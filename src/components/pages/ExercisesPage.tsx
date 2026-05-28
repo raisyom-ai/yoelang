@@ -1,12 +1,12 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   ArrowLeft, Home, CheckCircle2, XCircle, Star, Zap, Clock,
   Brain, BookOpen, MessageSquareText, Mic, RotateCcw,
   ChevronRight, Trophy, Sparkles, Volume2, Eye, EyeOff,
-  Hash, SkipForward, RefreshCw, AudioWaveform
+  Hash, SkipForward, RefreshCw, AlertCircle, Loader2
 } from 'lucide-react'
 import { useAppStore } from '@/lib/store'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -1029,104 +1029,75 @@ interface PronunciationAttempt {
 function PronunciationTab() {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isRecording, setIsRecording] = useState(false)
+  const [isProcessing, setIsProcessing] = useState(false)
   const [isCompleted, setIsCompleted] = useState(false)
   const [micLevel, setMicLevel] = useState(0)
   const [currentAttempt, setCurrentAttempt] = useState<PronunciationAttempt | null>(null)
   const [attemptHistory, setAttemptHistory] = useState<Record<string, PronunciationAttempt[]>>({})
   const [correctWords, setCorrectWords] = useState<Set<string>>(new Set())
   const [showEncouragement, setShowEncouragement] = useState(false)
+  const [micError, setMicError] = useState<string | null>(null)
+  const [recordingSeconds, setRecordingSeconds] = useState(0)
+
+  // Refs for audio recording
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null)
+  const audioChunksRef = useRef<Blob[]>([])
+  const streamRef = useRef<MediaStream | null>(null)
+  const analyserRef = useRef<AnalyserNode | null>(null)
+  const animFrameRef = useRef<number | null>(null)
+  const recognitionRef = useRef<{ stop: () => void } | null>(null)
+  const recordingTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   const currentWord = PRONUNCIATION_WORDS[currentIndex]
   const wordAttempts = attemptHistory[currentWord.id] ?? []
 
-  // Simulate microphone visual feedback when recording
-  useEffect(() => {
-    if (!isRecording) {
-      setMicLevel(0)
-      return
+  // Real microphone level via Web Audio API analyser
+  const updateMicLevel = useCallback(() => {
+    if (!analyserRef.current) return
+    const dataArray = new Uint8Array(analyserRef.current.frequencyBinCount)
+    analyserRef.current.getByteFrequencyData(dataArray)
+    // Calculate average volume
+    let sum = 0
+    for (let i = 0; i < dataArray.length; i++) sum += dataArray[i]
+    const avg = sum / dataArray.length
+    setMicLevel(avg)
+    animFrameRef.current = requestAnimationFrame(updateMicLevel)
+  }, [])
+
+  // Stop recording and clean up
+  const stopRecording = useCallback(() => {
+    // Stop media recorder
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      mediaRecorderRef.current.stop()
     }
-    const interval = setInterval(() => {
-      setMicLevel(Math.random() * 100)
-    }, 100)
-    return () => clearInterval(interval)
-  }, [isRecording])
-
-  // Auto-advance after correct pronunciation
-  useEffect(() => {
-    if (!showEncouragement) return
-    const timer = setTimeout(() => {
-      setShowEncouragement(false)
-      handleAdvance()
-    }, 2000)
-    return () => clearTimeout(timer)
-  }, [showEncouragement])
-
-  const handleMicPress = () => {
-    if (isRecording) return
-
-    const SpeechRecognition = (window as unknown as { SpeechRecognition?: typeof window.SpeechRecognition; webkitSpeechRecognition?: typeof window.SpeechRecognition }).SpeechRecognition || (window as unknown as { webkitSpeechRecognition?: typeof window.SpeechRecognition }).webkitSpeechRecognition
-
-    if (!SpeechRecognition) {
-      // Fallback: try the backend ASR API
-      handleFallbackASR()
-      return
+    // Stop all tracks on the stream
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop())
+      streamRef.current = null
     }
-
-    const recognition = new SpeechRecognition()
-    recognition.lang = 'en-US'
-    recognition.interimResults = false
-    recognition.maxAlternatives = 1
-    recognition.continuous = false
-
-    recognition.onstart = () => {
-      setIsRecording(true)
+    // Stop Web Speech recognition if active
+    if (recognitionRef.current) {
+      try { recognitionRef.current.stop() } catch { /* ignore */ }
+      recognitionRef.current = null
     }
-
-    recognition.onresult = (event: SpeechRecognitionEvent) => {
-      const transcript = event.results[0][0].transcript.trim()
-      processTranscript(transcript)
-      setIsRecording(false)
+    // Cancel animation frame
+    if (animFrameRef.current) {
+      cancelAnimationFrame(animFrameRef.current)
+      animFrameRef.current = null
     }
-
-    recognition.onerror = () => {
-      setIsRecording(false)
-      // Try backend ASR as fallback
-      handleFallbackASR()
+    // Cancel recording timer
+    if (recordingTimerRef.current) {
+      clearInterval(recordingTimerRef.current)
+      recordingTimerRef.current = null
     }
+    setIsRecording(false)
+    setMicLevel(0)
+    setRecordingSeconds(0)
+  }, [])
 
-    recognition.onend = () => {
-      setIsRecording(false)
-    }
-
-    recognition.start()
-  }
-
-  const handleFallbackASR = async () => {
-    setIsRecording(true)
-    try {
-      // Simulate a short delay for the "recording" feel
-      await new Promise(resolve => setTimeout(resolve, 1500))
-      // Since we can't easily record audio in-browser without a library,
-      // we'll show a message that speech recognition isn't available
-      const attempt: PronunciationAttempt = {
-        transcript: '',
-        confidence: 0,
-        isCorrect: false,
-      }
-      setCurrentAttempt(attempt)
-      setAttemptHistory(prev => ({
-        ...prev,
-        [currentWord.id]: [...(prev[currentWord.id] ?? []), attempt],
-      }))
-    } catch {
-      // Silent error handling
-    } finally {
-      setIsRecording(false)
-    }
-  }
-
-  const processTranscript = (transcript: string) => {
-    const normalizedTranscript = transcript.toLowerCase()
+  // Process transcript from any source (Web Speech API or backend ASR)
+  const processTranscript = useCallback((transcript: string) => {
+    const normalizedTranscript = transcript.toLowerCase().trim()
     const target = currentWord.word.toLowerCase()
     const confidence = calculateSimilarity(normalizedTranscript, target)
     const isMatch = confidence >= 70 || normalizedTranscript.includes(target) || target.includes(normalizedTranscript)
@@ -1138,25 +1109,239 @@ function PronunciationTab() {
     }
 
     setCurrentAttempt(attempt)
-    setAttemptHistory(prev => ({
+    setAttemptHistory((prev) => ({
       ...prev,
       [currentWord.id]: [...(prev[currentWord.id] ?? []), attempt],
     }))
 
     if (isMatch) {
-      setCorrectWords(prev => new Set([...prev, currentWord.id]))
+      setCorrectWords((prev) => new Set([...prev, currentWord.id]))
       setShowEncouragement(true)
     }
-  }
+  }, [currentWord])
+
+  // Send recorded audio to backend ASR for transcription
+  const sendAudioToBackend = useCallback(async (audioBlob: Blob) => {
+    setIsProcessing(true)
+    try {
+      const reader = new FileReader()
+      const base64Promise = new Promise<string>((resolve, reject) => {
+        reader.onloadend = () => {
+          const base64 = (reader.result as string).split(',')[1]
+          resolve(base64)
+        }
+        reader.onerror = reject
+      })
+      reader.readAsDataURL(audioBlob)
+      const audioBase64 = await base64Promise
+
+      const response = await fetch('/api/pronunciation', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          audio_base64: audioBase64,
+          target_word: currentWord.word,
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('ASR request failed')
+      }
+
+      const data = await response.json()
+      if (data.transcript) {
+        processTranscript(data.transcript)
+      } else {
+        // Backend couldn't transcribe
+        const attempt: PronunciationAttempt = {
+          transcript: '',
+          confidence: 0,
+          isCorrect: false,
+        }
+        setCurrentAttempt(attempt)
+        setAttemptHistory((prev) => ({
+          ...prev,
+          [currentWord.id]: [...(prev[currentWord.id] ?? []), attempt],
+        }))
+      }
+    } catch (error) {
+      console.error('Backend ASR error:', error)
+      // Show error attempt
+      const attempt: PronunciationAttempt = {
+        transcript: '',
+        confidence: 0,
+        isCorrect: false,
+      }
+      setCurrentAttempt(attempt)
+      setAttemptHistory((prev) => ({
+        ...prev,
+        [currentWord.id]: [...(prev[currentWord.id] ?? []), attempt],
+      }))
+    } finally {
+      setIsProcessing(false)
+    }
+  }, [currentWord, processTranscript])
+
+  // Main mic press handler — records audio and uses both Web Speech API + backend ASR
+  const handleMicPress = useCallback(async () => {
+    if (isRecording || isProcessing) return
+    setMicError(null)
+    setCurrentAttempt(null)
+
+    // Try Web Speech API first (faster, works in Chrome/Edge)
+    const SpeechRecognitionAPI = (window as unknown as { SpeechRecognition?: typeof window.SpeechRecognition; webkitSpeechRecognition?: typeof window.SpeechRecognition }).SpeechRecognition || (window as unknown as { webkitSpeechRecognition?: typeof window.SpeechRecognition }).webkitSpeechRecognition
+
+    // Always try to get microphone access and record audio
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      streamRef.current = stream
+
+      // Set up audio analyser for mic level visualization
+      const audioContext = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)()
+      const source = audioContext.createMediaStreamSource(stream)
+      const analyser = audioContext.createAnalyser()
+      analyser.fftSize = 256
+      source.connect(analyser)
+      analyserRef.current = analyser
+
+      setIsRecording(true)
+      setRecordingSeconds(0)
+
+      // Start mic level animation
+      animFrameRef.current = requestAnimationFrame(updateMicLevel)
+
+      // Start recording timer
+      recordingTimerRef.current = setInterval(() => {
+        setRecordingSeconds((prev) => prev + 1)
+      }, 1000)
+
+      // Set up MediaRecorder to capture audio as backup/for backend ASR
+      const mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm;codecs=opus' })
+      audioChunksRef.current = []
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data)
+        }
+      }
+      mediaRecorderRef.current = mediaRecorder
+      mediaRecorder.start()
+
+      // If Web Speech API is available, use it for real-time transcription
+      if (SpeechRecognitionAPI) {
+        const recognition = new SpeechRecognitionAPI()
+        recognition.lang = 'en-US'
+        recognition.interimResults = false
+        recognition.maxAlternatives = 3
+        recognition.continuous = false
+
+        recognitionRef.current = recognition
+
+        recognition.onresult = (event: SpeechRecognitionEvent) => {
+          // Get the best transcript
+          const transcript = event.results[0][0].transcript.trim()
+          stopRecording()
+          processTranscript(transcript)
+        }
+
+        recognition.onerror = () => {
+          // Web Speech failed — stop recording and send audio to backend
+          stopRecording()
+          // Create audio blob from recorded chunks
+          if (audioChunksRef.current.length > 0) {
+            const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' })
+            sendAudioToBackend(audioBlob)
+          }
+        }
+
+        recognition.onend = () => {
+          // If we got here without onresult firing, try backend
+          if (isRecording) {
+            stopRecording()
+            if (audioChunksRef.current.length > 0) {
+              const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' })
+              sendAudioToBackend(audioBlob)
+            }
+          }
+        }
+
+        recognition.start()
+      } else {
+        // No Web Speech API — record for a fixed duration then send to backend
+        // Auto-stop after 4 seconds
+        setTimeout(() => {
+          if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
+            mediaRecorderRef.current.onstop = () => {
+              stopRecording()
+              if (audioChunksRef.current.length > 0) {
+                const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' })
+                sendAudioToBackend(audioBlob)
+              }
+            }
+            mediaRecorderRef.current.stop()
+          }
+        }, 4000)
+      }
+    } catch (error) {
+      console.error('Microphone access error:', error)
+      setIsRecording(false)
+      setMicError('Impossible d\'accéder au microphone. Vérifiez les permissions de votre navigateur.')
+    }
+  }, [isRecording, isProcessing, stopRecording, processTranscript, sendAudioToBackend, updateMicLevel])
+
+  // Stop recording manually (for manual stop before auto-timeout)
+  const handleStopRecording = useCallback(() => {
+    if (!isRecording) return
+
+    const SpeechRecognitionAPI = (window as unknown as { SpeechRecognition?: typeof window.SpeechRecognition; webkitSpeechRecognition?: typeof window.SpeechRecognition }).SpeechRecognition || (window as unknown as { webkitSpeechRecognition?: typeof window.SpeechRecognition }).webkitSpeechRecognition
+
+    // If we have Web Speech API, stopping the recognition will trigger onresult/onend
+    if (recognitionRef.current && SpeechRecognitionAPI) {
+      try { recognitionRef.current.stop() } catch { /* ignore */ }
+      return
+    }
+
+    // Otherwise, stop the media recorder and send audio to backend
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
+      mediaRecorderRef.current.onstop = () => {
+        stopRecording()
+        if (audioChunksRef.current.length > 0) {
+          const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' })
+          sendAudioToBackend(audioBlob)
+        }
+      }
+      mediaRecorderRef.current.stop()
+    } else {
+      stopRecording()
+    }
+  }, [isRecording, stopRecording, sendAudioToBackend])
+
+  // Auto-advance after correct pronunciation
+  useEffect(() => {
+    if (!showEncouragement) return
+    const timer = setTimeout(() => {
+      setShowEncouragement(false)
+      handleAdvance()
+    }, 2000)
+    return () => clearTimeout(timer)
+  }, [showEncouragement])
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      stopRecording()
+    }
+  }, [stopRecording])
 
   const handleRetry = () => {
     setCurrentAttempt(null)
+    setMicError(null)
   }
 
   const handleAdvance = () => {
     setCurrentAttempt(null)
+    setMicError(null)
     if (currentIndex < PRONUNCIATION_WORDS.length - 1) {
-      setCurrentIndex(prev => prev + 1)
+      setCurrentIndex((prev) => prev + 1)
     } else {
       setIsCompleted(true)
     }
@@ -1176,13 +1361,16 @@ function PronunciationTab() {
   }
 
   const handleRestart = () => {
+    stopRecording()
     setCurrentIndex(0)
     setIsRecording(false)
+    setIsProcessing(false)
     setCurrentAttempt(null)
     setAttemptHistory({})
     setCorrectWords(new Set())
     setIsCompleted(false)
     setShowEncouragement(false)
+    setMicError(null)
   }
 
   const totalAttempts = Object.values(attemptHistory).reduce((acc, attempts) => acc + attempts.length, 0)
@@ -1254,6 +1442,8 @@ function PronunciationTab() {
 
   const randomEncouragement = ENCOURAGEMENTS[Math.floor(Math.random() * ENCOURAGEMENTS.length)]
 
+  const isBusy = isRecording || isProcessing
+
   return (
     <div className="space-y-4">
       {/* Progress */}
@@ -1314,7 +1504,7 @@ function PronunciationTab() {
 
               {/* Microphone section */}
               <div className="flex flex-col items-center gap-3 py-3">
-                {/* Waveform */}
+                {/* Waveform — real mic level from Web Audio API */}
                 <div className="flex items-center gap-1 h-10">
                   {Array.from({ length: 16 }).map((_, i) => (
                     <motion.div
@@ -1323,7 +1513,7 @@ function PronunciationTab() {
                       animate={
                         isRecording
                           ? {
-                              height: [8, Math.max(8, micLevel * 0.4 + Math.random() * 20), 8],
+                              height: [8, Math.max(8, micLevel * 0.6 + Math.random() * 8), 8],
                             }
                           : { height: 8 }
                       }
@@ -1336,43 +1526,91 @@ function PronunciationTab() {
                   ))}
                 </div>
 
-                {/* Mic button */}
-                <motion.button
-                  whileTap={{ scale: 0.9 }}
-                  onClick={handleMicPress}
-                  disabled={isRecording || showEncouragement}
-                  className={`relative flex h-16 w-16 items-center justify-center rounded-full transition-all ${
-                    isRecording
-                      ? 'bg-yoel-red text-white shadow-lg shadow-yoel-red/30'
-                      : showEncouragement
-                      ? 'bg-yoel-green/20 text-yoel-green'
-                      : 'bg-yoel-red/10 text-yoel-red hover:bg-yoel-red/20'
-                  }`}
-                >
-                  {isRecording && (
+                {/* Recording timer */}
+                {isRecording && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="flex items-center gap-2"
+                  >
+                    <span className="relative flex h-3 w-3">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yoel-red opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-3 w-3 bg-yoel-red"></span>
+                    </span>
+                    <span className="text-sm font-mono font-semibold text-yoel-red tabular-nums">
+                      {recordingSeconds}s
+                    </span>
+                  </motion.div>
+                )}
+
+                {/* Mic / Stop button */}
+                {!isRecording && !isProcessing ? (
+                  <motion.button
+                    whileTap={{ scale: 0.9 }}
+                    onClick={handleMicPress}
+                    disabled={showEncouragement}
+                    className={`relative flex h-16 w-16 items-center justify-center rounded-full transition-all ${
+                      showEncouragement
+                        ? 'bg-yoel-green/20 text-yoel-green'
+                        : 'bg-yoel-red/10 text-yoel-red hover:bg-yoel-red/20'
+                    }`}
+                  >
+                    {showEncouragement ? (
+                      <CheckCircle2 className="h-7 w-7" />
+                    ) : (
+                      <Mic className="h-7 w-7" />
+                    )}
+                  </motion.button>
+                ) : isRecording ? (
+                  <motion.button
+                    whileTap={{ scale: 0.9 }}
+                    onClick={handleStopRecording}
+                    className="relative flex h-16 w-16 items-center justify-center rounded-full bg-yoel-red text-white shadow-lg shadow-yoel-red/30"
+                  >
                     <motion.div
                       className="absolute inset-0 rounded-full border-2 border-yoel-red"
                       animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
                       transition={{ duration: 1.5, repeat: Infinity }}
                     />
-                  )}
-                  {isRecording ? (
-                    <AudioWaveform className="h-7 w-7" />
-                  ) : showEncouragement ? (
-                    <CheckCircle2 className="h-7 w-7" />
-                  ) : (
-                    <Mic className="h-7 w-7" />
-                  )}
-                </motion.button>
+                    <div className="h-6 w-6 rounded-sm bg-white" />
+                  </motion.button>
+                ) : (
+                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-yoel-gold/10">
+                    <Loader2 className="h-7 w-7 text-yoel-gold animate-spin" />
+                  </div>
+                )}
 
                 <p className="text-sm font-medium text-muted-foreground">
-                  {isRecording ? 'Écoute en cours...' : showEncouragement ? 'Parfait ! Mot suivant...' : 'Appuyez pour prononcer'}
+                  {isProcessing
+                    ? 'Analyse en cours...'
+                    : isRecording
+                    ? 'Parlez maintenant ! Cliquez pour arrêter'
+                    : showEncouragement
+                    ? 'Parfait ! Mot suivant...'
+                    : 'Appuyez pour prononcer'}
                 </p>
               </div>
 
+              {/* Mic permission error */}
+              {micError && !isBusy && (
+                <motion.div
+                  initial={{ opacity: 0, y: 5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="rounded-xl border bg-yoel-red/5 border-yoel-red/20 p-4"
+                >
+                  <div className="flex items-start gap-2">
+                    <AlertCircle className="h-5 w-5 text-yoel-red shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-sm font-medium text-yoel-red">Microphone non disponible</p>
+                      <p className="text-xs text-muted-foreground mt-1">{micError}</p>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+
               {/* Pronunciation result feedback */}
               <AnimatePresence>
-                {currentAttempt && !isRecording && !showEncouragement && (
+                {currentAttempt && !isBusy && !showEncouragement && (
                   <motion.div
                     initial={{ opacity: 0, y: 10, height: 0 }}
                     animate={{ opacity: 1, y: 0, height: 'auto' }}
@@ -1425,11 +1663,11 @@ function PronunciationTab() {
                       </div>
                     )}
 
-                    {/* No transcript available (fallback mode) */}
+                    {/* No transcript available (ASR couldn't understand) */}
                     {!currentAttempt.transcript && (
                       <div className="rounded-xl border bg-yoel-gold/5 border-yoel-gold/20 p-4">
                         <p className="text-sm text-muted-foreground text-center">
-                          <span className="font-medium text-yoel-gold">⚠️</span> La reconnaissance vocale n&apos;est pas disponible dans votre navigateur. Essayez Chrome ou Edge pour une meilleure expérience.
+                          <span className="font-medium text-yoel-gold">⚠️</span> Nous n&apos;avons pas pu comprendre l&apos;audio. Parlez clairement dans le microphone et réessayez.
                         </p>
                       </div>
                     )}
@@ -1457,7 +1695,7 @@ function PronunciationTab() {
                     {wordAttempts.length > 0 && (
                       <p className="text-xs text-muted-foreground text-center">
                         {wordAttempts.length} essai{wordAttempts.length > 1 ? 's' : ''} pour ce mot
-                        {wordAttempts.some(a => a.isCorrect) && (
+                        {wordAttempts.some((a) => a.isCorrect) && (
                           <span className="text-yoel-green ml-1">• Réussi !</span>
                         )}
                       </p>
@@ -1489,7 +1727,7 @@ function PronunciationTab() {
               </AnimatePresence>
 
               {/* Listen button (always visible) + Skip when no attempt yet */}
-              {!currentAttempt && !isRecording && !showEncouragement && (
+              {!currentAttempt && !isBusy && !showEncouragement && !micError && (
                 <div className="flex gap-3">
                   <Button
                     variant="outline"
@@ -1511,7 +1749,7 @@ function PronunciationTab() {
               )}
 
               {/* Always show listen button after attempt */}
-              {currentAttempt && !isRecording && !showEncouragement && (
+              {currentAttempt && !isBusy && !showEncouragement && (
                 <div className="flex justify-center">
                   <Button
                     variant="ghost"
