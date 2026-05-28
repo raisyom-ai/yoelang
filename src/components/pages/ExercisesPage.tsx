@@ -1105,18 +1105,23 @@ function PronunciationTab() {
   const streamRef = useRef<MediaStream | null>(null)
   const analyserRef = useRef<AnalyserNode | null>(null)
   const animFrameRef = useRef<number | null>(null)
-  const recognitionRef = useRef<{ stop: () => void } | null>(null)
   const recordingTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const audioContextRef = useRef<AudioContext | null>(null)
+  const autoStopTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const hasResultRef = useRef(false)
 
   const currentWord = PRONUNCIATION_WORDS[currentIndex]
   const wordAttempts = attemptHistory[currentWord.id] ?? []
+
+  // Current word ref for use in callbacks without stale closures
+  const currentWordRef = useRef(currentWord)
+  currentWordRef.current = currentWord
 
   // Real microphone level via Web Audio API analyser
   const updateMicLevel = useCallback(() => {
     if (!analyserRef.current) return
     const dataArray = new Uint8Array(analyserRef.current.frequencyBinCount)
     analyserRef.current.getByteFrequencyData(dataArray)
-    // Calculate average volume
     let sum = 0
     for (let i = 0; i < dataArray.length; i++) sum += dataArray[i]
     const avg = sum / dataArray.length
@@ -1124,41 +1129,42 @@ function PronunciationTab() {
     animFrameRef.current = requestAnimationFrame(updateMicLevel)
   }, [])
 
-  // Stop recording and clean up
-  const stopRecording = useCallback(() => {
-    // Stop media recorder
-    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
-      mediaRecorderRef.current.stop()
-    }
-    // Stop all tracks on the stream
+  // Clean up all recording resources (does NOT handle audio processing)
+  const cleanupRecording = useCallback(() => {
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((track) => track.stop())
       streamRef.current = null
     }
-    // Stop Web Speech recognition if active
-    if (recognitionRef.current) {
-      try { recognitionRef.current.stop() } catch { /* ignore */ }
-      recognitionRef.current = null
+    if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
+      try { audioContextRef.current.close() } catch { /* ignore */ }
+      audioContextRef.current = null
     }
-    // Cancel animation frame
     if (animFrameRef.current) {
       cancelAnimationFrame(animFrameRef.current)
       animFrameRef.current = null
     }
-    // Cancel recording timer
     if (recordingTimerRef.current) {
       clearInterval(recordingTimerRef.current)
       recordingTimerRef.current = null
     }
+    if (autoStopTimerRef.current) {
+      clearTimeout(autoStopTimerRef.current)
+      autoStopTimerRef.current = null
+    }
+    analyserRef.current = null
+    mediaRecorderRef.current = null
     setIsRecording(false)
     setMicLevel(0)
     setRecordingSeconds(0)
   }, [])
 
-  // Process transcript from any source (Web Speech API or backend ASR)
-  const processTranscript = useCallback((transcript: string) => {
+  // Process transcript from backend ASR
+  const processTranscript = useCallback((transcript: string, targetWord: string) => {
+    if (hasResultRef.current) return
+    hasResultRef.current = true
+
     const normalizedTranscript = transcript.toLowerCase().trim()
-    const target = currentWord.word.toLowerCase()
+    const target = targetWord.toLowerCase()
     const confidence = calculateSimilarity(normalizedTranscript, target)
     const isMatch = confidence >= 70 || normalizedTranscript.includes(target) || target.includes(normalizedTranscript)
 
@@ -1171,18 +1177,20 @@ function PronunciationTab() {
     setCurrentAttempt(attempt)
     setAttemptHistory((prev) => ({
       ...prev,
-      [currentWord.id]: [...(prev[currentWord.id] ?? []), attempt],
+      [currentWordRef.current.id]: [...(prev[currentWordRef.current.id] ?? []), attempt],
     }))
 
     if (isMatch) {
-      setCorrectWords((prev) => new Set([...prev, currentWord.id]))
+      setCorrectWords((prev) => new Set([...prev, currentWordRef.current.id]))
       setShowEncouragement(true)
     }
-  }, [currentWord])
+  }, [])
 
-  // Send recorded audio to backend ASR for transcription
+  // Send recorded audio to backend ASR
   const sendAudioToBackend = useCallback(async (audioBlob: Blob) => {
     setIsProcessing(true)
+    const targetWord = currentWordRef.current.word
+
     try {
       const reader = new FileReader()
       const base64Promise = new Promise<string>((resolve, reject) => {
@@ -1195,38 +1203,40 @@ function PronunciationTab() {
       reader.readAsDataURL(audioBlob)
       const audioBase64 = await base64Promise
 
+      console.log('[Pronunciation] Sending audio to backend, target:', targetWord, 'audio size:', audioBase64.length)
+
       const response = await fetch('/api/pronunciation', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           audio_base64: audioBase64,
-          target_word: currentWord.word,
+          target_word: targetWord,
         }),
       })
 
       if (!response.ok) {
-        throw new Error('ASR request failed')
+        throw new Error(`ASR request failed: ${response.status}`)
       }
 
       const data = await response.json()
-      if (data.transcript) {
-        processTranscript(data.transcript)
+      console.log('[Pronunciation] Backend response:', data)
+
+      if (data.transcript && data.transcript.trim().length > 0) {
+        processTranscript(data.transcript, targetWord)
       } else {
-        // Backend couldn't transcribe
         const attempt: PronunciationAttempt = {
-          transcript: '',
+          transcript: data.transcript || '',
           confidence: 0,
           isCorrect: false,
         }
         setCurrentAttempt(attempt)
         setAttemptHistory((prev) => ({
           ...prev,
-          [currentWord.id]: [...(prev[currentWord.id] ?? []), attempt],
+          [currentWordRef.current.id]: [...(prev[currentWordRef.current.id] ?? []), attempt],
         }))
       }
     } catch (error) {
-      console.error('Backend ASR error:', error)
-      // Show error attempt
+      console.error('[Pronunciation] Backend ASR error:', error)
       const attempt: PronunciationAttempt = {
         transcript: '',
         confidence: 0,
@@ -1235,29 +1245,34 @@ function PronunciationTab() {
       setCurrentAttempt(attempt)
       setAttemptHistory((prev) => ({
         ...prev,
-        [currentWord.id]: [...(prev[currentWord.id] ?? []), attempt],
+        [currentWordRef.current.id]: [...(prev[currentWordRef.current.id] ?? []), attempt],
       }))
     } finally {
       setIsProcessing(false)
     }
-  }, [currentWord, processTranscript])
+  }, [processTranscript])
 
-  // Main mic press handler — records audio and uses both Web Speech API + backend ASR
+  // Start recording — simple MediaRecorder + backend ASR approach
   const handleMicPress = useCallback(async () => {
     if (isRecording || isProcessing) return
     setMicError(null)
     setCurrentAttempt(null)
+    hasResultRef.current = false
 
-    // Try Web Speech API first (faster, works in Chrome/Edge)
-    const SpeechRecognitionAPI = (window as unknown as { SpeechRecognition?: typeof window.SpeechRecognition; webkitSpeechRecognition?: typeof window.SpeechRecognition }).SpeechRecognition || (window as unknown as { webkitSpeechRecognition?: typeof window.SpeechRecognition }).webkitSpeechRecognition
-
-    // Always try to get microphone access and record audio
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      // Request microphone access with noise suppression for better ASR
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+        },
+      })
       streamRef.current = stream
 
       // Set up audio analyser for mic level visualization
-      const audioContext = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)()
+      const audioContext = new AudioContext()
+      audioContextRef.current = audioContext
       const source = audioContext.createMediaStreamSource(stream)
       const analyser = audioContext.createAnalyser()
       analyser.fftSize = 256
@@ -1275,7 +1290,7 @@ function PronunciationTab() {
         setRecordingSeconds((prev) => prev + 1)
       }, 1000)
 
-      // Set up MediaRecorder to capture audio as backup/for backend ASR
+      // Set up MediaRecorder — use timeslice for incremental data collection
       const mimeType = getSupportedMimeType()
       const mediaRecorderOptions: MediaRecorderOptions = {}
       if (mimeType) {
@@ -1283,106 +1298,53 @@ function PronunciationTab() {
       }
       const mediaRecorder = new MediaRecorder(stream, mediaRecorderOptions)
       audioChunksRef.current = []
+
       mediaRecorder.ondataavailable = (event) => {
         if (event.data.size > 0) {
           audioChunksRef.current.push(event.data)
         }
       }
-      mediaRecorderRef.current = mediaRecorder
-      mediaRecorder.start()
 
-      // If Web Speech API is available, use it for real-time transcription
-      if (SpeechRecognitionAPI) {
-        const recognition = new SpeechRecognitionAPI()
-        recognition.lang = 'en-US'
-        recognition.interimResults = false
-        recognition.maxAlternatives = 3
-        recognition.continuous = false
-
-        recognitionRef.current = recognition
-
-        recognition.onresult = (event: SpeechRecognitionEvent) => {
-          // Get the best transcript
-          const transcript = event.results[0][0].transcript.trim()
-          stopRecording()
-          processTranscript(transcript)
+      mediaRecorder.onstop = () => {
+        // Collect all recorded audio and send to backend
+        if (audioChunksRef.current.length > 0 && !hasResultRef.current) {
+          const blobType = mimeType || 'audio/webm'
+          const audioBlob = new Blob(audioChunksRef.current, { type: blobType })
+          console.log('[Pronunciation] Recording stopped, audio size:', audioBlob.size, 'type:', blobType)
+          cleanupRecording()
+          sendAudioToBackend(audioBlob)
+        } else {
+          cleanupRecording()
         }
-
-        recognition.onerror = () => {
-          // Web Speech failed — stop recording and send audio to backend
-          stopRecording()
-          // Create audio blob from recorded chunks
-          if (audioChunksRef.current.length > 0) {
-            const blobType = getSupportedMimeType() || 'audio/webm'
-            const audioBlob = new Blob(audioChunksRef.current, { type: blobType })
-            sendAudioToBackend(audioBlob)
-          }
-        }
-
-        recognition.onend = () => {
-          // If we got here without onresult firing, try backend
-          if (isRecording) {
-            stopRecording()
-            if (audioChunksRef.current.length > 0) {
-              const blobType = getSupportedMimeType() || 'audio/webm'
-              const audioBlob = new Blob(audioChunksRef.current, { type: blobType })
-              sendAudioToBackend(audioBlob)
-            }
-          }
-        }
-
-        recognition.start()
-      } else {
-        // No Web Speech API — record for a fixed duration then send to backend
-        // Auto-stop after 4 seconds
-        const fallbackMimeType = getSupportedMimeType() || 'audio/webm'
-        setTimeout(() => {
-          if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
-            mediaRecorderRef.current.onstop = () => {
-              stopRecording()
-              if (audioChunksRef.current.length > 0) {
-                const audioBlob = new Blob(audioChunksRef.current, { type: fallbackMimeType })
-                sendAudioToBackend(audioBlob)
-              }
-            }
-            mediaRecorderRef.current.stop()
-          }
-        }, 4000)
       }
+
+      mediaRecorderRef.current = mediaRecorder
+      // Use timeslice of 500ms for incremental data collection
+      mediaRecorder.start(500)
+
+      // Auto-stop after 5 seconds
+      autoStopTimerRef.current = setTimeout(() => {
+        if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
+          console.log('[Pronunciation] Auto-stop after 5s')
+          mediaRecorderRef.current.stop()
+        }
+      }, 5000)
     } catch (error) {
-      console.error('Microphone access error:', error)
-      setIsRecording(false)
+      console.error('[Pronunciation] Microphone access error:', error)
+      cleanupRecording()
       setMicError('Impossible d\'accéder au microphone. Vérifiez les permissions de votre navigateur.')
     }
-  }, [isRecording, isProcessing, stopRecording, processTranscript, sendAudioToBackend, updateMicLevel])
+  }, [isRecording, isProcessing, cleanupRecording, updateMicLevel, sendAudioToBackend])
 
-  // Stop recording manually (for manual stop before auto-timeout)
+  // Stop recording manually
   const handleStopRecording = useCallback(() => {
     if (!isRecording) return
-
-    const SpeechRecognitionAPI = (window as unknown as { SpeechRecognition?: typeof window.SpeechRecognition; webkitSpeechRecognition?: typeof window.SpeechRecognition }).SpeechRecognition || (window as unknown as { webkitSpeechRecognition?: typeof window.SpeechRecognition }).webkitSpeechRecognition
-
-    // If we have Web Speech API, stopping the recognition will trigger onresult/onend
-    if (recognitionRef.current && SpeechRecognitionAPI) {
-      try { recognitionRef.current.stop() } catch { /* ignore */ }
-      return
-    }
-
-    // Otherwise, stop the media recorder and send audio to backend
+    // Stop the media recorder — its onstop handler will send audio to backend
     if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
-      mediaRecorderRef.current.onstop = () => {
-        stopRecording()
-        if (audioChunksRef.current.length > 0) {
-          const blobType = getSupportedMimeType() || 'audio/webm'
-          const audioBlob = new Blob(audioChunksRef.current, { type: blobType })
-          sendAudioToBackend(audioBlob)
-        }
-      }
+      console.log('[Pronunciation] Manual stop')
       mediaRecorderRef.current.stop()
-    } else {
-      stopRecording()
     }
-  }, [isRecording, stopRecording, sendAudioToBackend])
+  }, [isRecording])
 
   // Auto-advance after correct pronunciation
   useEffect(() => {
@@ -1397,18 +1359,20 @@ function PronunciationTab() {
   // Cleanup on unmount
   useEffect(() => {
     return () => {
-      stopRecording()
+      cleanupRecording()
     }
-  }, [stopRecording])
+  }, [cleanupRecording])
 
   const handleRetry = () => {
     setCurrentAttempt(null)
     setMicError(null)
+    hasResultRef.current = false
   }
 
   const handleAdvance = () => {
     setCurrentAttempt(null)
     setMicError(null)
+    hasResultRef.current = false
     if (currentIndex < PRONUNCIATION_WORDS.length - 1) {
       setCurrentIndex((prev) => prev + 1)
     } else {
@@ -1430,7 +1394,7 @@ function PronunciationTab() {
   }
 
   const handleRestart = () => {
-    stopRecording()
+    cleanupRecording()
     setCurrentIndex(0)
     setIsRecording(false)
     setIsProcessing(false)
@@ -1440,6 +1404,7 @@ function PronunciationTab() {
     setIsCompleted(false)
     setShowEncouragement(false)
     setMicError(null)
+    hasResultRef.current = false
   }
 
   const totalAttempts = Object.values(attemptHistory).reduce((acc, attempts) => acc + attempts.length, 0)
@@ -1583,8 +1548,8 @@ function PronunciationTab() {
                 </div>
               </div>
 
-              {/* Always-visible Listen button */}
-              <div className="flex justify-center">
+              {/* Step indicator */}
+              <div className="flex items-center justify-center gap-4">
                 <Button
                   variant="outline"
                   size="sm"
@@ -1592,7 +1557,18 @@ function PronunciationTab() {
                   className="rounded-full text-yoel-blue hover:text-yoel-blue hover:bg-yoel-blue/5"
                 >
                   <Volume2 className="h-4 w-4 mr-1.5" />
-                  Écouter le mot
+                  1. Écouter
+                </Button>
+                <div className="text-muted-foreground/40">→</div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleMicPress}
+                  disabled={isRecording || isProcessing || showEncouragement}
+                  className="rounded-full text-yoel-red hover:text-yoel-red hover:bg-yoel-red/5 disabled:opacity-50"
+                >
+                  <Mic className="h-4 w-4 mr-1.5" />
+                  2. Prononcer
                 </Button>
               </div>
 
@@ -1640,12 +1616,12 @@ function PronunciationTab() {
                       <span className="relative inline-flex rounded-full h-3 w-3 bg-yoel-red"></span>
                     </span>
                     <span className="text-sm font-mono font-semibold text-yoel-red tabular-nums">
-                      {recordingSeconds}s
+                      {recordingSeconds}s / 5s
                     </span>
                   </motion.div>
                 )}
 
-                {/* Mic / Stop button */}
+                {/* Mic / Stop / Processing button */}
                 {!isRecording && !isProcessing ? (
                   <motion.button
                     whileTap={{ scale: 0.9 }}
@@ -1682,14 +1658,14 @@ function PronunciationTab() {
                   </div>
                 )}
 
-                <p className="text-sm font-medium text-muted-foreground">
+                <p className="text-sm font-medium text-muted-foreground text-center">
                   {isProcessing
-                    ? 'Analyse en cours...'
+                    ? '🔄 Analyse de votre prononciation...'
                     : isRecording
-                    ? 'Parlez maintenant ! Cliquez pour arrêter'
+                    ? '🎤 Parlez maintenant ! Cliquez pour arrêter'
                     : showEncouragement
-                    ? 'Parfait ! Mot suivant...'
-                    : 'Appuyez pour prononcer'}
+                    ? '✅ Parfait ! Mot suivant...'
+                    : '👆 Appuyez sur le micro pour prononcer le mot'}
                 </p>
               </div>
 
@@ -1724,7 +1700,7 @@ function PronunciationTab() {
                     <div className={`rounded-xl p-4 border ${getConfidenceBg(currentAttempt.confidence)}`}>
                       <div className="flex items-center justify-between mb-2">
                         <span className={`text-sm font-semibold ${getConfidenceColor(currentAttempt.confidence)}`}>
-                          {getConfidenceLabel(currentAttempt.confidence)}
+                          {currentAttempt.isCorrect ? '✅ ' : ''}{getConfidenceLabel(currentAttempt.confidence)}
                         </span>
                         <span className={`text-2xl font-bold ${getConfidenceColor(currentAttempt.confidence)}`}>
                           {currentAttempt.confidence}%
