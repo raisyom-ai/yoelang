@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import {
-  ArrowLeft, BarChart3, Flame, Zap, Target,
+  ArrowLeft, Home, BarChart3, Flame, Zap, Target,
   BookOpen, Clock, Award, Lock, CheckCircle2, TrendingUp
 } from 'lucide-react'
 import {
@@ -93,7 +93,7 @@ function CustomTooltip({ active, payload, label }: { active?: boolean; payload?:
 // ─── Main Component ─────────────────────────────────────────────────────────
 
 export default function StatsPage() {
-  const { user, goBack } = useAppStore()
+  const { user, goBack, navigate } = useAppStore()
 
   const xp = user?.xp ?? 1250
   const streak = user?.streak ?? 7
@@ -119,6 +119,9 @@ export default function StatsPage() {
         <motion.div variants={itemVariants} className="flex items-center gap-3">
           <Button variant="ghost" size="icon" onClick={goBack} className="shrink-0">
             <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <Button variant="ghost" size="icon" onClick={() => navigate('dashboard')} className="shrink-0 text-muted-foreground hover:text-yoel-red">
+            <Home className="h-4 w-4" />
           </Button>
           <div>
             <h1 className="text-xl font-bold gradient-text-red">Statistiques</h1>

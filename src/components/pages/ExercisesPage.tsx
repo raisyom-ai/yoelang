@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  ArrowLeft, CheckCircle2, XCircle, Star, Zap, Clock,
+  ArrowLeft, Home, CheckCircle2, XCircle, Star, Zap, Clock,
   Brain, BookOpen, MessageSquareText, Mic, RotateCcw,
   ChevronRight, Trophy, Sparkles, Volume2, Eye, EyeOff,
   Hash
@@ -878,13 +878,13 @@ function VocabularyTab() {
                   >
                     <Badge variant="secondary" className="text-xs">
                       <MessageSquareText className="h-3 w-3 mr-1" />
-                      Anglais → Français
+                      Français → Anglais
                     </Badge>
-                    <h3 className="text-3xl font-bold gradient-text-blue">
-                      {currentCard.english}
+                    <h3 className="text-3xl font-bold gradient-text-red">
+                      {currentCard.french}
                     </h3>
-                    <p className="text-sm text-muted-foreground font-mono">
-                      {currentCard.phonetic}
+                    <p className="text-sm text-muted-foreground">
+                      🇫🇷 Traduisez en anglais
                     </p>
                     <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-2">
                       <Eye className="h-3.5 w-3.5" />
@@ -900,19 +900,33 @@ function VocabularyTab() {
                     className="flex flex-col items-center text-center space-y-4"
                   >
                     <Badge variant="secondary" className="text-xs bg-yoel-green/10 text-yoel-green">
-                      Traduction
+                      Traduction en anglais
                     </Badge>
-                    <h3 className="text-3xl font-bold gradient-text-red">
-                      {currentCard.french}
+                    <h3 className="text-3xl font-bold gradient-text-blue">
+                      {currentCard.english}
                     </h3>
+                    <p className="text-sm text-muted-foreground font-mono">
+                      {currentCard.phonetic}
+                    </p>
                     <Separator className="w-16" />
                     <p className="text-sm italic text-muted-foreground max-w-[250px]">
                       &ldquo;{currentCard.example}&rdquo;
                     </p>
-                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <button
+                      className="flex items-center gap-1.5 text-xs text-yoel-blue hover:text-yoel-blue-dark transition-colors mt-1"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        if ('speechSynthesis' in window) {
+                          const utterance = new SpeechSynthesisUtterance(currentCard.english)
+                          utterance.lang = 'en-US'
+                          utterance.rate = 0.85
+                          window.speechSynthesis.speak(utterance)
+                        }
+                      }}
+                    >
                       <Volume2 className="h-3.5 w-3.5" />
                       Écouter la prononciation
-                    </div>
+                    </button>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -1238,7 +1252,7 @@ function PronunciationTab() {
 // ─── Main Component ─────────────────────────────────────────────────────────
 
 export default function ExercisesPage() {
-  const { goBack, currentLevel, user } = useAppStore()
+  const { goBack, navigate, currentLevel, user } = useAppStore()
   const [activeTab, setActiveTab] = useState('quiz')
 
   const level = user?.level ?? currentLevel
@@ -1268,6 +1282,14 @@ export default function ExercisesPage() {
               className="h-9 w-9 rounded-full"
             >
               <ArrowLeft className="h-5 w-5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate('dashboard')}
+              className="h-9 w-9 rounded-full text-muted-foreground hover:text-yoel-red"
+            >
+              <Home className="h-4 w-4" />
             </Button>
             <div>
               <h1 className="text-lg font-bold">Exercices</h1>

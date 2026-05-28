@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  ArrowLeft, Map, Zap, BookOpen, Lock,
+  ArrowLeft, Home, Map, Zap, BookOpen, Lock,
   CheckCircle2, ChevronRight, Trophy, Star, Filter
 } from 'lucide-react'
 import { useAppStore, LEVELS, type LevelInfo } from '@/lib/store'
@@ -126,6 +126,14 @@ export default function LevelsPage() {
                 onClick={goBack}
               >
                 <ArrowLeft className="h-5 w-5" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-10 w-10 rounded-xl text-muted-foreground hover:text-yoel-red"
+                onClick={() => navigate('dashboard')}
+              >
+                <Home className="h-4 w-4" />
               </Button>
               <div>
                 <h1 className="text-xl font-bold gradient-text-red">

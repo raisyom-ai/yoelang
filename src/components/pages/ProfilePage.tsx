@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import {
-  ArrowLeft, Zap, Flame, Coins, Award, Crown,
+  ArrowLeft, Home, Zap, Flame, Coins, Award, Crown,
   BookOpen, CheckCircle2, Star, Edit3, LogOut, ChevronRight, Calendar
 } from 'lucide-react'
 import { useAppStore, LEVELS, BADGES } from '@/lib/store'
@@ -84,6 +84,9 @@ export default function ProfilePage() {
         <motion.div variants={itemVariants} className="flex items-center gap-3">
           <Button variant="ghost" size="icon" onClick={goBack} className="shrink-0">
             <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <Button variant="ghost" size="icon" onClick={() => navigate('dashboard')} className="shrink-0 text-muted-foreground hover:text-yoel-red">
+            <Home className="h-4 w-4" />
           </Button>
           <h1 className="text-xl font-bold gradient-text-red">Profil</h1>
         </motion.div>

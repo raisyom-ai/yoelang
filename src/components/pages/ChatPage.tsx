@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  ArrowLeft, Send, Mic, MicOff, Bot, User as UserIcon,
+  ArrowLeft, Home, Send, Mic, MicOff, Bot, User as UserIcon,
   Trash2, Sparkles, Clock, AlertCircle, RotateCcw,
   MessageCircle, Zap
 } from 'lucide-react'
@@ -180,6 +180,7 @@ function ChatMessage({ message }: { message: ChatMsg }) {
 export default function ChatPage() {
   const {
     goBack,
+    navigate,
     user,
     currentLevel,
     chatMessages,
@@ -359,6 +360,14 @@ export default function ChatPage() {
               className="h-9 w-9 rounded-full"
             >
               <ArrowLeft className="h-5 w-5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate('dashboard')}
+              className="h-9 w-9 rounded-full text-muted-foreground hover:text-yoel-red"
+            >
+              <Home className="h-4 w-4" />
             </Button>
             <div>
               <h1 className="text-lg font-bold flex items-center gap-2">

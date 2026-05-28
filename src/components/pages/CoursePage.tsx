@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  ArrowLeft, Volume2, Mic, MicOff, ChevronLeft, ChevronRight,
+  ArrowLeft, Home, Volume2, Mic, MicOff, ChevronLeft, ChevronRight,
   BookOpen, MessageSquare, PenTool, Headphones, Star, Trophy,
   Zap, Clock, CheckCircle2, XCircle, Award, Sparkles, RotateCcw,
   Play
@@ -297,10 +297,40 @@ export default function CoursePage() {
     navigate('dashboard')
   }
 
-  // Audio simulation
-  const simulateAudio = () => {
-    setIsPlayingAudio(true)
-    setTimeout(() => setIsPlayingAudio(false), 1500)
+  // Audio playback using Web Speech API
+  const speakText = (text: string, lang: string = 'en-US', rate: number = 0.85) => {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel() // Stop any ongoing speech
+      const utterance = new SpeechSynthesisUtterance(text)
+      utterance.lang = lang
+      utterance.rate = rate
+      utterance.onstart = () => setIsPlayingAudio(true)
+      utterance.onend = () => setIsPlayingAudio(false)
+      utterance.onerror = () => setIsPlayingAudio(false)
+      window.speechSynthesis.speak(utterance)
+    } else {
+      // Fallback: just show visual feedback
+      setIsPlayingAudio(true)
+      setTimeout(() => setIsPlayingAudio(false), 1500)
+    }
+  }
+
+  // Play current vocab word audio
+  const playVocabAudio = () => {
+    const word = VOCAB_WORDS[currentVocabIndex] ?? VOCAB_WORDS[0]
+    speakText(word.english)
+  }
+
+  // Play dialogue line audio
+  const playDialogueAudio = (lineIndex: number) => {
+    const line = DIALOGUE[lineIndex]
+    if (line) speakText(line.text)
+  }
+
+  // Play pronunciation word audio
+  const playPronunciationAudio = () => {
+    const item = PRONUNCIATION_ITEMS[currentPronIndex] ?? PRONUNCIATION_ITEMS[0]
+    speakText(item.word, 'en-US', 0.7)
   }
 
   // Recording simulation
@@ -343,6 +373,14 @@ export default function CoursePage() {
                 onClick={goBack}
               >
                 <ArrowLeft className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-9 w-9 rounded-xl text-muted-foreground hover:text-yoel-red"
+                onClick={() => navigate('dashboard')}
+              >
+                <Home className="h-4 w-4" />
               </Button>
               <div>
                 <h1 className="text-sm font-semibold truncate max-w-[180px] sm:max-w-none">
@@ -391,7 +429,7 @@ export default function CoursePage() {
                     revealed={vocabRevealed.has(currentStep)}
                     onReveal={() => setVocabRevealed((prev) => new Set(prev).add(currentStep))}
                     isPlayingAudio={isPlayingAudio}
-                    onPlayAudio={simulateAudio}
+                    onPlayAudio={playVocabAudio}
                   />
                 )}
                 {currentStepData.type === 'grammar' && (
@@ -407,7 +445,7 @@ export default function CoursePage() {
                     revealedIndices={dialogueRevealed}
                     onReveal={(idx) => setDialogueRevealed((prev) => new Set(prev).add(idx))}
                     isPlayingAudio={isPlayingAudio}
-                    onPlayAudio={simulateAudio}
+                    onPlayAudio={playDialogueAudio}
                   />
                 )}
                 {currentStepData.type === 'pronunciation' && (
@@ -417,7 +455,7 @@ export default function CoursePage() {
                     isRecording={isRecording}
                     attempted={pronunciationAttempted.has(currentStep)}
                     onRecord={() => simulateRecording(currentStep)}
-                    onPlayAudio={simulateAudio}
+                    onPlayAudio={playPronunciationAudio}
                     isPlayingAudio={isPlayingAudio}
                   />
                 )}
@@ -688,10 +726,10 @@ function VocabularyStep({
           {/* Top gradient */}
           <div className="h-2 bg-gradient-to-r from-yoel-red to-yoel-gold" />
           <CardContent className="p-6 space-y-5">
-            {/* English Word */}
+            {/* French Word (known language for francophone users) */}
             <div className="text-center space-y-2">
-              <h3 className="text-4xl font-bold gradient-text-blue">{word.english}</h3>
-              <p className="text-sm font-mono text-muted-foreground">{word.phonetic}</p>
+              <h3 className="text-4xl font-bold gradient-text-red">{word.french}</h3>
+              <p className="text-sm text-muted-foreground">🇫🇷 Français</p>
               <Button
                 variant="outline"
                 size="sm"
@@ -706,7 +744,7 @@ function VocabularyStep({
                 ) : (
                   <>
                     <Play className="h-4 w-4 mr-1" />
-                    Écouter
+                    Écouter (EN)
                   </>
                 )}
               </Button>
@@ -714,7 +752,7 @@ function VocabularyStep({
 
             <Separator />
 
-            {/* French Translation (tap to reveal) */}
+            {/* English Translation (tap to reveal - this is what they're learning) */}
             <div
               className="text-center cursor-pointer"
               onClick={onReveal}
@@ -725,7 +763,7 @@ function VocabularyStep({
                   whileTap={{ scale: 0.98 }}
                   className="rounded-xl bg-muted/50 p-4 space-y-1"
                 >
-                  <p className="text-sm text-muted-foreground">Appuyez pour révéler</p>
+                  <p className="text-sm text-muted-foreground">Appuyez pour révéler la traduction</p>
                   <p className="text-2xl">🇫🇷 → 🇬🇧</p>
                 </motion.div>
               ) : (
@@ -734,8 +772,9 @@ function VocabularyStep({
                   animate={{ opacity: 1, scale: 1 }}
                   className="rounded-xl bg-yoel-green/10 p-4"
                 >
-                  <p className="text-xs text-muted-foreground mb-1">Traduction</p>
-                  <p className="text-2xl font-bold text-yoel-green">{word.french}</p>
+                  <p className="text-xs text-muted-foreground mb-1">Traduction en anglais</p>
+                  <p className="text-2xl font-bold gradient-text-blue">{word.english}</p>
+                  <p className="text-sm font-mono text-muted-foreground mt-1">{word.phonetic}</p>
                 </motion.div>
               )}
             </div>
@@ -904,7 +943,7 @@ function ConversationStep({
   revealedIndices: Set<number>
   onReveal: (index: number) => void
   isPlayingAudio: boolean
-  onPlayAudio: () => void
+  onPlayAudio: (lineIndex: number) => void
 }) {
   return (
     <motion.div
@@ -955,7 +994,7 @@ function ConversationStep({
                     className="h-5 w-5"
                     onClick={(e) => {
                       e.stopPropagation()
-                      onPlayAudio()
+                      onPlayAudio(idx)
                     }}
                   >
                     {isPlayingAudio ? (
