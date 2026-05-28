@@ -38,8 +38,8 @@ const itemVariants = {
 }
 
 const cardFlipVariants = {
-  front: { rotateY: 0, transition: { duration: 0.5, ease: 'easeInOut' } },
-  back: { rotateY: 180, transition: { duration: 0.5, ease: 'easeInOut' } },
+  front: { rotateY: 0, transition: { duration: 0.4, ease: 'easeInOut' } },
+  back: { rotateY: 0, transition: { duration: 0.4, ease: 'easeInOut' } },
 }
 
 const feedbackVariants = {
@@ -792,7 +792,6 @@ function VocabularyTab() {
   const [isFlipped, setIsFlipped] = useState(false)
   const [results, setResults] = useState<Record<string, boolean>>({})
   const [isCompleted, setIsCompleted] = useState(false)
-  const { goBack, navigate } = useAppStore()
 
   const currentCard = VOCAB_CARDS[currentIndex]
 
@@ -857,14 +856,12 @@ function VocabularyTab() {
         </div>
       </div>
 
-      {/* Flashcard */}
-      <div className="perspective-1000 flex justify-center">
+      {/* Flashcard - Crossfade style (no mirror effect) */}
+      <div className="flex justify-center">
         <motion.div
           className="w-full max-w-sm cursor-pointer"
-          style={{ perspective: 1000 }}
-          animate={isFlipped ? 'back' : 'front'}
-          variants={cardFlipVariants}
           onClick={() => setIsFlipped(!isFlipped)}
+          whileTap={{ scale: 0.98 }}
         >
           <Card className="glass overflow-hidden border-0 min-h-[280px]">
             <CardContent className="flex flex-col items-center justify-center p-6 min-h-[280px]">
@@ -872,9 +869,10 @@ function VocabularyTab() {
                 {!isFlipped ? (
                   <motion.div
                     key="front"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ duration: 0.25, ease: 'easeInOut' }}
                     className="flex flex-col items-center text-center space-y-4"
                   >
                     <Badge variant="secondary" className="text-xs">
@@ -913,13 +911,14 @@ function VocabularyTab() {
                 ) : (
                   <motion.div
                     key="back"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ duration: 0.25, ease: 'easeInOut' }}
                     className="flex flex-col items-center text-center space-y-4"
                   >
                     <Badge variant="secondary" className="text-xs bg-yoel-green/10 text-yoel-green">
-                      Traduction en français
+                      🇫🇷 Traduction en français
                     </Badge>
                     <h3 className="text-3xl font-bold gradient-text-red">
                       {currentCard.french}
@@ -928,6 +927,16 @@ function VocabularyTab() {
                     <p className="text-sm italic text-muted-foreground max-w-[250px]">
                       &ldquo;{currentCard.example}&rdquo;
                     </p>
+                    <button
+                      className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors mt-1"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setIsFlipped(false)
+                      }}
+                    >
+                      <EyeOff className="h-3.5 w-3.5" />
+                      Retourner la carte
+                    </button>
                   </motion.div>
                 )}
               </AnimatePresence>
