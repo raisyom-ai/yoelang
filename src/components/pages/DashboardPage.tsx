@@ -48,13 +48,24 @@ const pulseVariants = {
 const DAILY_XP_GOAL = 20
 const DAILY_XP_EARNED = 12
 
-const DAILY_CHALLENGE = {
-  question: 'Traduisez : "She ___ to the store yesterday."',
-  options: ['go', 'goes', 'went', 'going'],
-  correctIndex: 2,
-  timeLimit: 60,
-  xpReward: 25,
+// Défis journaliers rotatifs basés sur le jour de l'année
+const DAILY_CHALLENGES = [
+  { question: 'Traduisez : "She ___ to the store yesterday."', options: ['go', 'goes', 'went', 'going'], correctIndex: 2, xpReward: 25 },
+  { question: 'Quel est le pluriel de "child" ?', options: ['Childs', 'Children', 'Childrens', 'Childes'], correctIndex: 1, xpReward: 25 },
+  { question: 'Complétez : "I have been living here ___ 2010."', options: ['for', 'since', 'from', 'during'], correctIndex: 1, xpReward: 25 },
+  { question: 'Quelle est la forme correcte ? "He ___ to music every night."', options: ['listen', 'listens', 'listening', 'listened'], correctIndex: 1, xpReward: 25 },
+  { question: 'Traduisez : "Je voudrais une tasse de thé."', options: ['I would like a cup of tea', 'I want a glass of tea', 'I like a tea cup', 'I will have tea'], correctIndex: 0, xpReward: 25 },
+  { question: 'Quel mot est un adjectif ?', options: ['Quickly', 'Beautiful', 'Running', 'Happiness'], correctIndex: 1, xpReward: 25 },
+  { question: 'Complétez : "If I ___ rich, I would travel the world."', options: ['am', 'was', 'were', 'be'], correctIndex: 2, xpReward: 30 },
+]
+
+// Sélectionner le défi du jour basé sur la date
+const getDailyChallenge = () => {
+  const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000)
+  return DAILY_CHALLENGES[dayOfYear % DAILY_CHALLENGES.length]
 }
+
+const DAILY_CHALLENGE = { ...getDailyChallenge(), timeLimit: 60 }
 
 const LEADERBOARD = [
   { rank: 1, name: 'Marie L.', xp: 4820, avatar: 'ML', isPremium: true },
@@ -215,7 +226,7 @@ function BottomNavItem({
 // ─── Main Component ─────────────────────────────────────────────────────────
 
 export default function DashboardPage() {
-  const { user, isDarkMode, toggleDarkMode, navigate, currentLesson } = useAppStore()
+  const { user, isDarkMode, toggleDarkMode, navigate, currentLesson, dailyChallengeCompleted, completeDailyChallenge, addXP } = useAppStore()
 
   // Derive data with fallbacks
   const displayName = user?.name ?? 'Apprenant'
@@ -234,7 +245,7 @@ export default function DashboardPage() {
   // Daily challenge state
   const [selectedOption, setSelectedOption] = useState<number | null>(null)
   const [challengeTime, setChallengeTime] = useState(DAILY_CHALLENGE.timeLimit)
-  const [challengeAnswered, setChallengeAnswered] = useState(false)
+  const [challengeAnswered, setChallengeAnswered] = useState(dailyChallengeCompleted)
 
   useEffect(() => {
     if (challengeAnswered) return
@@ -255,6 +266,10 @@ export default function DashboardPage() {
     if (challengeAnswered) return
     setSelectedOption(index)
     setChallengeAnswered(true)
+    if (index === DAILY_CHALLENGE.correctIndex) {
+      addXP(DAILY_CHALLENGE.xpReward)
+      completeDailyChallenge()
+    }
   }
 
   // Earned badges (first 5)

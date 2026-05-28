@@ -18,6 +18,7 @@ const StatsPage = dynamic(() => import('@/components/pages/StatsPage'))
 const ProfilePage = dynamic(() => import('@/components/pages/ProfilePage'))
 const SettingsPage = dynamic(() => import('@/components/pages/SettingsPage'))
 const PremiumPage = dynamic(() => import('@/components/pages/PremiumPage'))
+const CertificatePage = dynamic(() => import('@/components/pages/CertificatePage'))
 
 const pageComponents: Record<PageId, React.ComponentType> = {
   splash: SplashScreen,
@@ -33,6 +34,7 @@ const pageComponents: Record<PageId, React.ComponentType> = {
   profile: ProfilePage,
   settings: SettingsPage,
   premium: PremiumPage,
+  certificate: CertificatePage,
 }
 
 export default function YOELANGApp() {

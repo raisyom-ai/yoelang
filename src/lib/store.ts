@@ -3,7 +3,7 @@ import { create } from 'zustand'
 export type PageId = 
   | 'splash' | 'home' | 'login' | 'register' 
   | 'dashboard' | 'levels' | 'course' | 'exercises' 
-  | 'chat' | 'stats' | 'profile' | 'settings' | 'premium'
+  | 'chat' | 'stats' | 'profile' | 'settings' | 'premium' | 'certificate'
 
 export interface UserState {
   id: string
@@ -91,6 +91,15 @@ interface AppState {
   // Splash
   splashComplete: boolean
   setSplashComplete: (complete: boolean) => void
+
+  // XP tracking
+  addXP: (amount: number) => void
+  completedLessons: string[]
+  addCompletedLesson: (lessonId: string) => void
+  earnedBadges: string[]
+  earnBadge: (badgeId: string) => void
+  dailyChallengeCompleted: boolean
+  completeDailyChallenge: () => void
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -146,6 +155,21 @@ export const useAppStore = create<AppState>((set, get) => ({
   // Splash
   splashComplete: false,
   setSplashComplete: (complete) => set({ splashComplete: complete }),
+
+  // XP tracking
+  addXP: (amount) => set((state) => ({
+    user: state.user ? { ...state.user, xp: (state.user.xp || 0) + amount, coins: (state.user.coins || 0) + Math.floor(amount / 2) } : state.user,
+  })),
+  completedLessons: [],
+  addCompletedLesson: (lessonId) => set((state) => ({
+    completedLessons: state.completedLessons.includes(lessonId) ? state.completedLessons : [...state.completedLessons, lessonId],
+  })),
+  earnedBadges: ['first-lesson', 'streak-3', 'streak-7', 'quiz-master', 'vocabulary-100'],
+  earnBadge: (badgeId) => set((state) => ({
+    earnedBadges: state.earnedBadges.includes(badgeId) ? state.earnedBadges : [...state.earnedBadges, badgeId],
+  })),
+  dailyChallengeCompleted: false,
+  completeDailyChallenge: () => set({ dailyChallengeCompleted: true }),
 }))
 
 // Demo data

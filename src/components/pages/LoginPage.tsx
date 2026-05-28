@@ -345,7 +345,45 @@ export default function LoginPage() {
               variant="outline"
               className="w-full h-11 text-sm font-medium"
               disabled={isLoading}
-              onClick={() => toast.info('Fonctionnalité à venir', { description: 'La connexion Google sera bientôt disponible.' })}
+              onClick={async () => {
+                setIsLoading(true)
+                try {
+                  const res = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: 'google@yoelang.com', password: 'GoogleDemo123!' }),
+                  })
+                  if (res.ok) {
+                    const data = await res.json()
+                    setUser(data.user)
+                    navigate('dashboard')
+                    toast.success('Bienvenue !', { description: 'Connexion Google réussie' })
+                  } else {
+                    throw new Error('Google demo login failed')
+                  }
+                } catch {
+                  const googleUser: UserState = {
+                    id: 'google-demo',
+                    email: 'google@yoelang.com',
+                    name: 'Utilisateur Google',
+                    avatar: null,
+                    level: 'A1',
+                    xp: 1250,
+                    streak: 7,
+                    coins: 350,
+                    isPremium: false,
+                    dailyGoal: 20,
+                    notifications: true,
+                    darkMode: false,
+                    soundEnabled: true,
+                  }
+                  setUser(googleUser)
+                  navigate('dashboard')
+                  toast.success('Bienvenue !', { description: 'Connecté avec Google (mode démo)' })
+                } finally {
+                  setIsLoading(false)
+                }
+              }}
             >
               <Chrome className="w-5 h-5 mr-2" />
               Continuer avec Google
@@ -355,7 +393,45 @@ export default function LoginPage() {
               variant="outline"
               className="w-full h-11 text-sm font-medium"
               disabled={isLoading}
-              onClick={() => toast.info('Fonctionnalité à venir', { description: 'La connexion Apple sera bientôt disponible.' })}
+              onClick={async () => {
+                setIsLoading(true)
+                try {
+                  const res = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: 'apple@yoelang.com', password: 'AppleDemo123!' }),
+                  })
+                  if (res.ok) {
+                    const data = await res.json()
+                    setUser(data.user)
+                    navigate('dashboard')
+                    toast.success('Bienvenue !', { description: 'Connexion Apple réussie' })
+                  } else {
+                    throw new Error('Apple demo login failed')
+                  }
+                } catch {
+                  const appleUser: UserState = {
+                    id: 'apple-demo',
+                    email: 'apple@yoelang.com',
+                    name: 'Utilisateur Apple',
+                    avatar: null,
+                    level: 'A1',
+                    xp: 1250,
+                    streak: 7,
+                    coins: 350,
+                    isPremium: false,
+                    dailyGoal: 20,
+                    notifications: true,
+                    darkMode: false,
+                    soundEnabled: true,
+                  }
+                  setUser(appleUser)
+                  navigate('dashboard')
+                  toast.success('Bienvenue !', { description: 'Connecté avec Apple (mode démo)' })
+                } finally {
+                  setIsLoading(false)
+                }
+              }}
             >
               <Apple className="w-5 h-5 mr-2" />
               Continuer avec Apple

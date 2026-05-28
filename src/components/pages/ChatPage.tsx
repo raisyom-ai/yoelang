@@ -14,6 +14,7 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
+import { toast } from 'sonner'
 
 // ─── Animation Variants ─────────────────────────────────────────────────────
 
@@ -241,6 +242,7 @@ export default function ChatPage() {
         body: JSON.stringify({
           message: trimmed,
           userId: user?.id ?? 'anonymous',
+          history: chatMessages.slice(-10).map(m => ({ role: m.role, content: m.content })),
         }),
       })
 
@@ -279,16 +281,44 @@ export default function ChatPage() {
   const handleMicToggle = () => {
     if (isRecording) {
       setIsRecording(false)
-      // Simulate voice-to-text result
-      setInputValue('How do you pronounce "through"?')
-    } else {
-      setIsRecording(true)
-      // Auto stop after 3 seconds
-      setTimeout(() => {
-        setIsRecording(false)
-        setInputValue('How do you pronounce "through"?')
-      }, 3000)
+      return
     }
+
+    // Utiliser la vraie Web Speech API
+    const SpeechRecognition = (window as unknown as { SpeechRecognition?: typeof window.SpeechRecognition; webkitSpeechRecognition?: typeof window.SpeechRecognition }).SpeechRecognition || (window as unknown as { webkitSpeechRecognition?: typeof window.SpeechRecognition }).webkitSpeechRecognition
+
+    if (!SpeechRecognition) {
+      toast.error('Non supporté', { description: 'La reconnaissance vocale n\'est pas disponible sur ce navigateur.' })
+      return
+    }
+
+    const recognition = new SpeechRecognition()
+    recognition.lang = 'en-US'
+    recognition.interimResults = false
+    recognition.maxAlternatives = 1
+    recognition.continuous = false
+
+    recognition.onstart = () => {
+      setIsRecording(true)
+    }
+
+    recognition.onresult = (event: SpeechRecognitionEvent) => {
+      const transcript = event.results[0][0].transcript
+      setInputValue(transcript)
+      setIsRecording(false)
+      inputRef.current?.focus()
+    }
+
+    recognition.onerror = () => {
+      setIsRecording(false)
+      toast.error('Erreur vocale', { description: 'Impossible de reconnaître la parole. Réessayez.' })
+    }
+
+    recognition.onend = () => {
+      setIsRecording(false)
+    }
+
+    recognition.start()
   }
 
   const handleClearChat = () => {

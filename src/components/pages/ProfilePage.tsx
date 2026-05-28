@@ -324,6 +324,29 @@ export default function ProfilePage() {
           </motion.div>
         )}
 
+        {/* ─── Certificate Card ────────────────────────────────────────── */}
+        <motion.div variants={itemVariants}>
+          <Card
+            className="overflow-hidden border-0 cursor-pointer bg-gradient-to-r from-yoel-gold/10 via-yoel-red/5 to-yoel-blue/10"
+            onClick={() => navigate('certificate')}
+          >
+            <CardContent className="flex items-center gap-4 p-5">
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-yoel-gold to-amber-600 text-white text-2xl shadow-lg">
+                🏆
+              </div>
+              <div className="flex-1">
+                <h3 className="font-semibold gradient-text-premium text-lg">
+                  Mon Certificat
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  Consultez et téléchargez votre certificat de niveau
+                </p>
+              </div>
+              <ChevronRight className="h-5 w-5 text-muted-foreground shrink-0" />
+            </CardContent>
+          </Card>
+        </motion.div>
+
         {/* ─── Action Buttons ──────────────────────────────────────────── */}
         <motion.div variants={itemVariants} className="space-y-3">
           <Button

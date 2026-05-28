@@ -188,6 +188,28 @@ const XP_REWARDS = {
   pronunciation: 12,
 }
 
+// ─── Levenshtein Distance ────────────────────────────────────────────────────
+
+function levenshteinDistance(a: string, b: string): number {
+  const matrix: number[][] = []
+  for (let i = 0; i <= b.length; i++) matrix[i] = [i]
+  for (let j = 0; j <= a.length; j++) matrix[0][j] = j
+  for (let i = 1; i <= b.length; i++) {
+    for (let j = 1; j <= a.length; j++) {
+      if (b.charAt(i - 1) === a.charAt(j - 1)) {
+        matrix[i][j] = matrix[i - 1][j - 1]
+      } else {
+        matrix[i][j] = Math.min(
+          matrix[i - 1][j - 1] + 1,
+          matrix[i][j - 1] + 1,
+          matrix[i - 1][j] + 1
+        )
+      }
+    }
+  }
+  return matrix[b.length][a.length]
+}
+
 // ─── Timer Component ────────────────────────────────────────────────────────
 
 function QuestionTimer({
@@ -252,6 +274,7 @@ function ResultsSummary({
   onRestart: () => void
   onBack: () => void
 }) {
+  const addXP = useAppStore((s) => s.addXP)
   const percentage = Math.round((score / total) * 100)
   const encouragement =
     percentage >= 80
@@ -261,6 +284,13 @@ function ResultsSummary({
       : percentage >= 40
       ? 'Pas mal ! Révisez un peu plus ! 📚'
       : 'Continuez à apprendre, vous progresserez ! 🌱'
+
+  // Award XP when results are shown
+  useEffect(() => {
+    if (xpEarned > 0) {
+      addXP(xpEarned)
+    }
+  }, [xpEarned, addXP])
 
   return (
     <motion.div
@@ -921,10 +951,11 @@ function PronunciationTab() {
   const [attempts, setAttempts] = useState<Record<string, number>>({})
   const [isCompleted, setIsCompleted] = useState(false)
   const [micLevel, setMicLevel] = useState(0)
+  const [pronunciationResult, setPronunciationResult] = useState<Record<string, 'correct' | 'incorrect' | 'attempted'>>({})
 
   const currentWord = PRONUNCIATION_WORDS[currentIndex]
 
-  // Simulate microphone visual feedback
+  // Simulate microphone visual feedback when recording
   useEffect(() => {
     if (!isRecording) {
       setMicLevel(0)
@@ -938,16 +969,48 @@ function PronunciationTab() {
 
   const handleMicPress = () => {
     if (isRecording) return
-    setIsRecording(true)
-    setAttempts((prev) => ({
-      ...prev,
-      [currentWord.id]: (prev[currentWord.id] ?? 0) + 1,
-    }))
 
-    // Simulate recording duration
-    setTimeout(() => {
+    const SpeechRecognition = (window as unknown as { SpeechRecognition?: typeof window.SpeechRecognition; webkitSpeechRecognition?: typeof window.SpeechRecognition }).SpeechRecognition || (window as unknown as { webkitSpeechRecognition?: typeof window.SpeechRecognition }).webkitSpeechRecognition
+
+    if (!SpeechRecognition) {
+      // Fallback: just mark as attempted
+      setIsRecording(true)
+      setAttempts((prev) => ({ ...prev, [currentWord.id]: (prev[currentWord.id] ?? 0) + 1 }))
+      setPronunciationResult((prev) => ({ ...prev, [currentWord.id]: 'attempted' }))
+      setTimeout(() => setIsRecording(false), 2000)
+      return
+    }
+
+    const recognition = new SpeechRecognition()
+    recognition.lang = 'en-US'
+    recognition.interimResults = false
+    recognition.maxAlternatives = 1
+    recognition.continuous = false
+
+    recognition.onstart = () => {
+      setIsRecording(true)
+      setAttempts((prev) => ({ ...prev, [currentWord.id]: (prev[currentWord.id] ?? 0) + 1 }))
+    }
+
+    recognition.onresult = (event: SpeechRecognitionEvent) => {
+      const transcript = event.results[0][0].transcript.toLowerCase()
+      const target = currentWord.word.toLowerCase()
+      // Check if user said the word correctly (fuzzy match)
+      const isMatch = transcript.includes(target) || target.includes(transcript) || levenshteinDistance(transcript, target) <= 2
+      setPronunciationResult((prev) => ({ ...prev, [currentWord.id]: isMatch ? 'correct' : 'incorrect' }))
       setIsRecording(false)
-    }, 2000)
+    }
+
+    recognition.onerror = () => {
+      setIsRecording(false)
+      setPronunciationResult((prev) => ({ ...prev, [currentWord.id]: 'attempted' }))
+    }
+
+    recognition.onend = () => {
+      setIsRecording(false)
+    }
+
+    recognition.start()
   }
 
   const handleSpeakWord = () => {
@@ -1095,6 +1158,40 @@ function PronunciationTab() {
                 <p className="text-sm text-muted-foreground">
                   {isRecording ? 'Écoute en cours...' : 'Appuyez pour prononcer'}
                 </p>
+
+                {/* Pronunciation result feedback */}
+                {pronunciationResult[currentWord.id] && !isRecording && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className={`flex items-center gap-1.5 text-sm font-medium ${
+                      pronunciationResult[currentWord.id] === 'correct'
+                        ? 'text-yoel-green'
+                        : pronunciationResult[currentWord.id] === 'incorrect'
+                        ? 'text-yoel-red'
+                        : 'text-muted-foreground'
+                    }`}
+                  >
+                    {pronunciationResult[currentWord.id] === 'correct' && (
+                      <>
+                        <CheckCircle2 className="h-4 w-4" />
+                        Bonne prononciation !
+                      </>
+                    )}
+                    {pronunciationResult[currentWord.id] === 'incorrect' && (
+                      <>
+                        <XCircle className="h-4 w-4" />
+                        Réessayez, presque !
+                      </>
+                    )}
+                    {pronunciationResult[currentWord.id] === 'attempted' && (
+                      <>
+                        <Mic className="h-4 w-4" />
+                        Essai enregistré
+                      </>
+                    )}
+                  </motion.div>
+                )}
 
                 {attempts[currentWord.id] && (
                   <p className="text-xs text-muted-foreground">

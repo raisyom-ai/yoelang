@@ -23,54 +23,54 @@ import {
 const features = [
   {
     icon: Bot,
-    title: 'AI Tutor',
-    description: 'Converse with an intelligent AI that adapts to your level and corrects you in real time.',
+    title: 'Tuteur IA',
+    description: 'Conversez avec une IA intelligente qui s\'adapte à votre niveau et vous corrige en temps réel.',
     color: 'from-yoel-red to-yoel-red-dark',
   },
   {
     icon: BookOpen,
-    title: 'Interactive Lessons',
-    description: 'Engage with dynamic lessons covering vocabulary, grammar, and culture.',
+    title: 'Leçons interactives',
+    description: 'Des leçons dynamiques couvrant le vocabulaire, la grammaire et la culture anglophone.',
     color: 'from-yoel-blue to-yoel-blue-dark',
   },
   {
     icon: Mic,
-    title: 'Speech Recognition',
-    description: 'Practice your pronunciation with advanced speech-to-text technology.',
+    title: 'Reconnaissance vocale',
+    description: 'Pratiquez votre prononciation avec la technologie de reconnaissance vocale avancée.',
     color: 'from-yoel-green to-emerald-600',
   },
   {
     icon: BarChart3,
-    title: 'Progress Tracking',
-    description: 'Monitor your improvement with detailed stats, streaks, and XP.',
+    title: 'Suivi de progression',
+    description: 'Suivez vos progrès avec des statistiques détaillées, des séries et des points XP.',
     color: 'from-yoel-gold to-amber-600',
   },
   {
     icon: Trophy,
-    title: 'Daily Challenges',
-    description: 'Complete daily challenges to earn XP and maintain your streak.',
+    title: 'Défis journaliers',
+    description: 'Relevez des défis chaque jour pour gagner des XP et maintenir votre série.',
     color: 'from-purple-500 to-purple-700',
   },
   {
     icon: Award,
-    title: 'Certificates',
-    description: 'Earn official certificates as you complete each proficiency level.',
+    title: 'Certificats',
+    description: 'Obtenez des certificats officiels à chaque fois que vous complétez un niveau de compétence.',
     color: 'from-teal-500 to-teal-700',
   },
 ]
 
 const stats = [
-  { value: '50K+', label: 'Learners', icon: Users },
-  { value: '1000+', label: 'Lessons', icon: BookOpen },
-  { value: '6', label: 'Levels', icon: GraduationCap },
-  { value: '4.9', label: 'Rating', icon: Star },
+  { value: '50K+', label: 'Apprenants', icon: Users },
+  { value: '1000+', label: 'Leçons', icon: BookOpen },
+  { value: '6', label: 'Niveaux', icon: GraduationCap },
+  { value: '4.9', label: 'Note', icon: Star },
 ]
 
 const testimonials = [
   {
     name: 'Marie Dupont',
     role: 'Étudiante, Paris',
-    text: "YOELANG a complètement changé ma façon d'apprendre l'anglais. L'IA tutor est incroyable !",
+    text: "YOELANG a complètement changé ma façon d'apprendre l'anglais. Le tuteur IA est incroyable !",
     avatar: 'MD',
   },
   {
@@ -90,18 +90,18 @@ const testimonials = [
 const steps = [
   {
     number: '01',
-    title: 'Create Your Account',
-    description: 'Sign up for free and take a quick placement test to determine your level.',
+    title: 'Créez votre compte',
+    description: 'Inscrivez-vous gratuitement et passez un test de placement rapide pour déterminer votre niveau.',
   },
   {
     number: '02',
-    title: 'Start Learning',
-    description: 'Follow personalized lessons, practice with your AI tutor, and complete challenges.',
+    title: 'Commencez à apprendre',
+    description: 'Suivez des leçons personnalisées, pratiquez avec votre tuteur IA et relevez des défis.',
   },
   {
     number: '03',
-    title: 'Track & Certify',
-    description: 'Monitor your progress, earn badges, and get certified as you advance through levels.',
+    title: 'Progressez et certifiez',
+    description: 'Suivez vos progrès, gagnez des badges et obtenez des certificats à chaque niveau atteint.',
   },
 ]
 
@@ -240,17 +240,17 @@ export default function HomePage() {
               custom={0}
               className="text-3xl font-bold tracking-tight sm:text-4xl"
             >
-              <span className="gradient-text-premium">Everything You Need</span>
+              <span className="gradient-text-premium">Tout ce dont vous avez besoin</span>
               <br />
-              to Learn English
+              pour apprendre l'anglais
             </motion.h2>
             <motion.p
               variants={fadeInUp}
               custom={1}
               className="mx-auto mt-4 max-w-2xl text-muted-foreground"
             >
-              Our platform combines cutting-edge AI technology with proven language
-              learning methods to deliver a premium experience.
+              Notre plateforme combine la technologie IA de pointe avec des méthodes d'apprentissage
+              des langues éprouvées pour offrir une expérience premium.
             </motion.p>
           </motion.div>
 
@@ -327,14 +327,14 @@ export default function HomePage() {
               custom={0}
               className="text-3xl font-bold tracking-tight sm:text-4xl"
             >
-              <span className="gradient-text-blue">How It Works</span>
+              <span className="gradient-text-blue">Comment ça marche</span>
             </motion.h2>
             <motion.p
               variants={fadeInUp}
               custom={1}
               className="mx-auto mt-4 max-w-xl text-muted-foreground"
             >
-              Start your English journey in three simple steps.
+              Commencez votre apprentissage de l'anglais en trois étapes simples.
             </motion.p>
           </motion.div>
 
@@ -384,14 +384,14 @@ export default function HomePage() {
               custom={0}
               className="text-3xl font-bold tracking-tight sm:text-4xl"
             >
-              Loved by <span className="gradient-text-red">Learners</span>
+              Aimé par les <span className="gradient-text-red">apprenants</span>
             </motion.h2>
             <motion.p
               variants={fadeInUp}
               custom={1}
               className="mx-auto mt-4 max-w-xl text-muted-foreground"
             >
-              Join thousands of satisfied learners who have transformed their English skills.
+              Rejoignez des milliers d'apprenants satisfaits qui ont transformé leur anglais.
             </motion.p>
           </motion.div>
 
@@ -443,10 +443,10 @@ export default function HomePage() {
             <div className="pointer-events-none absolute -bottom-20 -left-20 h-60 w-60 rounded-full bg-white/5 blur-2xl" />
 
             <h2 className="relative text-3xl font-bold sm:text-4xl">
-              Ready to Start Your Journey?
+              Prêt à commencer votre parcours ?
             </h2>
             <p className="relative mx-auto mt-4 max-w-lg text-white/80">
-              Join 50,000+ learners and start mastering English today. It&apos;s free to begin.
+              Rejoignez plus de 50 000 apprenants et commencez à maîtriser l'anglais aujourd'hui. C'est gratuit pour commencer.
             </p>
             <div className="relative mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
               <Button
