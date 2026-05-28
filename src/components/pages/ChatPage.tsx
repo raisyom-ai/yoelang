@@ -46,6 +46,43 @@ const messageVariants = {
   },
 }
 
+// ─── Web Speech API Helper ────────────────────────────────────────────────────
+
+interface SpeechRecognitionEventResult {
+  results: SpeechRecognitionResultList
+}
+
+interface SpeechRecognitionErrorEventResult {
+  error: string
+}
+
+interface SpeechRecognitionInstance {
+  lang: string
+  continuous: boolean
+  interimResults: boolean
+  maxAlternatives: number
+  onresult: ((event: SpeechRecognitionEventResult) => void) | null
+  onerror: ((event: SpeechRecognitionErrorEventResult) => void) | null
+  onend: (() => void) | null
+  onstart: (() => void) | null
+  start(): void
+  stop(): void
+  abort(): void
+}
+
+function createSpeechRecognition(): SpeechRecognitionInstance | null {
+  if (typeof window === 'undefined') return null
+  const SR = (window as Record<string, unknown>).SpeechRecognition as
+    | (new () => SpeechRecognitionInstance)
+    | undefined
+  const WSR = (window as Record<string, unknown>).webkitSpeechRecognition as
+    | (new () => SpeechRecognitionInstance)
+    | undefined
+  const Ctor = SR || WSR
+  if (!Ctor) return null
+  return new Ctor()
+}
+
 // ─── Quick Suggestions ──────────────────────────────────────────────────────
 
 const QUICK_SUGGESTIONS = [
@@ -196,6 +233,7 @@ export default function ChatPage() {
   const [showClearConfirm, setShowClearConfirm] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+  const recognitionRef = useRef<ReturnType<typeof createSpeechRecognition> | null>(null)
 
   const level = user?.level ?? currentLevel
 
@@ -220,6 +258,16 @@ export default function ChatPage() {
     }, 80)
     return () => clearInterval(interval)
   }, [isRecording])
+
+  // Cleanup recognition on unmount
+  useEffect(() => {
+    return () => {
+      if (recognitionRef.current) {
+        try { recognitionRef.current.abort() } catch { /* ignore */ }
+        recognitionRef.current = null
+      }
+    }
+  }, [])
 
   const handleSend = async () => {
     const trimmed = inputValue.trim()
@@ -281,19 +329,23 @@ export default function ChatPage() {
 
   const handleMicToggle = () => {
     if (isRecording) {
+      // Stop the recognition instance
+      if (recognitionRef.current) {
+        try { recognitionRef.current.stop() } catch { /* ignore */ }
+        recognitionRef.current = null
+      }
       setIsRecording(false)
       return
     }
 
-    // Utiliser la vraie Web Speech API
-    const SpeechRecognition = (window as unknown as { SpeechRecognition?: typeof window.SpeechRecognition; webkitSpeechRecognition?: typeof window.SpeechRecognition }).SpeechRecognition || (window as unknown as { webkitSpeechRecognition?: typeof window.SpeechRecognition }).webkitSpeechRecognition
+    // Use Web Speech API
+    const recognition = createSpeechRecognition()
 
-    if (!SpeechRecognition) {
-      toast.error('Non supporté', { description: 'La reconnaissance vocale n\'est pas disponible sur ce navigateur.' })
+    if (!recognition) {
+      toast.error('Non supporté', { description: 'La reconnaissance vocale n\'est pas disponible sur ce navigateur. Essayez Chrome ou Edge.' })
       return
     }
 
-    const recognition = new SpeechRecognition()
     recognition.lang = 'en-US'
     recognition.interimResults = false
     recognition.maxAlternatives = 1
@@ -303,22 +355,31 @@ export default function ChatPage() {
       setIsRecording(true)
     }
 
-    recognition.onresult = (event: SpeechRecognitionEvent) => {
-      const transcript = event.results[0][0].transcript
-      setInputValue(transcript)
+    recognition.onresult = (event) => {
+      const result = event.results[0]
+      if (result && result.length > 0) {
+        const transcript = result[0].transcript
+        setInputValue(transcript)
+      }
       setIsRecording(false)
+      recognitionRef.current = null
       inputRef.current?.focus()
     }
 
-    recognition.onerror = () => {
+    recognition.onerror = (event) => {
       setIsRecording(false)
-      toast.error('Erreur vocale', { description: 'Impossible de reconnaître la parole. Réessayez.' })
+      recognitionRef.current = null
+      if (event.error !== 'aborted' && event.error !== 'no-speech') {
+        toast.error('Erreur vocale', { description: 'Impossible de reconnaître la parole. Réessayez.' })
+      }
     }
 
     recognition.onend = () => {
       setIsRecording(false)
+      recognitionRef.current = null
     }
 
+    recognitionRef.current = recognition
     recognition.start()
   }
 

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -10,6 +10,7 @@ import {
   Hash, SkipForward, RefreshCw, AlertCircle, Loader2
 } from 'lucide-react'
 import { useAppStore } from '@/lib/store'
+import { useSpeechRecognition, type SpeechRecognitionResult } from '@/hooks/use-speech-recognition'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -231,34 +232,7 @@ const XP_REWARDS = {
   pronunciation: 12,
 }
 
-// ─── Levenshtein Distance ────────────────────────────────────────────────────
 
-function levenshteinDistance(a: string, b: string): number {
-  const matrix: number[][] = []
-  for (let i = 0; i <= b.length; i++) matrix[i] = [i]
-  for (let j = 0; j <= a.length; j++) matrix[0][j] = j
-  for (let i = 1; i <= b.length; i++) {
-    for (let j = 1; j <= a.length; j++) {
-      if (b.charAt(i - 1) === a.charAt(j - 1)) {
-        matrix[i][j] = matrix[i - 1][j - 1]
-      } else {
-        matrix[i][j] = Math.min(
-          matrix[i - 1][j - 1] + 1,
-          matrix[i][j - 1] + 1,
-          matrix[i - 1][j] + 1
-        )
-      }
-    }
-  }
-  return matrix[b.length][a.length]
-}
-
-function calculateSimilarity(a: string, b: string): number {
-  const maxLen = Math.max(a.length, b.length)
-  if (maxLen === 0) return 100
-  const dist = levenshteinDistance(a, b)
-  return Math.round(((maxLen - dist) / maxLen) * 100)
-}
 
 // ─── Timer Component ────────────────────────────────────────────────────────
 
@@ -1061,292 +1035,81 @@ function VocabularyTab() {
   )
 }
 
-// ─── Supported MIME Type for MediaRecorder ──────────────────────────────────
-
-function getSupportedMimeType(): string {
-  const types = [
-    'audio/webm;codecs=opus',
-    'audio/webm',
-    'audio/ogg;codecs=opus',
-    'audio/mp4',
-  ]
-  for (const type of types) {
-    if (typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported(type)) {
-      return type
-    }
-  }
-  return ''
-}
-
 // ─── Pronunciation Tab ──────────────────────────────────────────────────────
-
-interface PronunciationAttempt {
-  transcript: string
-  confidence: number
-  isCorrect: boolean
-}
 
 function PronunciationTab() {
   const [currentIndex, setCurrentIndex] = useState(0)
-  const [isRecording, setIsRecording] = useState(false)
-  const [isProcessing, setIsProcessing] = useState(false)
   const [isCompleted, setIsCompleted] = useState(false)
-  const [micLevel, setMicLevel] = useState(0)
-  const [currentAttempt, setCurrentAttempt] = useState<PronunciationAttempt | null>(null)
-  const [attemptHistory, setAttemptHistory] = useState<Record<string, PronunciationAttempt[]>>({})
+  const [currentAttempt, setCurrentAttempt] = useState<SpeechRecognitionResult | null>(null)
+  const [attemptHistory, setAttemptHistory] = useState<Record<string, SpeechRecognitionResult[]>>({})
   const [correctWords, setCorrectWords] = useState<Set<string>>(new Set())
   const [showEncouragement, setShowEncouragement] = useState(false)
-  const [micError, setMicError] = useState<string | null>(null)
-  const [recordingSeconds, setRecordingSeconds] = useState(0)
-
-  // Refs for audio recording
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null)
-  const audioChunksRef = useRef<Blob[]>([])
-  const streamRef = useRef<MediaStream | null>(null)
-  const analyserRef = useRef<AnalyserNode | null>(null)
-  const animFrameRef = useRef<number | null>(null)
-  const recordingTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
-  const audioContextRef = useRef<AudioContext | null>(null)
-  const autoStopTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const hasResultRef = useRef(false)
 
   const currentWord = PRONUNCIATION_WORDS[currentIndex]
   const wordAttempts = attemptHistory[currentWord.id] ?? []
 
-  // Current word ref for use in callbacks without stale closures
-  const currentWordRef = useRef(currentWord)
-  currentWordRef.current = currentWord
+  const {
+    isRecording,
+    isProcessing,
+    micLevel,
+    recordingSeconds,
+    result,
+    error: micError,
+    isSupported,
+    method,
+    startRecording,
+    stopRecording,
+    reset: resetRecording,
+  } = useSpeechRecognition({
+    targetWord: currentWord.word,
+    autoStopMs: 5000,
+    similarityThreshold: 70,
+    language: 'en-US',
+  })
 
-  // Real microphone level via Web Audio API analyser
-  const updateMicLevel = useCallback(() => {
-    if (!analyserRef.current) return
-    const dataArray = new Uint8Array(analyserRef.current.frequencyBinCount)
-    analyserRef.current.getByteFrequencyData(dataArray)
-    let sum = 0
-    for (let i = 0; i < dataArray.length; i++) sum += dataArray[i]
-    const avg = sum / dataArray.length
-    setMicLevel(avg)
-    animFrameRef.current = requestAnimationFrame(updateMicLevel)
-  }, [])
-
-  // Clean up all recording resources (does NOT handle audio processing)
-  const cleanupRecording = useCallback(() => {
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach((track) => track.stop())
-      streamRef.current = null
-    }
-    if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
-      try { audioContextRef.current.close() } catch { /* ignore */ }
-      audioContextRef.current = null
-    }
-    if (animFrameRef.current) {
-      cancelAnimationFrame(animFrameRef.current)
-      animFrameRef.current = null
-    }
-    if (recordingTimerRef.current) {
-      clearInterval(recordingTimerRef.current)
-      recordingTimerRef.current = null
-    }
-    if (autoStopTimerRef.current) {
-      clearTimeout(autoStopTimerRef.current)
-      autoStopTimerRef.current = null
-    }
-    analyserRef.current = null
-    mediaRecorderRef.current = null
-    setIsRecording(false)
-    setMicLevel(0)
-    setRecordingSeconds(0)
-  }, [])
-
-  // Process transcript from backend ASR
-  const processTranscript = useCallback((transcript: string, targetWord: string) => {
-    if (hasResultRef.current) return
-    hasResultRef.current = true
-
-    const normalizedTranscript = transcript.toLowerCase().trim()
-    const target = targetWord.toLowerCase()
-    const confidence = calculateSimilarity(normalizedTranscript, target)
-    const isMatch = confidence >= 70 || normalizedTranscript.includes(target) || target.includes(normalizedTranscript)
-
-    const attempt: PronunciationAttempt = {
-      transcript,
-      confidence,
-      isCorrect: isMatch,
-    }
-
-    setCurrentAttempt(attempt)
-    setAttemptHistory((prev) => ({
-      ...prev,
-      [currentWordRef.current.id]: [...(prev[currentWordRef.current.id] ?? []), attempt],
-    }))
-
-    if (isMatch) {
-      setCorrectWords((prev) => new Set([...prev, currentWordRef.current.id]))
-      setShowEncouragement(true)
-    }
-  }, [])
-
-  // Send recorded audio to backend ASR
-  const sendAudioToBackend = useCallback(async (audioBlob: Blob) => {
-    setIsProcessing(true)
-    const targetWord = currentWordRef.current.word
-
-    try {
-      const reader = new FileReader()
-      const base64Promise = new Promise<string>((resolve, reject) => {
-        reader.onloadend = () => {
-          const base64 = (reader.result as string).split(',')[1]
-          resolve(base64)
-        }
-        reader.onerror = reject
-      })
-      reader.readAsDataURL(audioBlob)
-      const audioBase64 = await base64Promise
-
-      console.log('[Pronunciation] Sending audio to backend, target:', targetWord, 'audio size:', audioBase64.length)
-
-      const response = await fetch('/api/pronunciation', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          audio_base64: audioBase64,
-          target_word: targetWord,
-        }),
-      })
-
-      if (!response.ok) {
-        throw new Error(`ASR request failed: ${response.status}`)
-      }
-
-      const data = await response.json()
-      console.log('[Pronunciation] Backend response:', data)
-
-      if (data.transcript && data.transcript.trim().length > 0) {
-        processTranscript(data.transcript, targetWord)
-      } else {
-        const attempt: PronunciationAttempt = {
-          transcript: data.transcript || '',
-          confidence: 0,
-          isCorrect: false,
-        }
-        setCurrentAttempt(attempt)
-        setAttemptHistory((prev) => ({
-          ...prev,
-          [currentWordRef.current.id]: [...(prev[currentWordRef.current.id] ?? []), attempt],
-        }))
-      }
-    } catch (error) {
-      console.error('[Pronunciation] Backend ASR error:', error)
-      const attempt: PronunciationAttempt = {
-        transcript: '',
-        confidence: 0,
-        isCorrect: false,
-      }
-      setCurrentAttempt(attempt)
+  // Sync hook result to local attempt tracking
+  useEffect(() => {
+    if (result) {
+      setCurrentAttempt(result)
       setAttemptHistory((prev) => ({
         ...prev,
-        [currentWordRef.current.id]: [...(prev[currentWordRef.current.id] ?? []), attempt],
+        [currentWord.id]: [...(prev[currentWord.id] ?? []), result],
       }))
-    } finally {
-      setIsProcessing(false)
+      if (result.isCorrect) {
+        setCorrectWords((prev) => new Set([...prev, currentWord.id]))
+        setShowEncouragement(true)
+      }
     }
-  }, [processTranscript])
+  }, [result, currentWord.id])
 
-  // Start recording — simple MediaRecorder + backend ASR approach
   const handleMicPress = useCallback(async () => {
     if (isRecording || isProcessing) return
-    setMicError(null)
     setCurrentAttempt(null)
-    hasResultRef.current = false
+    resetRecording()
+    // Small delay to let reset complete before starting
+    setTimeout(() => startRecording(), 50)
+  }, [isRecording, isProcessing, resetRecording, startRecording])
 
-    try {
-      // Request microphone access with noise suppression for better ASR
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: {
-          echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true,
-        },
-      })
-      streamRef.current = stream
-
-      // Set up audio analyser for mic level visualization
-      const audioContext = new AudioContext()
-      audioContextRef.current = audioContext
-      const source = audioContext.createMediaStreamSource(stream)
-      const analyser = audioContext.createAnalyser()
-      analyser.fftSize = 256
-      source.connect(analyser)
-      analyserRef.current = analyser
-
-      setIsRecording(true)
-      setRecordingSeconds(0)
-
-      // Start mic level animation
-      animFrameRef.current = requestAnimationFrame(updateMicLevel)
-
-      // Start recording timer
-      recordingTimerRef.current = setInterval(() => {
-        setRecordingSeconds((prev) => prev + 1)
-      }, 1000)
-
-      // Set up MediaRecorder — use timeslice for incremental data collection
-      const mimeType = getSupportedMimeType()
-      const mediaRecorderOptions: MediaRecorderOptions = {}
-      if (mimeType) {
-        mediaRecorderOptions.mimeType = mimeType
-      }
-      const mediaRecorder = new MediaRecorder(stream, mediaRecorderOptions)
-      audioChunksRef.current = []
-
-      mediaRecorder.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          audioChunksRef.current.push(event.data)
-        }
-      }
-
-      mediaRecorder.onstop = () => {
-        // Collect all recorded audio and send to backend
-        if (audioChunksRef.current.length > 0 && !hasResultRef.current) {
-          const blobType = mimeType || 'audio/webm'
-          const audioBlob = new Blob(audioChunksRef.current, { type: blobType })
-          console.log('[Pronunciation] Recording stopped, audio size:', audioBlob.size, 'type:', blobType)
-          cleanupRecording()
-          sendAudioToBackend(audioBlob)
-        } else {
-          cleanupRecording()
-        }
-      }
-
-      mediaRecorderRef.current = mediaRecorder
-      // Use timeslice of 500ms for incremental data collection
-      mediaRecorder.start(500)
-
-      // Auto-stop after 5 seconds
-      autoStopTimerRef.current = setTimeout(() => {
-        if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
-          console.log('[Pronunciation] Auto-stop after 5s')
-          mediaRecorderRef.current.stop()
-        }
-      }, 5000)
-    } catch (error) {
-      console.error('[Pronunciation] Microphone access error:', error)
-      cleanupRecording()
-      setMicError('Impossible d\'accéder au microphone. Vérifiez les permissions de votre navigateur.')
-    }
-  }, [isRecording, isProcessing, cleanupRecording, updateMicLevel, sendAudioToBackend])
-
-  // Stop recording manually
   const handleStopRecording = useCallback(() => {
-    if (!isRecording) return
-    // Stop the media recorder — its onstop handler will send audio to backend
-    if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
-      console.log('[Pronunciation] Manual stop')
-      mediaRecorderRef.current.stop()
-    }
-  }, [isRecording])
+    stopRecording()
+  }, [stopRecording])
+
+  const handleRetry = () => {
+    setCurrentAttempt(null)
+    resetRecording()
+  }
 
   // Auto-advance after correct pronunciation
+  const handleAdvance = useCallback(() => {
+    setCurrentAttempt(null)
+    resetRecording()
+    if (currentIndex < PRONUNCIATION_WORDS.length - 1) {
+      setCurrentIndex((prev) => prev + 1)
+    } else {
+      setIsCompleted(true)
+    }
+  }, [currentIndex, resetRecording])
+
   useEffect(() => {
     if (!showEncouragement) return
     const timer = setTimeout(() => {
@@ -1354,31 +1117,7 @@ function PronunciationTab() {
       handleAdvance()
     }, 2000)
     return () => clearTimeout(timer)
-  }, [showEncouragement])
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      cleanupRecording()
-    }
-  }, [cleanupRecording])
-
-  const handleRetry = () => {
-    setCurrentAttempt(null)
-    setMicError(null)
-    hasResultRef.current = false
-  }
-
-  const handleAdvance = () => {
-    setCurrentAttempt(null)
-    setMicError(null)
-    hasResultRef.current = false
-    if (currentIndex < PRONUNCIATION_WORDS.length - 1) {
-      setCurrentIndex((prev) => prev + 1)
-    } else {
-      setIsCompleted(true)
-    }
-  }
+  }, [showEncouragement, handleAdvance])
 
   const handleSkip = () => {
     handleAdvance()
@@ -1394,17 +1133,13 @@ function PronunciationTab() {
   }
 
   const handleRestart = () => {
-    cleanupRecording()
+    resetRecording()
     setCurrentIndex(0)
-    setIsRecording(false)
-    setIsProcessing(false)
     setCurrentAttempt(null)
     setAttemptHistory({})
     setCorrectWords(new Set())
     setIsCompleted(false)
     setShowEncouragement(false)
-    setMicError(null)
-    hasResultRef.current = false
   }
 
   const totalAttempts = Object.values(attemptHistory).reduce((acc, attempts) => acc + attempts.length, 0)
@@ -1591,7 +1326,7 @@ function PronunciationTab() {
                       animate={
                         isRecording
                           ? {
-                              height: [8, Math.max(8, micLevel * 0.6 + Math.random() * 8), 8],
+                              height: [8, Math.max(8, micLevel * 30 + Math.random() * 8), 8],
                             }
                           : { height: 8 }
                       }
@@ -1669,7 +1404,20 @@ function PronunciationTab() {
                 </p>
               </div>
 
-              {/* Mic permission error */}
+              {/* Not supported */}
+              {!isSupported && !isBusy && (
+                <div className="rounded-xl border bg-yoel-gold/5 border-yoel-gold/20 p-4">
+                  <div className="flex items-start gap-2">
+                    <AlertCircle className="h-5 w-5 text-yoel-gold shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-sm font-medium text-yoel-gold">Reconnaissance vocale non disponible</p>
+                      <p className="text-xs text-muted-foreground mt-1">Votre navigateur ne supporte pas la reconnaissance vocale. Essayez Chrome ou Edge.</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Mic error */}
               {micError && !isBusy && (
                 <motion.div
                   initial={{ opacity: 0, y: 5 }}
