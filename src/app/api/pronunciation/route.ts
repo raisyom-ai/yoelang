@@ -39,25 +39,54 @@ function calculateSimilarity(a: string, b: string): number {
 
 export async function POST(req: NextRequest) {
   try {
-    const { audio_base64, target_word } = await req.json()
+    const body = await req.json()
+    // Support both audio_base64 (from frontend) and audioBase64 (alternative)
+    const audioBase64 = body.audio_base64 || body.audioBase64
+    const targetWord = body.target_word || body.targetWord
 
-    if (!audio_base64 || !target_word) {
+    if (!audioBase64 || !targetWord) {
+      console.error('[Pronunciation API] Missing required fields:', {
+        hasAudio: !!audioBase64,
+        hasTarget: !!targetWord,
+        bodyKeys: Object.keys(body),
+      })
       return NextResponse.json(
         { error: 'audio_base64 et target_word sont requis' },
         { status: 400 }
       )
     }
 
+    console.log('[Pronunciation API] Processing request for word:', targetWord, 'audio length:', audioBase64.length)
+
     const zai = await getZAI()
 
     // Use z-ai-web-dev-sdk ASR to transcribe the audio
-    const asrResult = await zai.audio.asr.create({
-      file_base64: audio_base64,
-    })
+    let asrResult: unknown
+    try {
+      asrResult = await zai.audio.asr.create({
+        file_base64: audioBase64,
+      })
+    } catch (asrError) {
+      console.error('[Pronunciation API] ASR call failed:', asrError)
+      return NextResponse.json(
+        { error: 'ASR service unavailable', transcript: '', confidence: 0, is_correct: false },
+        { status: 502 }
+      )
+    }
 
-    // Extract transcript from ASR result
-    const transcript = (asrResult?.text ?? asrResult ?? '').toString().trim().toLowerCase()
-    const target = target_word.toLowerCase()
+    // Extract transcript from ASR result - handle various response formats
+    let transcript = ''
+    if (typeof asrResult === 'string') {
+      transcript = asrResult
+    } else if (asrResult && typeof asrResult === 'object') {
+      const result = asrResult as Record<string, unknown>
+      transcript = (result.text ?? result.transcript ?? result.result ?? '').toString().trim()
+    }
+
+    transcript = transcript.toLowerCase().trim()
+    const target = targetWord.toLowerCase()
+
+    console.log('[Pronunciation API] ASR result:', { transcript, target })
 
     // Calculate similarity using Levenshtein distance
     const confidence = calculateSimilarity(transcript, target)
@@ -65,18 +94,19 @@ export async function POST(req: NextRequest) {
     // Determine if correct: 70%+ similarity, or one contains the other
     const isCorrect =
       confidence >= 70 ||
-      transcript.includes(target) ||
-      target.includes(transcript)
+      (transcript.length > 0 && (transcript.includes(target) || target.includes(transcript)))
+
+    console.log('[Pronunciation API] Result:', { transcript, target, confidence, isCorrect })
 
     return NextResponse.json({
-      transcript: transcript,
+      transcript,
       confidence,
       is_correct: isCorrect,
     })
   } catch (error) {
-    console.error('Pronunciation ASR error:', error)
+    console.error('[Pronunciation API] Unexpected error:', error)
     return NextResponse.json(
-      { error: 'Erreur lors de l\'analyse de prononciation' },
+      { error: 'Erreur lors de l\'analyse de prononciation', transcript: '', confidence: 0, is_correct: false },
       { status: 500 }
     )
   }

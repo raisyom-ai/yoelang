@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
+import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   ArrowLeft, Home, CheckCircle2, XCircle, Star, Zap, Clock,
@@ -148,19 +149,20 @@ interface VocabCard {
   example: string
   phonetic: string
   level?: string
+  image?: string
 }
 
 const VOCAB_CARDS_A1: VocabCard[] = [
-  { id: 'v1', english: 'Hello', french: 'Bonjour', example: 'Hello, how are you?', phonetic: '/həˈloʊ/', level: 'A1' },
-  { id: 'v2', english: 'Goodbye', french: 'Au revoir', example: 'Goodbye, see you tomorrow!', phonetic: '/ɡʊdˈbaɪ/', level: 'A1' },
-  { id: 'v3', english: 'Thank you', french: 'Merci', example: 'Thank you very much!', phonetic: '/θæŋk juː/', level: 'A1' },
-  { id: 'v4', english: 'Please', french: "S'il vous plaît", example: 'Can I have some water, please?', phonetic: '/pliːz/', level: 'A1' },
-  { id: 'v5', english: 'Water', french: 'Eau', example: 'I would like a glass of water.', phonetic: '/ˈwɔːtər/', level: 'A1' },
-  { id: 'v6', english: 'House', french: 'Maison', example: 'My house is big.', phonetic: '/haʊs/', level: 'A1' },
-  { id: 'v7', english: 'Family', french: 'Famille', example: 'I love my family.', phonetic: '/ˈfæməli/', level: 'A1' },
-  { id: 'v8', english: 'Friend', french: 'Ami(e)', example: 'She is my best friend.', phonetic: '/frend/', level: 'A1' },
-  { id: 'v9', english: 'Book', french: 'Livre', example: 'I am reading a book.', phonetic: '/bʊk/', level: 'A1' },
-  { id: 'v10', english: 'School', french: 'École', example: 'I go to school every day.', phonetic: '/skuːl/', level: 'A1' },
+  { id: 'v1', english: 'Hello', french: 'Bonjour', example: 'Hello, how are you?', phonetic: '/həˈloʊ/', level: 'A1', image: '/images/exercises/hello.png' },
+  { id: 'v2', english: 'Goodbye', french: 'Au revoir', example: 'Goodbye, see you tomorrow!', phonetic: '/ɡʊdˈbaɪ/', level: 'A1', image: '/images/exercises/hello.png' },
+  { id: 'v3', english: 'Thank you', french: 'Merci', example: 'Thank you very much!', phonetic: '/θæŋk juː/', level: 'A1', image: '/images/exercises/hello.png' },
+  { id: 'v4', english: 'Please', french: "S'il vous plaît", example: 'Can I have some water, please?', phonetic: '/pliːz/', level: 'A1', image: '/images/exercises/hello.png' },
+  { id: 'v5', english: 'Water', french: 'Eau', example: 'I would like a glass of water.', phonetic: '/ˈwɔːtər/', level: 'A1', image: '/images/exercises/water.png' },
+  { id: 'v6', english: 'House', french: 'Maison', example: 'My house is big.', phonetic: '/haʊs/', level: 'A1', image: '/images/exercises/house.png' },
+  { id: 'v7', english: 'Family', french: 'Famille', example: 'I love my family.', phonetic: '/ˈfæməli/', level: 'A1', image: '/images/exercises/family.png' },
+  { id: 'v8', english: 'Friend', french: 'Ami(e)', example: 'She is my best friend.', phonetic: '/frend/', level: 'A1', image: '/images/exercises/family.png' },
+  { id: 'v9', english: 'Book', french: 'Livre', example: 'I am reading a book.', phonetic: '/bʊk/', level: 'A1', image: '/images/exercises/book.png' },
+  { id: 'v10', english: 'School', french: 'École', example: 'I go to school every day.', phonetic: '/skuːl/', level: 'A1', image: '/images/exercises/school.png' },
 ]
 
 const VOCAB_CARDS_A2: VocabCard[] = [
@@ -198,19 +200,20 @@ interface PronunciationWord {
   phonetic: string
   tip: string
   difficulty: 'easy' | 'medium' | 'hard'
+  image: string
 }
 
 const PRONUNCIATION_WORDS: PronunciationWord[] = [
-  { id: 'p1', word: 'Hello', phonetic: '/həˈloʊ/', tip: 'Commencez par un "h" doux (expiré), puis "lo" comme dans "lôt".', difficulty: 'easy' },
-  { id: 'p2', word: 'Goodbye', phonetic: '/ɡʊdˈbaɪ/', tip: 'Dites "goud" puis "baï". Le "g" est dur comme dans "gâteau".', difficulty: 'easy' },
-  { id: 'p3', word: 'Thank you', phonetic: '/θæŋk juː/', tip: 'Le "th" se prononce en plaçant la langue entre les dents et en soufflant de l\'air.', difficulty: 'medium' },
-  { id: 'p4', word: 'Please', phonetic: '/pliːz/', tip: 'Prolongez le "ee" comme dans "lit". Le "z" final est doux.', difficulty: 'medium' },
-  { id: 'p5', word: 'Sorry', phonetic: '/ˈsɒri/', tip: 'Le "r" anglais est différent du français. Ne roulez pas le "r".', difficulty: 'medium' },
-  { id: 'p6', word: 'Water', phonetic: '/ˈwɔːtər/', tip: 'Le "w" se forme en arrondissant les lèvres. Le "t" américain est souvent adouci.', difficulty: 'easy' },
-  { id: 'p7', word: 'Beautiful', phonetic: '/ˈbjuːtɪfəl/', tip: 'Commencez par "biou", puis "ti" et "foul". Le "eau" anglais se dit "iou".', difficulty: 'hard' },
-  { id: 'p8', word: 'Three', phonetic: '/θriː/', tip: 'Le "th" est crucial : langue entre les dents, soufflez. Puis "ri" prolongé.', difficulty: 'medium' },
-  { id: 'p9', word: 'Woman', phonetic: '/ˈwʊmən/', tip: 'Le "w" initial nécessite des lèvres arrondies. "Ouman" avec un "ou" court.', difficulty: 'medium' },
-  { id: 'p10', word: 'World', phonetic: '/wɜːrld/', tip: 'Le "rld" final est difficile. Dites "weur-ld" en reliant le "r" au "l".', difficulty: 'hard' },
+  { id: 'p1', word: 'Hello', phonetic: '/həˈloʊ/', tip: 'Commencez par un "h" doux (expiré), puis "lo" comme dans "lôt".', difficulty: 'easy', image: '/images/exercises/hello.png' },
+  { id: 'p2', word: 'Goodbye', phonetic: '/ɡʊdˈbaɪ/', tip: 'Dites "goud" puis "baï". Le "g" est dur comme dans "gâteau".', difficulty: 'easy', image: '/images/exercises/hello.png' },
+  { id: 'p3', word: 'Thank you', phonetic: '/θæŋk juː/', tip: 'Le "th" se prononce en plaçant la langue entre les dents et en soufflant de l\'air.', difficulty: 'medium', image: '/images/exercises/hello.png' },
+  { id: 'p4', word: 'Please', phonetic: '/pliːz/', tip: 'Prolongez le "ee" comme dans "lit". Le "z" final est doux.', difficulty: 'medium', image: '/images/exercises/hello.png' },
+  { id: 'p5', word: 'Sorry', phonetic: '/ˈsɒri/', tip: 'Le "r" anglais est différent du français. Ne roulez pas le "r".', difficulty: 'medium', image: '/images/exercises/hello.png' },
+  { id: 'p6', word: 'Water', phonetic: '/ˈwɔːtər/', tip: 'Le "w" se forme en arrondissant les lèvres. Le "t" américain est souvent adouci.', difficulty: 'easy', image: '/images/exercises/water.png' },
+  { id: 'p7', word: 'Beautiful', phonetic: '/ˈbjuːtɪfəl/', tip: 'Commencez par "biou", puis "ti" et "foul". Le "eau" anglais se dit "iou".', difficulty: 'hard', image: '/images/exercises/beautiful.png' },
+  { id: 'p8', word: 'Three', phonetic: '/θriː/', tip: 'Le "th" est crucial : langue entre les dents, soufflez. Puis "ri" prolongé.', difficulty: 'medium', image: '/images/exercises/book.png' },
+  { id: 'p9', word: 'Woman', phonetic: '/ˈwʊmən/', tip: 'Le "w" initial nécessite des lèvres arrondies. "Ouman" avec un "ou" court.', difficulty: 'medium', image: '/images/exercises/family.png' },
+  { id: 'p10', word: 'World', phonetic: '/wɜːrld/', tip: 'Le "rld" final est difficile. Dites "weur-ld" en reliant le "r" au "l".', difficulty: 'hard', image: '/images/exercises/world.png' },
 ]
 
 const ENCOURAGEMENTS = [
@@ -515,6 +518,16 @@ function QuizTab() {
           transition={{ type: 'spring', stiffness: 300, damping: 30 }}
         >
           <Card className="glass overflow-hidden border-0">
+            <div className="relative w-full h-[100px] overflow-hidden rounded-t-xl">
+              <Image
+                src="/images/exercises/quiz.png"
+                alt="Quiz"
+                fill
+                className="object-cover"
+                priority
+              />
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background/80" />
+            </div>
             <CardContent className="p-6 space-y-5">
               <div className="flex items-center gap-2 mb-2">
                 <Badge variant="secondary" className="text-xs">
@@ -716,6 +729,16 @@ function GrammarTab() {
           transition={{ type: 'spring', stiffness: 300, damping: 30 }}
         >
           <Card className="glass overflow-hidden border-0">
+            <div className="relative w-full h-[100px] overflow-hidden rounded-t-xl">
+              <Image
+                src="/images/exercises/grammar.png"
+                alt="Grammar"
+                fill
+                className="object-cover"
+                priority
+              />
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background/80" />
+            </div>
             <CardContent className="p-6 space-y-5">
               <div className="flex items-center gap-2">
                 <Badge variant="secondary" className="text-xs">
@@ -914,8 +937,18 @@ function VocabularyTab() {
           onClick={() => setIsFlipped(!isFlipped)}
           whileTap={{ scale: 0.98 }}
         >
-          <Card className="glass overflow-hidden border-0 min-h-[280px]">
-            <CardContent className="flex flex-col items-center justify-center p-6 min-h-[280px]">
+          <Card className="glass overflow-hidden border-0 min-h-[320px]">
+            <div className="relative w-full h-[80px] overflow-hidden rounded-t-xl">
+              <Image
+                src="/images/exercises/vocabulary.png"
+                alt="Vocabulary"
+                fill
+                className="object-cover"
+                priority
+              />
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background/80" />
+            </div>
+            <CardContent className="flex flex-col items-center justify-center p-6 min-h-[240px]">
               <AnimatePresence mode="wait">
                 {!isFlipped ? (
                   <motion.div
@@ -924,8 +957,18 @@ function VocabularyTab() {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ duration: 0.25, ease: 'easeInOut' }}
-                    className="flex flex-col items-center text-center space-y-4"
+                    className="flex flex-col items-center text-center space-y-3"
                   >
+                    {currentCard.image && (
+                      <div className="relative w-16 h-16 rounded-lg overflow-hidden">
+                        <Image
+                          src={currentCard.image}
+                          alt={currentCard.english}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                    )}
                     <Badge variant="secondary" className="text-xs">
                       <MessageSquareText className="h-3 w-3 mr-1" />
                       Anglais → Français
@@ -937,7 +980,7 @@ function VocabularyTab() {
                       {currentCard.phonetic}
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      🇬🇧 Que signifie ce mot en français ?
+                      Que signifie ce mot en français ?
                     </p>
                     <button
                       className="flex items-center gap-1.5 text-xs text-yoel-blue hover:text-yoel-blue-dark transition-colors mt-1"
@@ -954,7 +997,7 @@ function VocabularyTab() {
                       <Volume2 className="h-3.5 w-3.5" />
                       Écouter la prononciation
                     </button>
-                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-2">
+                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-1">
                       <Eye className="h-3.5 w-3.5" />
                       Tapez pour voir la traduction
                     </div>
@@ -1016,6 +1059,23 @@ function VocabularyTab() {
       </div>
     </div>
   )
+}
+
+// ─── Supported MIME Type for MediaRecorder ──────────────────────────────────
+
+function getSupportedMimeType(): string {
+  const types = [
+    'audio/webm;codecs=opus',
+    'audio/webm',
+    'audio/ogg;codecs=opus',
+    'audio/mp4',
+  ]
+  for (const type of types) {
+    if (typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported(type)) {
+      return type
+    }
+  }
+  return ''
 }
 
 // ─── Pronunciation Tab ──────────────────────────────────────────────────────
@@ -1216,7 +1276,12 @@ function PronunciationTab() {
       }, 1000)
 
       // Set up MediaRecorder to capture audio as backup/for backend ASR
-      const mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm;codecs=opus' })
+      const mimeType = getSupportedMimeType()
+      const mediaRecorderOptions: MediaRecorderOptions = {}
+      if (mimeType) {
+        mediaRecorderOptions.mimeType = mimeType
+      }
+      const mediaRecorder = new MediaRecorder(stream, mediaRecorderOptions)
       audioChunksRef.current = []
       mediaRecorder.ondataavailable = (event) => {
         if (event.data.size > 0) {
@@ -1248,7 +1313,8 @@ function PronunciationTab() {
           stopRecording()
           // Create audio blob from recorded chunks
           if (audioChunksRef.current.length > 0) {
-            const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' })
+            const blobType = getSupportedMimeType() || 'audio/webm'
+            const audioBlob = new Blob(audioChunksRef.current, { type: blobType })
             sendAudioToBackend(audioBlob)
           }
         }
@@ -1258,7 +1324,8 @@ function PronunciationTab() {
           if (isRecording) {
             stopRecording()
             if (audioChunksRef.current.length > 0) {
-              const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' })
+              const blobType = getSupportedMimeType() || 'audio/webm'
+              const audioBlob = new Blob(audioChunksRef.current, { type: blobType })
               sendAudioToBackend(audioBlob)
             }
           }
@@ -1268,12 +1335,13 @@ function PronunciationTab() {
       } else {
         // No Web Speech API — record for a fixed duration then send to backend
         // Auto-stop after 4 seconds
+        const fallbackMimeType = getSupportedMimeType() || 'audio/webm'
         setTimeout(() => {
           if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
             mediaRecorderRef.current.onstop = () => {
               stopRecording()
               if (audioChunksRef.current.length > 0) {
-                const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' })
+                const audioBlob = new Blob(audioChunksRef.current, { type: fallbackMimeType })
                 sendAudioToBackend(audioBlob)
               }
             }
@@ -1305,7 +1373,8 @@ function PronunciationTab() {
       mediaRecorderRef.current.onstop = () => {
         stopRecording()
         if (audioChunksRef.current.length > 0) {
-          const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' })
+          const blobType = getSupportedMimeType() || 'audio/webm'
+          const audioBlob = new Blob(audioChunksRef.current, { type: blobType })
           sendAudioToBackend(audioBlob)
         }
       }
@@ -1473,6 +1542,16 @@ function PronunciationTab() {
           transition={{ type: 'spring', stiffness: 300, damping: 30 }}
         >
           <Card className="glass overflow-hidden border-0">
+            <div className="relative w-full h-[80px] overflow-hidden rounded-t-xl">
+              <Image
+                src="/images/exercises/pronunciation.png"
+                alt="Pronunciation"
+                fill
+                className="object-cover"
+                priority
+              />
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background/80" />
+            </div>
             <CardContent className="p-4 sm:p-6 space-y-4">
               <div className="flex items-center gap-2">
                 <Badge variant="secondary" className="text-xs">
@@ -1484,14 +1563,37 @@ function PronunciationTab() {
                 </Badge>
               </div>
 
-              {/* Word display */}
-              <div className="text-center space-y-1 py-2">
-                <h3 className="text-4xl font-bold gradient-text-blue">
-                  {currentWord.word}
-                </h3>
-                <p className="text-lg text-muted-foreground font-mono">
-                  {currentWord.phonetic}
-                </p>
+              {/* Word image + word display */}
+              <div className="flex items-center gap-4 justify-center">
+                <div className="relative w-20 h-20 rounded-xl overflow-hidden shrink-0">
+                  <Image
+                    src={currentWord.image}
+                    alt={currentWord.word}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <div className="text-center space-y-1">
+                  <h3 className="text-4xl font-bold gradient-text-blue">
+                    {currentWord.word}
+                  </h3>
+                  <p className="text-lg text-muted-foreground font-mono">
+                    {currentWord.phonetic}
+                  </p>
+                </div>
+              </div>
+
+              {/* Always-visible Listen button */}
+              <div className="flex justify-center">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleSpeakWord}
+                  className="rounded-full text-yoel-blue hover:text-yoel-blue hover:bg-yoel-blue/5"
+                >
+                  <Volume2 className="h-4 w-4 mr-1.5" />
+                  Écouter le mot
+                </Button>
               </div>
 
               {/* Tip */}
@@ -1672,7 +1774,7 @@ function PronunciationTab() {
                       </div>
                     )}
 
-                    {/* Retry and Skip buttons */}
+                    {/* Retry button — always shown when incorrect. Skip only after 3+ attempts or if correct */}
                     <div className="flex gap-3">
                       <Button
                         onClick={handleRetry}
@@ -1681,15 +1783,28 @@ function PronunciationTab() {
                         <RefreshCw className="h-4 w-4 mr-1.5" />
                         Réessayer
                       </Button>
-                      <Button
-                        onClick={handleSkip}
-                        variant="outline"
-                        className="flex-1 rounded-xl"
-                      >
-                        <SkipForward className="h-4 w-4 mr-1.5" />
-                        Passer
-                      </Button>
+                      {(currentAttempt.isCorrect || wordAttempts.length >= 3) && (
+                        <Button
+                          onClick={handleSkip}
+                          variant="outline"
+                          className="flex-1 rounded-xl"
+                        >
+                          <SkipForward className="h-4 w-4 mr-1.5" />
+                          Passer
+                        </Button>
+                      )}
                     </div>
+                    {/* Encouraging message when stuck */}
+                    {!currentAttempt.isCorrect && wordAttempts.length >= 2 && wordAttempts.length < 3 && (
+                      <p className="text-xs text-center text-yoel-gold font-medium">
+                        Continuez à essayer ! Vous y êtes presque ! 💪
+                      </p>
+                    )}
+                    {!currentAttempt.isCorrect && wordAttempts.length >= 3 && (
+                      <p className="text-xs text-center text-muted-foreground">
+                        Vous pouvez passer ce mot et revenir plus tard.
+                      </p>
+                    )}
 
                     {/* Attempt count */}
                     {wordAttempts.length > 0 && (
@@ -1726,39 +1841,16 @@ function PronunciationTab() {
                 )}
               </AnimatePresence>
 
-              {/* Listen button (always visible) + Skip when no attempt yet */}
+              {/* Skip button when no attempt yet */}
               {!currentAttempt && !isBusy && !showEncouragement && !micError && (
-                <div className="flex gap-3">
-                  <Button
-                    variant="outline"
-                    onClick={handleSpeakWord}
-                    className="flex-1 rounded-xl"
-                  >
-                    <Volume2 className="h-4 w-4 mr-1.5" />
-                    Écouter
-                  </Button>
+                <div className="flex justify-center">
                   <Button
                     onClick={handleSkip}
                     variant="outline"
-                    className="flex-1 rounded-xl"
+                    className="rounded-xl"
                   >
                     <SkipForward className="h-4 w-4 mr-1.5" />
                     Passer
-                  </Button>
-                </div>
-              )}
-
-              {/* Always show listen button after attempt */}
-              {currentAttempt && !isBusy && !showEncouragement && (
-                <div className="flex justify-center">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleSpeakWord}
-                    className="text-yoel-blue hover:text-yoel-blue"
-                  >
-                    <Volume2 className="h-4 w-4 mr-1.5" />
-                    Réécouter le mot
                   </Button>
                 </div>
               )}
