@@ -1,12 +1,12 @@
 'use client'
 
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, useCallback, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   ArrowLeft, Home, Volume2, Mic, MicOff, ChevronLeft, ChevronRight,
   BookOpen, MessageSquare, PenTool, Headphones, Star, Trophy,
   Zap, Clock, CheckCircle2, XCircle, Award, Sparkles, RotateCcw,
-  Play
+  Play, RefreshCw, SkipForward, AlertCircle, Loader2, Square
 } from 'lucide-react'
 import { useAppStore, DEMO_LESSONS, LEVELS, type LessonInfo } from '@/lib/store'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
@@ -182,28 +182,28 @@ const DIALOGUE: DialogueLine[] = [
 
 const PRONUNCIATION_ITEMS: PronunciationItem[] = [
   {
-    word: 'Thought',
-    phonetic: '/θɔːt/',
-    meaning: 'Pensée',
-    tip: 'Place your tongue between your teeth and blow for the "th" sound.',
+    word: 'Hello',
+    phonetic: '/həˈloʊ/',
+    meaning: 'Bonjour',
+    tip: 'Commencez par un "h" doux (expiré), puis "lo" comme dans "lôt".',
   },
   {
-    word: 'Weather',
-    phonetic: '/ˈwɛðər/',
-    meaning: 'Météo',
-    tip: 'The "th" here is voiced — your vocal cords should vibrate.',
+    word: 'Thank you',
+    phonetic: '/θæŋk juː/',
+    meaning: 'Merci',
+    tip: 'Le "th" se prononce en plaçant la langue entre les dents et en soufflant de l\'air.',
   },
   {
-    word: 'Comfortable',
-    phonetic: '/ˈkʌmfərtəbəl/',
-    meaning: 'Confortable',
-    tip: 'The stress is on the first syllable: COM-fortable.',
+    word: 'Water',
+    phonetic: '/ˈwɔːtər/',
+    meaning: 'Eau',
+    tip: 'Le "w" se forme en arrondissant les lèvres. Le "t" américain est souvent adouci.',
   },
   {
-    word: 'Restaurant',
-    phonetic: '/ˈrɛstərɒnt/',
-    meaning: 'Restaurant',
-    tip: 'The French pronunciation is different! In English, stress the first syllable.',
+    word: 'Beautiful',
+    phonetic: '/ˈbjuːtɪfəl/',
+    meaning: 'Beau/Belle',
+    tip: 'Commencez par "biou", puis "ti" et "foul". Le "eau" anglais se dit "iou".',
   },
 ]
 
@@ -252,12 +252,10 @@ export default function CoursePage() {
   const [currentStep, setCurrentStep] = useState(0)
   const [direction, setDirection] = useState(1)
   const [isPlayingAudio, setIsPlayingAudio] = useState(false)
-  const [isRecording, setIsRecording] = useState(false)
   const [showCompletionModal, setShowCompletionModal] = useState(false)
   const [vocabRevealed, setVocabRevealed] = useState<Set<number>>(new Set())
   const [dialogueRevealed, setDialogueRevealed] = useState<Set<number>>(new Set())
   const [grammarAnswers, setGrammarAnswers] = useState<Set<number>>(new Set())
-  const [pronunciationAttempted, setPronunciationAttempted] = useState<Set<number>>(new Set())
 
   // Preload speech synthesis voices (needed for Chrome)
   useEffect(() => {
@@ -363,15 +361,6 @@ export default function CoursePage() {
   const playPronunciationAudio = () => {
     const item = PRONUNCIATION_ITEMS[currentPronIndex] ?? PRONUNCIATION_ITEMS[0]
     speakText(item.word, 'en-US', 0.7)
-  }
-
-  // Recording simulation
-  const simulateRecording = (index: number) => {
-    setIsRecording(true)
-    setTimeout(() => {
-      setIsRecording(false)
-      setPronunciationAttempted((prev) => new Set(prev).add(index))
-    }, 2000)
   }
 
   // Vocab index mapping
@@ -484,11 +473,9 @@ export default function CoursePage() {
                   <PronunciationStep
                     item={PRONUNCIATION_ITEMS[currentPronIndex] ?? PRONUNCIATION_ITEMS[0]}
                     index={currentPronIndex}
-                    isRecording={isRecording}
-                    attempted={pronunciationAttempted.has(currentStep)}
-                    onRecord={() => simulateRecording(currentStep)}
                     onPlayAudio={playPronunciationAudio}
                     isPlayingAudio={isPlayingAudio}
+                    onComplete={goNext}
                   />
                 )}
               </motion.div>
@@ -695,7 +682,6 @@ export default function CoursePage() {
                         setVocabRevealed(new Set())
                         setDialogueRevealed(new Set())
                         setGrammarAnswers(new Set())
-                        setPronunciationAttempted(new Set())
                         setShowCompletionModal(false)
                       }}
                     >
@@ -1085,25 +1071,466 @@ function ConversationStep({
   )
 }
 
+// ─── Pronunciation Helpers ───────────────────────────────────────────────────
+
+function getSupportedMimeType(): string {
+  const types = [
+    'audio/webm;codecs=opus',
+    'audio/webm',
+    'audio/ogg;codecs=opus',
+    'audio/mp4',
+  ]
+  for (const type of types) {
+    if (MediaRecorder.isTypeSupported(type)) return type
+  }
+  return ''
+}
+
+function levenshteinDistance(a: string, b: string): number {
+  const matrix: number[][] = []
+  for (let i = 0; i <= b.length; i++) matrix[i] = [i]
+  for (let j = 0; j <= a.length; j++) matrix[0][j] = j
+  for (let i = 1; i <= b.length; i++) {
+    for (let j = 1; j <= a.length; j++) {
+      if (b.charAt(i - 1) === a.charAt(j - 1)) {
+        matrix[i][j] = matrix[i - 1][j - 1]
+      } else {
+        matrix[i][j] = Math.min(
+          matrix[i - 1][j - 1] + 1,
+          matrix[i][j - 1] + 1,
+          matrix[i - 1][j] + 1
+        )
+      }
+    }
+  }
+  return matrix[b.length][a.length]
+}
+
+function calculateSimilarity(a: string, b: string): number {
+  const normA = a.toLowerCase().trim()
+  const normB = b.toLowerCase().trim()
+  const maxLen = Math.max(normA.length, normB.length)
+  if (maxLen === 0) return 100
+  const dist = levenshteinDistance(normA, normB)
+  return Math.round(((maxLen - dist) / maxLen) * 100)
+}
+
+// Web Speech API type declarations
+interface SpeechRecognitionEvent extends Event {
+  results: SpeechRecognitionResultList
+}
+
+interface SpeechRecognitionErrorEvent extends Event {
+  error: string
+}
+
+type SpeechRecognitionInstance = {
+  lang: string
+  continuous: boolean
+  interimResults: boolean
+  maxAlternatives: number
+  onresult: ((event: SpeechRecognitionEvent) => void) | null
+  onerror: ((event: SpeechRecognitionErrorEvent) => void) | null
+  onend: (() => void) | null
+  start: () => void
+  stop: () => void
+  abort: () => void
+}
+
+function createSpeechRecognition(): SpeechRecognitionInstance | null {
+  const SR = typeof window !== 'undefined'
+    ? (window as unknown as Record<string, unknown>).SpeechRecognition ||
+      (window as unknown as Record<string, unknown>).webkitSpeechRecognition
+    : undefined
+  if (!SR) return null
+  return new (SR as new () => SpeechRecognitionInstance)()
+}
+
 // ─── Pronunciation Step ──────────────────────────────────────────────────────
 
 function PronunciationStep({
   item,
   index,
-  isRecording,
-  attempted,
-  onRecord,
   onPlayAudio,
   isPlayingAudio,
+  onComplete,
 }: {
   item: PronunciationItem
   index: number
-  isRecording: boolean
-  attempted: boolean
-  onRecord: () => void
   onPlayAudio: () => void
   isPlayingAudio: boolean
+  onComplete: () => void
 }) {
+  // State
+  const [isRecording, setIsRecording] = useState(false)
+  const [isProcessing, setIsProcessing] = useState(false)
+  const [currentAttempt, setCurrentAttempt] = useState<{
+    transcript: string
+    confidence: number
+    isCorrect: boolean
+  } | null>(null)
+  const [micError, setMicError] = useState<string | null>(null)
+  const [micLevel, setMicLevel] = useState(0)
+  const [recordingSeconds, setRecordingSeconds] = useState(0)
+  const [attemptCount, setAttemptCount] = useState(0)
+  const [isCorrect, setIsCorrect] = useState(false)
+
+  // Refs
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null)
+  const audioChunksRef = useRef<Blob[]>([])
+  const streamRef = useRef<MediaStream | null>(null)
+  const analyserRef = useRef<AnalyserNode | null>(null)
+  const animFrameRef = useRef<number>(0)
+  const recognitionRef = useRef<SpeechRecognitionInstance | null>(null)
+  const recordingTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const autoAdvanceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  // Cleanup helper
+  const cleanup = useCallback(() => {
+    // Stop recognition
+    if (recognitionRef.current) {
+      try { recognitionRef.current.abort() } catch { /* ignore */ }
+      recognitionRef.current = null
+    }
+    // Stop media recorder
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      try { mediaRecorderRef.current.stop() } catch { /* ignore */ }
+    }
+    mediaRecorderRef.current = null
+    // Stop stream
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((t) => t.stop())
+      streamRef.current = null
+    }
+    // Cancel animation frame
+    if (animFrameRef.current) {
+      cancelAnimationFrame(animFrameRef.current)
+      animFrameRef.current = 0
+    }
+    // Cancel timers
+    if (recordingTimerRef.current) {
+      clearInterval(recordingTimerRef.current)
+      recordingTimerRef.current = null
+    }
+    if (autoAdvanceTimerRef.current) {
+      clearTimeout(autoAdvanceTimerRef.current)
+      autoAdvanceTimerRef.current = null
+    }
+    setMicLevel(0)
+    setRecordingSeconds(0)
+  }, [])
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => { cleanup() }
+  }, [cleanup])
+
+  // Reset when item changes
+  useEffect(() => {
+    cleanup()
+    setCurrentAttempt(null)
+    setMicError(null)
+    setAttemptCount(0)
+    setIsCorrect(false)
+    setIsRecording(false)
+    setIsProcessing(false)
+  }, [item.word, cleanup])
+
+  // Process result from either Web Speech API or backend ASR
+  const processResult = useCallback((transcript: string) => {
+    const similarity = calculateSimilarity(transcript, item.word)
+    const correct = similarity >= 70 ||
+      (transcript.toLowerCase().includes(item.word.toLowerCase()))
+
+    setCurrentAttempt({ transcript, confidence: similarity, isCorrect: correct })
+    setIsProcessing(false)
+    setAttemptCount((prev) => prev + 1)
+
+    if (correct) {
+      setIsCorrect(true)
+      // Auto-advance after 2 seconds
+      autoAdvanceTimerRef.current = setTimeout(() => {
+        onComplete()
+      }, 2000)
+    }
+  }, [item.word, onComplete])
+
+  // Send audio to backend ASR
+  const sendToBackendASR = useCallback(async (audioBlob: Blob) => {
+    setIsProcessing(true)
+    try {
+      const reader = new FileReader()
+      const base64Promise = new Promise<string>((resolve) => {
+        reader.onloadend = () => {
+          const dataUrl = reader.result as string
+          const base64 = dataUrl.split(',')[1] || ''
+          resolve(base64)
+        }
+        reader.readAsDataURL(audioBlob)
+      })
+      const audioBase64 = await base64Promise
+
+      const response = await fetch('/api/pronunciation', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          audio_base64: audioBase64,
+          target_word: item.word,
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`)
+      }
+
+      const data = await response.json()
+      const transcript = data.transcript || ''
+      if (transcript.length > 0) {
+        processResult(transcript)
+      } else {
+        // Empty transcript from backend
+        setCurrentAttempt({
+          transcript: '',
+          confidence: 0,
+          isCorrect: false,
+        })
+        setIsProcessing(false)
+        setAttemptCount((prev) => prev + 1)
+      }
+    } catch (err) {
+      console.error('[PronunciationStep] Backend ASR error:', err)
+      setMicError("Impossible d'analyser l'audio. Veuillez réessayer.")
+      setIsProcessing(false)
+    }
+  }, [item.word, processResult])
+
+  // Start mic level monitoring
+  const startMicLevelMonitoring = useCallback((stream: MediaStream) => {
+    try {
+      const audioCtx = new AudioContext()
+      const source = audioCtx.createMediaStreamSource(stream)
+      const analyser = audioCtx.createAnalyser()
+      analyser.fftSize = 256
+      source.connect(analyser)
+      analyserRef.current = analyser
+
+      const dataArray = new Uint8Array(analyser.frequencyBinCount)
+
+      const updateLevel = () => {
+        if (!analyserRef.current) return
+        analyserRef.current.getByteFrequencyData(dataArray)
+        let sum = 0
+        for (let i = 0; i < dataArray.length; i++) {
+          sum += dataArray[i]
+        }
+        const avg = sum / dataArray.length
+        setMicLevel(Math.min(avg / 128, 1))
+        animFrameRef.current = requestAnimationFrame(updateLevel)
+      }
+      updateLevel()
+    } catch {
+      // AudioContext not available, skip visualization
+    }
+  }, [])
+
+  // Handle mic press (start recording)
+  const handleMicPress = useCallback(async () => {
+    setMicError(null)
+    setCurrentAttempt(null)
+    audioChunksRef.current = []
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      streamRef.current = stream
+
+      // Start mic level monitoring
+      startMicLevelMonitoring(stream)
+
+      // Setup MediaRecorder for fallback backend ASR
+      const mimeType = getSupportedMimeType()
+      const options: MediaRecorderOptions = {}
+      if (mimeType) options.mimeType = mimeType
+
+      const mediaRecorder = new MediaRecorder(stream, options)
+      mediaRecorderRef.current = mediaRecorder
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data)
+        }
+      }
+
+      mediaRecorder.onstop = async () => {
+        const chunks = audioChunksRef.current
+        if (chunks.length > 0) {
+          const blobMimeType = mimeType || 'audio/webm'
+          const audioBlob = new Blob(chunks, { type: blobMimeType })
+          await sendToBackendASR(audioBlob)
+        } else {
+          setIsProcessing(false)
+        }
+      }
+
+      // Start recording
+      mediaRecorder.start(250) // collect data every 250ms
+      setIsRecording(true)
+      setRecordingSeconds(0)
+
+      // Start recording timer
+      recordingTimerRef.current = setInterval(() => {
+        setRecordingSeconds((prev) => {
+          if (prev >= 5) {
+            // Auto-stop after 5 seconds
+            handleStopRecording()
+            return prev
+          }
+          return prev + 1
+        })
+      }, 1000)
+
+      // Try Web Speech API as primary method
+      const recognition = createSpeechRecognition()
+      if (recognition) {
+        recognition.lang = 'en-US'
+        recognition.continuous = false
+        recognition.interimResults = false
+        recognition.maxAlternatives = 1
+
+        recognition.onresult = (event: SpeechRecognitionEvent) => {
+          const result = event.results[0]
+          if (result) {
+            const transcript = result[0].transcript.trim()
+            // Stop the media recorder since we got a result
+            if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+              mediaRecorderRef.current.stop()
+            }
+            setIsRecording(false)
+            cleanup()
+            processResult(transcript)
+          }
+        }
+
+        recognition.onerror = (_event: SpeechRecognitionErrorEvent) => {
+          // Web Speech API failed, fallback to backend ASR
+          console.log('[PronunciationStep] Web Speech API error, falling back to backend ASR')
+          // Don't stop recording - let MediaRecorder continue and auto-stop
+        }
+
+        recognition.onend = () => {
+          recognitionRef.current = null
+        }
+
+        recognitionRef.current = recognition
+        recognition.start()
+      }
+      // If no Web Speech API, MediaRecorder will auto-stop after 5 seconds
+      // and onstop handler will send audio to backend
+    } catch (err: unknown) {
+      console.error('[PronunciationStep] Mic access error:', err)
+      if (err instanceof DOMException && err.name === 'NotAllowedError') {
+        setMicError('Accès au microphone refusé. Veuillez autoriser l\'accès dans les paramètres de votre navigateur.')
+      } else if (err instanceof DOMException && err.name === 'NotFoundError') {
+        setMicError('Aucun microphone détecté. Veuillez connecter un microphone.')
+      } else {
+        setMicError('Impossible d\'accéder au microphone. Veuillez vérifier vos paramètres.')
+      }
+    }
+  }, [cleanup, processResult, sendToBackendASR, startMicLevelMonitoring])
+
+  // Stop recording manually
+  const handleStopRecording = useCallback(() => {
+    if (recordingTimerRef.current) {
+      clearInterval(recordingTimerRef.current)
+      recordingTimerRef.current = null
+    }
+
+    // Stop recognition
+    if (recognitionRef.current) {
+      try { recognitionRef.current.stop() } catch { /* ignore */ }
+      recognitionRef.current = null
+    }
+
+    // Stop media recorder - onstop will fire and send to backend if no Web Speech result
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      try { mediaRecorderRef.current.stop() } catch { /* ignore */ }
+    }
+
+    // Stop mic level
+    if (animFrameRef.current) {
+      cancelAnimationFrame(animFrameRef.current)
+      animFrameRef.current = 0
+    }
+    setMicLevel(0)
+
+    // Stop stream
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((t) => t.stop())
+      streamRef.current = null
+    }
+
+    setIsRecording(false)
+    // If we don't have a Web Speech API result, the onstop handler will trigger backend ASR
+    // Set a small delay then start processing indicator if no result yet
+    setTimeout(() => {
+      // If after 300ms we're not already processing and have no result, show processing
+      setIsRecording(false)
+    }, 100)
+  }, [])
+
+  // Retry handler
+  const handleRetry = useCallback(() => {
+    cleanup()
+    setCurrentAttempt(null)
+    setMicError(null)
+    setIsRecording(false)
+    setIsProcessing(false)
+  }, [cleanup])
+
+  // Skip handler (only available after 3+ failed attempts)
+  const handleSkip = useCallback(() => {
+    cleanup()
+    onComplete()
+  }, [cleanup, onComplete])
+
+  // Confidence color
+  const getConfidenceColor = (conf: number) => {
+    if (conf >= 80) return 'text-yoel-green'
+    if (conf >= 50) return 'text-yoel-gold'
+    return 'text-destructive'
+  }
+
+  const getConfidenceBg = (conf: number) => {
+    if (conf >= 80) return 'bg-yoel-green/10'
+    if (conf >= 50) return 'bg-yoel-gold/10'
+    return 'bg-destructive/10'
+  }
+
+  // Waveform bars
+  const renderWaveformBars = () => {
+    const barCount = 12
+    return (
+      <div className="flex items-center justify-center gap-[3px] h-10">
+        {Array.from({ length: barCount }).map((_, i) => {
+          const baseHeight = 4
+          const levelBoost = isRecording ? micLevel * 28 : 0
+          const barHeight = baseHeight + levelBoost * (0.5 + Math.random() * 0.5)
+          return (
+            <motion.div
+              key={i}
+              className={`w-[3px] rounded-full ${isRecording ? 'bg-yoel-red' : 'bg-muted-foreground/30'}`}
+              animate={{
+                height: isRecording
+                  ? `${Math.max(4, barHeight)}px`
+                  : `${baseHeight}px`,
+              }}
+              transition={{ duration: 0.08 }}
+            />
+          )
+        })}
+      </div>
+    )
+  }
+
   return (
     <motion.div
       variants={containerVariants}
@@ -1137,12 +1564,13 @@ function PronunciationStep({
               </Badge>
             </div>
 
-            {/* Listen button */}
+            {/* Listen button — always visible */}
             <div className="flex justify-center">
               <Button
                 variant="outline"
                 className="rounded-full px-6"
                 onClick={onPlayAudio}
+                disabled={isRecording || isProcessing}
               >
                 {isPlayingAudio ? (
                   <>
@@ -1152,62 +1580,13 @@ function PronunciationStep({
                 ) : (
                   <>
                     <Play className="h-5 w-5 mr-2" />
-                    Écouter la prononciation
+                    Écouter
                   </>
                 )}
               </Button>
             </div>
 
-            <Separator />
-
-            {/* Record button */}
-            <div className="text-center space-y-3">
-              <p className="text-sm font-medium">Maintenant, essayez vous-même !</p>
-              <motion.div whileTap={{ scale: 0.9 }}>
-                <Button
-                  className={`h-16 w-16 rounded-full ${
-                    isRecording
-                      ? 'bg-destructive hover:bg-destructive/90 animate-pulse'
-                      : 'bg-yoel-red hover:bg-yoel-red-dark'
-                  } text-white shadow-lg`}
-                  onClick={onRecord}
-                  disabled={isRecording}
-                >
-                  {isRecording ? (
-                    <MicOff className="h-7 w-7" />
-                  ) : (
-                    <Mic className="h-7 w-7" />
-                  )}
-                </Button>
-              </motion.div>
-              <p className="text-xs text-muted-foreground">
-                {isRecording
-                  ? 'Enregistrement en cours... Parlez maintenant !'
-                  : 'Appuyez pour enregistrer'}
-              </p>
-            </div>
-
-            {/* Feedback after recording */}
-            {attempted && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="rounded-xl bg-yoel-green/10 p-4 space-y-2"
-              >
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="h-5 w-5 text-yoel-green" />
-                  <span className="text-sm font-medium text-yoel-green">
-                    Bonne tentative !
-                  </span>
-                </div>
-                <Progress value={78} className="h-2" />
-                <p className="text-xs text-muted-foreground">
-                  Précision : 78% — Continuez à pratiquer !
-                </p>
-              </motion.div>
-            )}
-
-            {/* Tip */}
+            {/* Tip box */}
             <div className="rounded-xl bg-yoel-gold/5 p-4">
               <div className="flex items-start gap-2">
                 <Sparkles className="h-4 w-4 text-yoel-gold shrink-0 mt-0.5" />
@@ -1217,6 +1596,184 @@ function PronunciationStep({
                 </div>
               </div>
             </div>
+
+            <Separator />
+
+            {/* Mic button & waveform */}
+            <div className="text-center space-y-3">
+              <p className="text-sm font-medium">
+                {isCorrect ? 'Excellent !' : 'Maintenant, essayez vous-même !'}
+              </p>
+
+              {/* Waveform visualization */}
+              {renderWaveformBars()}
+
+              {/* Recording timer */}
+              {isRecording && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="flex items-center justify-center gap-2"
+                >
+                  <div className="h-2 w-2 rounded-full bg-red-500 animate-pulse" />
+                  <span className="text-sm font-mono text-red-500">
+                    {recordingSeconds}s
+                  </span>
+                </motion.div>
+              )}
+
+              {/* Mic / Stop button */}
+              <div className="flex justify-center">
+                {isRecording ? (
+                  <motion.div whileTap={{ scale: 0.9 }}>
+                    <Button
+                      className="h-16 w-16 rounded-full bg-destructive hover:bg-destructive/90 text-white shadow-lg"
+                      onClick={handleStopRecording}
+                    >
+                      <Square className="h-7 w-7" fill="white" />
+                    </Button>
+                  </motion.div>
+                ) : (
+                  <motion.div whileTap={{ scale: 0.9 }}>
+                    <Button
+                      className="h-16 w-16 rounded-full bg-yoel-red hover:bg-yoel-red-dark text-white shadow-lg"
+                      onClick={handleMicPress}
+                      disabled={isProcessing || isCorrect}
+                    >
+                      {isProcessing ? (
+                        <Loader2 className="h-7 w-7 animate-spin" />
+                      ) : (
+                        <Mic className="h-7 w-7" />
+                      )}
+                    </Button>
+                  </motion.div>
+                )}
+              </div>
+
+              <p className="text-xs text-muted-foreground">
+                {isProcessing
+                  ? 'Analyse en cours...'
+                  : isRecording
+                  ? 'Parlez maintenant ! Appuyez sur ■ pour arrêter.'
+                  : isCorrect
+                  ? 'Prononciation réussie !'
+                  : 'Appuyez pour enregistrer'}
+              </p>
+            </div>
+
+            {/* Mic error */}
+            {micError && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="rounded-xl bg-destructive/10 p-4 space-y-2"
+              >
+                <div className="flex items-center gap-2">
+                  <AlertCircle className="h-5 w-5 text-destructive shrink-0" />
+                  <span className="text-sm font-medium text-destructive">Erreur</span>
+                </div>
+                <p className="text-xs text-muted-foreground">{micError}</p>
+              </motion.div>
+            )}
+
+            {/* Result section */}
+            {currentAttempt && !isCorrect && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className={`rounded-xl ${getConfidenceBg(currentAttempt.confidence)} p-4 space-y-3`}
+              >
+                {/* What was said vs expected */}
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <XCircle className="h-4 w-4 text-destructive shrink-0" />
+                    <span className="text-xs text-muted-foreground">Vous avez dit :</span>
+                    <span className="text-sm font-medium">{currentAttempt.transcript || '(rien détecté)'}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-yoel-green shrink-0" />
+                    <span className="text-xs text-muted-foreground">Mot attendu :</span>
+                    <span className="text-sm font-bold">{item.word}</span>
+                  </div>
+                </div>
+
+                {/* Confidence bar */}
+                <div className="space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-muted-foreground">Précision</span>
+                    <span className={`text-sm font-bold ${getConfidenceColor(currentAttempt.confidence)}`}>
+                      {currentAttempt.confidence}%
+                    </span>
+                  </div>
+                  <Progress value={currentAttempt.confidence} className="h-2" />
+                </div>
+
+                {/* Retry / Skip buttons */}
+                <div className="flex items-center gap-2 pt-1">
+                  <Button
+                    size="sm"
+                    className="rounded-xl bg-yoel-red hover:bg-yoel-red-dark text-white flex-1"
+                    onClick={handleRetry}
+                  >
+                    <RefreshCw className="h-4 w-4 mr-1" />
+                    Réessayer
+                  </Button>
+                  {attemptCount >= 3 && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="rounded-xl flex-1"
+                      onClick={handleSkip}
+                    >
+                      <SkipForward className="h-4 w-4 mr-1" />
+                      Passer
+                    </Button>
+                  )}
+                </div>
+
+                {/* Encouragement after multiple attempts */}
+                {attemptCount >= 2 && attemptCount < 3 && (
+                  <p className="text-xs text-muted-foreground text-center">
+                    Continuez ! Vous êtes sur la bonne voie 💪
+                  </p>
+                )}
+                {attemptCount >= 3 && (
+                  <p className="text-xs text-muted-foreground text-center">
+                    Vous pouvez passer au mot suivant si vous le souhaitez
+                  </p>
+                )}
+              </motion.div>
+            )}
+
+            {/* Success result */}
+            {isCorrect && currentAttempt && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="rounded-xl bg-yoel-green/10 p-4 space-y-3"
+              >
+                <div className="flex items-center justify-center gap-2">
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: 'spring', stiffness: 300, delay: 0.1 }}
+                  >
+                    <CheckCircle2 className="h-8 w-8 text-yoel-green" />
+                  </motion.div>
+                </div>
+                <p className="text-center text-sm font-bold text-yoel-green">
+                  Parfait ! 🎉
+                </p>
+                {currentAttempt.transcript && (
+                  <p className="text-center text-xs text-muted-foreground">
+                    Vous avez dit : &ldquo;{currentAttempt.transcript}&rdquo; — Précision : {currentAttempt.confidence}%
+                  </p>
+                )}
+                <p className="text-center text-xs text-muted-foreground animate-pulse">
+                  Passage au suivant...
+                </p>
+              </motion.div>
+            )}
           </CardContent>
         </Card>
       </motion.div>
