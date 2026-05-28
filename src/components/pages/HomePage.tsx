@@ -161,6 +161,7 @@ export default function HomePage() {
         <div className="pointer-events-none absolute inset-0 -z-10">
           <div className="absolute -right-40 -top-40 h-[500px] w-[500px] rounded-full bg-yoel-red/5 blur-3xl" />
           <div className="absolute -left-40 top-20 h-[400px] w-[400px] rounded-full bg-yoel-blue/5 blur-3xl" />
+          <div className="absolute bottom-0 right-1/4 h-[300px] w-[300px] rounded-full bg-yoel-gold/5 blur-3xl" />
         </div>
 
         <div className="mx-auto grid max-w-7xl items-center gap-8 px-4 py-16 sm:px-6 md:py-24 lg:grid-cols-2 lg:gap-16 lg:px-8 lg:py-32">
@@ -207,7 +208,7 @@ export default function HomePage() {
             </div>
           </motion.div>
 
-          {/* Mascot */}
+          {/* Mascot / Hero Image */}
           <motion.div
             initial={{ opacity: 0, x: 40 }}
             animate={{ opacity: 1, x: 0 }}
@@ -216,7 +217,7 @@ export default function HomePage() {
           >
             <motion.img
               src="/yoelang-mascot.png"
-              alt="YOELANG Mascot"
+              alt="YOELANG - Apprenez l'anglais en conversation"
               className="h-72 w-72 drop-shadow-2xl sm:h-80 sm:w-80 md:h-96 md:w-96"
               animate={{ y: [0, -12, 0] }}
               transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
@@ -334,8 +335,23 @@ export default function HomePage() {
               custom={1}
               className="mx-auto mt-4 max-w-xl text-muted-foreground"
             >
-              Commencez votre apprentissage de l'anglais en trois étapes simples.
+              Commencez votre apprentissage de l&apos;anglais en trois étapes simples.
             </motion.p>
+          </motion.div>
+
+          {/* Illustration */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="flex justify-center my-10"
+          >
+            <img
+              src="/learning-group.png"
+              alt="Apprenez l'anglais en groupe"
+              className="h-48 sm:h-56 md:h-64 w-auto object-contain drop-shadow-lg"
+            />
           </motion.div>
 
           <motion.div
@@ -431,13 +447,29 @@ export default function HomePage() {
       {/* ===== CTA ===== */}
       <section className="py-16 md:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-80px' }}
-            transition={{ duration: 0.6 }}
-            className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-yoel-red via-yoel-red-dark to-yoel-blue-dark p-8 text-center text-white shadow-2xl sm:p-12 md:p-16"
-          >
+          <div className="grid md:grid-cols-2 gap-8 items-center">
+            {/* Achievement Illustration */}
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="flex justify-center"
+            >
+              <img
+                src="/achievement.png"
+                alt="Atteignez vos objectifs en anglais"
+                className="h-56 sm:h-64 md:h-72 w-auto object-contain drop-shadow-lg"
+              />
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-80px' }}
+              transition={{ duration: 0.6 }}
+              className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-yoel-red via-yoel-red-dark to-yoel-blue-dark p-8 text-center text-white shadow-2xl sm:p-12 md:p-16"
+            >
             {/* Decorative circles */}
             <div className="pointer-events-none absolute -right-20 -top-20 h-60 w-60 rounded-full bg-white/10 blur-2xl" />
             <div className="pointer-events-none absolute -bottom-20 -left-20 h-60 w-60 rounded-full bg-white/5 blur-2xl" />
@@ -467,6 +499,7 @@ export default function HomePage() {
               </Button>
             </div>
           </motion.div>
+          </div>
         </div>
       </section>
 

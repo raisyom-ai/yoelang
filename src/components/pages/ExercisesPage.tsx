@@ -792,6 +792,7 @@ function VocabularyTab() {
   const [isFlipped, setIsFlipped] = useState(false)
   const [results, setResults] = useState<Record<string, boolean>>({})
   const [isCompleted, setIsCompleted] = useState(false)
+  const { goBack, navigate } = useAppStore()
 
   const currentCard = VOCAB_CARDS[currentIndex]
 
@@ -878,29 +879,7 @@ function VocabularyTab() {
                   >
                     <Badge variant="secondary" className="text-xs">
                       <MessageSquareText className="h-3 w-3 mr-1" />
-                      Français → Anglais
-                    </Badge>
-                    <h3 className="text-3xl font-bold gradient-text-red">
-                      {currentCard.french}
-                    </h3>
-                    <p className="text-sm text-muted-foreground">
-                      🇫🇷 Traduisez en anglais
-                    </p>
-                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-2">
-                      <Eye className="h-3.5 w-3.5" />
-                      Tapez pour voir la traduction
-                    </div>
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key="back"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="flex flex-col items-center text-center space-y-4"
-                  >
-                    <Badge variant="secondary" className="text-xs bg-yoel-green/10 text-yoel-green">
-                      Traduction en anglais
+                      Anglais → Français
                     </Badge>
                     <h3 className="text-3xl font-bold gradient-text-blue">
                       {currentCard.english}
@@ -908,9 +887,8 @@ function VocabularyTab() {
                     <p className="text-sm text-muted-foreground font-mono">
                       {currentCard.phonetic}
                     </p>
-                    <Separator className="w-16" />
-                    <p className="text-sm italic text-muted-foreground max-w-[250px]">
-                      &ldquo;{currentCard.example}&rdquo;
+                    <p className="text-sm text-muted-foreground">
+                      🇬🇧 Que signifie ce mot en français ?
                     </p>
                     <button
                       className="flex items-center gap-1.5 text-xs text-yoel-blue hover:text-yoel-blue-dark transition-colors mt-1"
@@ -927,6 +905,29 @@ function VocabularyTab() {
                       <Volume2 className="h-3.5 w-3.5" />
                       Écouter la prononciation
                     </button>
+                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-2">
+                      <Eye className="h-3.5 w-3.5" />
+                      Tapez pour voir la traduction
+                    </div>
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="back"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="flex flex-col items-center text-center space-y-4"
+                  >
+                    <Badge variant="secondary" className="text-xs bg-yoel-green/10 text-yoel-green">
+                      Traduction en français
+                    </Badge>
+                    <h3 className="text-3xl font-bold gradient-text-red">
+                      {currentCard.french}
+                    </h3>
+                    <Separator className="w-16" />
+                    <p className="text-sm italic text-muted-foreground max-w-[250px]">
+                      &ldquo;{currentCard.example}&rdquo;
+                    </p>
                   </motion.div>
                 )}
               </AnimatePresence>

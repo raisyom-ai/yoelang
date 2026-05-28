@@ -445,8 +445,8 @@ export default function DashboardPage() {
               {/* Accent bar */}
               <div className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-yoel-red to-yoel-gold rounded-l-xl" />
               <CardContent className="flex items-center gap-4 p-5 pl-6">
-                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-yoel-red/20 to-yoel-gold/20">
-                  <BookOpen className="h-7 w-7 text-yoel-red" />
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-yoel-red/20 to-yoel-gold/20 overflow-hidden">
+                  <img src="/practice-english.png" alt="Practice" className="h-14 w-14 object-cover rounded-xl" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">

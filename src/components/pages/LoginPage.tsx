@@ -2,7 +2,7 @@
 
 import { useState, FormEvent } from 'react'
 import { motion } from 'framer-motion'
-import { Mail, Lock, Eye, EyeOff, Loader2, Chrome, Apple, BookOpen, Globe, Sparkles } from 'lucide-react'
+import { Mail, Lock, Eye, EyeOff, Loader2, Chrome, Apple, BookOpen, Globe, Sparkles, ArrowLeft } from 'lucide-react'
 import { useAppStore, type UserState } from '@/lib/store'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -26,7 +26,7 @@ const fadeInUp = {
 }
 
 export default function LoginPage() {
-  const { navigate, setUser } = useAppStore()
+  const { navigate, goBack, setUser } = useAppStore()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -203,9 +203,26 @@ export default function LoginPage() {
           animate="visible"
           className="w-full max-w-md"
         >
-          {/* Logo for mobile */}
+          {/* Back button */}
           <motion.div
             custom={0}
+            variants={fadeInUp}
+            className="mb-4"
+          >
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={goBack}
+              className="text-muted-foreground hover:text-foreground -ml-2"
+            >
+              <ArrowLeft className="h-4 w-4 mr-1" />
+              Retour
+            </Button>
+          </motion.div>
+
+          {/* Logo for mobile */}
+          <motion.div
+            custom={1}
             variants={fadeInUp}
             className="flex items-center justify-center lg:hidden mb-8"
           >

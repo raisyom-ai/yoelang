@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   ArrowLeft, Home, Volume2, Mic, MicOff, ChevronLeft, ChevronRight,
@@ -259,6 +259,18 @@ export default function CoursePage() {
   const [grammarAnswers, setGrammarAnswers] = useState<Set<number>>(new Set())
   const [pronunciationAttempted, setPronunciationAttempted] = useState<Set<number>>(new Set())
 
+  // Preload speech synthesis voices (needed for Chrome)
+  useEffect(() => {
+    if ('speechSynthesis' in window) {
+      // Trigger voice loading
+      window.speechSynthesis.getVoices()
+      // Chrome loads voices asynchronously
+      window.speechSynthesis.onvoiceschanged = () => {
+        window.speechSynthesis.getVoices()
+      }
+    }
+  }, [])
+
   // Current lesson and level info
   const lesson = currentLesson ?? DEMO_LESSONS.find((l) => !l.completed) ?? DEMO_LESSONS[3]
   const levelInfo = LEVELS.find((l) => l.code === currentLevel) ?? LEVELS[0]
@@ -300,14 +312,34 @@ export default function CoursePage() {
   // Audio playback using Web Speech API
   const speakText = (text: string, lang: string = 'en-US', rate: number = 0.85) => {
     if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel() // Stop any ongoing speech
+      // Cancel any ongoing speech first
+      window.speechSynthesis.cancel()
+      
+      // Chrome bug workaround: resume if paused
+      window.speechSynthesis.resume()
+      
       const utterance = new SpeechSynthesisUtterance(text)
       utterance.lang = lang
       utterance.rate = rate
+      utterance.volume = 1
+      
+      // Try to use an English voice if available
+      const voices = window.speechSynthesis.getVoices()
+      const englishVoice = voices.find(v => v.lang.startsWith('en') && v.name.includes('Google')) 
+        || voices.find(v => v.lang.startsWith('en-US'))
+        || voices.find(v => v.lang.startsWith('en'))
+      if (englishVoice) {
+        utterance.voice = englishVoice
+      }
+      
       utterance.onstart = () => setIsPlayingAudio(true)
       utterance.onend = () => setIsPlayingAudio(false)
       utterance.onerror = () => setIsPlayingAudio(false)
-      window.speechSynthesis.speak(utterance)
+      
+      // Small delay to ensure speechSynthesis is ready
+      setTimeout(() => {
+        window.speechSynthesis.speak(utterance)
+      }, 50)
     } else {
       // Fallback: just show visual feedback
       setIsPlayingAudio(true)

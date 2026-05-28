@@ -2,7 +2,7 @@
 
 import { useState, FormEvent, useMemo } from 'react'
 import { motion } from 'framer-motion'
-import { Mail, Lock, Eye, EyeOff, Loader2, Chrome, Apple, User, BookOpen, Globe, Sparkles, Shield, Check } from 'lucide-react'
+import { Mail, Lock, Eye, EyeOff, Loader2, Chrome, Apple, User, BookOpen, Globe, Sparkles, Shield, Check, ArrowLeft } from 'lucide-react'
 import { useAppStore, type UserState } from '@/lib/store'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -65,7 +65,7 @@ function getPasswordStrength(password: string): {
 }
 
 export default function RegisterPage() {
-  const { navigate, setUser } = useAppStore()
+  const { navigate, goBack, setUser } = useAppStore()
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -278,9 +278,26 @@ export default function RegisterPage() {
           animate="visible"
           className="w-full max-w-md"
         >
-          {/* Logo for mobile */}
+          {/* Back button */}
           <motion.div
             custom={0}
+            variants={fadeInUp}
+            className="mb-4"
+          >
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={goBack}
+              className="text-muted-foreground hover:text-foreground -ml-2"
+            >
+              <ArrowLeft className="h-4 w-4 mr-1" />
+              Retour
+            </Button>
+          </motion.div>
+
+          {/* Logo for mobile */}
+          <motion.div
+            custom={1}
             variants={fadeInUp}
             className="flex items-center justify-center lg:hidden mb-6"
           >
