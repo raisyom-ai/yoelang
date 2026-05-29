@@ -66,7 +66,7 @@ const itemVariants = {
 
 // ─── Lesson Steps ────────────────────────────────────────────────────────────
 
-type StepType = 'vocab' | 'grammar' | 'conversation' | 'pronunciation'
+type StepType = 'vocab' | 'grammar' | 'conversation' | 'pronunciation' | 'quiz'
 
 interface LessonStep {
   type: StepType
@@ -74,6 +74,7 @@ interface LessonStep {
 }
 
 function getLessonSteps(lessonType: string): LessonStep[] {
+  // All lesson types end with a quiz step
   switch (lessonType) {
     case 'vocabulary':
       return [
@@ -85,6 +86,7 @@ function getLessonSteps(lessonType: string): LessonStep[] {
         { type: 'conversation', title: 'Conversation' },
         { type: 'pronunciation', title: 'Prononciation' },
         { type: 'pronunciation', title: 'Prononciation' },
+        { type: 'quiz', title: 'Quiz' },
       ]
     case 'grammar':
       return [
@@ -95,6 +97,7 @@ function getLessonSteps(lessonType: string): LessonStep[] {
         { type: 'conversation', title: 'Conversation' },
         { type: 'pronunciation', title: 'Prononciation' },
         { type: 'pronunciation', title: 'Prononciation' },
+        { type: 'quiz', title: 'Quiz' },
       ]
     case 'conversation':
       return [
@@ -105,6 +108,7 @@ function getLessonSteps(lessonType: string): LessonStep[] {
         { type: 'grammar', title: 'Grammaire' },
         { type: 'pronunciation', title: 'Prononciation' },
         { type: 'pronunciation', title: 'Prononciation' },
+        { type: 'quiz', title: 'Quiz' },
       ]
     case 'pronunciation':
       return [
@@ -115,6 +119,7 @@ function getLessonSteps(lessonType: string): LessonStep[] {
         { type: 'vocab', title: 'Vocabulaire' },
         { type: 'grammar', title: 'Grammaire' },
         { type: 'conversation', title: 'Conversation' },
+        { type: 'quiz', title: 'Quiz' },
       ]
     default:
       return [
@@ -126,6 +131,7 @@ function getLessonSteps(lessonType: string): LessonStep[] {
         { type: 'conversation', title: 'Conversation' },
         { type: 'pronunciation', title: 'Prononciation' },
         { type: 'pronunciation', title: 'Prononciation' },
+        { type: 'quiz', title: 'Quiz' },
       ]
   }
 }
@@ -163,6 +169,7 @@ export default function CoursePage() {
   const [vocabRevealed, setVocabRevealed] = useState<Set<number>>(new Set())
   const [dialogueRevealed, setDialogueRevealed] = useState<Set<number>>(new Set())
   const [grammarAnswers, setGrammarAnswers] = useState<Set<number>>(new Set())
+  const [quizScore, setQuizScore] = useState<number | null>(null) // null = not taken yet
 
   // Preload speech synthesis voices (needed for Chrome)
   useEffect(() => {
@@ -221,6 +228,7 @@ export default function CoursePage() {
     setDialogueRevealed(new Set())
     setGrammarAnswers(new Set())
     setShowCompletionModal(false)
+    setQuizScore(null)
     setViewMode('study')
   }
 
@@ -266,12 +274,43 @@ export default function CoursePage() {
     }
   }
 
-  const finishLesson = () => {
-    if (selectedLessonData) {
+  const PASSING_SCORE = 60 // moyenne = 60%
+
+  const finishLesson = (score: number) => {
+    setQuizScore(score)
+    const passed = score >= PASSING_SCORE
+    if (passed && selectedLessonData) {
       addCompletedLesson(selectedLessonData.id)
       addXP(selectedLessonData.xpReward)
     }
     setShowCompletionModal(true)
+  }
+
+  const handleRestartLesson = () => {
+    setCurrentStep(0)
+    setVocabRevealed(new Set())
+    setDialogueRevealed(new Set())
+    setGrammarAnswers(new Set())
+    setShowCompletionModal(false)
+    setQuizScore(null)
+  }
+
+  const handleAdvanceToNextLesson = () => {
+    if (!selectedLessonData) {
+      handleCompletionBackToList()
+      return
+    }
+    // Find the next lesson in the same level
+    const currentIndex = allLessons.findIndex((l) => l.id === selectedLessonData.id)
+    const nextLesson = allLessons[currentIndex + 1]
+    if (nextLesson) {
+      setShowCompletionModal(false)
+      setQuizScore(null)
+      handleSelectLesson(nextLesson)
+    } else {
+      // No more lessons - go back to list
+      handleCompletionBackToList()
+    }
   }
 
   const handleCompletionBackToList = () => {
@@ -661,6 +700,13 @@ export default function CoursePage() {
                     onComplete={goNext}
                   />
                 )}
+                {currentStepData?.type === 'quiz' && (
+                  <LessonQuizStep
+                    vocab={VOCAB_WORDS}
+                    grammar={GRAMMAR_RULE}
+                    onFinish={finishLesson}
+                  />
+                )}
               </motion.div>
             </AnimatePresence>
           </div>
@@ -701,170 +747,49 @@ export default function CoursePage() {
             ))}
           </div>
 
-          {currentStep === totalSteps - 1 ? (
-            <Button
-              size="sm"
-              className="rounded-xl bg-yoel-green hover:bg-yoel-green/90 text-white"
-              onClick={finishLesson}
-            >
-              <CheckCircle2 className="h-4 w-4 mr-1" />
-              Terminer
-            </Button>
-          ) : (
-            <Button
-              size="sm"
-              className="rounded-xl bg-yoel-red hover:bg-yoel-red-dark text-white"
-              onClick={goNext}
-            >
-              Suivant
-              <ChevronRight className="h-4 w-4 ml-1" />
-            </Button>
-          )}
+          {(() => {
+            if (currentStepData?.type === 'quiz') return null
+            if (currentStep === totalSteps - 2) {
+              return (
+                <Button
+                  size="sm"
+                  className="rounded-xl bg-yoel-gold hover:bg-yoel-gold/90 text-white"
+                  onClick={goNext}
+                >
+                  <Sparkles className="h-4 w-4 mr-1" />
+                  Passer au Quiz
+                </Button>
+              )
+            }
+            if (currentStep === totalSteps - 1) return null
+            return (
+              <Button
+                size="sm"
+                className="rounded-xl bg-yoel-red hover:bg-yoel-red-dark text-white"
+                onClick={goNext}
+              >
+                Suivant
+                <ChevronRight className="h-4 w-4 ml-1" />
+              </Button>
+            )
+          })()}
         </div>
       </motion.div>
 
       {/* Completion Modal */}
       <AnimatePresence>
-        {showCompletionModal && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
-            onClick={() => setShowCompletionModal(false)}
-          >
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.8, opacity: 0, y: 20 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-              className="w-full max-w-md"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <Card className="border-0 overflow-hidden shadow-2xl">
-                {/* Header gradient */}
-                <div className="bg-gradient-to-br from-yoel-green via-emerald-500 to-yoel-blue p-8 text-center text-white">
-                  <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ delay: 0.3, type: 'spring', stiffness: 200 }}
-                  >
-                    <Trophy className="h-16 w-16 mx-auto mb-4 drop-shadow-lg" />
-                  </motion.div>
-                  <motion.h2
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.4 }}
-                    className="text-2xl font-bold"
-                  >
-                    Leçon terminée !
-                  </motion.h2>
-                  <motion.p
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.5 }}
-                    className="text-sm opacity-90 mt-1"
-                  >
-                    {selectedLessonData?.title ?? lesson?.title}
-                  </motion.p>
-                </div>
-
-                <CardContent className="p-6 space-y-4">
-                  {/* XP Earned */}
-                  <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.6 }}
-                    className="flex items-center justify-between"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-yoel-gold/15">
-                        <Zap className="h-5 w-5 text-yoel-gold" />
-                      </div>
-                      <span className="font-medium text-sm">XP gagnés</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <span className="text-lg font-bold text-yoel-gold">+{selectedLessonData?.xpReward ?? lesson?.xpReward ?? 15}</span>
-                      <span className="text-xs text-muted-foreground">XP</span>
-                    </div>
-                  </motion.div>
-
-                  <Separator />
-
-                  {/* Time */}
-                  <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.7 }}
-                    className="flex items-center justify-between"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-yoel-blue/15">
-                        <Clock className="h-5 w-5 text-yoel-blue" />
-                      </div>
-                      <span className="font-medium text-sm">Durée</span>
-                    </div>
-                    <span className="text-sm font-medium text-muted-foreground">
-                      {selectedLessonData?.duration ?? lesson?.duration ?? 5} min
-                    </span>
-                  </motion.div>
-
-                  <Separator />
-
-                  {/* Badges */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.8 }}
-                    className="space-y-2"
-                  >
-                    <div className="flex items-center gap-2">
-                      <Award className="h-4 w-4 text-yoel-red" />
-                      <span className="text-sm font-medium">Badges débloqués</span>
-                    </div>
-                    <div className="flex gap-2">
-                      <Badge className="bg-yoel-red/15 text-yoel-red border-0 text-xs">
-                        🎯 Précision
-                      </Badge>
-                      <Badge className="bg-yoel-gold/15 text-yoel-gold border-0 text-xs">
-                        ⚡ Vitesse
-                      </Badge>
-                    </div>
-                  </motion.div>
-
-                  {/* Action buttons */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.9 }}
-                    className="flex gap-3 pt-2"
-                  >
-                    <Button
-                      variant="outline"
-                      className="flex-1 rounded-xl"
-                      onClick={() => {
-                        setCurrentStep(0)
-                        setVocabRevealed(new Set())
-                        setDialogueRevealed(new Set())
-                        setGrammarAnswers(new Set())
-                        setShowCompletionModal(false)
-                      }}
-                    >
-                      <RotateCcw className="h-4 w-4 mr-1" />
-                      Recommencer
-                    </Button>
-                    <Button
-                      className="flex-1 rounded-xl bg-yoel-red hover:bg-yoel-red-dark text-white"
-                      onClick={handleCompletionBackToList}
-                    >
-                      <List className="h-4 w-4 mr-1" />
-                      Toutes les leçons
-                    </Button>
-                  </motion.div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          </motion.div>
+        {showCompletionModal && quizScore !== null && (
+          <LessonCompletionModal
+            score={quizScore}
+            passingScore={PASSING_SCORE}
+            lessonTitle={selectedLessonData?.title ?? lesson?.title ?? 'Leçon'}
+            xpReward={selectedLessonData?.xpReward ?? lesson?.xpReward ?? 15}
+            duration={selectedLessonData?.duration ?? lesson?.duration ?? 5}
+            hasNextLesson={allLessons.findIndex((l) => l.id === selectedLessonData?.id) < allLessons.length - 1}
+            onRestart={handleRestartLesson}
+            onAdvance={handleAdvanceToNextLesson}
+            onBackToList={handleCompletionBackToList}
+          />
         )}
       </AnimatePresence>
     </div>
@@ -1308,6 +1233,505 @@ function PronunciationStep({
                 </Badge>
               </motion.div>
             )}
+          </CardContent>
+        </Card>
+      </motion.div>
+    </motion.div>
+  )
+}
+
+// ─── Lesson Quiz Step ─────────────────────────────────────────────────────────
+
+interface QuizQuestion {
+  id: string
+  question: string
+  options: string[]
+  correctIndex: number
+  explanation: string
+}
+
+function generateQuizFromLesson(vocab: VocabWord[], grammar: GrammarRule): QuizQuestion[] {
+  const questions: QuizQuestion[] = []
+
+  // Generate 3 vocabulary questions: "What does [french word] mean in English?"
+  const shuffledVocab = [...vocab].sort(() => Math.random() - 0.5)
+  const vocabQuestions = shuffledVocab.slice(0, Math.min(3, shuffledVocab.length))
+
+  for (const word of vocabQuestions) {
+    // Create wrong options from other vocab words
+    const otherWords = vocab.filter(w => w.english !== word.english)
+    const wrongOptions = otherWords.sort(() => Math.random() - 0.5).slice(0, 3).map(w => w.english)
+    // If not enough wrong options, add generic ones
+    while (wrongOptions.length < 3) {
+      wrongOptions.push(['Yes', 'No', 'Maybe', 'Please', 'Thanks', 'Sorry'][wrongOptions.length])
+    }
+    const allOptions = [word.english, ...wrongOptions].sort(() => Math.random() - 0.5)
+    questions.push({
+      id: `vocab-${word.english}`,
+      question: `Que signifie « ${word.french} » en anglais ?`,
+      options: allOptions,
+      correctIndex: allOptions.indexOf(word.english),
+      explanation: `« ${word.french} » = « ${word.english} » (${word.phonetic})`,
+    })
+  }
+
+  // Generate 2 grammar questions from the examples
+  const correctExamples = grammar.examples.filter(e => e.isCorrect)
+  const incorrectExamples = grammar.examples.filter(e => !e.isCorrect)
+
+  // Question: "Which sentence is correct?"
+  if (correctExamples.length > 0 || incorrectExamples.length > 0) {
+    const allSentences = grammar.examples.slice(0, 4)
+    if (allSentences.length >= 2) {
+      const correctSentence = correctExamples[0]
+      if (correctSentence) {
+        const wrongSentences = allSentences.filter(e => e.sentence !== correctSentence.sentence).slice(0, 3).map(e => e.sentence)
+        while (wrongSentences.length < 3) {
+          wrongSentences.push('I are happy.')
+        }
+        const allOptions = [correctSentence.sentence, ...wrongSentences].sort(() => Math.random() - 0.5)
+        questions.push({
+          id: 'grammar-correct',
+          question: 'Quelle phrase est correcte ?',
+          options: allOptions,
+          correctIndex: allOptions.indexOf(correctSentence.sentence),
+          explanation: correctSentence.translation || grammar.title,
+        })
+      }
+    }
+  }
+
+  // Question: "Which sentence contains an error?"
+  if (incorrectExamples.length > 0) {
+    const wrongSentence = incorrectExamples[0]
+    const correctSentences = grammar.examples.filter(e => e.isCorrect).slice(0, 3).map(e => e.sentence)
+    while (correctSentences.length < 3) {
+      correctSentences.push('She is happy.')
+    }
+    const allOptions = [wrongSentence.sentence, ...correctSentences].sort(() => Math.random() - 0.5)
+    questions.push({
+      id: 'grammar-error',
+      question: 'Quelle phrase contient une erreur ?',
+      options: allOptions,
+      correctIndex: allOptions.indexOf(wrongSentence.sentence),
+      explanation: grammar.commonMistakes[0]?.explanation || `La phrase correcte est : ${grammar.commonMistakes[0]?.correct ?? ''}`,
+    })
+  }
+
+  return questions.slice(0, 5) // Max 5 questions
+}
+
+function LessonQuizStep({
+  vocab,
+  grammar,
+  onFinish,
+}: {
+  vocab: VocabWord[]
+  grammar: GrammarRule
+  onFinish: (score: number) => void
+}) {
+  const [questions] = useState<QuizQuestion[]>(() => generateQuizFromLesson(vocab, grammar))
+  const [currentIndex, setCurrentIndex] = useState(0)
+  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null)
+  const [isAnswered, setIsAnswered] = useState(false)
+  const [score, setScore] = useState(0)
+
+  const currentQuestion = questions[currentIndex]
+
+  const handleAnswer = (index: number) => {
+    if (isAnswered) return
+    setSelectedAnswer(index)
+    setIsAnswered(true)
+    if (index === currentQuestion.correctIndex) {
+      setScore((prev) => prev + 1)
+    }
+  }
+
+  const handleNext = () => {
+    if (currentIndex < questions.length - 1) {
+      setCurrentIndex((prev) => prev + 1)
+      setSelectedAnswer(null)
+      setIsAnswered(false)
+    } else {
+      // Quiz finished - calculate percentage score
+      const lastAnswerCorrect = selectedAnswer === currentQuestion.correctIndex ? 1 : 0
+      const totalCorrect = score + lastAnswerCorrect
+      const finalScore = Math.round((totalCorrect / questions.length) * 100)
+      onFinish(finalScore)
+    }
+  }
+
+  // Calculate running score including current answer
+  const currentScore = score + (isAnswered && selectedAnswer === currentQuestion.correctIndex ? 1 : 0)
+
+  return (
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="space-y-4"
+    >
+      <motion.div variants={itemVariants} className="text-center">
+        <Badge className="bg-yoel-gold/15 text-yoel-gold border-0 text-xs mb-2">
+          <Sparkles className="h-3 w-3 mr-1" />
+          Quiz de la leçon
+        </Badge>
+        <h2 className="text-2xl font-bold">Vérifiez vos connaissances</h2>
+        <p className="text-sm text-muted-foreground mt-1">
+          Obtenez au moins 60% pour débloquer la leçon suivante
+        </p>
+      </motion.div>
+
+      {/* Progress */}
+      <motion.div variants={itemVariants} className="flex items-center gap-3">
+        <span className="text-sm font-medium text-muted-foreground">
+          Question {currentIndex + 1}/{questions.length}
+        </span>
+        <Progress value={((currentIndex + 1) / questions.length) * 100} className="flex-1 h-2" />
+        <div className="flex items-center gap-1 text-sm font-semibold text-yoel-green">
+          <CheckCircle2 className="h-4 w-4" />
+          {currentScore}/{questions.length}
+        </div>
+      </motion.div>
+
+      {/* Question Card */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={currentQuestion.id}
+          initial={{ opacity: 0, x: 50 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -50 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+        >
+          <Card className="border-0 shadow-lg overflow-hidden">
+            <div className="h-2 bg-gradient-to-r from-yoel-gold to-amber-400" />
+            <CardContent className="p-6 space-y-5">
+              <h3 className="text-lg font-semibold leading-relaxed">
+                {currentQuestion.question}
+              </h3>
+
+              {/* Options */}
+              <div className="grid grid-cols-1 gap-3">
+                {currentQuestion.options.map((option, idx) => {
+                  const isSelected = selectedAnswer === idx
+                  const isCorrect = idx === currentQuestion.correctIndex
+
+                  let optionClass = 'relative text-sm py-3 px-4 rounded-xl border-2 transition-all font-medium text-left'
+
+                  if (isAnswered) {
+                    if (isCorrect) {
+                      optionClass += ' bg-yoel-green/15 border-yoel-green/50 text-yoel-green'
+                    } else if (isSelected && !isCorrect) {
+                      optionClass += ' bg-destructive/10 border-destructive/50 text-destructive'
+                    } else {
+                      optionClass += ' bg-muted/30 border-transparent text-muted-foreground'
+                    }
+                  } else {
+                    optionClass += ' bg-background border-border hover:border-yoel-gold/40 hover:bg-yoel-gold/5 cursor-pointer active:scale-[0.98]'
+                  }
+
+                  return (
+                    <motion.button
+                      key={idx}
+                      whileTap={!isAnswered ? { scale: 0.97 } : undefined}
+                      onClick={() => handleAnswer(idx)}
+                      disabled={isAnswered}
+                      className={optionClass}
+                    >
+                      <span className="flex items-center gap-2">
+                        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-muted/50 text-xs font-bold">
+                          {String.fromCharCode(65 + idx)}
+                        </span>
+                        {option}
+                        {isAnswered && isCorrect && (
+                          <CheckCircle2 className="h-4 w-4 ml-auto text-yoel-green" />
+                        )}
+                        {isAnswered && isSelected && !isCorrect && (
+                          <XCircle className="h-4 w-4 ml-auto text-destructive" />
+                        )}
+                      </span>
+                    </motion.button>
+                  )
+                })}
+              </div>
+
+              {/* Explanation */}
+              <AnimatePresence>
+                {isAnswered && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <div className={`rounded-xl p-4 ${
+                      selectedAnswer === currentQuestion.correctIndex
+                        ? 'bg-yoel-green/10 border border-yoel-green/20'
+                        : 'bg-yoel-red/5 border border-yoel-red/20'
+                    }`}>
+                      <p className="text-sm font-medium">
+                        {selectedAnswer === currentQuestion.correctIndex ? '✓ Correct !' : '✗ Incorrect'}
+                      </p>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {currentQuestion.explanation}
+                      </p>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Next button */}
+              {isAnswered && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex justify-end"
+                >
+                  <Button
+                    onClick={handleNext}
+                    className="bg-yoel-red hover:bg-yoel-red-dark text-white rounded-full"
+                  >
+                    {currentIndex < questions.length - 1 ? (
+                      <>
+                        Suivante
+                        <ChevronRight className="h-4 w-4 ml-1" />
+                      </>
+                    ) : (
+                      <>
+                        Voir le résultat
+                        <Trophy className="h-4 w-4 ml-1" />
+                      </>
+                    )}
+                  </Button>
+                </motion.div>
+              )}
+            </CardContent>
+          </Card>
+        </motion.div>
+      </AnimatePresence>
+    </motion.div>
+  )
+}
+
+// ─── Lesson Completion Modal ──────────────────────────────────────────────────
+
+function LessonCompletionModal({
+  score,
+  passingScore,
+  lessonTitle,
+  xpReward,
+  duration,
+  hasNextLesson,
+  onRestart,
+  onAdvance,
+  onBackToList,
+}: {
+  score: number
+  passingScore: number
+  lessonTitle: string
+  xpReward: number
+  duration: number
+  hasNextLesson: boolean
+  onRestart: () => void
+  onAdvance: () => void
+  onBackToList: () => void
+}) {
+  const passed = score >= passingScore
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+    >
+      <motion.div
+        initial={{ scale: 0.8, opacity: 0, y: 20 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.8, opacity: 0, y: 20 }}
+        transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+        className="w-full max-w-md"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <Card className="border-0 overflow-hidden shadow-2xl">
+          {/* Header gradient - different colors for pass/fail */}
+          <div className={`p-8 text-center text-white ${
+            passed
+              ? 'bg-gradient-to-br from-yoel-green via-emerald-500 to-yoel-blue'
+              : 'bg-gradient-to-br from-yoel-red via-rose-500 to-orange-500'
+          }`}>
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.3, type: 'spring', stiffness: 200 }}
+            >
+              {passed ? (
+                <Trophy className="h-16 w-16 mx-auto mb-4 drop-shadow-lg" />
+              ) : (
+                <RotateCcw className="h-16 w-16 mx-auto mb-4 drop-shadow-lg" />
+              )}
+            </motion.div>
+            <motion.h2
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="text-2xl font-bold"
+            >
+              {passed ? 'Leçon réussie ! 🎉' : 'Pas encore... 💪'}
+            </motion.h2>
+            <motion.p
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="text-sm opacity-90 mt-1"
+            >
+              {lessonTitle}
+            </motion.p>
+          </div>
+
+          <CardContent className="p-6 space-y-4">
+            {/* Score */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.6 }}
+              className="flex items-center justify-between"
+            >
+              <div className="flex items-center gap-3">
+                <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${
+                  passed ? 'bg-yoel-green/15' : 'bg-yoel-red/15'
+                }`}>
+                  {passed ? (
+                    <CheckCircle2 className="h-5 w-5 text-yoel-green" />
+                  ) : (
+                    <XCircle className="h-5 w-5 text-yoel-red" />
+                  )}
+                </div>
+                <span className="font-medium text-sm">Score</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className={`text-2xl font-bold ${passed ? 'text-yoel-green' : 'text-yoel-red'}`}>
+                  {score}%
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  ({passingScore}% requis)
+                </span>
+              </div>
+            </motion.div>
+
+            {/* Score bar */}
+            <div className="space-y-1">
+              <div className="relative">
+                <Progress value={score} className="h-3" />
+                <div
+                  className="absolute top-0 h-3 w-0.5 bg-foreground"
+                  style={{ left: `${passingScore}%` }}
+                />
+              </div>
+              <div className="flex justify-between text-[10px] text-muted-foreground">
+                <span>0%</span>
+                <span className="font-medium">Moyenne : {passingScore}%</span>
+                <span>100%</span>
+              </div>
+            </div>
+
+            <Separator />
+
+            {/* XP Earned (only if passed) */}
+            {passed && (
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.7 }}
+                className="flex items-center justify-between"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-yoel-gold/15">
+                    <Zap className="h-5 w-5 text-yoel-gold" />
+                  </div>
+                  <span className="font-medium text-sm">XP gagnés</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="text-lg font-bold text-yoel-gold">+{xpReward}</span>
+                  <span className="text-xs text-muted-foreground">XP</span>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Message */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8 }}
+              className={`rounded-xl p-4 ${
+                passed
+                  ? 'bg-yoel-green/10 border border-yoel-green/20'
+                  : 'bg-yoel-red/5 border border-yoel-red/20'
+              }`}
+            >
+              <p className="text-sm font-medium">
+                {passed
+                  ? '🎉 Bravo ! Vous avez dépassé la moyenne. Vous pouvez passer à la leçon suivante !'
+                  : `Vous avez obtenu ${String(score)}%. Il faut au moins ${String(passingScore)}% pour avancer. Révisez et réessayez !`
+                }
+              </p>
+            </motion.div>
+
+            {/* Action buttons */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.9 }}
+              className="flex gap-3 pt-2"
+            >
+              {passed ? (
+                <>
+                  <Button
+                    variant="outline"
+                    className="flex-1 rounded-xl"
+                    onClick={onRestart}
+                  >
+                    <RotateCcw className="h-4 w-4 mr-1" />
+                    Recommencer
+                  </Button>
+                  {hasNextLesson ? (
+                    <Button
+                      className="flex-1 rounded-xl bg-yoel-green hover:bg-yoel-green/90 text-white"
+                      onClick={onAdvance}
+                    >
+                      <ChevronRight className="h-4 w-4 mr-1" />
+                      Leçon suivante
+                    </Button>
+                  ) : (
+                    <Button
+                      className="flex-1 rounded-xl bg-yoel-red hover:bg-yoel-red-dark text-white"
+                      onClick={onBackToList}
+                    >
+                      <List className="h-4 w-4 mr-1" />
+                      Toutes les leçons
+                    </Button>
+                  )}
+                </>
+              ) : (
+                <>
+                  <Button
+                    variant="outline"
+                    className="flex-1 rounded-xl"
+                    onClick={onBackToList}
+                  >
+                    <List className="h-4 w-4 mr-1" />
+                    Toutes les leçons
+                  </Button>
+                  <Button
+                    className="flex-1 rounded-xl bg-yoel-red hover:bg-yoel-red-dark text-white"
+                    onClick={onRestart}
+                  >
+                    <RotateCcw className="h-4 w-4 mr-1" />
+                    Réessayer
+                  </Button>
+                </>
+              )}
+            </motion.div>
           </CardContent>
         </Card>
       </motion.div>
