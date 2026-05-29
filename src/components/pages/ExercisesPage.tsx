@@ -317,7 +317,7 @@ function ResultsSummary({
 
 // ─── Quiz Tab ───────────────────────────────────────────────────────────────
 
-function QuizTab({ level }: { level: string }) {
+function QuizTab({ level, onAdvance }: { level: string; onAdvance?: () => void }) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null)
   const [isAnswered, setIsAnswered] = useState(false)
@@ -374,7 +374,7 @@ function QuizTab({ level }: { level: string }) {
         type="Quiz"
         onRestart={handleRestart}
         onBack={handleRestart}
-        onAdvance={handleRestart}
+        onAdvance={onAdvance}
       />
     )
   }
@@ -545,7 +545,7 @@ function QuizTab({ level }: { level: string }) {
 
 // ─── Grammar Tab ────────────────────────────────────────────────────────────
 
-function GrammarTab({ level }: { level: string }) {
+function GrammarTab({ level, onAdvance }: { level: string; onAdvance?: () => void }) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [answers, setAnswers] = useState<Record<string, string>>({})
   const [checked, setChecked] = useState<Record<string, boolean | null>>({})
@@ -591,7 +591,7 @@ function GrammarTab({ level }: { level: string }) {
         type="Grammaire"
         onRestart={handleRestart}
         onBack={handleRestart}
-        onAdvance={handleRestart}
+        onAdvance={onAdvance}
       />
     )
   }
@@ -747,7 +747,7 @@ function GrammarTab({ level }: { level: string }) {
 
 // ─── Vocabulary Tab ─────────────────────────────────────────────────────────
 
-function VocabularyTab({ level }: { level: string }) {
+function VocabularyTab({ level, onAdvance }: { level: string; onAdvance?: () => void }) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isFlipped, setIsFlipped] = useState(false)
   const [results, setResults] = useState<Record<string, boolean>>({})
@@ -794,7 +794,7 @@ function VocabularyTab({ level }: { level: string }) {
         type="Vocabulaire"
         onRestart={handleRestart}
         onBack={handleRestart}
-        onAdvance={handleRestart}
+        onAdvance={onAdvance}
       />
     )
   }
@@ -947,7 +947,7 @@ function VocabularyTab({ level }: { level: string }) {
 
 // ─── Pronunciation Tab ──────────────────────────────────────────────────────
 
-function PronunciationTab({ level }: { level: string }) {
+function PronunciationTab({ level, onAdvance }: { level: string; onAdvance?: () => void }) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isCompleted, setIsCompleted] = useState(false)
   const [currentAttempt, setCurrentAttempt] = useState<SpeechRecognitionResult | null>(null)
@@ -1116,7 +1116,7 @@ function PronunciationTab({ level }: { level: string }) {
         type="Prononciation"
         onRestart={handleRestart}
         onBack={handleRestart}
-        onAdvance={handleRestart}
+        onAdvance={onAdvance}
       />
     )
   }
@@ -1618,6 +1618,15 @@ export default function ExercisesPage() {
 
   const level = user?.level ?? currentLevel
 
+  const TAB_ORDER = ['quiz', 'grammar', 'vocabulary', 'pronunciation']
+
+  const handleAdvanceToNextTab = useCallback(() => {
+    const currentIdx = TAB_ORDER.indexOf(activeTab)
+    if (currentIdx < TAB_ORDER.length - 1) {
+      setActiveTab(TAB_ORDER[currentIdx + 1])
+    }
+  }, [activeTab])
+
   const tabConfig = [
     { id: 'quiz', label: 'Quiz', icon: Brain, color: 'text-yoel-red' },
     { id: 'grammar', label: 'Grammaire', icon: BookOpen, color: 'text-yoel-blue' },
@@ -1688,13 +1697,13 @@ export default function ExercisesPage() {
             </TabsList>
 
             <TabsContent value="quiz" className="mt-0">
-              <QuizTab level={level} />
+              <QuizTab level={level} onAdvance={handleAdvanceToNextTab} />
             </TabsContent>
             <TabsContent value="grammar" className="mt-0">
-              <GrammarTab level={level} />
+              <GrammarTab level={level} onAdvance={handleAdvanceToNextTab} />
             </TabsContent>
             <TabsContent value="vocabulary" className="mt-0">
-              <VocabularyTab level={level} />
+              <VocabularyTab level={level} onAdvance={handleAdvanceToNextTab} />
             </TabsContent>
             <TabsContent value="pronunciation" className="mt-0">
               <PronunciationTab level={level} />
