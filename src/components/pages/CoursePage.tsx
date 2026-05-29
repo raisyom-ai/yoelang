@@ -73,16 +73,62 @@ interface LessonStep {
   title: string
 }
 
-const LESSON_STEPS: LessonStep[] = [
-  { type: 'vocab', title: 'Vocabulaire' },
-  { type: 'vocab', title: 'Vocabulaire' },
-  { type: 'vocab', title: 'Vocabulaire' },
-  { type: 'vocab', title: 'Vocabulaire' },
-  { type: 'grammar', title: 'Grammaire' },
-  { type: 'conversation', title: 'Conversation' },
-  { type: 'pronunciation', title: 'Prononciation' },
-  { type: 'pronunciation', title: 'Prononciation' },
-]
+function getLessonSteps(lessonType: string): LessonStep[] {
+  switch (lessonType) {
+    case 'vocabulary':
+      return [
+        { type: 'vocab', title: 'Vocabulaire' },
+        { type: 'vocab', title: 'Vocabulaire' },
+        { type: 'vocab', title: 'Vocabulaire' },
+        { type: 'vocab', title: 'Vocabulaire' },
+        { type: 'grammar', title: 'Grammaire' },
+        { type: 'conversation', title: 'Conversation' },
+        { type: 'pronunciation', title: 'Prononciation' },
+        { type: 'pronunciation', title: 'Prononciation' },
+      ]
+    case 'grammar':
+      return [
+        { type: 'grammar', title: 'Grammaire' },
+        { type: 'grammar', title: 'Grammaire' },
+        { type: 'vocab', title: 'Vocabulaire' },
+        { type: 'vocab', title: 'Vocabulaire' },
+        { type: 'conversation', title: 'Conversation' },
+        { type: 'pronunciation', title: 'Prononciation' },
+        { type: 'pronunciation', title: 'Prononciation' },
+      ]
+    case 'conversation':
+      return [
+        { type: 'conversation', title: 'Conversation' },
+        { type: 'conversation', title: 'Conversation' },
+        { type: 'vocab', title: 'Vocabulaire' },
+        { type: 'vocab', title: 'Vocabulaire' },
+        { type: 'grammar', title: 'Grammaire' },
+        { type: 'pronunciation', title: 'Prononciation' },
+        { type: 'pronunciation', title: 'Prononciation' },
+      ]
+    case 'pronunciation':
+      return [
+        { type: 'pronunciation', title: 'Prononciation' },
+        { type: 'pronunciation', title: 'Prononciation' },
+        { type: 'pronunciation', title: 'Prononciation' },
+        { type: 'vocab', title: 'Vocabulaire' },
+        { type: 'vocab', title: 'Vocabulaire' },
+        { type: 'grammar', title: 'Grammaire' },
+        { type: 'conversation', title: 'Conversation' },
+      ]
+    default:
+      return [
+        { type: 'vocab', title: 'Vocabulaire' },
+        { type: 'vocab', title: 'Vocabulaire' },
+        { type: 'vocab', title: 'Vocabulaire' },
+        { type: 'vocab', title: 'Vocabulaire' },
+        { type: 'grammar', title: 'Grammaire' },
+        { type: 'conversation', title: 'Conversation' },
+        { type: 'pronunciation', title: 'Prononciation' },
+        { type: 'pronunciation', title: 'Prononciation' },
+      ]
+  }
+}
 
 // ─── Type Badge Config ───────────────────────────────────────────────────────
 
@@ -187,11 +233,11 @@ export default function CoursePage() {
   // ─── Study mode variables ───────────────────────────────────────────────
   const lesson = currentLesson ?? (allLessons.find((l) => !l.completed) ?? allLessons[0])
 
-  // Load dynamic lesson content based on the selected lesson's unit
+  // Load dynamic lesson content based on the selected lesson ID
   const lessonContent = useMemo(() => {
-    const unitId = selectedLessonData?.unitId ?? 'a1-u1'
-    return getLessonContent(unitId)
-  }, [selectedLessonData?.unitId])
+    const lessonId = selectedLessonData?.id ?? 'a1-l1'
+    return getLessonContent(lessonId)
+  }, [selectedLessonData?.id])
 
   const VOCAB_WORDS = lessonContent.vocab
   const GRAMMAR_RULE = lessonContent.grammar
@@ -200,6 +246,8 @@ export default function CoursePage() {
 
   const typeConfig = selectedLessonData ? getTypeConfig(selectedLessonData.type) : getTypeConfig(lesson?.type ?? 'vocabulary')
 
+  // Dynamic steps based on lesson type
+  const LESSON_STEPS = useMemo(() => getLessonSteps(selectedLessonData?.type ?? 'vocabulary'), [selectedLessonData?.type])
   const totalSteps = LESSON_STEPS.length
   const stepProgress = ((currentStep + 1) / totalSteps) * 100
   const currentStepData = LESSON_STEPS[currentStep]
@@ -247,7 +295,7 @@ export default function CoursePage() {
 
   const playVocabAudio = () => {
     const word = VOCAB_WORDS[currentVocabIndex] ?? VOCAB_WORDS[0]
-    speakText(word.english)
+    if (word) speakText(word.english)
   }
 
   const playDialogueAudio = (lineIndex: number) => {
@@ -257,7 +305,7 @@ export default function CoursePage() {
 
   const playPronunciationAudio = () => {
     const item = PRONUNCIATION_ITEMS[currentPronIndex] ?? PRONUNCIATION_ITEMS[0]
-    speakText(item.word, 'en-US', 0.7)
+    if (item) speakText(item.word, 'en-US', 0.7)
   }
 
   // Vocab index mapping
@@ -577,7 +625,7 @@ export default function CoursePage() {
                 animate="center"
                 exit="exit"
               >
-                {currentStepData.type === 'vocab' && (
+                {currentStepData?.type === 'vocab' && VOCAB_WORDS.length > 0 && (
                   <VocabularyStep
                     word={VOCAB_WORDS[currentVocabIndex] ?? VOCAB_WORDS[0]}
                     index={currentVocabIndex}
@@ -588,14 +636,14 @@ export default function CoursePage() {
                     onPlayAudio={playVocabAudio}
                   />
                 )}
-                {currentStepData.type === 'grammar' && (
+                {currentStepData?.type === 'grammar' && GRAMMAR_RULE && (
                   <GrammarStep
                     rule={GRAMMAR_RULE}
                     answeredIndices={grammarAnswers}
                     onAnswer={(idx) => setGrammarAnswers((prev) => new Set(prev).add(idx))}
                   />
                 )}
-                {currentStepData.type === 'conversation' && (
+                {currentStepData?.type === 'conversation' && DIALOGUE.length > 0 && (
                   <ConversationStep
                     dialogue={DIALOGUE}
                     revealedIndices={dialogueRevealed}
@@ -604,7 +652,7 @@ export default function CoursePage() {
                     onPlayAudio={playDialogueAudio}
                   />
                 )}
-                {currentStepData.type === 'pronunciation' && (
+                {currentStepData?.type === 'pronunciation' && PRONUNCIATION_ITEMS.length > 0 && (
                   <PronunciationStep
                     item={PRONUNCIATION_ITEMS[currentPronIndex] ?? PRONUNCIATION_ITEMS[0]}
                     index={currentPronIndex}
