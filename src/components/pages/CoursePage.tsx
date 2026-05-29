@@ -581,6 +581,7 @@ export default function CoursePage() {
                   <VocabularyStep
                     word={VOCAB_WORDS[currentVocabIndex] ?? VOCAB_WORDS[0]}
                     index={currentVocabIndex}
+                    totalVocabCount={VOCAB_WORDS.length}
                     revealed={vocabRevealed.has(currentStep)}
                     onReveal={() => setVocabRevealed((prev) => new Set(prev).add(currentStep))}
                     isPlayingAudio={isPlayingAudio}
@@ -827,6 +828,7 @@ export default function CoursePage() {
 function VocabularyStep({
   word,
   index,
+  totalVocabCount,
   revealed,
   onReveal,
   isPlayingAudio,
@@ -834,6 +836,7 @@ function VocabularyStep({
 }: {
   word: VocabWord
   index: number
+  totalVocabCount: number
   revealed: boolean
   onReveal: () => void
   isPlayingAudio: boolean
@@ -849,7 +852,7 @@ function VocabularyStep({
       {/* Header */}
       <motion.div variants={itemVariants} className="text-center">
         <Badge className="bg-yoel-red/15 text-yoel-red border-0 text-xs mb-2">
-          Mot {index + 1}/{VOCAB_WORDS.length}
+          Mot {index + 1}/{totalVocabCount}
         </Badge>
         <h2 className="text-2xl font-bold">Apprenez un nouveau mot</h2>
       </motion.div>
