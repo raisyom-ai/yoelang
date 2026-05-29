@@ -1,5 +1,6 @@
 // ─── Lesson Content Data for YOELANG ─────────────────────────────────────────
-// Unique content for each unit: vocabulary, grammar, conversation, pronunciation
+// Unique content for each lesson, mapped by LESSON ID (not unit ID)
+// Inspired by Harvard's practical English pedagogy — rigorous, practical, progressive
 
 export interface VocabWord {
   english: string
@@ -37,719 +38,1652 @@ export interface LessonContent {
   pronunciation: PronunciationItem[]
 }
 
-// ─── A1 UNITS ────────────────────────────────────────────────────────────────
+// ─── FALLBACK CONTENT ─────────────────────────────────────────────────────────
 
-const A1_U1: LessonContent = {
+const FALLBACK_CONTENT: LessonContent = {
   vocab: [
     { english: 'Hello', french: 'Bonjour', phonetic: '/həˈloʊ/', example: 'Hello, how are you?', exampleTranslation: 'Bonjour, comment allez-vous ?' },
     { english: 'Goodbye', french: 'Au revoir', phonetic: '/ɡʊdˈbaɪ/', example: 'Goodbye, see you tomorrow!', exampleTranslation: 'Au revoir, à demain !' },
-    { english: 'Please', french: "S'il vous plaît", phonetic: '/pliːz/', example: 'Can I have some water, please?', exampleTranslation: "Puis-je avoir de l'eau, s'il vous plaît ?" },
-    { english: 'Thank you', french: 'Merci', phonetic: '/θæŋk juː/', example: 'Thank you for your help!', exampleTranslation: 'Merci pour votre aide !' },
   ],
   grammar: {
-    title: 'Present Simple: Be',
-    explanation: 'Le verbe "be" (être) se conjugue : I am, you are, he/she/it is, we are, they are. On utilise les contractions : I\'m, you\'re, he\'s, she\'s, it\'s, we\'re, they\'re.',
+    title: 'Basic Grammar',
+    explanation: 'Content coming soon for this lesson.',
     examples: [
       { sentence: 'I am a student.', translation: 'Je suis étudiant.', isCorrect: true },
-      { sentence: 'She are from France.', translation: '', isCorrect: false },
-      { sentence: 'They are my friends.', translation: 'Ce sont mes amis.', isCorrect: true },
-      { sentence: 'He is happy today.', translation: 'Il est content aujourd\'hui.', isCorrect: true },
     ],
-    commonMistakes: [
-      { wrong: 'She are tired.', correct: 'She is tired.', explanation: 'On utilise "is" avec he/she/it.' },
-      { wrong: 'I am agree.', correct: 'I agree.', explanation: 'En anglais, on dit "I agree" sans le verbe be.' },
-    ],
+    commonMistakes: [],
   },
   conversation: [
-    { speaker: 'Léa', role: 'A', text: 'Hello! My name is Léa.', translation: 'Bonjour ! Je m\'appelle Léa.' },
-    { speaker: 'Tom', role: 'B', text: 'Hi Léa! I\'m Tom. Nice to meet you!', translation: 'Salut Léa ! Je suis Tom. Enchanté !' },
-    { speaker: 'Léa', role: 'A', text: 'Nice to meet you too! Where are you from?', translation: 'Enchantée aussi ! D\'où viens-tu ?' },
-    { speaker: 'Tom', role: 'B', text: 'I\'m from London. And you?', translation: 'Je suis de Londres. Et toi ?' },
-    { speaker: 'Léa', role: 'A', text: 'I\'m from Paris. I\'m a student.', translation: 'Je suis de Paris. Je suis étudiante.' },
-    { speaker: 'Tom', role: 'B', text: 'That\'s great! Goodbye, Léa!', translation: 'Super ! Au revoir, Léa !' },
+    { speaker: 'A', role: 'A', text: 'Hello!', translation: 'Bonjour !' },
+    { speaker: 'B', role: 'B', text: 'Hi!', translation: 'Salut !' },
   ],
   pronunciation: [
-    { word: 'Hello', phonetic: '/həˈloʊ/', meaning: 'Bonjour', tip: 'Le "h" anglais est expiré, ne le prononcez pas comme le "h" français qui est muet.' },
-    { word: 'Thank you', phonetic: '/θæŋk juː/', meaning: 'Merci', tip: 'Le "th" se prononce la langue entre les dents, en soufflant de l\'air.' },
-    { word: 'Goodbye', phonetic: '/ɡʊdˈbaɪ/', meaning: 'Au revoir', tip: 'Prononcez "good" comme "gued" et "bye" comme "baï".' },
-    { word: 'Please', phonetic: '/pliːz/', meaning: "S'il vous plaît", tip: 'Le "ea" se prononce "ii" long. Terminez par le son "z" doux.' },
+    { word: 'Hello', phonetic: '/həˈloʊ/', meaning: 'Bonjour', tip: 'Prononcez "hélo" avec le h expiré.' },
   ],
 }
 
-const A1_U2: LessonContent = {
+// Lesson content for A1 Units 1-4
+// YOELANG English Learning App for Francophone Users
+// Inspired by Harvard's practical English pedagogy — rigorous, practical, progressive
+
+
+// ════════════════════════════════════════════════════════════════════════════════
+// UNIT 1: GREETINGS & INTRODUCTIONS (a1-l1 through a1-l5)
+// ════════════════════════════════════════════════════════════════════════════════
+
+// ─── a1-l1: Hello & Goodbye (vocabulary) ───────────────────────────────────────
+export const A1_L1: LessonContent = {
   vocab: [
-    { english: 'Seven', french: 'Sept', phonetic: '/ˈsevən/', example: 'I have seven books.', exampleTranslation: 'J\'ai sept livres.' },
-    { english: 'Twenty', french: 'Vingt', phonetic: '/ˈtwenti/', example: 'She is twenty years old.', exampleTranslation: 'Elle a vingt ans.' },
-    { english: 'Hundred', french: 'Cent', phonetic: '/ˈhʌndrəd/', example: 'There are a hundred students.', exampleTranslation: 'Il y a cent étudiants.' },
-    { english: 'Monday', french: 'Lundi', phonetic: '/ˈmʌndeɪ/', example: 'I have class on Monday.', exampleTranslation: 'J\'ai cours le lundi.' },
+    { english: 'Hello', french: 'Bonjour', phonetic: '/həˈloʊ/', example: 'Hello! How are you today?', exampleTranslation: 'Bonjour ! Comment allez-vous aujourd\'hui ?' },
+    { english: 'Goodbye', french: 'Au revoir', phonetic: '/ɡʊdˈbaɪ/', example: 'Goodbye! See you tomorrow!', exampleTranslation: 'Au revoir ! À demain !' },
+    { english: 'Good morning', french: 'Bonjour (matin)', phonetic: '/ɡʊd ˈmɔːrnɪŋ/', example: 'Good morning, Mrs. Dupont!', exampleTranslation: 'Bonjour, Madame Dupont !' },
+    { english: 'Good night', french: 'Bonne nuit', phonetic: '/ɡʊd naɪt/', example: 'Good night! Sleep well!', exampleTranslation: 'Bonne nuit ! Dors bien !' },
+    { english: 'See you later', french: 'À plus tard', phonetic: '/siː juː ˈleɪtər/', example: 'I have to go. See you later!', exampleTranslation: 'Je dois y aller. À plus tard !' },
   ],
   grammar: {
-    title: 'Articles: A & An',
-    explanation: 'On utilise "a" devant un mot commençant par une consonne, et "an" devant un mot commençant par une voyelle (a, e, i, o, u). Exemples : a book, an apple.',
+    title: 'Subject Pronouns in Greetings',
+    explanation: 'Dans les salutations, on utilise les pronoms sujets : I (je), you (tu/vous), he (il), she (elle), it (ce/c\'est), we (nous), they (ils/elles). Exemples : "I am fine", "You are welcome", "She is here". Ces pronoms sont essentiels pour former des phrases en anglais.',
     examples: [
-      { sentence: 'I have a dog.', translation: 'J\'ai un chien.', isCorrect: true },
+      { sentence: 'I am happy to meet you.', translation: 'Je suis content(e) de vous rencontrer.', isCorrect: true },
+      { sentence: 'You are very kind.', translation: 'Vous êtes très gentil(le).', isCorrect: true },
+      { sentence: 'He are my friend.', translation: '', isCorrect: false },
+      { sentence: 'She is a new student.', translation: 'Elle est une nouvelle étudiante.', isCorrect: true },
+    ],
+    commonMistakes: [
+      { wrong: 'He are my friend.', correct: 'He is my friend.', explanation: 'On utilise "is" avec "he" et "she", jamais "are".' },
+      { wrong: 'I is happy.', correct: 'I am happy.', explanation: 'On utilise toujours "am" avec "I", jamais "is".' },
+    ],
+  },
+  conversation: [
+    { speaker: 'Claire', role: 'A', text: 'Hello! Good morning!', translation: 'Bonjour ! Bonjour !' },
+    { speaker: 'Marc', role: 'B', text: 'Good morning, Claire! How are you?', translation: 'Bonjour, Claire ! Comment allez-vous ?' },
+    { speaker: 'Claire', role: 'A', text: 'I am fine, thank you! And you?', translation: 'Je vais bien, merci ! Et vous ?' },
+    { speaker: 'Marc', role: 'B', text: 'I am good! It is nice to see you.', translation: 'Je vais bien ! C\'est sympa de vous voir.' },
+    { speaker: 'Claire', role: 'A', text: 'Nice to see you too! I have to go now. Goodbye!', translation: 'Sympa de vous voir aussi ! Je dois y aller. Au revoir !' },
+    { speaker: 'Marc', role: 'B', text: 'Goodbye, Claire! See you later!', translation: 'Au revoir, Claire ! À plus tard !' },
+  ],
+  pronunciation: [
+    { word: 'Hello', phonetic: '/həˈloʊ/', meaning: 'Bonjour', tip: 'Le "h" anglais est expiré : mettez la main devant la bouche, vous devez sentir l\'air. Ne le rendez pas muet comme en français.' },
+    { word: 'Goodbye', phonetic: '/ɡʊdˈbaɪ/', meaning: 'Au revoir', tip: 'Prononcez "good" comme "guèd" et "bye" comme "baï". L\'accent est sur "bye".' },
+    { word: 'Good morning', phonetic: '/ɡʊd ˈmɔːrnɪŋ/', meaning: 'Bonjour (matin)', tip: 'Le "or" se prononce "or" long comme dans "port". Le "ng" final : langue contre le palais, ne dites pas "mor-nin".' },
+    { word: 'Good night', phonetic: '/ɡʊd naɪt/', meaning: 'Bonne nuit', tip: 'Le "igh" = "aï" : prononcez "naït". Ne dites surtout pas "nuit" à la française !' },
+  ],
+}
+
+// ─── a1-l2: How Are You? (conversation) ────────────────────────────────────────
+export const A1_L2: LessonContent = {
+  vocab: [
+    { english: 'Fine', french: 'Bien', phonetic: '/faɪn/', example: 'I am fine, thank you.', exampleTranslation: 'Je vais bien, merci.' },
+    { english: 'Tired', french: 'Fatigué(e)', phonetic: '/taɪərd/', example: 'I am tired today.', exampleTranslation: 'Je suis fatigué(e) aujourd\'hui.' },
+    { english: 'Happy', french: 'Heureux/Heureuse', phonetic: '/ˈhæpi/', example: 'She is very happy!', exampleTranslation: 'Elle est très heureuse !' },
+    { english: 'Busy', french: 'Occupé(e)', phonetic: '/ˈbɪzi/', example: 'He is busy right now.', exampleTranslation: 'Il est occupé en ce moment.' },
+    { english: 'Sad', french: 'Triste', phonetic: '/sæd/', example: 'I am sad today.', exampleTranslation: 'Je suis triste aujourd\'hui.' },
+  ],
+  grammar: {
+    title: 'Questions avec "How"',
+    explanation: 'Pour demander comment quelqu\'un va : "How are you?" (Comment allez-vous ?), "How is she?" (Comment va-t-elle ?), "How are they?" (Comment vont-ils ?). On répond avec le verbe "be" : "I am fine", "She is tired", "They are busy". Dans les questions, le verbe "be" se place avant le sujet : "How are you?" (pas "How you are?").',
+    examples: [
+      { sentence: 'How are you today?', translation: 'Comment allez-vous aujourd\'hui ?', isCorrect: true },
+      { sentence: 'How is your mother?', translation: 'Comment va votre mère ?', isCorrect: true },
+      { sentence: 'How are he?', translation: '', isCorrect: false },
+      { sentence: 'How is your friend?', translation: 'Comment va votre ami(e) ?', isCorrect: true },
+    ],
+    commonMistakes: [
+      { wrong: 'How are he?', correct: 'How is he?', explanation: 'Avec "he", on utilise "is", pas "are".' },
+      { wrong: 'How is you?', correct: 'How are you?', explanation: 'Avec "you", on utilise toujours "are".' },
+    ],
+  },
+  conversation: [
+    { speaker: 'Sophie', role: 'A', text: 'Hi! How are you?', translation: 'Salut ! Comment vas-tu ?' },
+    { speaker: 'Pierre', role: 'B', text: 'I am fine, thanks. And you?', translation: 'Je vais bien, merci. Et toi ?' },
+    { speaker: 'Sophie', role: 'A', text: 'I am a little tired today. I worked late.', translation: 'Je suis un peu fatiguée aujourd\'hui. J\'ai travaillé tard.' },
+    { speaker: 'Pierre', role: 'B', text: 'Oh! How is your sister? Is she busy?', translation: 'Oh ! Comment va ta sœur ? Est-elle occupée ?' },
+    { speaker: 'Sophie', role: 'A', text: 'She is happy! She has a new job.', translation: 'Elle est heureuse ! Elle a un nouveau travail.' },
+    { speaker: 'Pierre', role: 'B', text: 'That is great! I am happy for her.', translation: 'C\'est super ! Je suis content pour elle.' },
+  ],
+  pronunciation: [
+    { word: 'Fine', phonetic: '/faɪn/', meaning: 'Bien', tip: 'Le "i" est long : "faïn". Ne prononcez pas "fin" à la française, le son est beaucoup plus long.' },
+    { word: 'Tired', phonetic: '/taɪərd/', meaning: 'Fatigué(e)', tip: 'Prononcez "taï-erd" — le "i" est long et il y a un léger son "er" avant le "d" final.' },
+    { word: 'Happy', phonetic: '/ˈhæpi/', meaning: 'Heureux/Heureuse', tip: 'Le "a" est très ouvert, comme dans "cat" : "ha-ppi". Ne dites pas "épi".' },
+    { word: 'Busy', phonetic: '/ˈbɪzi/', meaning: 'Occupé(e)', tip: 'Le "u" se prononce comme un "i" bref : "bi-zi". Pas "bou-zi" !' },
+  ],
+}
+
+// ─── a1-l3: Introducing Yourself (conversation) ───────────────────────────────
+export const A1_L3: LessonContent = {
+  vocab: [
+    { english: 'Name', french: 'Nom', phonetic: '/neɪm/', example: 'My name is Julie.', exampleTranslation: 'Je m\'appelle Julie.' },
+    { english: 'Age', french: 'Âge', phonetic: '/eɪdʒ/', example: 'What is your age?', exampleTranslation: 'Quel est votre âge ?' },
+    { english: 'Country', french: 'Pays', phonetic: '/ˈkʌntri/', example: 'I am from a big country.', exampleTranslation: 'Je viens d\'un grand pays.' },
+    { english: 'Language', french: 'Langue', phonetic: '/ˈlæŋɡwɪdʒ/', example: 'I speak two languages.', exampleTranslation: 'Je parle deux langues.' },
+    { english: 'From', french: 'De (provenance)', phonetic: '/frɒm/', example: 'I am from France.', exampleTranslation: 'Je suis de France.' },
+  ],
+  grammar: {
+    title: 'Se présenter : My name is / I am from / I am X years old',
+    explanation: 'Pour vous présenter, utilisez trois structures essentielles : "My name is..." (Je m\'appelle...), "I am from..." (Je viens de...), "I am ... years old" (J\'ai ... ans). ATTENTION : en anglais on dit "I am 25 years old", PAS "I have 25 years". Le verbe "be" (am/is/are) remplace "avoir" pour l\'âge. "Nice to meet you" = Enchanté(e).',
+    examples: [
+      { sentence: 'My name is Pierre.', translation: 'Je m\'appelle Pierre.', isCorrect: true },
+      { sentence: 'I am from France.', translation: 'Je viens de France.', isCorrect: true },
+      { sentence: 'I have 25 years old.', translation: '', isCorrect: false },
+      { sentence: 'She is from Canada.', translation: 'Elle vient du Canada.', isCorrect: true },
+    ],
+    commonMistakes: [
+      { wrong: 'I have 25 years old.', correct: 'I am 25 years old.', explanation: 'En anglais, on utilise "am" (être) pour l\'âge, pas "have" (avoir). C\'est une différence majeure avec le français.' },
+      { wrong: 'I am come from France.', correct: 'I come from France. / I am from France.', explanation: 'On dit "I come from" ou "I am from", mais on ne combine PAS les deux : pas "I am come from".' },
+    ],
+  },
+  conversation: [
+    { speaker: 'Julie', role: 'A', text: 'Hello! My name is Julie. What is your name?', translation: 'Bonjour ! Je m\'appelle Julie. Comment vous appelez-vous ?' },
+    { speaker: 'Ahmed', role: 'B', text: 'Hi Julie! I am Ahmed. Nice to meet you!', translation: 'Salut Julie ! Je suis Ahmed. Enchanté !' },
+    { speaker: 'Julie', role: 'A', text: 'Nice to meet you too! Where are you from?', translation: 'Enchantée aussi ! D\'où venez-vous ?' },
+    { speaker: 'Ahmed', role: 'B', text: 'I am from Morocco. And you?', translation: 'Je viens du Maroc. Et vous ?' },
+    { speaker: 'Julie', role: 'A', text: 'I am from France. I am 22 years old. I speak French and English.', translation: 'Je viens de France. J\'ai 22 ans. Je parle français et anglais.' },
+    { speaker: 'Ahmed', role: 'B', text: 'I am 25. I speak Arabic, French, and a little English!', translation: 'J\'ai 25 ans. Je parle arabe, français et un peu anglais !' },
+  ],
+  pronunciation: [
+    { word: 'Name', phonetic: '/neɪm/', meaning: 'Nom', tip: 'Le "a" est long : "néïm". Ne dites pas "nam". Le "e" final est silencieux.' },
+    { word: 'Age', phonetic: '/eɪdʒ/', meaning: 'Âge', tip: 'Prononcez "éïdj" — le son "dj" comme dans "djinn" arabe. Le "g" doux devant "e".' },
+    { word: 'Country', phonetic: '/ˈkʌntri/', meaning: 'Pays', tip: 'Le "ou" est très ouvert comme dans "cou" : "keun-tri". L\'accent est sur la première syllabe.' },
+    { word: 'Language', phonetic: '/ˈlæŋɡwɪdʒ/', meaning: 'Langue', tip: 'Le "a" est ouvert : "laeng-guidj". Le "w" se lie au "i" suivant. Le "ge" final = "dj".' },
+  ],
+}
+
+// ─── a1-l4: Present Simple: Be (grammar) ───────────────────────────────────────
+export const A1_L4: LessonContent = {
+  vocab: [
+    { english: 'Student', french: 'Étudiant(e)', phonetic: '/ˈstjuːdənt/', example: 'I am a student.', exampleTranslation: 'Je suis étudiant(e).' },
+    { english: 'Teacher', french: 'Professeur', phonetic: '/ˈtiːtʃər/', example: 'She is a teacher.', exampleTranslation: 'Elle est professeur.' },
+    { english: 'Doctor', french: 'Médecin', phonetic: '/ˈdɒktər/', example: 'He is a doctor.', exampleTranslation: 'Il est médecin.' },
+    { english: 'Friend', french: 'Ami(e)', phonetic: '/frend/', example: 'They are my friends.', exampleTranslation: 'Ce sont mes amis.' },
+    { english: 'Nurse', french: 'Infirmier/Infirmière', phonetic: '/nɜːrs/', example: 'My sister is a nurse.', exampleTranslation: 'Ma sœur est infirmière.' },
+  ],
+  grammar: {
+    title: 'Present Simple: Be — Conjugaison complète',
+    explanation: 'Le verbe "be" (être) est le verbe le plus important en anglais. Conjugaison : I am (je suis), you are (tu es / vous êtes), he/she/it is (il/elle est), we are (nous sommes), they are (ils/elles sont). Contractions : I\'m, you\'re, he\'s, she\'s, it\'s, we\'re, they\'re. Négatif : I am not, you are not (aren\'t), he/she/it is not (isn\'t). Questions : Am I...? Are you...? Is he/she/it...? Are we/they...?',
+    examples: [
+      { sentence: 'I am a student.', translation: 'Je suis étudiant(e).', isCorrect: true },
+      { sentence: 'She are a doctor.', translation: '', isCorrect: false },
+      { sentence: 'We are friends.', translation: 'Nous sommes amis.', isCorrect: true },
+      { sentence: 'He isn\'t a teacher.', translation: 'Il n\'est pas professeur.', isCorrect: true },
+    ],
+    commonMistakes: [
+      { wrong: 'She are a doctor.', correct: 'She is a doctor.', explanation: 'Avec he/she/it, on utilise TOUJOURS "is", jamais "are". C\'est l\'erreur la plus fréquente des francophones.' },
+      { wrong: 'They is my friends.', correct: 'They are my friends.', explanation: 'Avec they/we/you, on utilise "are", pas "is".' },
+    ],
+  },
+  conversation: [
+    { speaker: 'Léa', role: 'A', text: 'Hello! I am Léa. I am a student. I am 20 years old.', translation: 'Bonjour ! Je suis Léa. Je suis étudiante. J\'ai 20 ans.' },
+    { speaker: 'Tom', role: 'B', text: 'Hi Léa! I am Tom. I am a teacher.', translation: 'Salut Léa ! Je suis Tom. Je suis professeur.' },
+    { speaker: 'Léa', role: 'A', text: 'Are you from London?', translation: 'Êtes-vous de Londres ?' },
+    { speaker: 'Tom', role: 'B', text: 'Yes, I am! Are you and Marie friends?', translation: 'Oui ! Vous et Marie êtes amis ?' },
+    { speaker: 'Léa', role: 'A', text: 'Yes, we are! She is my best friend. She is a nurse.', translation: 'Oui ! Elle est ma meilleure amie. Elle est infirmière.' },
+    { speaker: 'Tom', role: 'B', text: 'That is nice! I am not from here. I am from Manchester.', translation: 'C\'est sympa ! Je ne suis pas d\'ici. Je suis de Manchester.' },
+  ],
+  pronunciation: [
+    { word: 'Am', phonetic: '/æm/', meaning: 'Suis (I am)', tip: 'Le "a" est très ouvert comme dans "chat" : "aem". Contraction : "I\'m" = "aïm".' },
+    { word: 'Is', phonetic: '/ɪz/', meaning: 'Est (he/she/it is)', tip: 'Prononcez "iz" avec le son "z" sonore. Contraction : "he\'s" = "hiz", "she\'s" = "shiz".' },
+    { word: 'Are', phonetic: '/ɑːr/', meaning: 'Es/êtes/sont', tip: 'Le "ar" est long et ouvert : "aar". Contraction : "you\'re" = "your", "we\'re" = "ouir".' },
+    { word: 'Isn\'t', phonetic: '/ˈɪzənt/', meaning: 'N\'est pas', tip: 'Prononcez "iz-ent" — le "n" et le "t" sont clairs. Ne les avalez pas.' },
+  ],
+}
+
+// ─── a1-l5: Greeting Sounds (pronunciation) ────────────────────────────────────
+export const A1_L5: LessonContent = {
+  vocab: [
+    { english: 'Hi', french: 'Salut', phonetic: '/haɪ/', example: 'Hi! How are you?', exampleTranslation: 'Salut ! Comment vas-tu ?' },
+    { english: 'Hey', french: 'Hé / Salut', phonetic: '/heɪ/', example: 'Hey! Nice to see you!', exampleTranslation: 'Hé ! Sympa de te voir !' },
+    { english: 'Welcome', french: 'Bienvenue', phonetic: '/ˈwelkəm/', example: 'Welcome to our school!', exampleTranslation: 'Bienvenue dans notre école !' },
+    { english: 'Bye', french: 'Salut / Au revoir', phonetic: '/baɪ/', example: 'Bye! See you soon!', exampleTranslation: 'Salut ! À bientôt !' },
+    { english: 'Cheers', french: 'Salut / Santé', phonetic: '/tʃɪrz/', example: 'Cheers! Have a good day!', exampleTranslation: 'Salut ! Bonne journée !' },
+  ],
+  grammar: {
+    title: 'Contractions dans les salutations',
+    explanation: 'Dans les salutations informelles, on utilise souvent les contractions : "I\'m" (I am), "you\'re" (you are), "it\'s" (it is), "we\'re" (we are). "Nice to meet you" = Enchanté(e). "See you" = À plus / À bientôt. ATTENTION : "You\'re welcome" (De rien) ≠ "Your welcome" (Ton accueil). "It\'s nice" = C\'est sympa ≠ "Its nice" (incorrect ici).',
+    examples: [
+      { sentence: 'I\'m happy to see you!', translation: 'Je suis content(e) de te voir !', isCorrect: true },
+      { sentence: 'It\'s nice to meet you.', translation: 'C\'est sympa de te rencontrer.', isCorrect: true },
+      { sentence: 'Your welcome.', translation: '', isCorrect: false },
+      { sentence: 'We\'re happy you\'re here!', translation: 'Nous sommes contents que tu sois là !', isCorrect: true },
+    ],
+    commonMistakes: [
+      { wrong: 'Your welcome.', correct: 'You\'re welcome.', explanation: '"You\'re" = "you are" (vous êtes), pas "your" (ton/ta/votre). C\'est une erreur très courante même chez les anglophones !' },
+      { wrong: 'See your later.', correct: 'See you later.', explanation: 'On dit "see you" (te voir), pas "see your" (ton/ta).' },
+    ],
+  },
+  conversation: [
+    { speaker: 'Emma', role: 'A', text: 'Hey! Welcome! I\'m Emma.', translation: 'Hé ! Bienvenue ! Je suis Emma.' },
+    { speaker: 'Luc', role: 'B', text: 'Hi Emma! I\'m Luc. It\'s nice to meet you!', translation: 'Salut Emma ! Je suis Luc. Enchanté !' },
+    { speaker: 'Emma', role: 'A', text: 'You\'re welcome here! How are you?', translation: 'Tu es le bienvenu ici ! Comment vas-tu ?' },
+    { speaker: 'Luc', role: 'B', text: 'I\'m fine, thanks! Are you a student here?', translation: 'Je vais bien, merci ! Es-tu étudiant ici ?' },
+    { speaker: 'Emma', role: 'A', text: 'Yes, I\'m a new student. Bye for now, see you later!', translation: 'Oui, je suis un nouvel étudiant. À plus, à plus tard !' },
+    { speaker: 'Luc', role: 'B', text: 'Cheers, Emma! See you soon!', translation: 'Salut, Emma ! À bientôt !' },
+  ],
+  pronunciation: [
+    { word: 'Hi', phonetic: '/haɪ/', meaning: 'Salut', tip: 'Le "h" est expiré et le "i" est long : "haï". Plus court et décontracté que "hello". N\'oubliez pas d\'expirer le "h" !' },
+    { word: 'Hey', phonetic: '/heɪ/', meaning: 'Hé / Salut', tip: 'Prononcez "héï" — le "h" est expiré et le "ey" sonne comme "éi". Plus familier que "hi".' },
+    { word: 'Welcome', phonetic: '/ˈwelkəm/', meaning: 'Bienvenue', tip: 'Le "w" initial : arrondissez les lèvres comme pour dire "oui". "Ouel-kem". Le "l" est clair, le "e" final est réduit.' },
+    { word: 'Bye', phonetic: '/baɪ/', meaning: 'Au revoir', tip: 'Prononcez "baï" — un seul son bref. Plus informel que "goodbye". L\'accent est sur cette unique syllabe.' },
+  ],
+}
+
+// ════════════════════════════════════════════════════════════════════════════════
+// UNIT 2: NUMBERS & COUNTING (a1-l6 through a1-l10)
+// ════════════════════════════════════════════════════════════════════════════════
+
+// ─── a1-l6: Numbers 1-20 (vocabulary) ─────────────────────────────────────────
+export const A1_L6: LessonContent = {
+  vocab: [
+    { english: 'One', french: 'Un', phonetic: '/wʌn/', example: 'I have one brother.', exampleTranslation: 'J\'ai un frère.' },
+    { english: 'Five', french: 'Cinq', phonetic: '/faɪv/', example: 'There are five students.', exampleTranslation: 'Il y a cinq étudiants.' },
+    { english: 'Twelve', french: 'Douze', phonetic: '/twelv/', example: 'It is twelve o\'clock.', exampleTranslation: 'Il est midi (douze heures).' },
+    { english: 'Twenty', french: 'Vingt', phonetic: '/ˈtwenti/', example: 'She is twenty years old.', exampleTranslation: 'Elle a vingt ans.' },
+    { english: 'Eight', french: 'Huit', phonetic: '/eɪt/', example: 'I wake up at eight.', exampleTranslation: 'Je me réveille à huit heures.' },
+  ],
+  grammar: {
+    title: 'Singulier et pluriel avec les nombres',
+    explanation: 'Après "one", le nom est au singulier : "one book" (un livre). Après tout autre nombre (two, three, five...), le nom est au pluriel : "two books", "three pens", "five students". Le pluriel régulier se forme en ajoutant -s au nom. Pluriels irréguliers courants : man→men, woman→women, child→children, person→people.',
+    examples: [
+      { sentence: 'I have one book and three pens.', translation: 'J\'ai un livre et trois stylos.', isCorrect: true },
+      { sentence: 'She has two brother.', translation: '', isCorrect: false },
+      { sentence: 'There are five students in the class.', translation: 'Il y a cinq étudiants dans la classe.', isCorrect: true },
+      { sentence: 'I need one chair and four tables.', translation: 'J\'ai besoin d\'une chaise et de quatre tables.', isCorrect: true },
+    ],
+    commonMistakes: [
+      { wrong: 'She has two brother.', correct: 'She has two brothers.', explanation: 'Après un nombre supérieur à 1, le nom prend un "s" : brother → brothers.' },
+      { wrong: 'Three child are here.', correct: 'Three children are here.', explanation: 'Le pluriel de "child" est irrégulier : "children", pas "childs".' },
+    ],
+  },
+  conversation: [
+    { speaker: 'Marie', role: 'A', text: 'How many brothers do you have?', translation: 'Combien de frères as-tu ?' },
+    { speaker: 'James', role: 'B', text: 'I have one brother and two sisters.', translation: 'J\'ai un frère et deux sœurs.' },
+    { speaker: 'Marie', role: 'A', text: 'That\'s nice! How old are they?', translation: 'C\'est sympa ! Quel âge ont-ils ?' },
+    { speaker: 'James', role: 'B', text: 'My brother is twelve and my sisters are five and eight.', translation: 'Mon frère a douze ans et mes sœurs ont cinq et huit ans.' },
+    { speaker: 'Marie', role: 'A', text: 'I have twenty students in my class. Five are from France.', translation: 'J\'ai vingt étudiants dans ma classe. Cinq viennent de France.' },
+    { speaker: 'James', role: 'B', text: 'Wow! I only have eight students in my English class.', translation: 'Waouh ! J\'ai seulement huit étudiants dans mon cours d\'anglais.' },
+  ],
+  pronunciation: [
+    { word: 'One', phonetic: '/wʌn/', meaning: 'Un', tip: 'Prononcez "ouanne" — le "o" est ouvert. ATTENTION : ne dites pas "ouèn" ni "on". Le "w" initial est crucial.' },
+    { word: 'Five', phonetic: '/faɪv/', meaning: 'Cinq', tip: 'Le "i" est long : "faïv". Le "v" final est doux mais audible, ne l\'oubliez pas.' },
+    { word: 'Twelve', phonetic: '/twelv/', meaning: 'Douze', tip: 'Le "w" se forme en arrondissant les lèvres, puis "elv" : "touelv". Le "v" final est sonore.' },
+    { word: 'Twenty', phonetic: '/ˈtwenti/', meaning: 'Vingt', tip: 'Prononcez "toué-ni" — le "t" final peut être légèrement adouci. Ne dites pas "toui-enti".' },
+  ],
+}
+
+// ─── a1-l7: Numbers 20-100 (vocabulary) ────────────────────────────────────────
+export const A1_L7: LessonContent = {
+  vocab: [
+    { english: 'Thirty', french: 'Trente', phonetic: '/ˈθɜːrti/', example: 'She is thirty years old.', exampleTranslation: 'Elle a trente ans.' },
+    { english: 'Fifty', french: 'Cinquante', phonetic: '/ˈfɪfti/', example: 'The book costs fifty dollars.', exampleTranslation: 'Le livre coûte cinquante dollars.' },
+    { english: 'Seventy', french: 'Soixante-dix', phonetic: '/ˈsevənti/', example: 'There are seventy people here.', exampleTranslation: 'Il y a soixante-dix personnes ici.' },
+    { english: 'Hundred', french: 'Cent', phonetic: '/ˈhʌndrəd/', example: 'There are a hundred students.', exampleTranslation: 'Il y a cent étudiants.' },
+    { english: 'Thousand', french: 'Mille', phonetic: '/ˈθaʊzənd/', example: 'The city has five thousand people.', exampleTranslation: 'La ville a cinq mille habitants.' },
+  ],
+  grammar: {
+    title: '"How many...?" — Combien de... ?',
+    explanation: 'On utilise "How many" + nom au pluriel pour demander une quantité dénombrable : "How many students?" (Combien d\'étudiants ?), "How many books?" (Combien de livres ?). On répond avec "There are..." ou un nombre. Pour les noms indénombrables (money, water, rice), on utilise "How much" au lieu de "How many". Après un nombre, "hundred" et "thousand" ne prennent PAS de "s" : "two hundred" (pas "two hundreds").',
+    examples: [
+      { sentence: 'How many students are in the class?', translation: 'Combien d\'étudiants y a-t-il dans la classe ?', isCorrect: true },
+      { sentence: 'How many book do you have?', translation: '', isCorrect: false },
+      { sentence: 'There are thirty students.', translation: 'Il y a trente étudiants.', isCorrect: true },
+      { sentence: 'How much money do you need?', translation: 'De combien d\'argent avez-vous besoin ?', isCorrect: true },
+    ],
+    commonMistakes: [
+      { wrong: 'How many book do you have?', correct: 'How many books do you have?', explanation: 'Après "how many", le nom est TOUJOURS au pluriel : books, pas book.' },
+      { wrong: 'Two hundreds people', correct: 'Two hundred people', explanation: 'Après un nombre, "hundred" ne prend pas de "s" : two hundred (pas hundreds).' },
+    ],
+  },
+  conversation: [
+    { speaker: 'Anna', role: 'A', text: 'How many people live in your city?', translation: 'Combien de personnes vivent dans ta ville ?' },
+    { speaker: 'Paul', role: 'B', text: 'About fifty thousand people. And yours?', translation: 'Environ cinquante mille personnes. Et la tienne ?' },
+    { speaker: 'Anna', role: 'A', text: 'Nearly a hundred thousand! It is a big city.', translation: 'Presque cent mille ! C\'est une grande ville.' },
+    { speaker: 'Paul', role: 'B', text: 'My building has seventy apartments.', translation: 'Mon immeuble a soixante-dix appartements.' },
+    { speaker: 'Anna', role: 'A', text: 'That is a lot! How many floors does it have?', translation: 'C\'est beaucoup ! Combien d\'étages a-t-il ?' },
+    { speaker: 'Paul', role: 'B', text: 'Thirty floors! But I live on the fifth floor.', translation: 'Trente étages ! Mais j\'habite au cinquième étage.' },
+  ],
+  pronunciation: [
+    { word: 'Thirty', phonetic: '/ˈθɜːrti/', meaning: 'Trente', tip: 'Le "th" est crucial : langue entre les dents, soufflez. Ne dites PAS "tirty". L\'accent est sur "THIR".' },
+    { word: 'Fifty', phonetic: '/ˈfɪfti/', meaning: 'Cinquante', tip: 'Prononcez "fif-ti" — le son du milieu est "f" pas "v" : pas "fiv-ti". L\'accent est sur "FIF".' },
+    { word: 'Hundred', phonetic: '/ˈhʌndrəd/', meaning: 'Cent', tip: 'Le "u" se prononce comme le "o" ouvert français : "han-dred". Le "e" final est réduit.' },
+    { word: 'Thousand', phonetic: '/ˈθaʊzənd/', meaning: 'Mille', tip: 'Le "th" est expiré et le "ou" = "ao" : "thaou-zend". L\'accent est sur la première syllabe.' },
+  ],
+}
+
+// ─── a1-l8: Telling the Time (conversation) ────────────────────────────────────
+export const A1_L8: LessonContent = {
+  vocab: [
+    { english: 'O\'clock', french: 'Heure pile', phonetic: '/əˈklɒk/', example: 'It is three o\'clock.', exampleTranslation: 'Il est trois heures pile.' },
+    { english: 'Half past', french: 'Et demie', phonetic: '/hæf pæst/', example: 'It is half past two.', exampleTranslation: 'Il est deux heures et demie.' },
+    { english: 'Quarter', french: 'Quart', phonetic: '/ˈkwɔːrtər/', example: 'It is a quarter to five.', exampleTranslation: 'Il est cinq heures moins le quart.' },
+    { english: 'Evening', french: 'Soir', phonetic: '/ˈiːvnɪŋ/', example: 'I study in the evening.', exampleTranslation: 'J\'étudie le soir.' },
+    { english: 'Noon', french: 'Midi', phonetic: '/nuːn/', example: 'We have lunch at noon.', exampleTranslation: 'Nous déjeunons à midi.' },
+  ],
+  grammar: {
+    title: 'Prépositions de temps : at, in, on',
+    explanation: '"At" pour les heures précises : at 8 o\'clock, at half past three, at noon. "In" pour les parties du jour : in the morning, in the afternoon, in the evening. "On" pour les jours de la semaine : on Monday, on Friday. ATTENTION : on dit "at night" (la nuit), pas "in night". Et "in the morning" mais "at noon/midnight".',
+    examples: [
+      { sentence: 'The class starts at 9 o\'clock.', translation: 'Le cours commence à 9 heures.', isCorrect: true },
+      { sentence: 'I study in the morning.', translation: 'J\'étudie le matin.', isCorrect: true },
+      { sentence: 'We have class on 9 o\'clock.', translation: '', isCorrect: false },
+      { sentence: 'She works in the evening.', translation: 'Elle travaille le soir.', isCorrect: true },
+    ],
+    commonMistakes: [
+      { wrong: 'We have class on 9 o\'clock.', correct: 'We have class at 9 o\'clock.', explanation: 'Pour les heures, on utilise "at", pas "on". C\'est une erreur fréquente des francophones.' },
+      { wrong: 'I work at the morning.', correct: 'I work in the morning.', explanation: 'Pour les parties du jour (morning/afternoon/evening), on utilise "in", pas "at".' },
+    ],
+  },
+  conversation: [
+    { speaker: 'Lucie', role: 'A', text: 'Excuse me, what time is it?', translation: 'Excusez-moi, quelle heure est-il ?' },
+    { speaker: 'David', role: 'B', text: 'It is half past ten.', translation: 'Il est dix heures et demie.' },
+    { speaker: 'Lucie', role: 'A', text: 'Oh no! The meeting is at eleven o\'clock!', translation: 'Oh non ! La réunion est à onze heures !' },
+    { speaker: 'David', role: 'B', text: 'Don\'t worry, it is a quarter to eleven. You have time!', translation: 'Ne vous inquiétez pas, il est onze heures moins le quart. Vous avez le temps !' },
+    { speaker: 'Lucie', role: 'A', text: 'Are you free in the evening?', translation: 'Êtes-vous libre le soir ?' },
+    { speaker: 'David', role: 'B', text: 'Yes, I am free at noon and in the evening. Let\'s meet at 6 o\'clock!', translation: 'Oui, je suis libre à midi et le soir. Rencontrons-nous à 6 heures !' },
+  ],
+  pronunciation: [
+    { word: 'O\'clock', phonetic: '/əˈklɒk/', meaning: 'Heure pile', tip: 'Prononcez "e-klok" — le "o\'" est réduit, presque silencieux. Ne dites pas "o-clock" en séparant.' },
+    { word: 'Half past', phonetic: '/hæf pæst/', meaning: 'Et demie', tip: 'Le "a" de "half" est très ouvert : "haf". En anglais britannique, le "l" peut être muet. "Past" se prononce "pèst".' },
+    { word: 'Quarter', phonetic: '/ˈkwɔːrtər/', meaning: 'Quart', tip: 'Le "qu" = "k" + "w" : "kouor-ter". Le "a" final est très réduit. Ne dites pas "kouar-tère".' },
+    { word: 'Noon', phonetic: '/nuːn/', meaning: 'Midi', tip: 'Le "oo" est long : "noune". Comme dans "lune" mais avec un "n" final plus marqué.' },
+  ],
+}
+
+// ─── a1-l9: Days & Months (vocabulary) ─────────────────────────────────────────
+export const A1_L9: LessonContent = {
+  vocab: [
+    { english: 'Monday', french: 'Lundi', phonetic: '/ˈmʌndeɪ/', example: 'I have class on Monday.', exampleTranslation: 'J\'ai cours le lundi.' },
+    { english: 'Wednesday', french: 'Mercredi', phonetic: '/ˈwenzdeɪ/', example: 'We meet on Wednesday.', exampleTranslation: 'Nous nous rencontrons le mercredi.' },
+    { english: 'Saturday', french: 'Samedi', phonetic: '/ˈsætərdeɪ/', example: 'We go to the park on Saturday.', exampleTranslation: 'Nous allons au parc le samedi.' },
+    { english: 'March', french: 'Mars', phonetic: '/mɑːrtʃ/', example: 'My birthday is in March.', exampleTranslation: 'Mon anniversaire est en mars.' },
+    { english: 'November', french: 'Novembre', phonetic: '/noʊˈvembər/', example: 'It is cold in November.', exampleTranslation: 'Il fait froid en novembre.' },
+  ],
+  grammar: {
+    title: '"On" avec les jours, "In" avec les mois',
+    explanation: 'On utilise "on" devant les jours de la semaine : on Monday, on Wednesday, on Saturday. On utilise "in" devant les mois et les saisons : in March, in November, in summer, in winter. On utilise aussi "in" pour les années : in 2024. ATTENTION : "every Monday" (chaque lundi) ne prend PAS de préposition. "next Friday" (vendredi prochain) non plus.',
+    examples: [
+      { sentence: 'I have English class on Tuesday.', translation: 'J\'ai cours d\'anglais le mardi.', isCorrect: true },
+      { sentence: 'We go on vacation in July.', translation: 'Nous partons en vacances en juillet.', isCorrect: true },
+      { sentence: 'The exam is in Monday.', translation: '', isCorrect: false },
+      { sentence: 'She was born in September.', translation: 'Elle est née en septembre.', isCorrect: true },
+    ],
+    commonMistakes: [
+      { wrong: 'The exam is in Monday.', correct: 'The exam is on Monday.', explanation: 'Pour les jours de la semaine, on utilise "on", pas "in". C\'est une règle stricte.' },
+      { wrong: 'I visit my family on March.', correct: 'I visit my family in March.', explanation: 'Pour les mois, on utilise "in", pas "on". Moyen mnémotechnique : "in" pour les périodes longues (mois, année, saison).' },
+    ],
+  },
+  conversation: [
+    { speaker: 'Camille', role: 'A', text: 'What day is it today?', translation: 'Quel jour sommes-nous aujourd\'hui ?' },
+    { speaker: 'Ryan', role: 'B', text: 'Today is Wednesday. My class is on Wednesday and Friday.', translation: 'Aujourd\'hui c\'est mercredi. Mon cours est le mercredi et le vendredi.' },
+    { speaker: 'Camille', role: 'A', text: 'Are you free on Saturday?', translation: 'Es-tu libre samedi ?' },
+    { speaker: 'Ryan', role: 'B', text: 'Yes! What do you want to do?', translation: 'Oui ! Que veux-tu faire ?' },
+    { speaker: 'Camille', role: 'A', text: 'Let\'s go to the museum! The new exhibition opens in March.', translation: 'Allons au musée ! La nouvelle exposition ouvre en mars.' },
+    { speaker: 'Ryan', role: 'B', text: 'Great idea! In November, we can also visit the Christmas market.', translation: 'Bonne idée ! En novembre, nous pourrons aussi visiter le marché de Noël.' },
+  ],
+  pronunciation: [
+    { word: 'Monday', phonetic: '/ˈmʌndeɪ/', meaning: 'Lundi', tip: 'Le "o" est ouvert comme dans "come" : "man-deï". L\'accent est sur la première syllabe.' },
+    { word: 'Wednesday', phonetic: '/ˈwenzdeɪ/', meaning: 'Mercredi', tip: 'ATTENTION : on prononce "OUENZ-di", le "d" du milieu disparaît ! Ne dites surtout pas "wed-nes-day".' },
+    { word: 'March', phonetic: '/mɑːrtʃ/', meaning: 'Mars', tip: 'Le "ar" est long : "mortch". Le "ch" = "tch" comme dans "tchèque". Ne dites pas "marsh".' },
+    { word: 'November', phonetic: '/noʊˈvembər/', meaning: 'Novembre', tip: 'L\'accent est sur "vem" : "no-VEM-ber". Le premier "o" est long, le "er" final est doux.' },
+  ],
+}
+
+// ─── a1-l10: Number Pronunciation (pronunciation) ─────────────────────────────
+export const A1_L10: LessonContent = {
+  vocab: [
+    { english: 'Thirteen', french: 'Treize', phonetic: '/θɜːrˈtiːn/', example: 'She is thirteen years old.', exampleTranslation: 'Elle a treize ans.' },
+    { english: 'Fourteen', french: 'Quatorze', phonetic: '/fɔːrˈtiːn/', example: 'There are fourteen chairs.', exampleTranslation: 'Il y a quatorze chaises.' },
+    { english: 'Sixty', french: 'Soixante', phonetic: '/ˈsɪksti/', example: 'Sixty minutes is one hour.', exampleTranslation: 'Soixante minutes font une heure.' },
+    { english: 'Forty', french: 'Quarante', phonetic: '/ˈfɔːrti/', example: 'He is forty years old.', exampleTranslation: 'Il a quarante ans.' },
+    { english: 'Eighty', french: 'Quatre-vingts', phonetic: '/ˈeɪti/', example: 'My grandmother is eighty.', exampleTranslation: 'Ma grand-mère a quatre-vingts ans.' },
+  ],
+  grammar: {
+    title: 'Accent tonique dans les nombres en -teen et -ty',
+    explanation: 'C\'est une distinction CRUCIALE en anglais ! Les nombres en -teen (13-19) ont l\'accent sur la DEUXIÈME syllabe : thir-TEEN, four-TEEN, fif-TEEN. Les dizaines en -ty (20, 30, 40...) ont l\'accent sur la PREMIÈRE syllabe : THIR-ty, FOR-ty, FIF-ty. Confondre ces accents peut changer le sens : "I\'m thir-TEEN" (j\'ai 13 ans) ≠ "I\'m THIR-ty" (j\'ai 30 ans) !',
+    examples: [
+      { sentence: 'She is thir-TEEN years old.', translation: 'Elle a treize ans.', isCorrect: true },
+      { sentence: 'There are THIR-ty students.', translation: 'Il y a trente étudiants.', isCorrect: true },
+      { sentence: 'He is four-TEEN.', translation: 'Il a quatorze ans.', isCorrect: true },
+      { sentence: 'The price is for-TY dollars.', translation: '', isCorrect: false },
+    ],
+    commonMistakes: [
+      { wrong: 'The price is for-TY dollars.', correct: 'The price is FOR-ty dollars.', explanation: 'L\'accent est sur la PREMIÈRE syllabe pour -ty : FOR-ty, pas for-TY. Cette erreur peut être mal comprise !' },
+      { wrong: 'There are THIR-teen people.', correct: 'There are thir-TEEN people.', explanation: 'L\'accent est sur la DEUXIÈME syllabe pour -teen : thir-TEEN. Sinon on comprend "thirty" (30).' },
+    ],
+  },
+  conversation: [
+    { speaker: 'Isabelle', role: 'A', text: 'How many people are coming to the party?', translation: 'Combien de personnes viennent à la fête ?' },
+    { speaker: 'Mike', role: 'B', text: 'Thirteen. No, sorry, thirty people.', translation: 'Treize. Non, désolé, trente personnes.' },
+    { speaker: 'Isabelle', role: 'A', text: 'Thirteen or thirty? I am not sure.', translation: 'Treize ou trente ? Je ne suis pas sûre.' },
+    { speaker: 'Mike', role: 'B', text: 'Thirty! Three-zero. I am forty years old, not fourteen!', translation: 'Trente ! Trois-zéro. J\'ai quarante ans, pas quatorze !' },
+    { speaker: 'Isabelle', role: 'A', text: 'Oh, I understand now! Is the room for sixty or sixteen?', translation: 'Oh, je comprends maintenant ! La salle est pour soixante ou seize ?' },
+    { speaker: 'Mike', role: 'B', text: 'For sixty people. Six-zero, not six-teen! And eighty chairs.', translation: 'Pour soixante personnes. Six-zéro, pas seize ! Et quatre-vingts chaises.' },
+  ],
+  pronunciation: [
+    { word: 'Thirteen vs Thirty', phonetic: '/θɜːrˈtiːn/ vs /ˈθɜːrti/', meaning: 'Treize vs Trente', tip: '"Thir-TEEN" (accent sur TEEN, plus long) vs "THIR-ti" (accent sur THIR, plus court). Le "th" est identique dans les deux.' },
+    { word: 'Fourteen vs Forty', phonetic: '/fɔːrˈtiːn/ vs /ˈfɔːrti/', meaning: 'Quatorze vs Quarante', tip: '"Four-TEEN" (accent sur TEEN) vs "FOR-ty" (accent sur FOR). Notez que "forty" s\'écrit sans "u" (pas "fourty").' },
+    { word: 'Sixty', phonetic: '/ˈsɪksti/', meaning: 'Soixante', tip: 'Accent sur "SIX" : "SIKS-ti". Le "x" se prononce "ks". Distinguez bien de "six-TEEN" (seize).' },
+    { word: 'Eighty', phonetic: '/ˈeɪti/', meaning: 'Quatre-vingts', tip: 'Accent sur "EIGH" : "ÉI-ti". Distinguez de "eigh-TEEN" (dix-huit). Le "t" est léger.' },
+  ],
+}
+
+// ════════════════════════════════════════════════════════════════════════════════
+// UNIT 3: EVERYDAY OBJECTS (a1-l11 through a1-l15)
+// ════════════════════════════════════════════════════════════════════════════════
+
+// ─── a1-l11: Classroom Objects (vocabulary) ────────────────────────────────────
+export const A1_L11: LessonContent = {
+  vocab: [
+    { english: 'Pen', french: 'Stylo', phonetic: '/pen/', example: 'Can I borrow your pen?', exampleTranslation: 'Puis-je emprunter ton stylo ?' },
+    { english: 'Book', french: 'Livre', phonetic: '/bʊk/', example: 'Open your book to page five.', exampleTranslation: 'Ouvrez votre livre à la page cinq.' },
+    { english: 'Table', french: 'Table', phonetic: '/ˈteɪbəl/', example: 'Put it on the table.', exampleTranslation: 'Mets-le sur la table.' },
+    { english: 'Chair', french: 'Chaise', phonetic: '/tʃer/', example: 'Please sit on the chair.', exampleTranslation: 'Asseyez-vous sur la chaise.' },
+    { english: 'Board', french: 'Tableau', phonetic: '/bɔːrd/', example: 'Look at the board, please.', exampleTranslation: 'Regardez le tableau, s\'il vous plaît.' },
+  ],
+  grammar: {
+    title: 'Le pluriel des noms — Formes régulières et irrégulières',
+    explanation: 'Le pluriel régulier se forme en ajoutant -s : pen → pens, book → books, table → tables, chair → chairs, board → boards. Après s, ss, sh, ch, x, on ajoute -es : box → boxes, bus → buses. Les noms en -y après consonne changent y → ies : dictionary → dictionaries. Après voyelle + y, on ajoute -s : day → days. Pluriels irréguliers : man → men, woman → women, child → children, foot → feet, tooth → teeth.',
+    examples: [
+      { sentence: 'I have two pens and three books.', translation: 'J\'ai deux stylos et trois livres.', isCorrect: true },
+      { sentence: 'There are five chair in the room.', translation: '', isCorrect: false },
+      { sentence: 'The books are on the tables.', translation: 'Les livres sont sur les tables.', isCorrect: true },
+      { sentence: 'Two children are at the board.', translation: 'Deux enfants sont au tableau.', isCorrect: true },
+    ],
+    commonMistakes: [
+      { wrong: 'Five chair', correct: 'Five chairs', explanation: 'Après un nombre > 1, ajoutez -s au nom : chair → chairs.' },
+      { wrong: 'Two boxs', correct: 'Two boxes', explanation: 'Après x, on ajoute -es (pas juste -s) : box → boxes.' },
+    ],
+  },
+  conversation: [
+    { speaker: 'Nadia', role: 'A', text: 'Excuse me, is this your pen?', translation: 'Excusez-moi, est-ce votre stylo ?' },
+    { speaker: 'Olivier', role: 'B', text: 'No, my pen is on the table. That is Marie\'s pen.', translation: 'Non, mon stylo est sur la table. C\'est le stylo de Marie.' },
+    { speaker: 'Nadia', role: 'A', text: 'Oh, I see! Are those your books on the chair?', translation: 'Oh, je vois ! Ce sont vos livres sur la chaise ?' },
+    { speaker: 'Olivier', role: 'B', text: 'Yes, they are my books. I have four books today.', translation: 'Oui, ce sont mes livres. J\'ai quatre livres aujourd\'hui.' },
+    { speaker: 'Nadia', role: 'A', text: 'Can I borrow a chair? I don\'t have one.', translation: 'Puis-je emprunter une chaise ? Je n\'en ai pas.' },
+    { speaker: 'Olivier', role: 'B', text: 'Of course! And look at the board — the teacher is writing the homework.', translation: 'Bien sûr ! Et regarde le tableau — le professeur écrit les devoirs.' },
+  ],
+  pronunciation: [
+    { word: 'Pen', phonetic: '/pen/', meaning: 'Stylo', tip: 'Le "e" est bref et fermé : "pèn". Ne dites pas "pine" comme l\'arbre, ni "pan" comme la casserole.' },
+    { word: 'Book', phonetic: '/bʊk/', meaning: 'Livre', tip: 'Le "oo" est un "ou" très court : "bouk". Pas le "ou" long du français. Plus court que dans "loup".' },
+    { word: 'Table', phonetic: '/ˈteɪbəl/', meaning: 'Table', tip: 'Prononcez "téï-bal" avec le "a" final très réduit, presque muet. L\'accent est sur "ta".' },
+    { word: 'Chair', phonetic: '/tʃer/', meaning: 'Chaise', tip: 'Le "ch" anglais = "tch" : "tchèr". Pas "chair" à la française ! Le "r" final est léger.' },
+  ],
+}
+
+// ─── a1-l12: Articles: A & An (grammar) ────────────────────────────────────────
+export const A1_L12: LessonContent = {
+  vocab: [
+    { english: 'Apple', french: 'Pomme', phonetic: '/ˈæpəl/', example: 'I eat an apple every day.', exampleTranslation: 'Je mange une pomme chaque jour.' },
+    { english: 'Egg', french: 'Œuf', phonetic: '/eɡ/', example: 'She wants an egg for breakfast.', exampleTranslation: 'Elle veut un œuf pour le petit-déjeuner.' },
+    { english: 'Umbrella', french: 'Parapluie', phonetic: '/ʌmˈbrelə/', example: 'Take an umbrella with you.', exampleTranslation: 'Prends un parapluie avec toi.' },
+    { english: 'Uniform', french: 'Uniforme', phonetic: '/ˈjuːnɪfɔːrm/', example: 'He wears a uniform to school.', exampleTranslation: 'Il porte un uniforme à l\'école.' },
+    { english: 'Onion', french: 'Oignon', phonetic: '/ˈʌnjən/', example: 'I cut an onion for the soup.', exampleTranslation: 'Je coupe un oignon pour la soupe.' },
+  ],
+  grammar: {
+    title: 'Articles : A et An',
+    explanation: 'On utilise "a" devant un mot commençant par un SON consonantique : a dog, a cat, a book, a uniform (son "you"). On utilise "an" devant un mot commençant par un SON vocalique (a, e, i, o, u) : an apple, an egg, an umbrella, an onion. ATTENTION : c\'est le SON qui compte, pas l\'orthographe ! "A university" (commence par le son "you" = consonne) mais "an hour" (le "h" est muet = son vocalique). "An umbrella" (son "uh" = voyelle) mais "a uniform" (son "you" = consonne).',
+    examples: [
+      { sentence: 'I have a dog and an egg.', translation: 'J\'ai un chien et un œuf.', isCorrect: true },
       { sentence: 'She is an teacher.', translation: '', isCorrect: false },
       { sentence: 'He wants an orange.', translation: 'Il veut une orange.', isCorrect: true },
-      { sentence: 'There is a university near here.', translation: 'Il y a une université près d\'ici.', isCorrect: true },
+      { sentence: 'She goes to a university.', translation: 'Elle va à une université.', isCorrect: true },
     ],
     commonMistakes: [
-      { wrong: 'An university', correct: 'A university', explanation: '"University" commence par le son "you", qui est consonantique.' },
-      { wrong: 'A hour', correct: 'An hour', explanation: '"Hour" commence par le son "aou", qui est vocalique bien que "h" soit écrit.' },
+      { wrong: 'She is an teacher.', correct: 'She is a teacher.', explanation: '"Teacher" commence par le son consonne "t" : on utilise "a", pas "an".' },
+      { wrong: 'I am a engineer.', correct: 'I am an engineer.', explanation: '"Engineer" commence par le son voyelle "e" : on utilise "an", pas "a".' },
     ],
   },
   conversation: [
-    { speaker: 'Marie', role: 'A', text: 'How old are you?', translation: 'Quel âge as-tu ?' },
-    { speaker: 'James', role: 'B', text: 'I\'m twenty-five. And you?', translation: 'J\'ai vingt-cinq ans. Et toi ?' },
-    { speaker: 'Marie', role: 'A', text: 'I\'m thirty. What day is it today?', translation: 'J\'ai trente ans. Quel jour sommes-nous ?' },
-    { speaker: 'James', role: 'B', text: 'It\'s Monday, the fifteenth of March.', translation: 'C\'est lundi, le quinze mars.' },
-    { speaker: 'Marie', role: 'A', text: 'How many students are in your class?', translation: 'Combien d\'étudiants y a-t-il dans ta classe ?' },
-    { speaker: 'James', role: 'B', text: 'There are twenty-two students.', translation: 'Il y a vingt-deux étudiants.' },
+    { speaker: 'Sam', role: 'A', text: 'What is that on the table?', translation: 'Qu\'est-ce que c\'est sur la table ?' },
+    { speaker: 'Léa', role: 'B', text: 'It is an apple. Do you want an apple or an egg?', translation: 'C\'est une pomme. Veux-tu une pomme ou un œuf ?' },
+    { speaker: 'Sam', role: 'A', text: 'I want an apple, please! Is that an umbrella near the door?', translation: 'Je veux une pomme, s\'il vous plaît ! C\'est un parapluie près de la porte ?' },
+    { speaker: 'Léa', role: 'B', text: 'Yes! It is my umbrella. And this is a uniform for my new job.', translation: 'Oui ! C\'est mon parapluie. Et ceci est un uniforme pour mon nouveau travail.' },
+    { speaker: 'Sam', role: 'A', text: 'Oh, nice! Does your job need a uniform?', translation: 'Oh, sympa ! Ton travail nécessite un uniforme ?' },
+    { speaker: 'Léa', role: 'B', text: 'Yes! And I always bring an onion for my lunch sandwich.', translation: 'Oui ! Et j\'apporte toujours un oignon pour mon sandwich du déjeuner.' },
   ],
   pronunciation: [
-    { word: 'Thirty', phonetic: '/ˈθɜːrti/', meaning: 'Trente', tip: 'Attention à ne pas confondre "thirty" (30) et "thirteen" (13). Le "th" est crucial.' },
-    { word: 'Fifty', phonetic: '/ˈfɪfti/', meaning: 'Cinquante', tip: 'Prononcez bien le "f" au milieu, pas "v" : "fif-tee" et non "fiv-tee".' },
-    { word: 'Twelve', phonetic: '/twelv/', meaning: 'Douze', tip: 'Le "w" se forme en arrondissant les lèvres, comme "ou" français suivi de "elv".' },
-    { word: 'Hundred', phonetic: '/ˈhʌndrəd/', meaning: 'Cent', tip: 'Le "u" se prononce comme le "o" français ouvert : "han-dred".' },
+    { word: 'A (article)', phonetic: '/ə/', meaning: 'Un/Une (consonne)', tip: 'Devant une consonne, "a" se prononce "e" très réduit et rapide. Ne dites pas "éi" dans la conversation courante. C\'est un son neutre (schwa).' },
+    { word: 'An (article)', phonetic: '/ən/', meaning: 'Un/Une (voyelle)', tip: 'Devant une voyelle, "an" se lie au mot suivant : "an apple" = "e-nap-pl". Le "n" relie les deux mots naturellement.' },
+    { word: 'Apple', phonetic: '/ˈæpəl/', meaning: 'Pomme', tip: 'Le "a" est très ouvert comme dans "cat" : "a-pl". Le "e" final est très réduit, presque muet.' },
+    { word: 'Umbrella', phonetic: '/ʌmˈbrelə/', meaning: 'Parapluie', tip: 'Le "u" initial est ouvert : "eum-BRE-la". L\'accent est sur "BRE". Commence par un son vocalique.' },
   ],
 }
 
-const A1_U3: LessonContent = {
+// ─── a1-l13: This & That (grammar) ─────────────────────────────────────────────
+export const A1_L13: LessonContent = {
   vocab: [
-    { english: 'Book', french: 'Livre', phonetic: '/bʊk/', example: 'I read a book every day.', exampleTranslation: 'Je lis un livre chaque jour.' },
-    { english: 'Chair', french: 'Chaise', phonetic: '/tʃer/', example: 'Please sit on the chair.', exampleTranslation: 'Asseyez-vous sur la chaise, s\'il vous plaît.' },
-    { english: 'Window', french: 'Fenêtre', phonetic: '/ˈwɪndoʊ/', example: 'Open the window, please.', exampleTranslation: 'Ouvrez la fenêtre, s\'il vous plaît.' },
-    { english: 'Table', french: 'Table', phonetic: '/ˈteɪbəl/', example: 'The book is on the table.', exampleTranslation: 'Le livre est sur la table.' },
+    { english: 'Bag', french: 'Sac', phonetic: '/bæɡ/', example: 'This is my bag.', exampleTranslation: 'Ceci est mon sac.' },
+    { english: 'Phone', french: 'Téléphone', phonetic: '/foʊn/', example: 'That is her phone.', exampleTranslation: 'Cela est son téléphone.' },
+    { english: 'Laptop', french: 'Ordinateur portable', phonetic: '/ˈlæptɑːp/', example: 'This laptop is new.', exampleTranslation: 'Cet ordinateur portable est nouveau.' },
+    { english: 'Notebook', french: 'Carnet', phonetic: '/ˈnoʊtbʊk/', example: 'Those notebooks are mine.', exampleTranslation: 'Ces carnets sont à moi.' },
+    { english: 'Keys', french: 'Clés', phonetic: '/kiːz/', example: 'Where are my keys?', exampleTranslation: 'Où sont mes clés ?' },
   ],
   grammar: {
-    title: 'This & That',
-    explanation: '"This" (ceci) désigne un objet proche, "that" (cela) désigne un objet éloigné. Pluriel : "these" (ces - proches) et "those" (ces - éloignés).',
+    title: 'This, That, These, Those — Démonstratifs',
+    explanation: '"This" (ceci/cette) pour un objet PROCHE au singulier : This is my bag. "That" (cela/cette) pour un objet ÉLOIGNÉ au singulier : That is her phone. "These" (ces) pour des objets PROCHES au pluriel : These are my notebooks. "Those" (ces) pour des objets ÉLOIGNÉS au pluriel : Those are your keys. Accord du verbe : this/that → is ; these/those → are.',
     examples: [
-      { sentence: 'This is my book.', translation: 'Ceci est mon livre.', isCorrect: true },
-      { sentence: 'That are my shoes.', translation: '', isCorrect: false },
-      { sentence: 'These are my pens.', translation: 'Ce sont mes stylos.', isCorrect: true },
-      { sentence: 'Those is your chairs.', translation: '', isCorrect: false },
+      { sentence: 'This is my phone.', translation: 'Ceci est mon téléphone.', isCorrect: true },
+      { sentence: 'That are my bags.', translation: '', isCorrect: false },
+      { sentence: 'These are my notebooks.', translation: 'Ce sont mes carnets.', isCorrect: true },
+      { sentence: 'Those is your laptops.', translation: '', isCorrect: false },
     ],
     commonMistakes: [
-      { wrong: 'That are my books.', correct: 'Those are my books.', explanation: 'Au pluriel, on utilise "those" et non "that".' },
-      { wrong: 'This is my shoes.', correct: 'These are my shoes.', explanation: '"Shoes" est pluriel, on utilise "these" au lieu de "this".' },
+      { wrong: 'That are my bags.', correct: 'Those are my bags.', explanation: 'Au pluriel, on utilise "those" (ces-là) au lieu de "that" (cela). "That" est uniquement singulier.' },
+      { wrong: 'Those is your laptops.', correct: 'Those are your laptops.', explanation: '"Those" est pluriel, donc on utilise "are", pas "is". Règle : this/that → is, these/those → are.' },
     ],
   },
   conversation: [
-    { speaker: 'Anna', role: 'A', text: 'What is this?', translation: 'Qu\'est-ce que c\'est ?' },
-    { speaker: 'Paul', role: 'B', text: 'This is a pen. It\'s on the table.', translation: 'C\'est un stylo. Il est sur la table.' },
-    { speaker: 'Anna', role: 'A', text: 'And what is that over there?', translation: 'Et qu\'est-ce que c\'est là-bas ?' },
-    { speaker: 'Paul', role: 'B', text: 'That is a computer. It\'s near the window.', translation: 'C\'est un ordinateur. Il est près de la fenêtre.' },
-    { speaker: 'Anna', role: 'A', text: 'Are these your books?', translation: 'Ce sont tes livres ?' },
-    { speaker: 'Paul', role: 'B', text: 'Yes, they are! Thank you!', translation: 'Oui ! Merci !' },
+    { speaker: 'Élodie', role: 'A', text: 'What is this on the desk?', translation: 'Qu\'est-ce que c\'est sur le bureau ?' },
+    { speaker: 'Ben', role: 'B', text: 'This is my laptop. I use it every day.', translation: 'C\'est mon ordinateur portable. Je l\'utilise chaque jour.' },
+    { speaker: 'Élodie', role: 'A', text: 'And what is that over there, near the door?', translation: 'Et qu\'est-ce que c\'est là-bas, près de la porte ?' },
+    { speaker: 'Ben', role: 'B', text: 'That is my bag. These are my notebooks on the table.', translation: 'C\'est mon sac. Ce sont mes carnets sur la table.' },
+    { speaker: 'Élodie', role: 'A', text: 'Are those your keys too?', translation: 'Ce sont aussi tes clés ?' },
+    { speaker: 'Ben', role: 'B', text: 'Yes, those are my keys. This one is for my car, and that one is for my house.', translation: 'Oui, ce sont mes clés. Celui-ci est pour ma voiture, et celui-là pour ma maison.' },
   ],
   pronunciation: [
-    { word: 'Book', phonetic: '/bʊk/', meaning: 'Livre', tip: 'Le "oo" se prononce comme un "ou" court, pas comme "ou" long français.' },
-    { word: 'Chair', phonetic: '/tʃer/', meaning: 'Chaise', tip: 'Le "ch" anglais se prononce "tch" comme dans "tchére".' },
-    { word: 'Window', phonetic: '/ˈwɪndoʊ/', meaning: 'Fenêtre', tip: 'Le "w" initial : arrondissez les lèvres comme pour dire "oui".' },
-    { word: 'Table', phonetic: '/ˈteɪbəl/', meaning: 'Table', tip: 'Prononcez "té-bal" avec le "a" très réduit à la fin.' },
+    { word: 'This', phonetic: '/ðɪs/', meaning: 'Ceci/Cette', tip: 'Le "th" est SONORE : langue entre les dents, faites vibrer les cordes vocales. Approximativement "dzis". Ne dites pas "zis" ni "dis".' },
+    { word: 'That', phonetic: '/ðæt/', meaning: 'Cela/Cette', tip: 'Même "th" sonore : "dzèt". Le "a" est ouvert comme dans "cat". Distinguez bien "that" (cela) de "cat" (chat) — seul le "th" change.' },
+    { word: 'These', phonetic: '/ðiːz/', meaning: 'Ces (proches)', tip: '"Dhiiz" avec "th" sonore et "i" long. Ne confondez pas avec "this" (i court). "These" = i long, "this" = i court.' },
+    { word: 'Those', phonetic: '/ðoʊz/', meaning: 'Ces (éloignés)', tip: '"Dhoz" avec "th" sonore et "o" long. Distinguez bien "those" de "doze" — la langue entre les dents fait toute la différence.' },
   ],
 }
 
-const A1_U4: LessonContent = {
+// ─── a1-l14: At the Office (conversation) ──────────────────────────────────────
+export const A1_L14: LessonContent = {
+  vocab: [
+    { english: 'Computer', french: 'Ordinateur', phonetic: '/kəmˈpjuːtər/', example: 'The computer is on the desk.', exampleTranslation: 'L\'ordinateur est sur le bureau.' },
+    { english: 'Desk', french: 'Bureau (meuble)', phonetic: '/desk/', example: 'My desk is near the window.', exampleTranslation: 'Mon bureau est près de la fenêtre.' },
+    { english: 'Printer', french: 'Imprimante', phonetic: '/ˈprɪntər/', example: 'The printer is not working.', exampleTranslation: 'L\'imprimante ne fonctionne pas.' },
+    { english: 'Folder', french: 'Dossier / Chemise', phonetic: '/ˈfoʊldər/', example: 'Put the paper in the folder.', exampleTranslation: 'Mettez le papier dans le dossier.' },
+    { english: 'Keyboard', french: 'Clavier', phonetic: '/ˈkiːbɔːrd/', example: 'The keyboard is very loud.', exampleTranslation: 'Le clavier est très bruyant.' },
+  ],
+  grammar: {
+    title: '"Where is...?" et les prépositions de lieu',
+    explanation: 'Pour demander où se trouve quelque chose : "Where is the printer?" (Où est l\'imprimante ?), "Where are the folders?" (Où sont les dossiers ?). Prépositions de lieu essentielles : "on" (sur), "under" (sous), "next to" (à côté de), "near" (près de), "behind" (derrière), "in front of" (devant), "between" (entre), "in" (dans).',
+    examples: [
+      { sentence: 'The computer is on the desk.', translation: 'L\'ordinateur est sur le bureau.', isCorrect: true },
+      { sentence: 'The printer is next to the door.', translation: 'L\'imprimante est à côté de la porte.', isCorrect: true },
+      { sentence: 'The folder is in the desk.', translation: '', isCorrect: false },
+      { sentence: 'Where is my keyboard?', translation: 'Où est mon clavier ?', isCorrect: true },
+    ],
+    commonMistakes: [
+      { wrong: 'The folder is in the desk.', correct: 'The folder is on the desk. / The folder is in the drawer.', explanation: 'On dit "on the desk" (sur le bureau) ou "in the drawer" (dans le tiroir), pas "in the desk" qui est ambigu.' },
+      { wrong: 'Where is the computers?', correct: 'Where are the computers?', explanation: '"Computers" est pluriel, donc on utilise "Where are", pas "Where is". Le verbe s\'accorde avec le sujet.' },
+    ],
+  },
+  conversation: [
+    { speaker: 'Chloé', role: 'A', text: 'Is this your office? It is very nice!', translation: 'C\'est votre bureau ? Il est très sympa !' },
+    { speaker: 'Kevin', role: 'B', text: 'Yes! My computer is on the desk, near the window.', translation: 'Oui ! Mon ordinateur est sur le bureau, près de la fenêtre.' },
+    { speaker: 'Chloé', role: 'A', text: 'Where is the printer?', translation: 'Où est l\'imprimante ?' },
+    { speaker: 'Kevin', role: 'B', text: 'The printer is next to my desk. And the folders are under the desk.', translation: 'L\'imprimante est à côté de mon bureau. Et les dossiers sont sous le bureau.' },
+    { speaker: 'Chloé', role: 'A', text: 'Where is my keyboard?', translation: 'Où est mon clavier ?' },
+    { speaker: 'Kevin', role: 'B', text: 'Your keyboard is behind the door, on the small desk!', translation: 'Votre clavier est derrière la porte, sur le petit bureau !' },
+  ],
+  pronunciation: [
+    { word: 'Computer', phonetic: '/kəmˈpjuːtər/', meaning: 'Ordinateur', tip: 'L\'accent est sur "pu" : "kem-PYOU-ter". Les syllabes avant et après sont réduites (schwa).' },
+    { word: 'Desk', phonetic: '/desk/', meaning: 'Bureau (meuble)', tip: 'Le "e" est bref et ouvert : "dèsk". Pas "disk" (disque). Le "s" est toujours sonore avant "k".' },
+    { word: 'Printer', phonetic: '/ˈprɪntər/', meaning: 'Imprimante', tip: 'Accent sur "PRINT" : "PRIN-ter". Le "i" est court comme dans "pin", le "er" final est doux.' },
+    { word: 'Keyboard', phonetic: '/ˈkiːbɔːrd/', meaning: 'Clavier', tip: 'Accent sur "KEY" : "KII-bord". Le "ey" est long et le "oard" se prononce "ord".' },
+  ],
+}
+
+// ─── a1-l15: Object Sounds (pronunciation) ─────────────────────────────────────
+export const A1_L15: LessonContent = {
+  vocab: [
+    { english: 'Watch', french: 'Montre', phonetic: '/wɒtʃ/', example: 'Look at my watch.', exampleTranslation: 'Regarde ma montre.' },
+    { english: 'Switch', french: 'Interrupteur', phonetic: '/swɪtʃ/', example: 'Turn off the switch.', exampleTranslation: 'Éteins l\'interrupteur.' },
+    { english: 'Clock', french: 'Horloge', phonetic: '/klɒk/', example: 'The clock is on the wall.', exampleTranslation: 'L\'horloge est sur le mur.' },
+    { english: 'Glass', french: 'Verre', phonetic: '/ɡlæs/', example: 'The glass is on the table.', exampleTranslation: 'Le verre est sur la table.' },
+    { english: 'Mirror', french: 'Miroir', phonetic: '/ˈmɪrər/', example: 'Look in the mirror.', exampleTranslation: 'Regarde dans le miroir.' },
+  ],
+  grammar: {
+    title: 'Le son "ch" en anglais — Trois prononciations',
+    explanation: 'Le "ch" anglais a TROIS prononciations possibles : 1) "tch" (le plus courant) : watch, chair, kitchen, switch. 2) "k" : school, chemistry, character, ache. 3) "sh" : machine, chef, parachute. Pour les francophones, la confusion vient surtout de "school" (skoul) qu\'on dit souvent "shool" à tort. Mémorisez les exceptions !',
+    examples: [
+      { sentence: 'I watch TV every day.', translation: 'Je regarde la télé chaque jour.', isCorrect: true },
+      { sentence: 'She goes to school at 8.', translation: 'Elle va à l\'école à 8h.', isCorrect: true },
+      { sentence: 'The machine is broken.', translation: 'La machine est cassée.', isCorrect: true },
+      { sentence: 'He goes to shool every day.', translation: '', isCorrect: false },
+    ],
+    commonMistakes: [
+      { wrong: 'Shool', correct: 'School', explanation: 'Dans "school", le "ch" = "k" : "skoul". Ne dites pas "choul" ni "shoul". Même chose pour "chemistry" et "character".' },
+      { wrong: 'Mashine', correct: 'Machine', explanation: 'Dans "machine" (emprunt au français), le "ch" = "sh" : "ma-chine". Ce mot est une exception.' },
+    ],
+  },
+  conversation: [
+    { speaker: 'Tom', role: 'A', text: 'What time is it? I can\'t find my watch.', translation: 'Quelle heure est-il ? Je ne trouve pas ma montre.' },
+    { speaker: 'Lisa', role: 'B', text: 'Look at the clock on the wall!', translation: 'Regarde l\'horloge sur le mur !' },
+    { speaker: 'Tom', role: 'A', text: 'Oh! It is late. Turn off the switch, let\'s go.', translation: 'Oh ! Il est tard. Éteins l\'interrupteur, on y va.' },
+    { speaker: 'Lisa', role: 'B', text: 'Wait! Can you pass me that glass?', translation: 'Attends ! Peux-tu me passer ce verre ?' },
+    { speaker: 'Tom', role: 'A', text: 'Sure. I can see my reflection in the mirror over there!', translation: 'Bien sûr. Je peux voir mon reflet dans le miroir là-bas !' },
+    { speaker: 'Lisa', role: 'B', text: 'Let\'s go! The school clock is always five minutes fast.', translation: 'Allons-y ! L\'horloge de l\'école est toujours en avance de cinq minutes.' },
+  ],
+  pronunciation: [
+    { word: 'Watch', phonetic: '/wɒtʃ/', meaning: 'Montre', tip: 'Le "ch" = "tch" : "ouot-tch". Le "w" initial : arrondissez les lèvres. Ne dites pas "ouatch" avec le son "ou" français.' },
+    { word: 'Switch', phonetic: '/swɪtʃ/', meaning: 'Interrupteur', tip: 'Même son "tch" final : "souit-tch". Le "sw" = "s" + "ou" arrondi. Le "i" est court.' },
+    { word: 'Clock', phonetic: '/klɒk/', meaning: 'Horloge', tip: 'Le "cl" = "kl" : "klok". Le "o" est court et ouvert. Pas "klôk" avec un "o" long.' },
+    { word: 'Glass', phonetic: '/ɡlæs/', meaning: 'Verre', tip: 'Le "gl" = "gl" : "glès" avec le "a" très ouvert comme dans "cat". Ne dites pas "glace".' },
+  ],
+}
+
+// ════════════════════════════════════════════════════════════════════════════════
+// UNIT 4: FOOD & DRINKS (a1-l16 through a1-l20)
+// ════════════════════════════════════════════════════════════════════════════════
+
+// ─── a1-l16: Common Foods (vocabulary) ─────────────────────────────────────────
+export const A1_L16: LessonContent = {
   vocab: [
     { english: 'Bread', french: 'Pain', phonetic: '/bred/', example: 'I eat bread for breakfast.', exampleTranslation: 'Je mange du pain au petit-déjeuner.' },
-    { english: 'Water', french: 'Eau', phonetic: '/ˈwɔːtər/', example: 'Can I have some water?', exampleTranslation: 'Puis-je avoir de l\'eau ?' },
-    { english: 'Coffee', french: 'Café', phonetic: '/ˈkɒfi/', example: 'I like coffee in the morning.', exampleTranslation: 'J\'aime le café le matin.' },
-    { english: 'Chicken', french: 'Poulet', phonetic: '/ˈtʃɪkɪn/', example: 'We have chicken for dinner.', exampleTranslation: 'Nous avons du poulet pour le dîner.' },
+    { english: 'Rice', french: 'Riz', phonetic: '/raɪs/', example: 'We eat rice with chicken.', exampleTranslation: 'Nous mangeons du riz avec du poulet.' },
+    { english: 'Meat', french: 'Viande', phonetic: '/miːt/', example: 'He doesn\'t eat meat.', exampleTranslation: 'Il ne mange pas de viande.' },
+    { english: 'Vegetables', french: 'Légumes', phonetic: '/ˈvedʒtəbəlz/', example: 'Eat your vegetables!', exampleTranslation: 'Mange tes légumes !' },
+    { english: 'Fish', french: 'Poisson', phonetic: '/fɪʃ/', example: 'Fresh fish is delicious.', exampleTranslation: 'Le poisson frais est délicieux.' },
   ],
   grammar: {
-    title: 'I Like / I Don\'t Like',
-    explanation: 'Pour exprimer ses goûts : "I like" (j\'aime) + nom ou verbe en -ing. "I don\'t like" (je n\'aime pas). On peut aussi dire "I love" (j\'adore) et "I hate" (je déteste).',
+    title: 'Dénombrable vs Indénombrable — Les aliments',
+    explanation: 'Certains aliments sont dénombrables (countable) : a banana, two eggs, three apples. D\'autres sont indénombrables (uncountable) : bread, rice, meat, water, fish. Avec les indénombrables, on ne peut PAS dire "a bread" ou "two breads". On dit : "some bread" (du pain), "a piece of bread" (un morceau de pain), "a slice of bread" (une tranche de pain). Pour les questions : "How much bread?" (combien de pain) vs "How many eggs?" (combien d\'œufs).',
     examples: [
-      { sentence: 'I like coffee.', translation: 'J\'aime le café.', isCorrect: true },
-      { sentence: 'I don\'t like fish.', translation: 'Je n\'aime pas le poisson.', isCorrect: true },
-      { sentence: 'She like pizza.', translation: '', isCorrect: false },
-      { sentence: 'He don\'t like vegetables.', translation: '', isCorrect: false },
+      { sentence: 'I would like some bread.', translation: 'Je voudrais du pain.', isCorrect: true },
+      { sentence: 'Can I have a rice?', translation: '', isCorrect: false },
+      { sentence: 'She eats two eggs for breakfast.', translation: 'Elle mange deux œufs au petit-déjeuner.', isCorrect: true },
+      { sentence: 'I need some meat for the recipe.', translation: 'J\'ai besoin de viande pour la recette.', isCorrect: true },
     ],
     commonMistakes: [
-      { wrong: 'She like coffee.', correct: 'She likes coffee.', explanation: 'Avec he/she/it, on ajoute "s" au verbe : likes.' },
-      { wrong: 'He don\'t like rice.', correct: 'He doesn\'t like rice.', explanation: 'Avec he/she/it, on utilise "doesn\'t" au lieu de "don\'t".' },
+      { wrong: 'A rice', correct: 'Some rice / A bowl of rice', explanation: '"Rice" est indénombrable. On dit "some rice" ou "a bowl of rice" (un bol de riz), jamais "a rice".' },
+      { wrong: 'Two breads', correct: 'Two pieces of bread / Two slices of bread', explanation: '"Bread" est indénombrable. On ne peut pas le compter directement. On compte les tranches/morceaux.' },
     ],
   },
   conversation: [
     { speaker: 'Sophie', role: 'A', text: 'What do you like to eat?', translation: 'Qu\'aimes-tu manger ?' },
-    { speaker: 'Mike', role: 'B', text: 'I like pasta and chicken. And you?', translation: 'J\'aime les pâtes et le poulet. Et toi ?' },
-    { speaker: 'Sophie', role: 'A', text: 'I love bread and cheese!', translation: 'J\'adore le pain et le fromage !' },
-    { speaker: 'Mike', role: 'B', text: 'Do you like coffee or tea?', translation: 'Préfères-tu le café ou le thé ?' },
-    { speaker: 'Sophie', role: 'A', text: 'I don\'t like coffee. I prefer tea.', translation: 'Je n\'aime pas le café. Je préfère le thé.' },
-    { speaker: 'Mike', role: 'B', text: 'Oh, I love coffee! I drink it every morning.', translation: 'Oh, j\'adore le café ! J\'en bois chaque matin.' },
+    { speaker: 'Mike', role: 'B', text: 'I like rice and fish. And you?', translation: 'J\'aime le riz et le poisson. Et toi ?' },
+    { speaker: 'Sophie', role: 'A', text: 'I love bread and cheese! Do you eat vegetables?', translation: 'J\'adore le pain et le fromage ! Manges-tu des légumes ?' },
+    { speaker: 'Mike', role: 'B', text: 'Yes, I eat some vegetables every day. But not much meat.', translation: 'Oui, je mange des légumes chaque jour. Mais pas beaucoup de viande.' },
+    { speaker: 'Sophie', role: 'A', text: 'I prefer a piece of bread with some cheese. And some fish!', translation: 'Je préfère un morceau de pain avec du fromage. Et du poisson !' },
+    { speaker: 'Mike', role: 'B', text: 'That sounds delicious! Let\'s have lunch together.', translation: 'Ça a l\'air délicieux ! Déjeunons ensemble.' },
   ],
   pronunciation: [
-    { word: 'Bread', phonetic: '/bred/', meaning: 'Pain', tip: 'Le "ea" se prononce "é" court comme dans "brède".' },
-    { word: 'Water', phonetic: '/ˈwɔːtər/', meaning: 'Eau', tip: 'En anglais américain, le "t" au milieu est souvent adouci, presque comme un "d".' },
-    { word: 'Coffee', phonetic: '/ˈkɒfi/', meaning: 'Café', tip: 'Le "o" est ouvert, prononcez "ko-fi" avec le premier "o" comme dans "bon".' },
-    { word: 'Chicken', phonetic: '/ˈtʃɪkɪn/', meaning: 'Poulet', tip: 'Le "ch" = "tch" et le "i" est court : "tchik-in".' },
+    { word: 'Bread', phonetic: '/bred/', meaning: 'Pain', tip: 'Le "ea" se prononce "é" court : "brède". Ne dites pas "bri:d" ni "bré-ade". Comme dans "bed" (lit) avec un "r" devant.' },
+    { word: 'Rice', phonetic: '/raɪs/', meaning: 'Riz', tip: 'Le "i" est long : "raïce". Ne dites pas "riss". Le son est comme dans "nice" (sympa).' },
+    { word: 'Meat', phonetic: '/miːt/', meaning: 'Viande', tip: 'Le "ea" = "ii" long : "miit". Attention : "meat" (viande) et "meet" (rencontrer) se prononcent pareil !' },
+    { word: 'Fish', phonetic: '/fɪʃ/', meaning: 'Poisson', tip: 'Prononcez "fich" — le "i" est court et le "sh" = "ch" français. Ne dites pas "fiche".' },
   ],
 }
 
-const A1_U5: LessonContent = {
+// ─── a1-l17: Drinks & Beverages (vocabulary) ───────────────────────────────────
+export const A1_L17: LessonContent = {
   vocab: [
-    { english: 'Mother', french: 'Mère', phonetic: '/ˈmʌðər/', example: 'My mother is a doctor.', exampleTranslation: 'Ma mère est médecin.' },
-    { english: 'Brother', french: 'Frère', phonetic: '/ˈbrʌðər/', example: 'I have one brother.', exampleTranslation: 'J\'ai un frère.' },
-    { english: 'Daughter', french: 'Fille', phonetic: '/ˈdɔːtər/', example: 'Their daughter is very smart.', exampleTranslation: 'Leur fille est très intelligente.' },
-    { english: 'Husband', french: 'Mari', phonetic: '/ˈhʌzbənd/', example: 'Her husband is a teacher.', exampleTranslation: 'Son mari est professeur.' },
+    { english: 'Water', french: 'Eau', phonetic: '/ˈwɔːtər/', example: 'Can I have some water?', exampleTranslation: 'Puis-je avoir de l\'eau ?' },
+    { english: 'Coffee', french: 'Café', phonetic: '/ˈkɒfi/', example: 'I drink coffee every morning.', exampleTranslation: 'Je bois du café chaque matin.' },
+    { english: 'Tea', french: 'Thé', phonetic: '/tiː/', example: 'She prefers tea.', exampleTranslation: 'Elle préfère le thé.' },
+    { english: 'Juice', french: 'Jus', phonetic: '/dʒuːs/', example: 'Orange juice is healthy.', exampleTranslation: 'Le jus d\'orange est sain.' },
+    { english: 'Milk', french: 'Lait', phonetic: '/mɪlk/', example: 'I drink milk with my cereal.', exampleTranslation: 'Je bois du lait avec mes céréales.' },
   ],
   grammar: {
-    title: 'Possessive Adjectives',
-    explanation: 'Les adjectifs possessifs : my (mon/ma), your (ton/ta), his (son/sa - masculin), her (son/sa - féminin), our (notre/nos), their (leur/leurs). Ils s\'accordent avec le possesseur, pas l\'objet possédé.',
+    title: 'Exprimer ses préférences de boissons',
+    explanation: 'Pour exprimer vos préférences : "I drink" (je bois), "I prefer" (je préfère), "I would like" (je voudrais). Pour mesurer les boissons : "a cup of tea/coffee" (une tasse de thé/café), "a glass of water/juice/milk" (un verre d\'eau/jus/lait). ATTENTION : "prefer... to" (pas "than") : "I prefer tea to coffee" (Je préfère le thé au café). Les boissons sont indénombrables : "some water" (pas "a water"), "some milk" (pas "a milk").',
     examples: [
-      { sentence: 'This is my book.', translation: 'C\'est mon livre.', isCorrect: true },
-      { sentence: 'She loves his family.', translation: 'Elle aime sa famille (à lui).', isCorrect: true },
-      { sentence: 'He loves her mother.', translation: '', isCorrect: false },
-      { sentence: 'This is their house.', translation: 'C\'est leur maison.', isCorrect: true },
+      { sentence: 'I would like a cup of coffee, please.', translation: 'Je voudrais une tasse de café, s\'il vous plaît.', isCorrect: true },
+      { sentence: 'She prefers tea than coffee.', translation: '', isCorrect: false },
+      { sentence: 'Can I have a glass of water?', translation: 'Puis-je avoir un verre d\'eau ?', isCorrect: true },
+      { sentence: 'He drinks two cups of tea a day.', translation: 'Il boit deux tasses de thé par jour.', isCorrect: true },
     ],
     commonMistakes: [
-      { wrong: 'This is the book of John.', correct: 'This is John\'s book.', explanation: 'On utilise l\'apostrophe+s pour la possession, pas "of".' },
-      { wrong: 'She loves his mother.', correct: 'She loves her mother.', explanation: '"Her" parce que c\'est LA mère de she, pas de he.' },
+      { wrong: 'I prefer tea than coffee.', correct: 'I prefer tea to coffee.', explanation: 'Après "prefer", on utilise "to" (au), pas "than" (que). C\'est différent du français "préférer... à".' },
+      { wrong: 'A water, please.', correct: 'A glass of water, please. / Some water, please.', explanation: '"Water" est indénombrable. On dit "a glass of water" ou "some water", jamais "a water".' },
     ],
   },
   conversation: [
-    { speaker: 'Clara', role: 'A', text: 'Tell me about your family!', translation: 'Parle-moi de ta famille !' },
-    { speaker: 'David', role: 'B', text: 'I have a big family. I have two brothers and one sister.', translation: 'J\'ai une grande famille. J\'ai deux frères et une sœur.' },
-    { speaker: 'Clara', role: 'A', text: 'That\'s nice! What does your mother do?', translation: 'C\'est sympa ! Que fait ta mère ?' },
-    { speaker: 'David', role: 'B', text: 'My mother is a nurse. My father is an engineer.', translation: 'Ma mère est infirmière. Mon père est ingénieur.' },
-    { speaker: 'Clara', role: 'A', text: 'I have a small family — just my husband and our daughter.', translation: 'J\'ai une petite famille — juste mon mari et notre fille.' },
-    { speaker: 'David', role: 'B', text: 'How old is your daughter?', translation: 'Quel âge a votre fille ?' },
+    { speaker: 'Waiter', role: 'A', text: 'What would you like to drink?', translation: 'Que souhaitez-vous boire ?' },
+    { speaker: 'Customer', role: 'B', text: 'I would like a cup of coffee, please.', translation: 'Je voudrais une tasse de café, s\'il vous plaît.' },
+    { speaker: 'Waiter', role: 'A', text: 'Regular or decaf? We also have tea and juice.', translation: 'Normal ou déca ? Nous avons aussi du thé et du jus.' },
+    { speaker: 'Customer', role: 'B', text: 'Regular, please. My friend prefers tea to coffee.', translation: 'Normal, s\'il vous plaît. Mon ami préfère le thé au café.' },
+    { speaker: 'Waiter', role: 'A', text: 'Great! And for your friend? A cup of tea?', translation: 'Très bien ! Et pour votre ami ? Une tasse de thé ?' },
+    { speaker: 'Customer', role: 'B', text: 'Yes, and a glass of milk for me too, please.', translation: 'Oui, et un verre de lait pour moi aussi, s\'il vous plaît.' },
   ],
   pronunciation: [
-    { word: 'Mother', phonetic: '/ˈmʌðər/', meaning: 'Mère', tip: 'Le "th" sonore : la langue entre les dents, mais on fait vibrer les cordes vocales.' },
-    { word: 'Brother', phonetic: '/ˈbrʌðər/', meaning: 'Frère', tip: 'Même "th" sonore que dans "mother" : "bra-der".' },
-    { word: 'Daughter', phonetic: '/ˈdɔːtər/', meaning: 'Fille', tip: 'Le "au" se prononce "o" long ouvert : "do-ter".' },
-    { word: 'Husband', phonetic: '/ˈhʌzbənd/', meaning: 'Mari', tip: 'Le "u" est comme le "o" ouvert : "heuz-band".' },
+    { word: 'Water', phonetic: '/ˈwɔːtər/', meaning: 'Eau', tip: 'Le "t" au milieu est souvent adouci en américain : "ouo-der". En anglais britannique, c\'est un vrai "t" : "ouo-ter".' },
+    { word: 'Coffee', phonetic: '/ˈkɒfi/', meaning: 'Café', tip: 'Le "o" est ouvert comme dans "bon" : "ko-fi". L\'accent est sur la première syllabe. Ne dites pas "koufi".' },
+    { word: 'Tea', phonetic: '/tiː/', meaning: 'Thé', tip: 'Le "ea" = "ii" long : "tii". Comme dans "see" (voir). Très simple mais ne dites pas "ti" court.' },
+    { word: 'Milk', phonetic: '/mɪlk/', meaning: 'Lait', tip: 'Prononcez "milk" — le "i" est court et le "l" est sombre (à l\'arrière de la bouche). Ne dites pas "meulk".' },
   ],
 }
 
-const A1_U6: LessonContent = {
+// ─── a1-l18: I Like / I Don't Like (grammar) ──────────────────────────────────
+export const A1_L18: LessonContent = {
   vocab: [
-    { english: 'Wake up', french: 'Se réveiller', phonetic: '/weɪk ʌp/', example: 'I wake up at 7 AM.', exampleTranslation: 'Je me réveille à 7h.' },
-    { english: 'Breakfast', french: 'Petit-déjeuner', phonetic: '/ˈbrekfəst/', example: 'I eat breakfast at 8 AM.', exampleTranslation: 'Je prends le petit-déjeuner à 8h.' },
-    { english: 'Work', french: 'Travailler', phonetic: '/wɜːrk/', example: 'I work from 9 to 5.', exampleTranslation: 'Je travaille de 9h à 17h.' },
-    { english: 'Dinner', french: 'Dîner', phonetic: '/ˈdɪnər/', example: 'We have dinner at 7 PM.', exampleTranslation: 'Nous dînons à 19h.' },
+    { english: 'Like', french: 'Aimer', phonetic: '/laɪk/', example: 'I like pizza.', exampleTranslation: 'J\'aime la pizza.' },
+    { english: 'Love', french: 'Adorer', phonetic: '/lʌv/', example: 'I love chocolate!', exampleTranslation: 'J\'adore le chocolat !' },
+    { english: 'Hate', french: 'Détester', phonetic: '/heɪt/', example: 'He hates onions.', exampleTranslation: 'Il déteste les oignons.' },
+    { english: 'Prefer', french: 'Préférer', phonetic: '/prɪˈfɜːr/', example: 'I prefer tea to coffee.', exampleTranslation: 'Je préfère le thé au café.' },
+    { english: 'Dislike', french: 'Ne pas aimer', phonetic: '/dɪsˈlaɪk/', example: 'She dislikes spicy food.', exampleTranslation: 'Elle n\'aime pas la nourriture épicée.' },
   ],
   grammar: {
-    title: 'Present Simple — Habits & Routines',
-    explanation: 'Le Present Simple exprime des habitudes et routines. Avec I/you/we/they, on utilise le verbe de base. Avec he/she/it, on ajoute -s ou -es. Les adverbes de fréquence (always, usually, sometimes, never) se placent avant le verbe.',
+    title: 'Like / Likes / Don\'t Like / Doesn\'t Like',
+    explanation: 'Avec I/you/we/they : on utilise le verbe de base "like" : I like, you like, we like, they like. Avec he/she/it : on ajoute "s" → "likes" : he likes, she likes, it likes. Négatif : "don\'t like" (I/you/we/they) et "doesn\'t like" (he/she/it). "Love" et "hate" suivent la même règle : he loves, she hates. Après like/love/hate, on peut utiliser un NOM : "I like pizza" OU un verbe en -ing : "I like reading" (J\'aime lire).',
     examples: [
-      { sentence: 'I usually wake up at 7.', translation: 'Je me réveille habituellement à 7h.', isCorrect: true },
-      { sentence: 'She go to work at 8.', translation: '', isCorrect: false },
-      { sentence: 'He always eats breakfast.', translation: 'Il prend toujours le petit-déjeuner.', isCorrect: true },
-      { sentence: 'They doesn\'t work on Sunday.', translation: '', isCorrect: false },
+      { sentence: 'I like coffee.', translation: 'J\'aime le café.', isCorrect: true },
+      { sentence: 'I don\'t like fish.', translation: 'Je n\'aime pas le poisson.', isCorrect: true },
+      { sentence: 'She like pizza.', translation: '', isCorrect: false },
+      { sentence: 'He doesn\'t like vegetables.', translation: 'Il n\'aime pas les légumes.', isCorrect: true },
     ],
     commonMistakes: [
-      { wrong: 'She go to work.', correct: 'She goes to work.', explanation: 'Avec he/she/it, ajoutez -s ou -es au verbe.' },
-      { wrong: 'I always am happy.', correct: 'I am always happy.', explanation: 'L\'adverbe se place APRÈS le verbe "be" mais AVANT les autres verbes.' },
+      { wrong: 'She like coffee.', correct: 'She likes coffee.', explanation: 'Avec he/she/it, on ajoute TOUJOURS "s" au verbe : like → likes. C\'est la règle du Present Simple.' },
+      { wrong: 'He don\'t like rice.', correct: 'He doesn\'t like rice.', explanation: 'Avec he/she/it, on utilise "doesn\'t" au lieu de "don\'t". "Don\'t" = do not, "doesn\'t" = does not.' },
     ],
   },
   conversation: [
-    { speaker: 'Emma', role: 'A', text: 'What time do you wake up?', translation: 'À quelle heure te réveilles-tu ?' },
-    { speaker: 'Lucas', role: 'B', text: 'I usually wake up at 6:30. I always have breakfast at 7.', translation: 'Je me réveille habituellement à 6h30. Je prends toujours le petit-déjeuner à 7h.' },
-    { speaker: 'Emma', role: 'A', text: 'What do you do after breakfast?', translation: 'Que fais-tu après le petit-déjeuner ?' },
-    { speaker: 'Lucas', role: 'B', text: 'I go to work at 8. I work from 9 to 5.', translation: 'Je vais au travail à 8h. Je travaille de 9h à 17h.' },
-    { speaker: 'Emma', role: 'A', text: 'And what do you do in the evening?', translation: 'Et que fais-tu le soir ?' },
-    { speaker: 'Lucas', role: 'B', text: 'I have dinner at 7, then I watch TV. I never go to bed late.', translation: 'Je dîne à 19h, puis je regarde la télé. Je ne me couche jamais tard.' },
+    { speaker: 'Sophie', role: 'A', text: 'What food do you like?', translation: 'Quelle nourriture aimes-tu ?' },
+    { speaker: 'Mike', role: 'B', text: 'I love pasta and chicken! I hate mushrooms.', translation: 'J\'adore les pâtes et le poulet ! Je déteste les champignons.' },
+    { speaker: 'Sophie', role: 'A', text: 'Really? I like mushrooms. Do you like fish?', translation: 'Vraiment ? J\'aime les champignons. Aimes-tu le poisson ?' },
+    { speaker: 'Mike', role: 'B', text: 'No, I don\'t like fish. I prefer meat. And you?', translation: 'Non, je n\'aime pas le poisson. Je préfère la viande. Et toi ?' },
+    { speaker: 'Sophie', role: 'A', text: 'I like fish a lot! My sister loves sushi.', translation: 'J\'aime beaucoup le poisson ! Ma sœur adore les sushis.' },
+    { speaker: 'Mike', role: 'B', text: 'She doesn\'t like French food? That\'s unusual! I dislike spicy food myself.', translation: 'Elle n\'aime pas la cuisine française ? C\'est inhabituel ! Moi, je n\'aime pas la nourriture épicée.' },
   ],
   pronunciation: [
-    { word: 'Breakfast', phonetic: '/ˈbrekfəst/', meaning: 'Petit-déjeuner', tip: 'On prononce "brek-fust" — le "a" est réduit et non prononcé "é".' },
-    { word: 'Wake up', phonetic: '/weɪk ʌp/', meaning: 'Se réveiller', tip: 'Le "w" initial : arrondissez les lèvres. "Ouék-ap".' },
-    { word: 'Dinner', phonetic: '/ˈdɪnər/', meaning: 'Dîner', tip: 'Le "i" est court comme dans "dit" : "din-er".' },
-    { word: 'Usually', phonetic: '/ˈjuːʒuəli/', meaning: 'Habituellement', tip: 'Prononcez "iou-jou-ali" — le "s" devient le son "j" comme dans "jour".' },
+    { word: 'Like', phonetic: '/laɪk/', meaning: 'Aimer', tip: 'Le "i" est long : "laïk". Ne dites pas "lik" court. Le "k" final est net et sans aspiration excessive.' },
+    { word: 'Love', phonetic: '/lʌv/', meaning: 'Adorer', tip: 'Le "u" est ouvert comme dans "come" : "leuv". Le "v" final est doux mais audible.' },
+    { word: 'Hate', phonetic: '/heɪt/', meaning: 'Détester', tip: 'Le "h" est expiré et le "ate" = "éït" : "héït". Ne rendez pas le "h" muet comme en français.' },
+    { word: 'Prefer', phonetic: '/prɪˈfɜːr/', meaning: 'Préférer', tip: 'L\'accent est sur "fer" : "pri-FER". Le premier "e" est réduit (schwa), le deuxième est accentué.' },
   ],
 }
 
-const A1_U7: LessonContent = {
+// ─── a1-l19: Ordering at a Café (conversation) ────────────────────────────────
+export const A1_L19: LessonContent = {
   vocab: [
-    { english: 'Kitchen', french: 'Cuisine', phonetic: '/ˈkɪtʃɪn/', example: 'The kitchen is very big.', exampleTranslation: 'La cuisine est très grande.' },
-    { english: 'Bedroom', french: 'Chambre', phonetic: '/ˈbedruːm/', example: 'My bedroom is upstairs.', exampleTranslation: 'Ma chambre est à l\'étage.' },
-    { english: 'Sofa', french: 'Canapé', phonetic: '/ˈsoʊfə/', example: 'Sit on the sofa, please.', exampleTranslation: 'Asseyez-vous sur le canapé, s\'il vous plaît.' },
-    { english: 'Bathroom', french: 'Salle de bain', phonetic: '/ˈbæθruːm/', example: 'The bathroom is on the left.', exampleTranslation: 'La salle de bain est à gauche.' },
+    { english: 'Order', french: 'Commander / Commande', phonetic: '/ˈɔːrdər/', example: 'I would like to order, please.', exampleTranslation: 'Je voudrais commander, s\'il vous plaît.' },
+    { english: 'Menu', french: 'Menu / Carte', phonetic: '/ˈmenjuː/', example: 'Can I see the menu?', exampleTranslation: 'Puis-je voir le menu ?' },
+    { english: 'Bill', french: 'L\'addition', phonetic: '/bɪl/', example: 'The bill, please.', exampleTranslation: 'L\'addition, s\'il vous plaît.' },
+    { english: 'Tip', french: 'Pourboire', phonetic: '/tɪp/', example: 'I left a tip on the table.', exampleTranslation: 'J\'ai laissé un pourboire sur la table.' },
+    { english: 'Waiter', french: 'Serveur', phonetic: '/ˈweɪtər/', example: 'The waiter is very friendly.', exampleTranslation: 'Le serveur est très sympa.' },
   ],
   grammar: {
-    title: 'There is / There are',
-    explanation: 'On utilise "there is" (il y a) avec un singulier et "there are" avec un pluriel. Négatif : "there isn\'t" / "there aren\'t". Question : "Is there...?" / "Are there...?"',
+    title: 'Demandes polies au café et au restaurant',
+    explanation: 'Pour commander poliment, utilisez ces formules : "I would like..." (Je voudrais...), "Can I have...?" (Puis-je avoir...?), "Could I get...?" (Pourrais-je obtenir...?). Ajoutez toujours "please" à la fin. Quand on vous sert quelque chose, dites "Thank you". ATTENTION : "Give me" et "I want" sont considérés impolis en anglais ! Dites plutôt "I would like" ou "Can I have". Pour payer : "Could I have the bill, please?" ou "Can we pay, please?"',
     examples: [
-      { sentence: 'There is a sofa in the living room.', translation: 'Il y a un canapé dans le salon.', isCorrect: true },
-      { sentence: 'There are three bedrooms.', translation: 'Il y a trois chambres.', isCorrect: true },
-      { sentence: 'There is two bathrooms.', translation: '', isCorrect: false },
-      { sentence: 'Is there a kitchen?', translation: 'Y a-t-il une cuisine ?', isCorrect: true },
+      { sentence: 'I would like a coffee, please.', translation: 'Je voudrais un café, s\'il vous plaît.', isCorrect: true },
+      { sentence: 'Give me a water.', translation: '', isCorrect: false },
+      { sentence: 'Can I have the bill, please?', translation: 'Puis-je avoir l\'addition, s\'il vous plaît ?', isCorrect: true },
+      { sentence: 'Could I see the menu?', translation: 'Pourrais-je voir le menu ?', isCorrect: true },
     ],
     commonMistakes: [
-      { wrong: 'There is two chairs.', correct: 'There are two chairs.', explanation: 'Avec un pluriel, on utilise "there are".' },
-      { wrong: 'There are a table.', correct: 'There is a table.', explanation: 'Avec un singulier, on utilise "there is".' },
+      { wrong: 'Give me a water.', correct: 'I would like some water, please.', explanation: '"Give me" est impoli en anglais. Utilisez "I would like" + "please" pour être poli. Et "water" est indénombrable.' },
+      { wrong: 'I want the bill.', correct: 'Could I have the bill, please?', explanation: '"I want" est trop direct. "Could I have" est beaucoup plus poli et courant en anglais.' },
     ],
   },
   conversation: [
-    { speaker: 'Julie', role: 'A', text: 'Is there a kitchen in your apartment?', translation: 'Y a-t-il une cuisine dans ton appartement ?' },
-    { speaker: 'Mark', role: 'B', text: 'Yes, there is. There\'s also a big living room.', translation: 'Oui. Il y a aussi un grand salon.' },
-    { speaker: 'Julie', role: 'A', text: 'How many bedrooms are there?', translation: 'Combien de chambres y a-t-il ?' },
-    { speaker: 'Mark', role: 'B', text: 'There are two bedrooms and one bathroom.', translation: 'Il y a deux chambres et une salle de bain.' },
-    { speaker: 'Julie', role: 'A', text: 'Is there a sofa in the living room?', translation: 'Y a-t-il un canapé dans le salon ?' },
-    { speaker: 'Mark', role: 'B', text: 'Yes, there is a blue sofa near the window!', translation: 'Oui, il y a un canapé bleu près de la fenêtre !' },
+    { speaker: 'Waiter', role: 'A', text: 'Good afternoon! Would you like to order?', translation: 'Bon après-midi ! Souhaitez-vous commander ?' },
+    { speaker: 'Customer', role: 'B', text: 'Yes! Can I have the menu, please?', translation: 'Oui ! Puis-je avoir le menu, s\'il vous plaît ?' },
+    { speaker: 'Waiter', role: 'A', text: 'Of course! Here it is. Our special today is the chocolate cake.', translation: 'Bien sûr ! Le voici. Notre spécialité aujourd\'hui est le gâteau au chocolat.' },
+    { speaker: 'Customer', role: 'B', text: 'I would like a coffee and a piece of chocolate cake, please.', translation: 'Je voudrais un café et un morceau de gâteau au chocolat, s\'il vous plaît.' },
+    { speaker: 'Waiter', role: 'A', text: 'Anything else?', translation: 'Autre chose ?' },
+    { speaker: 'Customer', role: 'B', text: 'No, thank you. Could I have the bill when you are ready? I will leave a tip!', translation: 'Non, merci. Pourrais-je avoir l\'addition quand vous serez prêt ? Je laisserai un pourboire !' },
   ],
   pronunciation: [
-    { word: 'Kitchen', phonetic: '/ˈkɪtʃɪn/', meaning: 'Cuisine', tip: 'Le "ch" se prononce "tch" : "kit-chin".' },
-    { word: 'Bedroom', phonetic: '/ˈbedruːm/', meaning: 'Chambre', tip: 'Prononcez "béd-roum" — le "d" et le "r" se lient.' },
-    { word: 'Sofa', phonetic: '/ˈsoʊfə/', meaning: 'Canapé', tip: 'Le "o" est long : "so-fa" avec le "a" très réduit.' },
-    { word: 'Bathroom', phonetic: '/ˈbæθruːm/', meaning: 'Salle de bain', tip: 'Le "th" est expiré, langue entre les dents : "bath-roum".' },
+    { word: 'Order', phonetic: '/ˈɔːrdər/', meaning: 'Commander', tip: 'L\'accent est sur "or" : "OR-der". Le "or" est long comme dans "door". Le "er" final est réduit.' },
+    { word: 'Menu', phonetic: '/ˈmenjuː/', meaning: 'Menu', tip: 'Le "u" final est long : "mé-niou". L\'accent est sur la première syllabe. Ne dites pas "ménu".' },
+    { word: 'Bill', phonetic: '/bɪl/', meaning: 'L\'addition', tip: 'Le "i" est court : "bil". Comme dans "will" (futur). Pas "biil" long.' },
+    { word: 'Waiter', phonetic: '/ˈweɪtər/', meaning: 'Serveur', tip: 'L\'accent est sur "wait" : "OUÉI-ter". Le "er" final est doux et réduit. Ne dites pas "ouè-tèr".' },
   ],
 }
 
-const A1_U8: LessonContent = {
+// ─── a1-l20: Food Pronunciation (pronunciation) ───────────────────────────────
+export const A1_L20: LessonContent = {
   vocab: [
-    { english: 'Price', french: 'Prix', phonetic: '/praɪs/', example: 'What is the price?', exampleTranslation: 'Quel est le prix ?' },
-    { english: 'Cheap', french: 'Bon marché', phonetic: '/tʃiːp/', example: 'This shirt is very cheap.', exampleTranslation: 'Cette chemise est très bon marché.' },
-    { english: 'Expensive', french: 'Cher', phonetic: '/ɪkˈspensɪv/', example: 'The phone is too expensive.', exampleTranslation: 'Le téléphone est trop cher.' },
-    { english: 'Size', french: 'Taille', phonetic: '/saɪz/', example: 'What size do you need?', exampleTranslation: 'De quelle taille avez-vous besoin ?' },
+    { english: 'Breakfast', french: 'Petit-déjeuner', phonetic: '/ˈbrekfəst/', example: 'I eat breakfast at seven.', exampleTranslation: 'Je prends le petit-déjeuner à sept heures.' },
+    { english: 'Lunch', french: 'Déjeuner', phonetic: '/lʌntʃ/', example: 'Lunch is at noon.', exampleTranslation: 'Le déjeuner est à midi.' },
+    { english: 'Dinner', french: 'Dîner', phonetic: '/ˈdɪnər/', example: 'Dinner is at seven PM.', exampleTranslation: 'Le dîner est à 19h.' },
+    { english: 'Recipe', french: 'Recette', phonetic: '/ˈresəpi/', example: 'This recipe is easy.', exampleTranslation: 'Cette recette est facile.' },
+    { english: 'Dessert', french: 'Dessert', phonetic: '/dɪˈzɜːrt/', example: 'We have cake for dessert.', exampleTranslation: 'Nous avons du gâteau en dessert.' },
   ],
   grammar: {
-    title: 'Can I Have...? — Polite Requests',
-    explanation: 'Pour demander quelque chose poliment : "Can I have...?" (Puis-je avoir...?), "I would like..." (Je voudrais...), "Could I have...?" (Plus poli).',
+    title: 'Les sons voyelles dans les mots de nourriture',
+    explanation: 'Les voyelles en anglais sont souvent trompeuses pour les francophones : "breakfast" se prononce "brek-fust" (pas "brék-fest"), "recipe" = "ré-si-pi" (pas "ré-saïp"), "dinner" = "din-er" (i court), "dessert" = "di-ZERT" (accent sur la deuxième syllabe, contrairement au français "désert"). Règle générale : les mots de deux syllabes ont souvent l\'accent sur la PREMIÈRE syllabe (BREAKfast, DInner), mais les mots d\'origine française gardent souvent l\'accent français (desSERT).',
     examples: [
-      { sentence: 'Can I have a bag, please?', translation: 'Puis-je avoir un sac, s\'il vous plaît ?', isCorrect: true },
-      { sentence: 'I would like a blue shirt.', translation: 'Je voudrais une chemise bleue.', isCorrect: true },
-      { sentence: 'I want a water.', translation: '', isCorrect: false },
-      { sentence: 'Could I try this on?', translation: 'Puis-je essayer ceci ?', isCorrect: true },
+      { sentence: 'Breakfast is at 8 AM.', translation: 'Le petit-déjeuner est à 8h.', isCorrect: true },
+      { sentence: 'This is a simple recipe.', translation: 'C\'est une recette simple.', isCorrect: true },
+      { sentence: 'Lunch is my favorite meal.', translation: 'Le déjeuner est mon repas préféré.', isCorrect: true },
+      { sentence: 'I eat di-NER at seven.', translation: '', isCorrect: false },
     ],
     commonMistakes: [
-      { wrong: 'I want a water.', correct: 'I would like some water.', explanation: '"Want" est trop direct. "Would like" est plus poli. "Water" est indénombrable.' },
-      { wrong: 'Can I have one water?', correct: 'Can I have a glass of water?', explanation: '"Water" est indénombrable, on dit "a glass/bottle of water".' },
+      { wrong: 'Ré-saïp', correct: 'Ré-si-pi', explanation: '"Recipe" se prononce "ré-si-pi" avec des "i" courts dans les deux dernières syllabes. Pas de son "aï" !' },
+      { wrong: 'Brék-fest', correct: 'Brek-fust', explanation: 'Dans "breakfast", le "ea" = "e" court (pas "é" long) et le "a" de "fast" est réduit à "u" : "brek-fust".' },
     ],
   },
   conversation: [
-    { speaker: 'Nadia', role: 'A', text: 'Excuse me, can I have this shirt in size M?', translation: 'Excusez-moi, puis-je avoir cette chemise en taille M ?' },
-    { speaker: 'Clerk', role: 'B', text: 'Of course! What color would you like?', translation: 'Bien sûr ! Quelle couleur souhaitez-vous ?' },
-    { speaker: 'Nadia', role: 'A', text: 'I would like the blue one. How much is it?', translation: 'Je voudrais la bleue. Combien coûte-t-elle ?' },
-    { speaker: 'Clerk', role: 'B', text: 'It\'s twenty-five dollars.', translation: 'C\'est vingt-cinq dollars.' },
-    { speaker: 'Nadia', role: 'A', text: 'That\'s not too expensive! Can I try it on?', translation: 'Ce n\'est pas trop cher ! Puis-je l\'essayer ?' },
-    { speaker: 'Clerk', role: 'B', text: 'Sure, the fitting room is on the right.', translation: 'Bien sûr, la cabine d\'essayage est à droite.' },
+    { speaker: 'Chef', role: 'A', text: 'Welcome to cooking class! What do you eat for breakfast?', translation: 'Bienvenue au cours de cuisine ! Que mangez-vous au petit-déjeuner ?' },
+    { speaker: 'Student', role: 'B', text: 'I have breakfast at seven. Usually bread and coffee.', translation: 'Je prends le petit-déjeuner à sept heures. Généralement du pain et du café.' },
+    { speaker: 'Chef', role: 'A', text: 'Good. And lunch? What time?', translation: 'Bien. Et le déjeuner ? À quelle heure ?' },
+    { speaker: 'Student', role: 'B', text: 'Lunch is at noon. I eat a big lunch, then a small dinner.', translation: 'Le déjeuner est à midi. Je mange un gros déjeuner, puis un petit dîner.' },
+    { speaker: 'Chef', role: 'A', text: 'Interesting! Today\'s recipe is for dessert. Chocolate cake!', translation: 'Intéressant ! La recette d\'aujourd\'hui est un dessert. Gâteau au chocolat !' },
+    { speaker: 'Student', role: 'B', text: 'I love dessert! Dinner is always better with a sweet recipe.', translation: 'J\'adore le dessert ! Le dîner est toujours meilleur avec une recette sucrée.' },
   ],
   pronunciation: [
-    { word: 'Price', phonetic: '/praɪs/', meaning: 'Prix', tip: 'Le "i" est long : "praïce" — ne confondez pas avec "prize" (prix/recompense).' },
-    { word: 'Cheap', phonetic: '/tʃiːp/', meaning: 'Bon marché', tip: 'Le "ch" = "tch" et "ea" = "ii" long : "tchiip".' },
-    { word: 'Expensive', phonetic: '/ɪkˈspensɪv/', meaning: 'Cher', tip: 'L\'accent est sur "pen" : "ik-SPEN-siv".' },
-    { word: 'Size', phonetic: '/saɪz/', meaning: 'Taille', tip: 'Prononcez "saïz" avec le son "z" final sonore.' },
+    { word: 'Breakfast', phonetic: '/ˈbrekfəst/', meaning: 'Petit-déjeuner', tip: 'Prononcez "brek-fust" — le "ea" = "e" court et le "a" de "fast" est réduit. L\'accent est sur "BREAK". Pas "bréé-kfest" !' },
+    { word: 'Lunch', phonetic: '/lʌntʃ/', meaning: 'Déjeuner', tip: 'Le "u" est ouvert comme dans "come" : "leunt-ch". Le "ch" = "tch". L\'accent est sur "LUNCH".' },
+    { word: 'Dinner', phonetic: '/ˈdɪnər/', meaning: 'Dîner', tip: 'Le "i" est court comme dans "sit" : "din-er". L\'accent est sur "DIN". Ne dites pas "dii-ner" avec un "i" long.' },
+    { word: 'Dessert', phonetic: '/dɪˈzɜːrt/', meaning: 'Dessert', tip: 'L\'accent est sur "sert" : "di-ZERT" — contrairement au français "désert" (lieu vide). Les deux mots existent en anglais : "dessert" (sucrerie) vs "desert" (sable).' },
   ],
 }
+// Lesson content for A1 Units 5-8
+// YOELANG English learning app for francophone users
+// Inspired by Harvard's practical English pedagogy - rigorous, practical, progressive
 
-// ─── A2 UNITS ────────────────────────────────────────────────────────────────
 
-const A2_U1: LessonContent = {
+// ═══════════════════════════════════════════════════════════════════════════════
+// UNIT 5: FAMILY (a1-l21 to a1-l25)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+export const A1_L21: LessonContent = {
   vocab: [
-    { english: 'Sunny', french: 'Ensoleillé', phonetic: '/ˈsʌni/', example: 'It is sunny today.', exampleTranslation: 'Il fait soleil aujourd\'hui.' },
-    { english: 'Rainy', french: 'Pluvieux', phonetic: '/ˈreɪni/', example: 'It\'s a rainy day.', exampleTranslation: 'C\'est un jour pluvieux.' },
-    { english: 'Season', french: 'Saison', phonetic: '/ˈsiːzən/', example: 'My favorite season is summer.', exampleTranslation: 'Ma saison préférée est l\'été.' },
-    { english: 'Temperature', french: 'Température', phonetic: '/ˈtemprətʃər/', example: 'The temperature is 25 degrees.', exampleTranslation: 'La température est de 25 degrés.' },
+    { english: 'Father', french: 'Père', phonetic: '/ˈfɑːðər/', example: 'My father works in a hospital.', exampleTranslation: 'Mon père travaille dans un hôpital.' },
+    { english: 'Sister', french: 'Sœur', phonetic: '/ˈsɪstər/', example: 'My sister is older than me.', exampleTranslation: 'Ma sœur est plus âgée que moi.' },
+    { english: 'Parents', french: 'Parents', phonetic: '/ˈperənts/', example: 'My parents live in Lyon.', exampleTranslation: 'Mes parents habitent à Lyon.' },
+    { english: 'Son', french: 'Fils', phonetic: '/sʌn/', example: 'Their son is three years old.', exampleTranslation: 'Leur fils a trois ans.' },
+    { english: 'Aunt', french: 'Tante', phonetic: '/ænt/', example: 'My aunt lives near the sea.', exampleTranslation: 'Ma tante habite près de la mer.' },
   ],
   grammar: {
-    title: 'Future with "Going to"',
-    explanation: 'On utilise "going to" pour parler de prévisions et intentions futures : I am going to, you are going to, he/she/it is going to. Négatif : I am not going to.',
+    title: 'Irrégularités du pluriel — Famille',
+    explanation: 'Certains mots de la famille ont des pluriels irréguliers : man → men (homme → hommes), woman → women (femme → femmes), child → children (enfant → enfants), person → people (personne → personnes). On ne dit PAS "mans", "womans" ou "childs".',
     examples: [
-      { sentence: 'It is going to rain tomorrow.', translation: 'Il va pleuvoir demain.', isCorrect: true },
-      { sentence: 'We are going to visit Paris.', translation: 'Nous allons visiter Paris.', isCorrect: true },
-      { sentence: 'She going to study tonight.', translation: '', isCorrect: false },
-      { sentence: 'They is going to travel.', translation: '', isCorrect: false },
+      { sentence: 'The women in my family are strong.', translation: 'Les femmes de ma famille sont fortes.', isCorrect: true },
+      { sentence: 'There are three childs in the room.', translation: '', isCorrect: false },
+      { sentence: 'The men are my brothers.', translation: 'Les hommes sont mes frères.', isCorrect: true },
+      { sentence: 'Many people live in this city.', translation: 'Beaucoup de personnes vivent dans cette ville.', isCorrect: true },
     ],
     commonMistakes: [
-      { wrong: 'She going to come.', correct: 'She is going to come.', explanation: 'Il faut toujours le verbe "be" avant "going to".' },
-      { wrong: 'They is going to win.', correct: 'They are going to win.', explanation: '"They" prend "are", pas "is".' },
+      { wrong: 'Three childs', correct: 'Three children', explanation: 'Le pluriel de "child" est "children", pas "childs".' },
+      { wrong: 'Two womans', correct: 'Two women', explanation: 'Le pluriel de "woman" est "women" (prononcé "wimmen"), pas "womans".' },
     ],
   },
   conversation: [
-    { speaker: 'Alice', role: 'A', text: 'What\'s the weather like today?', translation: 'Quel temps fait-il aujourd\'hui ?' },
-    { speaker: 'Ben', role: 'B', text: 'It\'s sunny and warm. About 25 degrees.', translation: 'Il fait soleil et chaud. Environ 25 degrés.' },
-    { speaker: 'Alice', role: 'A', text: 'Is it going to rain this weekend?', translation: 'Va-t-il pleuvoir ce week-end ?' },
-    { speaker: 'Ben', role: 'B', text: 'Yes, it\'s going to be rainy on Saturday.', translation: 'Oui, il va pleuvoir samedi.' },
-    { speaker: 'Alice', role: 'A', text: 'Oh no! I love summer. I don\'t like cold weather.', translation: 'Oh non ! J\'adore l\'été. Je n\'aime pas le froid.' },
-    { speaker: 'Ben', role: 'B', text: 'Me too! But autumn is also beautiful with the colorful leaves.', translation: 'Moi aussi ! Mais l\'automne est aussi beau avec les feuilles colorées.' },
+    { speaker: 'Camille', role: 'A', text: 'Tell me, do you have a big family?', translation: 'Dis-moi, as-tu une grande famille ?' },
+    { speaker: 'Lucas', role: 'B', text: 'Yes! I have one sister and two brothers. My parents have four children.', translation: 'Oui ! J\'ai une sœur et deux frères. Mes parents ont quatre enfants.' },
+    { speaker: 'Camille', role: 'A', text: 'Wow! What does your father do?', translation: 'Waouh ! Que fait ton père ?' },
+    { speaker: 'Lucas', role: 'B', text: 'My father is a teacher. And my aunt is a doctor.', translation: 'Mon père est professeur. Et ma tante est médecin.' },
+    { speaker: 'Camille', role: 'A', text: 'That\'s nice. Do you have any sons or daughters?', translation: 'C\'est sympa. As-tu des fils ou des filles ?' },
+    { speaker: 'Lucas', role: 'B', text: 'Not yet! But I want a son and a daughter one day.', translation: 'Pas encore ! Mais je voudrais un fils et une fille un jour.' },
   ],
   pronunciation: [
-    { word: 'Sunny', phonetic: '/ˈsʌni/', meaning: 'Ensoleillé', tip: 'Le "u" est ouvert comme "o" : "son-ni".' },
-    { word: 'Rainy', phonetic: '/ˈreɪni/', meaning: 'Pluvieux', tip: 'Le "ai" se prononce "é" : "ré-ni".' },
-    { word: 'Season', phonetic: '/ˈsiːzən/', meaning: 'Saison', tip: 'Le "ea" est un "i" long : "sii-zon".' },
-    { word: 'Temperature', phonetic: '/ˈtemprətʃər/', meaning: 'Température', tip: 'On prononce souvent "tem-pra-tcher" avec le "ch" = "tch".' },
+    { word: 'Father', phonetic: '/ˈfɑːðər/', meaning: 'Père', tip: 'Le "th" est sonore : langue entre les dents, faites vibrer les cordes vocales. "Fa-der".' },
+    { word: 'Sister', phonetic: '/ˈsɪstər/', meaning: 'Sœur', tip: 'Le "i" est court comme dans "lit" : "sis-ter". Pas "siister".' },
+    { word: 'Son', phonetic: '/sʌn/', meaning: 'Fils', tip: 'Le "o" est ouvert comme dans "bon" : "seun". Ne confondez pas avec "sun" (soleil) — même prononciation !' },
+    { word: 'Aunt', phonetic: '/ænt/', meaning: 'Tante', tip: 'En anglais américain, on prononce "ant" (comme la fourmi). En anglais britannique, on dit "ahnt".' },
   ],
 }
 
-const A2_U2: LessonContent = {
+export const A1_L22: LessonContent = {
   vocab: [
-    { english: 'Airport', french: 'Aéroport', phonetic: '/ˈerpɔːrt/', example: 'We arrived at the airport.', exampleTranslation: 'Nous sommes arrivés à l\'aéroport.' },
-    { english: 'Ticket', french: 'Billet', phonetic: '/ˈtɪkɪt/', example: 'I bought a round-trip ticket.', exampleTranslation: 'J\'ai acheté un billet aller-retour.' },
-    { english: 'Luggage', french: 'Bagage', phonetic: '/ˈlʌɡɪdʒ/', example: 'Don\'t forget your luggage!', exampleTranslation: 'N\'oubliez pas vos bagages !' },
-    { english: 'Passenger', french: 'Passager', phonetic: '/ˈpæsəndʒər/', example: 'All passengers must board now.', exampleTranslation: 'Tous les passagers doivent embarquer maintenant.' },
+    { english: 'My', french: 'Mon/Ma', phonetic: '/maɪ/', example: 'This is my book.', exampleTranslation: 'Ceci est mon livre.' },
+    { english: 'His', french: 'Son/Sa (à lui)', phonetic: '/hɪz/', example: 'This is his car.', exampleTranslation: 'C\'est sa voiture (à lui).' },
+    { english: 'Her', french: 'Son/Sa (à elle)', phonetic: '/hɜːr/', example: 'This is her bag.', exampleTranslation: 'C\'est son sac (à elle).' },
+    { english: 'Our', french: 'Notre/Nos', phonetic: '/aʊr/', example: 'This is our house.', exampleTranslation: 'C\'est notre maison.' },
+    { english: 'Their', french: 'Leur/Leurs', phonetic: '/ðer/', example: 'This is their garden.', exampleTranslation: 'C\'est leur jardin.' },
   ],
   grammar: {
-    title: 'Past Simple — Regular Verbs',
-    explanation: 'Le Past Simple des verbes réguliers se forme en ajoutant -ed : walked, played, visited. Négatif : didn\'t + verbe de base. "I didn\'t walk" (je n\'ai pas marché).',
+    title: 'Adjectifs possessifs — my, your, his, her, our, their',
+    explanation: 'Les adjectifs possessifs s\'accordent avec le POSSESSEUR, pas avec l\'objet possédé. "His" = à un homme, "her" = à une femme. En français, "son livre" peut dire "his book" ou "her book" — en anglais, on distingue ! "My mother" (ma mère), "his sister" (sa sœur à lui), "her brother" (son frère à elle).',
     examples: [
-      { sentence: 'I traveled to London last year.', translation: 'J\'ai voyagé à Londres l\'année dernière.', isCorrect: true },
-      { sentence: 'She didn\'t go to the airport.', translation: 'Elle n\'est pas allée à l\'aéroport.', isCorrect: true },
-      { sentence: 'He visitied Paris last month.', translation: '', isCorrect: false },
-      { sentence: 'We didn\'t missed the train.', translation: '', isCorrect: false },
+      { sentence: 'She loves her mother.', translation: 'Elle aime sa mère (à elle).', isCorrect: true },
+      { sentence: 'He loves her mother.', translation: 'Il aime sa mère (à elle).', isCorrect: true },
+      { sentence: 'She loves his mother.', translation: '', isCorrect: false },
+      { sentence: 'We love our parents.', translation: 'Nous aimons nos parents.', isCorrect: true },
     ],
     commonMistakes: [
-      { wrong: 'He visitied Paris.', correct: 'He visited Paris.', explanation: 'Pas de "i" supplémentaire : visit + ed = visited.' },
-      { wrong: 'I didn\'t went.', correct: 'I didn\'t go.', explanation: 'Après "didn\'t", on utilise le verbe de base, pas le passé.' },
+      { wrong: 'She loves his mother. (pour dire : sa propre mère)', correct: 'She loves her mother.', explanation: '"Her" parce que c\'est la mère de "she", pas de "he". "His" = à un homme.' },
+      { wrong: 'The book of John', correct: 'John\'s book', explanation: 'En anglais, on utilise l\'apostrophe+s pour la possession : "John\'s book", pas "the book of John".' },
     ],
   },
   conversation: [
-    { speaker: 'Claire', role: 'A', text: 'How was your trip to London?', translation: 'Comment était ton voyage à Londres ?' },
-    { speaker: 'Romain', role: 'B', text: 'It was great! I traveled by plane last Friday.', translation: 'C\'était super ! J\'ai voyagé en avion vendredi dernier.' },
-    { speaker: 'Claire', role: 'A', text: 'Did you check in online?', translation: 'As-tu fait l\'enregistrement en ligne ?' },
-    { speaker: 'Romain', role: 'B', text: 'Yes, but my luggage was too heavy. I paid extra!', translation: 'Oui, mais mes bagages étaient trop lourds. J\'ai payé un supplément !' },
-    { speaker: 'Claire', role: 'A', text: 'Oh no! How long was the flight?', translation: 'Oh non ! Combien de temps a duré le vol ?' },
-    { speaker: 'Romain', role: 'B', text: 'About one hour. I arrived at the airport at 6 AM.', translation: 'Environ une heure. Je suis arrivé à l\'aéroport à 6h.' },
+    { speaker: 'Nadia', role: 'A', text: 'Is this your bag, Sophie?', translation: 'C\'est ton sac, Sophie ?' },
+    { speaker: 'Sophie', role: 'B', text: 'No, that\'s her bag! My bag is blue.', translation: 'Non, c\'est son sac ! Mon sac est bleu.' },
+    { speaker: 'Nadia', role: 'A', text: 'Oh! And whose jacket is this?', translation: 'Oh ! Et de qui est cette veste ?' },
+    { speaker: 'Sophie', role: 'B', text: 'That\'s his jacket. Pierre left it here.', translation: 'C\'est sa veste. Pierre l\'a laissée ici.' },
+    { speaker: 'Nadia', role: 'A', text: 'I see. Our teacher is looking for her keys.', translation: 'Je vois. Notre professeur cherche ses clés.' },
+    { speaker: 'Sophie', role: 'B', text: 'Their keys are on the table! Let\'s tell her.', translation: 'Ses clés sont sur la table ! Allons lui dire.' },
   ],
   pronunciation: [
-    { word: 'Airport', phonetic: '/ˈerpɔːrt/', meaning: 'Aéroport', tip: 'Le "ai" = "é" : "ér-port".' },
-    { word: 'Ticket', phonetic: '/ˈtɪkɪt/', meaning: 'Billet', tip: 'Prononcez "ti-kit" avec des "i" courts.' },
-    { word: 'Luggage', phonetic: '/ˈlʌɡɪdʒ/', meaning: 'Bagage', tip: 'Le "u" est ouvert et le finale est "idj" : "lo-gidj".' },
-    { word: 'Passenger', phonetic: '/ˈpæsəndʒər/', meaning: 'Passager', tip: 'Prononcez "päss-en-djer" avec l\'accent sur la première syllabe.' },
+    { word: 'My', phonetic: '/maɪ/', meaning: 'Mon/Ma', tip: 'Le "y" se prononce "aï" : "maï". Ne dites pas "mi".' },
+    { word: 'His', phonetic: '/hɪz/', meaning: 'Son/Sa (à lui)', tip: 'Le "h" est expiré et le "s" est sonore : "hiz". Pas "is".' },
+    { word: 'Her', phonetic: '/hɜːr/', meaning: 'Son/Sa (à elle)', tip: 'Le "h" est expiré et le "er" est un son ouvert : "heur". Comme dans "œur" français.' },
+    { word: 'Their', phonetic: '/ðer/', meaning: 'Leur/Leurs', tip: 'Le "th" est sonore : langue entre les dents, vibrez. "Dheir". Pas "zair".' },
   ],
 }
 
-const A2_U3: LessonContent = {
+export const A1_L23: LessonContent = {
   vocab: [
-    { english: 'Menu', french: 'Menu', phonetic: '/ˈmenjuː/', example: 'Can I see the menu, please?', exampleTranslation: 'Puis-je voir le menu, s\'il vous plaît ?' },
-    { english: 'Appetizer', french: 'Entrée', phonetic: '/ˈæpɪtaɪzər/', example: 'I\'d like an appetizer first.', exampleTranslation: 'Je voudrais d\'abord une entrée.' },
-    { english: 'Dessert', french: 'Dessert', phonetic: '/dɪˈzɜːrt/', example: 'We have chocolate cake for dessert.', exampleTranslation: 'Nous avons du gâteau au chocolat en dessert.' },
-    { english: 'Bill', french: 'L\'addition', phonetic: '/bɪl/', example: 'Can I have the bill, please?', exampleTranslation: 'Puis-je avoir l\'addition, s\'il vous plaît ?' },
+    { english: 'Only child', french: 'Enfant unique', phonetic: '/ˈoʊnli tʃaɪld/', example: 'I am an only child.', exampleTranslation: 'Je suis enfant unique.' },
+    { english: 'Twins', french: 'Jumeaux/Jumelles', phonetic: '/twɪnz/', example: 'They are twins.', exampleTranslation: 'Ce sont des jumeaux.' },
+    { english: 'Married', french: 'Marié(e)', phonetic: '/ˈmærid/', example: 'My parents are married.', exampleTranslation: 'Mes parents sont mariés.' },
+    { english: 'Single', french: 'Célibataire', phonetic: '/ˈsɪŋɡəl/', example: 'My sister is single.', exampleTranslation: 'Ma sœur est célibataire.' },
+    { english: 'Relative', french: 'Membre de la famille', phonetic: '/ˈrelətɪv/', example: 'All my relatives live in France.', exampleTranslation: 'Tous mes proches habitent en France.' },
   ],
   grammar: {
-    title: 'Countable & Uncountable Nouns',
-    explanation: 'Les noms dénombrables ont un pluriel (a potato, potatoes). Les indénombrables n\'en ont pas (water, rice, bread). On utilise "much" avec les indénombrables et "many" avec les dénombrables. "Some" pour les deux à l\'affirmatif, "any" au négatif.',
+    title: 'Poser des questions sur la famille — "Do you have...?"',
+    explanation: 'Pour demander si quelqu\'un a des membres de famille : "Do you have any brothers or sisters?" (As-tu des frères ou sœurs ?), "Does he have children?" (A-t-il des enfants ?). Réponse : "Yes, I do" / "No, I don\'t" ou "Yes, he does" / "No, he doesn\'t". On peut aussi dire "I have got..." (j\'ai...).',
     examples: [
-      { sentence: 'There are many vegetables.', translation: 'Il y a beaucoup de légumes.', isCorrect: true },
-      { sentence: 'I don\'t have much money.', translation: 'Je n\'ai pas beaucoup d\'argent.', isCorrect: true },
-      { sentence: 'Can I have any water?', translation: '', isCorrect: false },
-      { sentence: 'There aren\'t some apples.', translation: '', isCorrect: false },
+      { sentence: 'Do you have any brothers?', translation: 'As-tu des frères ?', isCorrect: true },
+      { sentence: 'Does she have children?', translation: 'A-t-elle des enfants ?', isCorrect: true },
+      { sentence: 'Do you have a brother? (une seule réponse)', translation: '', isCorrect: false },
+      { sentence: 'Yes, I do. I have two sisters.', translation: 'Oui. J\'ai deux sœurs.', isCorrect: true },
     ],
     commonMistakes: [
-      { wrong: 'Can I have any water?', correct: 'Can I have some water?', explanation: 'On utilise "some" dans les questions polies qui demandent quelque chose.' },
-      { wrong: 'I have much books.', correct: 'I have many books.', explanation: '"Books" est dénombrable, on utilise "many" pas "much".' },
+      { wrong: 'Do you have brother?', correct: 'Do you have any brothers?', explanation: 'Après "do you have" pour les membres de famille, on utilise "any" + pluriel : "any brothers".' },
+      { wrong: 'Does she has children?', correct: 'Does she have children?', explanation: 'Après "does", le verbe reste à la forme de base : "have", pas "has".' },
     ],
   },
   conversation: [
-    { speaker: 'Waiter', role: 'A', text: 'Good evening! Here is the menu. Are you ready to order?', translation: 'Bonsoir ! Voici le menu. Êtes-vous prêt à commander ?' },
-    { speaker: 'Sophie', role: 'B', text: 'Yes! I\'d like some soup as an appetizer, please.', translation: 'Oui ! Je voudrais de la soupe comme entrée, s\'il vous plaît.' },
-    { speaker: 'Waiter', role: 'A', text: 'Excellent! And for the main course?', translation: 'Excellent ! Et pour le plat principal ?' },
-    { speaker: 'Sophie', role: 'B', text: 'I\'ll have the chicken with rice. Is there any dessert?', translation: 'Je vais prendre le poulet avec du riz. Y a-t-il un dessert ?' },
-    { speaker: 'Waiter', role: 'A', text: 'Yes, we have chocolate cake and fruit salad.', translation: 'Oui, nous avons du gâteau au chocolat et de la salade de fruits.' },
-    { speaker: 'Sophie', role: 'B', text: 'I\'ll take the chocolate cake! And the bill, please.', translation: 'Je vais prendre le gâteau au chocolat ! Et l\'addition, s\'il vous plaît.' },
+    { speaker: 'Emma', role: 'A', text: 'Do you have any brothers or sisters?', translation: 'As-tu des frères ou sœurs ?' },
+    { speaker: 'Youssef', role: 'B', text: 'No, I am an only child. And you?', translation: 'Non, je suis enfant unique. Et toi ?' },
+    { speaker: 'Emma', role: 'A', text: 'I have a twin sister! We are very close.', translation: 'J\'ai une sœur jumelle ! Nous sommes très proches.' },
+    { speaker: 'Youssef', role: 'B', text: 'That\'s amazing! Are your parents married?', translation: 'C\'est génial ! Tes parents sont mariés ?' },
+    { speaker: 'Emma', role: 'A', text: 'Yes, they are. My aunt is single though. She lives with us.', translation: 'Oui. Mais ma tante est célibataire. Elle vit avec nous.' },
+    { speaker: 'Youssef', role: 'B', text: 'All my relatives live in Morocco. I miss them!', translation: 'Tous mes proches habitent au Maroc. Ils me manquent !' },
   ],
   pronunciation: [
-    { word: 'Menu', phonetic: '/ˈmenjuː/', meaning: 'Menu', tip: 'Le "u" final est long : "mé-niou".' },
-    { word: 'Appetizer', phonetic: '/ˈæpɪtaɪzər/', meaning: 'Entrée', tip: 'L\'accent est sur "ap" : "AP-i-tai-zer".' },
-    { word: 'Dessert', phonetic: '/dɪˈzɜːrt/', meaning: 'Dessert', tip: 'L\'accent est sur "sert" : "di-ZERT" — ne dites pas "désert" !' },
-    { word: 'Bill', phonetic: '/bɪl/', meaning: 'L\'addition', tip: 'Le "i" est court : "bil" — comme dans "billet" sans le "et".' },
+    { word: 'Twins', phonetic: '/twɪnz/', meaning: 'Jumeaux', tip: 'Le "w" : arrondissez les lèvres. "Touinz". Le "s" final est sonore : "z".' },
+    { word: 'Married', phonetic: '/ˈmærid/', meaning: 'Marié(e)', tip: 'Prononcez "ma-rid" — le "a" est ouvert et le "e" du milieu disparaît.' },
+    { word: 'Single', phonetic: '/ˈsɪŋɡəl/', meaning: 'Célibataire', tip: 'Le "ng" : langue contre le palais, ne dites pas "sin-gle" mais "sin-guel".' },
+    { word: 'Relative', phonetic: '/ˈrelətɪv/', meaning: 'Proche (famille)', tip: 'L\'accent est sur "REL" : "REL-e-tiv". Ne dites pas "ré-la-TIV".' },
   ],
 }
 
-const A2_U4: LessonContent = {
+export const A1_L24: LessonContent = {
   vocab: [
-    { english: 'Headache', french: 'Mal de tête', phonetic: '/ˈhedeɪk/', example: 'I have a terrible headache.', exampleTranslation: 'J\'ai un terrible mal de tête.' },
-    { english: 'Fever', french: 'Fièvre', phonetic: '/ˈfiːvər/', example: 'She has a high fever.', exampleTranslation: 'Elle a une forte fièvre.' },
-    { english: 'Medicine', french: 'Médicament', phonetic: '/ˈmedɪsɪn/', example: 'Take this medicine twice a day.', exampleTranslation: 'Prenez ce médicament deux fois par jour.' },
-    { english: 'Appointment', french: 'Rendez-vous', phonetic: '/əˈpɔɪntmənt/', example: 'I have a doctor\'s appointment.', exampleTranslation: 'J\'ai un rendez-vous chez le médecin.' },
+    { english: 'Have', french: 'Avoir', phonetic: '/hæv/', example: 'I have a big family.', exampleTranslation: 'J\'ai une grande famille.' },
+    { english: 'Has', french: 'A (3e personne)', phonetic: '/hæz/', example: 'She has two brothers.', exampleTranslation: 'Elle a deux frères.' },
+    { english: 'Don\'t have', french: 'N\'ai pas / N\'as pas', phonetic: '/doʊnt hæv/', example: 'I don\'t have a sister.', exampleTranslation: 'Je n\'ai pas de sœur.' },
+    { english: 'Doesn\'t have', french: 'N\'a pas (3e personne)', phonetic: '/ˈdʌzənt hæv/', example: 'He doesn\'t have children.', exampleTranslation: 'Il n\'a pas d\'enfants.' },
   ],
   grammar: {
-    title: 'Should / Must',
-    explanation: '"Should" = devrais (conseil). "Must" = dois (obligation forte). Négatif : "shouldn\'t" (ne devrais pas), "mustn\'t" (ne dois pas — interdiction).',
+    title: 'Have / Has — Avoir en anglais',
+    explanation: 'Le verbe "have" (avoir) se conjugue : I have, you have, he/she/it has, we have, they have. Négatif : I don\'t have (je n\'ai pas), he/she/it doesn\'t have (il/elle n\'a pas). Question : Do you have...? / Does she have...? On peut aussi dire "I\'ve got" / "She\'s got" (plus britannique).',
     examples: [
-      { sentence: 'You should drink more water.', translation: 'Tu devrais boire plus d\'eau.', isCorrect: true },
-      { sentence: 'You must take your medicine.', translation: 'Tu dois prendre ton médicament.', isCorrect: true },
-      { sentence: 'You should to rest.', translation: '', isCorrect: false },
-      { sentence: 'You mustn\'t eat junk food.', translation: 'Tu ne dois pas manger de la malbouffe.', isCorrect: true },
+      { sentence: 'I have two sisters.', translation: 'J\'ai deux sœurs.', isCorrect: true },
+      { sentence: 'She have a brother.', translation: '', isCorrect: false },
+      { sentence: 'He doesn\'t have any children.', translation: 'Il n\'a pas d\'enfants.', isCorrect: true },
+      { sentence: 'Does your mother have a car?', translation: 'Est-ce que ta mère a une voiture ?', isCorrect: true },
     ],
     commonMistakes: [
-      { wrong: 'You should to rest.', correct: 'You should rest.', explanation: 'Après should/must, on utilise le verbe de base sans "to".' },
-      { wrong: 'You don\'t must smoke.', correct: 'You mustn\'t smoke.', explanation: 'La négation de "must" est "mustn\'t", pas "don\'t must".' },
+      { wrong: 'She have a brother.', correct: 'She has a brother.', explanation: 'Avec he/she/it, on utilise "has", pas "have".' },
+      { wrong: 'He doesn\'t has a car.', correct: 'He doesn\'t have a car.', explanation: 'Après "doesn\'t", on utilise toujours "have" (forme de base), pas "has".' },
     ],
   },
   conversation: [
-    { speaker: 'Doctor', role: 'A', text: 'What seems to be the problem?', translation: 'Quel semble être le problème ?' },
-    { speaker: 'Pierre', role: 'B', text: 'I have a headache and a fever since yesterday.', translation: 'J\'ai mal à la tête et de la fièvre depuis hier.' },
-    { speaker: 'Doctor', role: 'A', text: 'You should rest and drink plenty of water.', translation: 'Vous devriez vous reposer et boire beaucoup d\'eau.' },
-    { speaker: 'Pierre', role: 'B', text: 'Should I take any medicine?', translation: 'Devrais-je prendre un médicament ?' },
-    { speaker: 'Doctor', role: 'A', text: 'Yes, you must take these pills twice a day for five days.', translation: 'Oui, vous devez prendre ces comprimés deux fois par jour pendant cinq jours.' },
-    { speaker: 'Pierre', role: 'B', text: 'Thank you, doctor! I\'ll make another appointment next week.', translation: 'Merci, docteur ! Je prendrai un autre rendez-vous la semaine prochaine.' },
+    { speaker: 'Chloé', role: 'A', text: 'How many cousins do you have?', translation: 'Combien de cousins as-tu ?' },
+    { speaker: 'Karim', role: 'B', text: 'I have six cousins! My mother has three brothers.', translation: 'J\'ai six cousins ! Ma mère a trois frères.' },
+    { speaker: 'Chloé', role: 'A', text: 'Does your father have brothers too?', translation: 'Ton père a aussi des frères ?' },
+    { speaker: 'Karim', role: 'B', text: 'No, he doesn\'t have brothers. He has one sister.', translation: 'Non, il n\'a pas de frères. Il a une sœur.' },
+    { speaker: 'Chloé', role: 'A', text: 'I don\'t have any cousins. My parents are only children.', translation: 'Je n\'ai aucun cousin. Mes parents sont enfants uniques.' },
+    { speaker: 'Karim', role: 'B', text: 'Oh, that\'s unusual! But you have us as friends!', translation: 'Oh, c\'est rare ! Mais tu nous as comme amis !' },
   ],
   pronunciation: [
-    { word: 'Headache', phonetic: '/ˈhedeɪk/', meaning: 'Mal de tête', tip: 'Prononcez "héd-ék" — le "ch" se prononce "k".' },
-    { word: 'Fever', phonetic: '/ˈfiːvər/', meaning: 'Fièvre', tip: 'Le "f" est le même qu\'en français : "fi-ver".' },
-    { word: 'Medicine', phonetic: '/ˈmedɪsɪn/', meaning: 'Médicament', tip: 'Prononcez "mé-di-sin" avec l\'accent sur la première syllabe.' },
-    { word: 'Should', phonetic: '/ʃʊd/', meaning: 'Devrais', tip: 'Le "sh" = "ch" français : "choud".' },
+    { word: 'Have', phonetic: '/hæv/', meaning: 'Avoir', tip: 'Le "h" est expiré et le "a" est ouvert comme dans "cat" : "haev". Le "v" final est doux.' },
+    { word: 'Has', phonetic: '/hæz/', meaning: 'A (3e pers.)', tip: 'Même "h" expiré. Le "s" final est sonore : "haez". Pas "ass".' },
+    { word: 'Doesn\'t', phonetic: '/ˈdʌzənt/', meaning: 'Ne...pas (3e pers.)', tip: 'Prononcez "deuz-ent" — le "o" est ouvert comme dans "bon" et le "t" final est léger.' },
+    { word: 'Have got', phonetic: '/hæv ɡɒt/', meaning: 'Avoir (britannique)', tip: 'En anglais britannique, "I\'ve got" = "aïv got". Le "v" se lie au "g" suivant.' },
   ],
 }
 
-// ─── B1-C2: Generate progressively advanced content ──────────────────────────
-// Helper to create level-appropriate content
-
-function makeB1Content(unitId: string, topic: string, topicFr: string, words: [string,string,string,string,string][], grammarTitle: string, grammarExp: string, grammarExs: {s:string,t:string,c:boolean}[], grammarMistakes: {w:string,cr:string,e:string}[], dialogueLines: [string,'A'|'B',string,string][], pronItems: [string,string,string,string][]): LessonContent {
-  return {
-    vocab: words.map(([en,fr,ph,ex,exTr]) => ({english:en,french:fr,phonetic:ph,example:ex,exampleTranslation:exTr})),
-    grammar: { title:grammarTitle, explanation:grammarExp, examples: grammarExs.map(e => ({sentence:e.s,translation:e.t,isCorrect:e.c})), commonMistakes: grammarMistakes.map(m => ({wrong:m.w,correct:m.cr,explanation:m.e})) },
-    conversation: dialogueLines.map(([sp,r,en,fr]) => ({speaker:sp,role:r,text:en,translation:fr})),
-    pronunciation: pronItems.map(([w,ph,m,t]) => ({word:w,phonetic:ph,meaning:m,tip:t})),
-  }
-}
-
-// B1 Units
-const B1_U1: LessonContent = makeB1Content('b1-u1','News','Actualités',
-  [['Headline','Titre','/ˈhedlaɪn/','The headline says the economy is growing.','Le titre dit que l\'économie grandit.'],['Broadcast','Diffusion','/ˈbrɔːdkæst/','The broadcast starts at 8 PM.','La diffusion commence à 20h.'],['Report','Rapport','/rɪˈpɔːrt/','She wrote a report on climate change.','Elle a écrit un rapport sur le changement climatique.'],['Editorial','Éditorial','/ˌedɪˈtɔːriəl/','I read the editorial in today\'s newspaper.','J\'ai lu l\'éditorial dans le journal d\'aujourd\'hui.']],
-  'Passive Voice — Present',
-  'La voix passive au présent : Sujet + am/is/are + participe passé. On l\'utilise quand l\'action est plus importante que l\'auteur. "The report is published every day" = Le rapport est publié chaque jour.',
-  [{s:'The news is broadcast every evening.',t:'Les nouvelles sont diffusées chaque soir.',c:true},{s:'The article is write by a journalist.',t:'',c:false},{s:'Reports are published daily.',t:'Les rapports sont publiés quotidiennement.',c:true},{s:'The headline is changed yesterday.',t:'',c:false}],
-  [{w:'The article is write by a journalist.',cr:'The article is written by a journalist.',e:'Le participe passé de "write" est "written".'},{w:'The headline is changed yesterday.',cr:'The headline was changed yesterday.',e:'Pour le passé, utilisez "was/were" au lieu de "is/are".'}],
-  [['Journalist','A','Have you read today\'s headline?','As-tu lu le titre d\'aujourd\'hui ?'],['Reader','B','Yes, the report about the economy is very interesting.','Oui, le rapport sur l\'économie est très intéressant.'],['Journalist','A','It\'s broadcast on TV tonight at 8.','Il est diffusé à la télé ce soir à 20h.'],['Reader','B','I prefer reading the editorial in the newspaper.','Je préfère lire l\'éditorial dans le journal.'],['Journalist','A','The editorial is written by our best journalist.','L\'éditorial est écrit par notre meilleur journaliste.'],['Reader','B','That\'s why it\'s always so well-informed!','C\'est pourquoi il est toujours si bien informé !']],
-  [['Broadcast','/ˈbrɔːdkæst/','Diffusion','Le "oa" = "o" long ouvert : "brord-cast" — le "d" au milieu est doux.'],['Headline','/ˈhedlaɪn/','Titre','Prononcez "héd-laïn" — le "h" est expiré.'],['Editorial','/ˌedɪˈtɔːriəl/','Éditorial','L\'accent est sur "tor" : "é-di-TOR-i-al".'],['Journalist','/ˈdʒɜːrnəlɪst/','Journaliste','Le "j" anglais = "djeu" : "djeur-nal-ist".']]
-)
-
-const B1_U2: LessonContent = makeB1Content('b1-u2','Environment','Environnement',
-  [['Pollution','Pollution','/pəˈluːʃən/','Air pollution is a serious problem.','La pollution de l\'air est un problème sérieux.'],['Recycle','Recycler','/riːˈsaɪkəl/','We should recycle more plastic.','Nous devrions recycler plus de plastique.'],['Climate','Climat','/ˈklaɪmət/','The climate is changing rapidly.','Le climat change rapidement.'],['Conservation','Conservation','/ˌkɒnsərˈveɪʃən/','Conservation of forests is essential.','La conservation des forêts est essentielle.']],
-  'First Conditional',
-  'Le premier conditionnel : If + présent simple, will + verbe. Il exprime une condition réelle possible. "If we don\'t act, the climate will change." = Si nous n\'agissons pas, le climat changera.',
-  [{s:'If we recycle, we will help the planet.',t:'Si nous recyclons, nous aiderons la planète.',c:true},{s:'If we will not act, the climate changes.',t:'',c:false},{s:'If pollution increases, animals will suffer.',t:'Si la pollution augmente, les animaux souffriront.',c:true},{s:'If we will recycle more, the earth is better.',t:'',c:false}],
-  [{w:'If we will act now, we can save the planet.',cr:'If we act now, we can save the planet.',e:'Après "if", on n\'utilise pas "will" — on reste au présent.'},{w:'If we don\'t act, the climate would change.',cr:'If we don\'t act, the climate will change.',e:'Le 1er conditionnel utilise "will", pas "would".'}],
-  [['Léa','A','What will happen if we don\'t recycle?','Que se passera-t-il si nous ne recyclons pas ?'],['Marc','B','If we don\'t recycle, pollution will increase.','Si nous ne recyclons pas, la pollution augmentera.'],['Léa','A','And if the climate changes?','Et si le climat change ?'],['Marc','B','If temperatures rise, many species will disappear.','Si les températures montent, beaucoup d\'espèces disparaîtront.'],['Léa','A','We should start conserving water and energy.','Nous devrions commencer à économiser l\'eau et l\'énergie.'],['Marc','B','If everyone acts, we will make a difference!','Si chacun agit, nous ferons la différence !']],
-  [['Pollution','/pəˈluːʃən/','Pollution','L\'accent est sur "lu" : "pe-LOU-chun".'],['Recycle','/riːˈsaɪkəl/','Recycler','Prononcez "ri-saï-kel" — le "cy" = "saï".'],['Climate','/ˈklaɪmət/','Climat','Le "i" est long : "klaï-met".'],['Conservation','/ˌkɒnsərˈveɪʃən/','Conservation','L\'accent est sur "va" : "kon-ser-VÉ-chun".']]
-)
-
-// B1 Units 3-12 — condensed but unique
-const B1_U3: LessonContent = makeB1Content('b1-u3','Emotions','Émotions',
-  [['Happiness','Bonheur','/ˈhæpɪnəs/','Happiness comes from within.','Le bonheur vient de l\'intérieur.'],['Anger','Colère','/ˈæŋɡər/','He expressed his anger calmly.','Il a exprimé sa colère calmement.'],['Excitement','Excitation','/ɪkˈsaɪtmənt/','The children showed great excitement.','Les enfants ont montré une grande excitation.'],['Disappointment','Déception','/ˌdɪsəˈpɔɪntmənt/','Her disappointment was visible.','Sa déception était visible.']],
-  'Second Conditional',
-  'Le deuxième conditionnel : If + passé simple, would + verbe. Il exprime une situation hypothétique ou imaginaire. "If I were you, I would apologize." = Si j\'étais toi, je m\'excuserais.',
-  [{s:'If I were rich, I would travel the world.',t:'Si j\'étais riche, je voyagerais dans le monde.',c:true},{s:'If I would be you, I will apologize.',t:'',c:false},{s:'If she had more time, she would learn English.',t:'Si elle avait plus de temps, elle apprendrait l\'anglais.',c:true},{s:'If I was a bird, I will fly.',t:'',c:false}],
-  [{w:'If I would have money, I would buy it.',cr:'If I had money, I would buy it.',e:'Après "if" au 2e conditionnel, on utilise le passé simple, pas "would".'},{w:'If I was you, I will go.',cr:'If I were you, I would go.',e:'Avec "I" au 2e conditionnel, on utilise "were" (subjonctif) et "would" dans la principale.'}],
-  [['Julie','A','If you could change one thing about your life, what would it be?','Si tu pouvais changer une chose dans ta vie, ce serait quoi ?'],['Tom','B','If I were braver, I would express my feelings more often.','Si j\'étais plus courageux, j\'exprimerais mes sentiments plus souvent.'],['Julie','A','I would be happier if I spent more time with friends.','Je serais plus heureuse si je passais plus de temps avec des amis.'],['Tom','B','What makes you the happiest?','Qu\'est-ce qui te rend le plus heureux ?'],['Julie','A','Simple things — a good book, sunshine, and laughter.','Des choses simples — un bon livre, le soleil, et les rires.'],['Tom','B','If everyone focused on happiness, the world would be better.','Si chacun se concentrait sur le bonheur, le monde serait meilleur.']],
-  [['Happiness','/ˈhæpɪnəs/','Bonheur','L\'accent sur "hap" : "HAP-i-nes".'],['Anger','/ˈæŋɡər/','Colère','Le "g" est dur : "an-ger".'],['Excitement','/ɪkˈsaɪtmənt/','Excitation','L\'accent sur "cite" : "ik-SAÏT-ment".'],['Disappointment','/ˌdɪsəˈpɔɪntmənt/','Déception','L\'accent sur "point" : "dis-a-POINT-ment".']]
-)
-
-// Remaining B1, B2, C1, C2 units — create unique entries
-const B1_U4: LessonContent = makeB1Content('b1-u4','Culture','Culture',
-  [['Festival','Festival','/ˈfestɪvəl/','We celebrate a music festival in summer.','Nous célébrons un festival de musique en été.'],['Custom',' Coutume','/ˈkʌstəm/','It\'s a local custom to greet everyone.','C\'est une coutume locale de saluer tout le monde.'],['Heritage','Patrimoine','/ˈherɪtɪdʒ/','This building is part of our heritage.','Ce bâtiment fait partie de notre patrimoine.'],['Tradition','Tradition','/trəˈdɪʃən/','Family traditions are important.','Les traditions familiales sont importantes.']],
-  'Past Perfect',
-  'Le Past Perfect : had + participe passé. Il exprime une action antérieure à une autre action passée. "She had never seen snow before that day." = Elle n\'avait jamais vu la neige avant ce jour-là.',
-  [{s:'They had already eaten when we arrived.',t:'Ils avaient déjà mangé quand nous sommes arrivés.',c:true},{s:'She had went home before the party started.',t:'',c:false},{s:'He had studied French before moving to Paris.',t:'Il avait étudié le français avant de déménager à Paris.',c:true},{s:'We had saw the movie already.',t:'',c:false}],
-  [{w:'She had went home.',cr:'She had gone home.',e:'Le participe passé de "go" est "gone", pas "went".'},{w:'They had came late.',cr:'They had come late.',e:'Le participe passé de "come" est "come", pas "came".'}],
-  [['Marie','A','Had you ever celebrated Diwali before?','Aviez-vous déjà célébré Diwali avant ?'],['Raj','B','No, I hadn\'t. But I had heard about it.','Non. Mais j\'en avais entendu parler.'],['Marie','A','People had decorated the whole street before the festival started.','Les gens avaient décoré toute la rue avant que le festival commence.'],['Raj','B','By the time I arrived, they had already begun the ceremony.','Quand je suis arrivé, ils avaient déjà commencé la cérémonie.'],['Marie','A','It\'s beautiful to discover new traditions.','C\'est beau de découvrir de nouvelles traditions.'],['Raj','B','Yes, cultural heritage connects us all.','Oui, le patrimoine culturel nous relie tous.']],
-  [['Festival','/ˈfestɪvəl/','Festival','L\'accent sur "fes" : "FES-ti-val".'],['Custom','/ˈkʌstəm/','Coutume','Le "u" est ouvert : "keus-tem".'],['Heritage','/ˈherɪtɪdʒ/','Patrimoine','Prononcez "hé-ri-tidj" avec le "t" doux comme "dj".'],['Tradition','/trəˈdɪʃən/','Tradition','L\'accent sur "di" : "tra-DI-chun".']]
-)
-
-const B1_U5: LessonContent = makeB1Content('b1-u5','Business','Affaires',
-  [['Meeting','Réunion','/ˈmiːtɪŋ/','The meeting starts at 10 AM.','La réunion commence à 10h.'],['Deadline','Date limite','/ˈdedlaɪn/','We need to meet the deadline.','Nous devons respecter la date limite.'],['Schedule','Emploi du temps','/ˈskedjuːl/','My schedule is very busy this week.','Mon emploi du temps est très chargé cette semaine.'],['Client','Client','/ˈklaɪənt/','We have a new client from Paris.','Nous avons un nouveau client de Paris.']],
-  'Making Suggestions',
-  'Pour faire des suggestions en contexte professionnel : "How about + V-ing ?", "Why don\'t we + verbe ?", "I suggest that we + verbe", "We could + verbe".',
-  [{s:'How about scheduling a meeting?',t:'Et si nous planifiions une réunion ?',c:true},{s:'Why don\'t we to discuss this tomorrow?',t:'',c:false},{s:'I suggest that we extend the deadline.',t:'Je suggère que nous prolongions la date limite.',c:true},{s:'We could to send the report now.',t:'',c:false}],
-  [{w:'Why don\'t we to discuss this?',cr:'Why don\'t we discuss this?',e:'Après "why don\'t we", on utilise le verbe de base sans "to".'},{w:'How about schedule a meeting?',cr:'How about scheduling a meeting?',e:'Après "how about", on utilise le verbe en -ing.'}],
-  [['Manager','A','We need to discuss the project deadline.','Nous devons discuter de la date limite du projet.'],['Employee','B','Why don\'t we schedule a meeting for tomorrow?','Pourquoi ne pas planifier une réunion pour demain ?'],['Manager','A','Good idea. How about 2 PM?','Bonne idée. Et si on disait 14h ?'],['Employee','B','I suggest that we invite the client to join us.','Je suggère que nous invitions le client à se joindre à nous.'],['Manager','A','We could also send the report beforehand.','Nous pourrions aussi envoyer le rapport à l\'avance.'],['Employee','B','Perfect! I\'ll prepare the schedule.','Parfait ! Je préparerai l\'emploi du temps.']],
-  [['Meeting','/ˈmiːtɪŋ/','Réunion','Le "ee" est un "i" long : "mii-ting".'],['Deadline','/ˈdedlaïn/','Date limite','Prononcez "déd-laïn" — le "i" est long.'],['Schedule','/ˈskedjuːl/','Emploi du temps','En anglais américain : "ské-djoul". En britannique : "ché-djoul".'],['Client','/ˈklaɪənt/','Client','Le "i" après "cl" est court : "klaï-ent".']]
-)
-
-// B1 6-12, B2, C1, C2 — abbreviated but unique content per unit theme
-const B1_U6: LessonContent = makeB1Content('b1-u6','Wellness','Bien-être',
-  [['Nutrition','Nutrition','/nuːˈtrɪʃən/','Good nutrition is essential for health.','Une bonne nutrition est essentielle pour la santé.'],['Meditation','Méditation','/ˌmedɪˈteɪʃən/','She practices meditation every morning.','Elle pratique la méditation chaque matin.'],['Stress','Stress','/stres/','Work stress can affect your health.','Le stress au travail peut affecter votre santé.'],['Exercise','Exercice','/ˈeksərsaɪz/','Regular exercise improves your mood.','L\'exercice régulier améliore votre humeur.']],
-  'Modals of Deduction',
-  'Les modaux de déduction : "must be" (doit être — quasi certitude), "might/may/could be" (pourrait être — possibilité), "can\'t be" (ne peut pas être — impossibilité).',
-  [{s:'She must be tired after working all night.',t:'Elle doit être fatiguée après avoir travaillé toute la nuit.',c:true},{s:'He can\'t be at home, his car is gone.',t:'Il ne peut pas être à la maison, sa voiture est partie.',c:true},{s:'She must be not happy.',t:'',c:false},{s:'They might to come tomorrow.',t:'',c:false}],
-  [{w:'She must be not happy.',cr:'She can\'t be happy. / She must not be happy.',e:'La négation de "must be" est "can\'t be" (impossibilité) ou "must not be".'},{w:'They might to come.',cr:'They might come.',e:'Après les modaux, pas de "to".'}],
-  [['Coach','A','You look exhausted! You must be stressed.','Tu as l\'air épuisé ! Tu dois être stressé.'],['Client','B','I am. I might need to change my routine.','Je le suis. J\'ai peut-être besoin de changer ma routine.'],['Coach','A','You should try meditation. It can\'t hurt!','Tu devrais essayer la méditation. Ça ne peut pas faire de mal !'],['Client','B','That might help. I could also exercise more.','Ça pourrait aider. Je pourrais aussi faire plus d\'exercice.'],['Coach','A','Good nutrition is also important. You must eat better.','Une bonne nutrition est aussi importante. Tu dois mieux manger.'],['Client','B','You\'re right. I may start cooking at home more.','Vous avez raison. Je pourrais commencer à cuisiner plus à la maison.']],
-  [['Nutrition','/nuːˈtrɪʃən/','Nutrition','L\'accent sur "tri" : "nou-TRI-chun".'],['Meditation','/ˌmedɪˈteɪʃən/','Méditation','L\'accent sur "ta" : "mé-di-TÉ-chun".'],['Stress','/stres/','Stress','Prononcez "stress" avec le "s" initial fort.'],['Exercise','/ˈeksərsaɪz/','Exercice','L\'accent sur "ex" : "EK-ser-saïz".']]
-)
-
-// Remaining B1 units 7-12, B2 1-12, C1 1-14, C2 1-12
-// For file size, we'll generate them with a generic function that creates themed content
-
-function makeGenericContent(level: string, unitId: string, topic: string, topicFr: string, grammarTopic: string, grammarExplanation: string): LessonContent {
-  const levelPrefix = level.toLowerCase()
-  const isAdvanced = ['C1','C2'].includes(level)
-  const isUpper = ['B2','C1','C2'].includes(level)
-
-  const vocabTemplates: Record<string, [string,string,string][]> = {
-    'b1-u7': [['Adventure','Aventure','/ədˈventʃər/'],['Destination','Destination','/ˌdestɪˈneɪʃən/'],['Itinerary','Itinéraire','/aɪˈtɪnəreri/'],['Excursion','Excursion','/ɪkˈskɜːrʒən/']],
-    'b1-u8': [['Equality','Égalité','/iˈkwɒləti/'],['Poverty','Pauvreté','/ˈpɒvərti/'],['Discrimination','Discrimination','/dɪˌskrɪmɪˈneɪʃən/'],['Rights','Droits','/raɪts/']],
-    'b1-u9': [['Museum','Musée','/mjuːˈziːəm/'],['Exhibition','Exposition','/ˌeksɪˈbɪʃən/'],['Performance','Représentation','/pərˈfɔːrməns/'],['Gallery','Galerie','/ˈɡæləri/']],
-    'b1-u10': [['Research','Recherche','/rɪˈsɜːrtʃ/'],['Experiment','Expérience','/ɪkˈsperɪmənt/'],['Hypothesis','Hypothèse','/haɪˈpɒθəsɪs/'],['Data','Données','/ˈdeɪtə/']],
-    'b1-u11': [['Budget','Budget','/ˈbʌdʒɪt/'],['Investment','Investissement','/ɪnˈvestmənt/'],['Savings','Économies','/ˈseɪvɪŋz/'],['Debt','Dette','/det/']],
-    'b1-u12': [['Justice','Justice','/ˈdʒʌstɪs/'],['Freedom','Liberté','/ˈfriːdəm/'],['Responsibility','Responsabilité','/rɪˌspɒnsəˈbɪləti/'],['Law','Loi','/lɔː/']],
-  }
-
-  const unitVocab = vocabTemplates[unitId] || [
-    [topic.charAt(0).toUpperCase()+topic.slice(1), topicFr, `/ˈwɜːrd/`],
-    [`Concept of ${topic}`, `Concept de ${topicFr}`, '/ˈkɒnsept/'],
-    [`${topic} theory`, `Théorie de ${topicFr}`, '/ˈθɪəri/'],
-    [`Advanced ${topic}`, `${topicFr} avancé`, '/ədˈvænst/'],
-  ]
-
-  return {
-    vocab: unitVocab.map(([en,fr,ph]) => ({
-      english: en, french: fr, phonetic: ph,
-      example: isAdvanced ? `The concept of ${en.toLowerCase()} is fundamental to this field.` : `I am learning about ${en.toLowerCase()}.`,
-      exampleTranslation: isAdvanced ? `Le concept de ${fr.toLowerCase()} est fondamental dans ce domaine.` : `J'apprends à propos de ${fr.toLowerCase()}.`,
-    })),
-    grammar: {
-      title: grammarTopic,
-      explanation: grammarExplanation,
-      examples: [
-        { sentence: isUpper ? `If the hypothesis were correct, the results would confirm it.` : `I have visited many countries.`, translation: isUpper ? `Si l'hypothèse était correcte, les résultats le confirmeraient.` : `J'ai visité beaucoup de pays.`, isCorrect: true },
-        { sentence: isUpper ? `The data are showing an interesting pattern.` : `She have been to Paris.`, translation: '', isCorrect: false },
-        { sentence: isUpper ? `By 2030, scientists will have discovered new treatments.` : `They have already finished the project.`, translation: isUpper ? `D'ici 2030, les scientifiques auront découvert de nouveaux traitements.` : `Ils ont déjà fini le projet.`, isCorrect: true },
-        { sentence: isUpper ? `He suggested that she goes home.` : `We has seen this movie.`, translation: '', isCorrect: false },
-      ],
-      commonMistakes: [
-        { wrong: isUpper ? `The data is showing.` : `I have went to Paris.`, correct: isUpper ? `The data are showing.` : `I have gone to Paris.`, explanation: isUpper ? `"Data" est pluriel en anglais académique.` : `Le participe passé de "go" est "gone".` },
-        { wrong: isUpper ? `He suggested that she goes.` : `She have finished.`, correct: isUpper ? `He suggested that she go.` : `She has finished.`, explanation: isUpper ? `Après "suggest that", on utilise le subjonctif (verbe de base).` : `Avec "she", on utilise "has" pas "have".` },
-      ],
-    },
-    conversation: [
-      { speaker: 'Prof. Martin', role: 'A', text: isAdvanced ? `The implications of ${topic.toLowerCase()} are far-reaching.` : `What do you know about ${topic.toLowerCase()}?`, translation: isAdvanced ? `Les implications de ${topicFr.toLowerCase()} sont vastes.` : `Que savez-vous sur ${topicFr.toLowerCase()} ?` },
-      { speaker: 'Student', role: 'B', text: isAdvanced ? `Indeed. The theoretical framework supports this conclusion.` : `I know the basics. Can you tell me more?`, translation: isAdvanced ? `En effet. Le cadre théorique soutient cette conclusion.` : `Je connais les bases. Pouvez-vous m'en dire plus ?` },
-      { speaker: 'Prof. Martin', role: 'A', text: isAdvanced ? `We must consider multiple perspectives in our analysis.` : `Let me explain with some examples.`, translation: isAdvanced ? `Nous devons considérer de multiples perspectives dans notre analyse.` : `Laissez-moi expliquer avec quelques exemples.` },
-      { speaker: 'Student', role: 'B', text: isAdvanced ? `That would provide a more nuanced understanding.` : `That makes sense! Can I try?`, translation: isAdvanced ? `Cela fournirait une compréhension plus nuancée.` : `Ça a du sens ! Puis-je essayer ?` },
-      { speaker: 'Prof. Martin', role: 'A', text: isAdvanced ? `Precisely. Critical thinking is essential here.` : `Of course! Practice is the best way to learn.`, translation: isAdvanced ? `Précisément. La pensée critique est essentielle ici.` : `Bien sûr ! La pratique est la meilleure façon d'apprendre.` },
-      { speaker: 'Student', role: 'B', text: isAdvanced ? `I appreciate your guidance on this complex topic.` : `Thank you! I feel more confident now.`, translation: isAdvanced ? `J'apprécie vos conseils sur ce sujet complexe.` : `Merci ! Je me sens plus confiant maintenant.` },
+export const A1_L25: LessonContent = {
+  vocab: [
+    { english: 'Daughter', french: 'Fille', phonetic: '/ˈdɔːtər/', example: 'Their daughter is very kind.', exampleTranslation: 'Leur fille est très gentille.' },
+    { english: 'Nephew', french: 'Neveu', phonetic: '/ˈnefjuː/', example: 'My nephew is five years old.', exampleTranslation: 'Mon neveu a cinq ans.' },
+    { english: 'Cousin', french: 'Cousin(e)', phonetic: '/ˈkʌzən/', example: 'My cousin lives in Canada.', exampleTranslation: 'Mon cousin habite au Canada.' },
+    { english: 'Grandmother', french: 'Grand-mère', phonetic: '/ˈɡrændmʌðər/', example: 'My grandmother makes great food.', exampleTranslation: 'Ma grand-mère fait de la grande cuisine.' },
+  ],
+  grammar: {
+    title: 'La possession avec l\'apostrophe — \'s',
+    explanation: 'Pour exprimer la possession en anglais, on ajoute \'s après le nom du possesseur : "Maria\'s brother" (le frère de Maria), "my mother\'s car" (la voiture de ma mère). Pluriel déjà en -s : on ajoute seulement l\'apostrophe : "my parents\' house" (la maison de mes parents).',
+    examples: [
+      { sentence: 'John\'s sister is a doctor.', translation: 'La sœur de John est médecin.', isCorrect: true },
+      { sentence: 'My parents\' house is big.', translation: 'La maison de mes parents est grande.', isCorrect: true },
+      { sentence: 'The car of my father is red.', translation: '', isCorrect: false },
+      { sentence: 'Sarah\'s children are twins.', translation: 'Les enfants de Sarah sont jumeaux.', isCorrect: true },
     ],
-    pronunciation: unitVocab.slice(0,4).map(([en,fr,ph]) => ({
-      word: en, phonetic: ph, meaning: fr,
-      tip: `Pratiquez le mot "${en}" en répétant lentement, puis en accélérant progressivement.`,
-    })),
-  }
+    commonMistakes: [
+      { wrong: 'The car of my father', correct: 'My father\'s car', explanation: 'On utilise l\'apostrophe+s : "my father\'s car", pas "the car of my father".' },
+      { wrong: 'My parents\'s house', correct: 'My parents\' house', explanation: 'Quand le nom est déjà au pluriel en -s, on ajoute seulement l\'apostrophe, pas un autre "s".' },
+    ],
+  },
+  conversation: [
+    { speaker: 'Léa', role: 'A', text: 'Is that your grandmother\'s photo?', translation: 'C\'est la photo de ta grand-mère ?' },
+    { speaker: 'Hugo', role: 'B', text: 'Yes! My grandmother\'s name is Henriette. She\'s ninety!', translation: 'Oui ! Ma grand-mère s\'appelle Henriette. Elle a quatre-vingt-dix ans !' },
+    { speaker: 'Léa', role: 'A', text: 'Wow! And who is this? Your cousin?', translation: 'Waouh ! Et qui est-ce ? Ton cousin ?' },
+    { speaker: 'Hugo', role: 'B', text: 'No, that\'s my nephew. My sister\'s son.', translation: 'Non, c\'est mon neveu. Le fils de ma sœur.' },
+    { speaker: 'Léa', role: 'A', text: 'He\'s cute! My daughter\'s name is Claire.', translation: 'Il est mignon ! Ma fille s\'appelle Claire.' },
+    { speaker: 'Hugo', role: 'B', text: 'What a lovely name! My cousin\'s daughter is also named Claire!', translation: 'Quel joli nom ! La fille de mon cousin s\'appelle aussi Claire !' },
+  ],
+  pronunciation: [
+    { word: 'Daughter', phonetic: '/ˈdɔːtər/', meaning: 'Fille', tip: 'Le "au" = "o" long ouvert : "do-ter". Ne dites PAS "daug-ter".' },
+    { word: 'Nephew', phonetic: '/ˈnefjuː/', meaning: 'Neveu', tip: 'Prononcez "ne-fiou" — le "ph" = "f" et le "ew" = "iou".' },
+    { word: 'Cousin', phonetic: '/ˈkʌzən/', meaning: 'Cousin(e)', tip: 'Le "ou" est ouvert : "keuz-enn". Ne dites pas "kou-zin".' },
+    { word: 'Grandmother', phonetic: '/ˈɡrændmʌðər/', meaning: 'Grand-mère', tip: 'Le "th" est sonore : langue entre les dents, vibrez. "Gran-meu-der".' },
+  ],
 }
 
-// Generate remaining units
-const B1_U7 = makeGenericContent('B1','b1-u7','Travel','Voyage','Present Perfect','Le Present Perfect : have/has + participe passé. Il exprime une expérience vécue sans préciser quand. "I have visited many countries." = J\'ai visité beaucoup de pays.')
-const B1_U8 = makeGenericContent('B1','b1-u8','Social Issues','Questions sociales','Agreeing & Disagreeing','Pour exprimer son accord : "I agree that...", "You\'re right." Pour désapprouver : "I disagree because...", "I see your point, but..."')
-const B1_U9 = makeGenericContent('B1','b1-u9','Arts','Arts','Gerunds & Infinitives','Certains verbes sont suivis du gérondif (-ing) : enjoy, avoid, consider. D\'autres de l\'infinitif : want, need, decide. "I enjoy watching films" mais "I want to watch a film."')
-const B1_U10 = makeGenericContent('B1','b1-u10','Science','Science','Future Perfect','Le Future Perfect : will have + participe passé. Il exprime une action qui sera terminée avant un moment futur. "By 2030, scientists will have discovered new treatments."')
-const B1_U11 = makeGenericContent('B1','b1-u11','Finance','Finance','Third Conditional','Le 3e conditionnel : If + had + participe passé, would have + participe passé. Il exprime un regret sur le passé. "If I had saved more, I would have bought a house."')
-const B1_U12 = makeGenericContent('B1','b1-u12','Law','Droit','Question Tags','Les question tags sont de petites questions ajoutées en fin de phrase. Affirmatif → négatif : "It\'s illegal, isn\'t it?" Négatif → affirmatif : "You can\'t drive, can you?"')
+// ═══════════════════════════════════════════════════════════════════════════════
+// UNIT 6: DAILY ROUTINE (a1-l26 to a1-l30)
+// ═══════════════════════════════════════════════════════════════════════════════
 
-// B2 Units
-const B2_U1 = makeGenericContent('B2','b2-u1','Professional Communication','Communication professionnelle','Mixed Conditionals','Les conditionnels mixtes combinent des temps différents : "If I had studied harder (passé), I would have a better job now (présent)."')
-const B2_U2 = makeGenericContent('B2','b2-u2','Academic English','Anglais académique','Hedging & Caution','Le hedging permet d\'exprimer des idées avec prudence : "It appears that...", "The evidence tends to suggest...", "This may indicate..."')
-const B2_U3 = makeGenericContent('B2','b2-u3','Politics','Politique','Inversion','L\'inversion : après des expressions négatives ou restrictives en début de phrase, on inverse le sujet et le verbe. "Rarely have we seen such a crisis." = Rarement avons-nous vu une telle crise.')
-const B2_U4 = makeGenericContent('B2','b2-u4','Philosophy','Philosophie','Formal Register','Le registre formel utilise le vocabulaire précis, les phrases complexes, et évite les contractions. "It is evident that..." au lieu de "It\'s clear that..."')
-const B2_U5 = makeGenericContent('B2','b2-u5','Business Strategy','Stratégie d\'entreprise','Reported Speech Advanced','Le discours rapporté avancé : "She inquired whether the merger had been finalized." Changements de temps, pronoms et structure.')
-const B2_U6 = makeGenericContent('B2','b2-u6','Medicine','Médecine','Passive Voice Advanced','La voix passive avancée : "The procedure is being performed" (en cours), "The patient was reported to have recovered" (infinitive passive).')
-const B2_U7 = makeGenericContent('B2','b2-u7','Engineering','Ingénierie','Technical Descriptions','Les descriptions techniques utilisent le passif, les termes précis, et les structures nominales : "The component is designed to withstand..."')
-const B2_U8 = makeGenericContent('B2','b2-u8','Literature','Littérature','Metaphor & Simile','La métaphore compare sans "like/as" : "Time is money." Le simile utilise "like/as" : "She sings like an angel."')
-const B2_U9 = makeGenericContent('B2','b2-u9','Psychology','Psychologie','Complex Sentences','Les phrases complexes combinent plusieurs clauses avec des connecteurs : "Although the study was limited, the findings suggest that further research is warranted."')
-const B2_U10 = makeGenericContent('B2','b2-u10','Economy','Économie','Nominalization','La nominalisation transforme des verbes/adjectifs en noms pour un style plus académique : "investigate" → "investigation", "grow" → "growth".')
-const B2_U11 = makeGenericContent('B2','b2-u11','Legal English','Anglais juridique','Formal Legal Language','Le langage juridique utilise des termes spécifiques : "hereby", "notwithstanding", "pursuant to". Les phrases sont longues et précises.')
-const B2_U12 = makeGenericContent('B2','b2-u12','Writing','Écriture','Cohesion & Coherence','La cohésion relie les phrases entre elles (linkers, pronoms). La cohérence assure que le texte a un sens logique global.')
+export const A1_L26: LessonContent = {
+  vocab: [
+    { english: 'Wake up', french: 'Se réveiller', phonetic: '/weɪk ʌp/', example: 'I wake up at seven o\'clock.', exampleTranslation: 'Je me réveille à sept heures.' },
+    { english: 'Brush teeth', french: 'Se brosser les dents', phonetic: '/brʌʃ tiːθ/', example: 'I brush my teeth every morning.', exampleTranslation: 'Je me brosse les dents chaque matin.' },
+    { english: 'Get dressed', french: 'S\'habiller', phonetic: '/ɡet drest/', example: 'She gets dressed quickly.', exampleTranslation: 'Elle s\'habille rapidement.' },
+    { english: 'Take a shower', french: 'Prendre une douche', phonetic: '/teɪk ə ˈʃaʊər/', example: 'He takes a shower before breakfast.', exampleTranslation: 'Il prend une douche avant le petit-déjeuner.' },
+    { english: 'Have breakfast', french: 'Prendre le petit-déjeuner', phonetic: '/hæv ˈbrekfəst/', example: 'We have breakfast at eight.', exampleTranslation: 'Nous prenons le petit-déjeuner à huit heures.' },
+  ],
+  grammar: {
+    title: 'Le Present Simple avec les routines',
+    explanation: 'Le Present Simple décrit les habitudes et routines quotidiennes. Avec I/you/we/they : verbe de base ("I wake up"). Avec he/she/it : on ajoute -s ou -es ("She wakes up", "He brushes"). Pour les verbes se terminant en -sh, -ch, -o, -ss, -x : on ajoute -es (brush → brushes, go → goes).',
+    examples: [
+      { sentence: 'I wake up at seven.', translation: 'Je me réveille à sept heures.', isCorrect: true },
+      { sentence: 'She brush her teeth every day.', translation: '', isCorrect: false },
+      { sentence: 'He takes a shower in the morning.', translation: 'Il prend une douche le matin.', isCorrect: true },
+      { sentence: 'We have breakfast together.', translation: 'Nous prenons le petit-déjeuner ensemble.', isCorrect: true },
+    ],
+    commonMistakes: [
+      { wrong: 'She brush her teeth.', correct: 'She brushes her teeth.', explanation: 'Avec he/she/it et un verbe en -sh, on ajoute -es : brush → brushes.' },
+      { wrong: 'He wake up at 7.', correct: 'He wakes up at 7.', explanation: 'Avec he/she/it, on ajoute -s au verbe : wake → wakes.' },
+    ],
+  },
+  conversation: [
+    { speaker: 'Marie', role: 'A', text: 'What time do you wake up?', translation: 'À quelle heure te réveilles-tu ?' },
+    { speaker: 'David', role: 'B', text: 'I wake up at six thirty. Then I take a shower.', translation: 'Je me réveille à six heures et demie. Ensuite je prends une douche.' },
+    { speaker: 'Marie', role: 'A', text: 'Do you have breakfast before you get dressed?', translation: 'Prends-tu le petit-déjeuner avant de t\'habiller ?' },
+    { speaker: 'David', role: 'B', text: 'Yes! I always have breakfast first. I brush my teeth after.', translation: 'Oui ! Je prends toujours le petit-déjeuner d\'abord. Je me brosse les dents après.' },
+    { speaker: 'Marie', role: 'A', text: 'That\'s smart. I get dressed first, then I eat.', translation: 'C\'est malin. Je m\'habille d\'abord, puis je mange.' },
+    { speaker: 'David', role: 'B', text: 'Everyone has their own routine!', translation: 'Chacun sa routine !' },
+  ],
+  pronunciation: [
+    { word: 'Wake up', phonetic: '/weɪk ʌp/', meaning: 'Se réveiller', tip: 'Le "w" : arrondissez les lèvres. "Ouék-ap". L\'accent est sur "wake".' },
+    { word: 'Brush', phonetic: '/brʌʃ/', meaning: 'Brosser', tip: 'Le "u" est ouvert : "breuch". Le "sh" final est comme le "ch" français.' },
+    { word: 'Shower', phonetic: '/ˈʃaʊər/', meaning: 'Douche', tip: 'Prononcez "chaou-er" — le "ow" = "aou" et le "er" final est doux.' },
+    { word: 'Breakfast', phonetic: '/ˈbrekfəst/', meaning: 'Petit-déjeuner', tip: 'On prononce "brek-fust" — le "a" disparaît. Pas "brék-fast".' },
+  ],
+}
 
-// C1 Units
-const C1_U1 = makeGenericContent('C1','c1-u1','Diplomacy','Diplomatie','Tactful Language','Le langage diplomatique utilise des formulations nuancées : "We would welcome the opportunity to..." au lieu de "We want to..."')
-const C1_U2 = makeGenericContent('C1','c1-u2','Research','Recherche','Academic Conventions','Les conventions académiques : hedging avancé, impersonnalisation, citations. "It has been widely documented that..."')
-const C1_U3 = makeGenericContent('C1','c1-u3','Literature','Littérature avancée','Narrative Theory','La théorie narrative : point of view, unreliable narrator, stream of consciousness, metafiction.')
-const C1_U4 = makeGenericContent('C1','c1-u4','Strategy','Stratégie','Complex Conditionals','Les conditionnels complexes combinent passé, présent et futur : "Had the strategy been implemented earlier, the company would now be in a stronger position."')
-const C1_U5 = makeGenericContent('C1','c1-u5','International Relations','Relations internationales','Formal Discourse Markers','Les marqueurs de discours formels : "Furthermore", "In light of", "With regard to", "Notwithstanding the aforementioned..."')
-const C1_U6 = makeGenericContent('C1','c1-u6','Medical Research','Recherche médicale','Impersonal Passive','La voix passive impersonnelle : "It is widely accepted that...", "It has been demonstrated that..."')
-const C1_U7 = makeGenericContent('C1','c1-u7','Technical Writing','Rédaction technique','Concise Expression','L\'expression concise évite la répétition, utilise le passif court, et les listes verticales : "Ensure proper alignment" au lieu de "You need to make sure that..."')
-const C1_U8 = makeGenericContent('C1','c1-u8','Debate','Débat','Persuasive Structures','Les structures persuasives : ethos (crédibilité), pathos (émotion), logos (logique). "Not only... but also", "The evidence compellingly suggests..."')
-const C1_U9 = makeGenericContent('C1','c1-u9','Cultural Nuances','Nuances culturelles','Connotation & Pragmatics','La connotation : "slim" (positif) vs "skinny" (négatif). La pragmatique : ce qui est impliqué mais non dit directement.')
-const C1_U10 = makeGenericContent('C1','c1-u10','Financial Markets','Marchés financiers','Advanced Financial Language','Le langage financier avancé : "The portfolio was hedged against market volatility through derivative instruments."')
-const C1_U11 = makeGenericContent('C1','c1-u11','Constitutional Law','Droit constitutionnel','Legal Argumentation','L\'argumentation juridique : "The precedent established in Case X is applicable herein because..."')
-const C1_U12 = makeGenericContent('C1','c1-u12','Scientific Discourse','Discours scientifique','Scientific Register','Le registre scientifique : objectivité, précision, hedging. "The empirical evidence suggests a correlation, though causation has not been established."')
-const C1_U13 = makeGenericContent('C1','c1-u13','Media Analysis','Analyse des médias','Bias & Framing','Le biais médiatique : framing (cadrage), cherry-picking, appeal to authority. "The article frames the issue as..."')
-const C1_U14 = makeGenericContent('C1','c1-u14','Advanced Idioms','Idiomes avancés','Colloquialism & Euphemism','Le colloquialisme : expressions informelles. L\'euphémisme : adoucir une réalité. "Let go" au lieu de "fired", "pass away" au lieu de "die".')
+export const A1_L27: LessonContent = {
+  vocab: [
+    { english: 'Go', french: 'Aller', phonetic: '/ɡoʊ/', example: 'I go to school every day.', exampleTranslation: 'Je vais à l\'école chaque jour.' },
+    { english: 'Eat', french: 'Manger', phonetic: '/iːt/', example: 'We eat lunch at noon.', exampleTranslation: 'Nous mangeons le déjeuner à midi.' },
+    { english: 'Study', french: 'Étudier', phonetic: '/ˈstʌdi/', example: 'She studies English every evening.', exampleTranslation: 'Elle étudie l\'anglais chaque soir.' },
+    { english: 'Sleep', french: 'Dormir', phonetic: '/sliːp/', example: 'He sleeps eight hours a night.', exampleTranslation: 'Il dort huit heures par nuit.' },
+  ],
+  grammar: {
+    title: 'Present Simple — Formes affirmative, négative et interrogative',
+    explanation: 'Affirmatif : I work, you work, he/she/it works, we work, they work. Négatif : I don\'t work, he/she/it doesn\'t work. Interrogatif : Do you work? Does she work? Réponses courtes : Yes, I do. / No, she doesn\'t. Le Present Simple exprime des habitudes, des routines, des vérités générales.',
+    examples: [
+      { sentence: 'She studies French at school.', translation: 'Elle étudie le français à l\'école.', isCorrect: true },
+      { sentence: 'He don\'t eat meat.', translation: '', isCorrect: false },
+      { sentence: 'Do you go to work by bus?', translation: 'Vas-tu au travail en bus ?', isCorrect: true },
+      { sentence: 'They doesn\'t study on weekends.', translation: '', isCorrect: false },
+    ],
+    commonMistakes: [
+      { wrong: 'He don\'t eat meat.', correct: 'He doesn\'t eat meat.', explanation: 'Avec he/she/it, on utilise "doesn\'t", pas "don\'t".' },
+      { wrong: 'They doesn\'t study.', correct: 'They don\'t study.', explanation: 'Avec they/we/you, on utilise "don\'t", pas "doesn\'t".' },
+    ],
+  },
+  conversation: [
+    { speaker: 'Julie', role: 'A', text: 'Do you go to school by bus?', translation: 'Vas-tu à l\'école en bus ?' },
+    { speaker: 'Marc', role: 'B', text: 'No, I don\'t. I walk to school. It takes ten minutes.', translation: 'Non. Je vais à l\'école à pied. Ça prend dix minutes.' },
+    { speaker: 'Julie', role: 'A', text: 'Does your sister study at the same school?', translation: 'Ta sœur étudie dans la même école ?' },
+    { speaker: 'Marc', role: 'B', text: 'No, she doesn\'t. She studies at the university.', translation: 'Non. Elle étudie à l\'université.' },
+    { speaker: 'Julie', role: 'A', text: 'What time does she eat dinner?', translation: 'À quelle heure mange-t-elle le dîner ?' },
+    { speaker: 'Marc', role: 'B', text: 'She eats dinner at seven. Then she sleeps early.', translation: 'Elle dîne à sept heures. Ensuite elle se couche tôt.' },
+  ],
+  pronunciation: [
+    { word: 'Goes', phonetic: '/ɡoʊz/', meaning: 'Va (3e pers.)', tip: 'Prononcez "gôz" — le "s" final est sonore : "z". Pas "goss".' },
+    { word: 'Eats', phonetic: '/iːts/', meaning: 'Mange (3e pers.)', tip: 'Prononcez "iits" — le "ea" est un "i" long et le "s" est sourd.' },
+    { word: 'Studies', phonetic: '/ˈstʌdiz/', meaning: 'Étudie (3e pers.)', tip: 'Le "y" devient "ie" : "steu-diz". Le "i" final est court.' },
+    { word: 'Sleeps', phonetic: '/sliːps/', meaning: 'Dort (3e pers.)', tip: 'Prononcez "sliips" — le "ee" est long et le "s" final est sourd.' },
+  ],
+}
 
-// C2 Units
-const C2_U1 = makeGenericContent('C2','c2-u1','Literary Criticism','Critique littéraire','Deconstructive Analysis','L\'analyse déconstructive remet en question les oppositions binaires et les significations fixes du texte.')
-const C2_U2 = makeGenericContent('C2','c2-u2','Philosophical Discourse','Discours philosophique','Dialectical Reasoning','Le raisonnement dialectique : thèse, antithèse, synthèse. Exprimer des nuances philosophiques en anglais.')
-const C2_U3 = makeGenericContent('C2','c2-u3','Advanced Rhetoric','Rhétorique avancée','Rhetorical Devices','Les dispositifs rhétoriques : anaphore, chiasme, tricolons, parataxe, hypotaxe.')
-const C2_U4 = makeGenericContent('C2','c2-u4','Scientific Publishing','Publication scientifique','Peer Review Language','Le langage de la revue par les pairs : "The methodology raises concerns regarding...", "The authors would strengthen their argument by..."')
-const C2_U5 = makeGenericContent('C2','c2-u5','Diplomatic Negotiation','Négociation diplomatique','Strategic Ambiguity','L\'ambiguïté stratégique : formuler des propositions qui laissent une marge d\'interprétation.')
-const C2_U6 = makeGenericContent('C2','c2-u6','Poetic Expression','Expression poétique','Poetic Devices','Les dispositifs poétiques : enjambment, caesura, alliteration, assonance, onomatopoeia.')
-const C2_U7 = makeGenericContent('C2','c2-u7','Legal Advocacy','Plaidoirie juridique','Legal Persuasion','La persuasion juridique : "May it please the court...", "The weight of evidence compels the conclusion that..."')
-const C2_U8 = makeGenericContent('C2','c2-u8','Academic Chairing','Présidence académique','Chairing Academic Sessions','Présider une session académique : "We now invite Professor X to present her findings...", "I\'d like to open the floor for questions."')
-const C2_U9 = makeGenericContent('C2','c2-u9','Cultural Anthropology','Anthropologie culturelle','Ethnographic Language','Le langage ethnographique : "Participant observation revealed...", "The emic perspective suggests..."')
-const C2_U10 = makeGenericContent('C2','c2-u10','Linguistic Analysis','Analyse linguistique','Metalanguage','Le métalangage : morphème, phonème, syntaxe, sémantique, pragmatique — les termes pour analyser le langage lui-même.')
-const C2_U11 = makeGenericContent('C2','c2-u11','Economic Policy','Politique économique','Policy Discourse','Le discours politique économique : "The fiscal stimulus package is projected to yield a multiplier effect of..."')
-const C2_U12 = makeGenericContent('C2','c2-u12','Ethical Leadership','Leadership éthique','Ethical Argumentation','L\'argumentation éthique : utilitarianism, deontological ethics, virtue ethics. "From a deontological perspective, the action is impermissible regardless of outcomes."')
+export const A1_L28: LessonContent = {
+  vocab: [
+    { english: 'Commute', french: 'Trajet domicile-travail', phonetic: '/kəˈmjuːt/', example: 'My commute is thirty minutes.', exampleTranslation: 'Mon trajet dure trente minutes.' },
+    { english: 'Lunch break', french: 'Pause déjeuner', phonetic: '/lʌntʃ breɪk/', example: 'I have a lunch break at noon.', exampleTranslation: 'J\'ai une pause déjeuner à midi.' },
+    { english: 'Chores', french: 'Tâches ménagères', phonetic: '/tʃɔːrz/', example: 'I do chores on Saturday.', exampleTranslation: 'Je fais les tâches ménagères le samedi.' },
+    { english: 'Relax', french: 'Se détendre', phonetic: '/rɪˈlæks/', example: 'I relax in the evening.', exampleTranslation: 'Je me détends le soir.' },
+  ],
+  grammar: {
+    title: 'Mots de séquence — First, Then, After that, Finally',
+    explanation: 'Pour raconter votre journée dans l\'ordre : "First" (d\'abord), "Then" (ensuite), "After that" (après cela), "Finally" (finalement). Ces mots aident à organiser votre récit. On les place au début de la phrase : "First, I wake up. Then, I take a shower. After that, I eat breakfast. Finally, I go to work."',
+    examples: [
+      { sentence: 'First, I wake up. Then, I get dressed.', translation: 'D\'abord, je me réveille. Ensuite, je m\'habille.', isCorrect: true },
+      { sentence: 'After that, I eat breakfast. Finally, I go to work.', translation: 'Après cela, je prends le petit-déjeuner. Finalement, je vais au travail.', isCorrect: true },
+      { sentence: 'Finally I wake up, then I sleep.', translation: '', isCorrect: false },
+      { sentence: 'First, she brushes her teeth. Then, she has breakfast.', translation: 'D\'abord, elle se brosse les dents. Ensuite, elle prend le petit-déjeuner.', isCorrect: true },
+    ],
+    commonMistakes: [
+      { wrong: 'First I wake up then I get dressed.', correct: 'First, I wake up. Then, I get dressed.', explanation: 'On sépare les phrases avec un point, pas une virgule. Chaque étape est une phrase complète.' },
+      { wrong: 'After, that I eat.', correct: 'After that, I eat.', explanation: '"After that" est une expression inséparable — pas de virgule entre "after" et "that".' },
+    ],
+  },
+  conversation: [
+    { speaker: 'Sarah', role: 'A', text: 'Can you describe your typical day?', translation: 'Peux-tu décrire ta journée type ?' },
+    { speaker: 'Olivier', role: 'B', text: 'Sure! First, I wake up at six. Then, I take a shower and get dressed.', translation: 'Bien sûr ! D\'abord, je me réveille à six heures. Ensuite, je prends une douche et je m\'habille.' },
+    { speaker: 'Sarah', role: 'A', text: 'What do you do after that?', translation: 'Que fais-tu après cela ?' },
+    { speaker: 'Olivier', role: 'B', text: 'After that, I have breakfast. My commute is twenty minutes by train.', translation: 'Après cela, je prends le petit-déjeuner. Mon trajet dure vingt minutes en train.' },
+    { speaker: 'Sarah', role: 'A', text: 'And in the evening? Do you do chores?', translation: 'Et le soir ? Fais-tu les tâches ménagères ?' },
+    { speaker: 'Olivier', role: 'B', text: 'I do chores on Wednesday. But after my lunch break, I just relax!', translation: 'Je fais les tâches ménagères le mercredi. Mais après ma pause déjeuner, je me détends !' },
+  ],
+  pronunciation: [
+    { word: 'Commute', phonetic: '/kəˈmjuːt/', meaning: 'Trajet', tip: 'L\'accent est sur "mute" : "ke-MIOUT". Les syllabes avant et après sont réduites.' },
+    { word: 'Chores', phonetic: '/tʃɔːrz/', meaning: 'Tâches ménagères', tip: 'Le "ch" = "tch" et le "o" est long : "tchorz". Pas "chorz".' },
+    { word: 'Relax', phonetic: '/rɪˈlæks/', meaning: 'Se détendre', tip: 'L\'accent est sur "lax" : "ri-LAKS". Le "a" est ouvert comme dans "cat".' },
+    { word: 'Finally', phonetic: '/ˈfaɪnəli/', meaning: 'Finalement', tip: 'Prononcez "faï-na-li" — le "i" de "fi" est long. Pas "fi-nal-li".' },
+  ],
+}
 
-// ─── CONTENT MAP ─────────────────────────────────────────────────────────────
+export const A1_L29: LessonContent = {
+  vocab: [
+    { english: 'Always', french: 'Toujours', phonetic: '/ˈɔːlweɪz/', example: 'I always drink coffee in the morning.', exampleTranslation: 'Je bois toujours du café le matin.' },
+    { english: 'Usually', french: 'Habituellement', phonetic: '/ˈjuːʒuəli/', example: 'She usually walks to work.', exampleTranslation: 'Elle va habituellement au travail à pied.' },
+    { english: 'Sometimes', french: 'Parfois', phonetic: '/ˈsʌmtaɪmz/', example: 'I sometimes read before bed.', exampleTranslation: 'Je lis parfois avant de dormir.' },
+    { english: 'Never', french: 'Jamais', phonetic: '/ˈnevər/', example: 'He never eats breakfast.', exampleTranslation: 'Il ne prend jamais le petit-déjeuner.' },
+  ],
+  grammar: {
+    title: 'Les adverbes de fréquence — Placement dans la phrase',
+    explanation: 'Les adverbes de fréquence se placent AVANT le verbe principal : "I always wake up early", "She sometimes reads". MAIS APRÈS le verbe "be" : "I am always tired", "She is never late". Ordre de fréquence : always (100%) > usually (80%) > sometimes (50%) > never (0%).',
+    examples: [
+      { sentence: 'I always eat breakfast.', translation: 'Je prends toujours le petit-déjeuner.', isCorrect: true },
+      { sentence: 'She is always happy.', translation: 'Elle est toujours heureuse.', isCorrect: true },
+      { sentence: 'I am always wake up early.', translation: '', isCorrect: false },
+      { sentence: 'He never drinks coffee.', translation: 'Il ne boit jamais de café.', isCorrect: true },
+    ],
+    commonMistakes: [
+      { wrong: 'I am always wake up early.', correct: 'I always wake up early.', explanation: 'L\'adverbe se place APRÈS "be" mais AVANT les autres verbes. "Wake up" n\'est pas "be".' },
+      { wrong: 'I don\'t never eat meat.', correct: 'I never eat meat.', explanation: 'On n\'utilise pas la double négation en anglais. "Never" suffit, pas besoin de "don\'t".' },
+    ],
+  },
+  conversation: [
+    { speaker: 'Émilie', role: 'A', text: 'Do you always wake up early?', translation: 'Te réveilles-tu toujours tôt ?' },
+    { speaker: 'Thomas', role: 'B', text: 'Yes, I always wake up at six. I usually go running.', translation: 'Oui, je me réveille toujours à six heures. Je vais habituellement courir.' },
+    { speaker: 'Émilie', role: 'A', text: 'That\'s impressive! I am never a morning person.', translation: 'C\'est impressionnant ! Je ne suis jamais du genre matinal.' },
+    { speaker: 'Thomas', role: 'B', text: 'Do you sometimes exercise in the evening?', translation: 'Fais-tu parfois de l\'exercice le soir ?' },
+    { speaker: 'Émilie', role: 'A', text: 'Sometimes, yes. I usually walk home from work.', translation: 'Parfois, oui. Je rentre habituellement du travail à pied.' },
+    { speaker: 'Thomas', role: 'B', text: 'That\'s good exercise! I never skip my morning run.', translation: 'C\'est un bon exercice ! Je ne saute jamais mon footing matinal.' },
+  ],
+  pronunciation: [
+    { word: 'Always', phonetic: '/ˈɔːlweɪz/', meaning: 'Toujours', tip: 'Prononcez "ol-ouéz" — l\'accent est sur "al" et le "s" final est sonore : "z".' },
+    { word: 'Usually', phonetic: '/ˈjuːʒuəli/', meaning: 'Habituellement', tip: 'Le "s" devient le son "j" français : "iou-jou-a-li". Pas "iou-zou-a-li".' },
+    { word: 'Sometimes', phonetic: '/ˈsʌmtaɪmz/', meaning: 'Parfois', tip: 'Prononcez "seum-taïmz" — le "s" final est sonore et le "i" de "times" est long.' },
+    { word: 'Never', phonetic: '/ˈnevər/', meaning: 'Jamais', tip: 'L\'accent sur "NEV" : "NE-ver". Le "er" final est doux et réduit.' },
+  ],
+}
+
+export const A1_L30: LessonContent = {
+  vocab: [
+    { english: 'Cook', french: 'Cuisiner', phonetic: '/kʊk/', example: 'I cook dinner every evening.', exampleTranslation: 'Je cuisine le dîner chaque soir.' },
+    { english: 'Clean', french: 'Nettoyer', phonetic: '/kliːn/', example: 'She cleans the house on Saturday.', exampleTranslation: 'Elle nettoie la maison le samedi.' },
+    { english: 'Drive', french: 'Conduire', phonetic: '/draɪv/', example: 'He drives to work every day.', exampleTranslation: 'Il conduit au travail chaque jour.' },
+    { english: 'Walk', french: 'Marcher', phonetic: '/wɔːk/', example: 'We walk to the park.', exampleTranslation: 'Nous marchons jusqu\'au parc.' },
+  ],
+  grammar: {
+    title: 'La 3e personne du singulier — Terminaisons -s, -es, -ies',
+    explanation: 'Avec he/she/it, le verbe prend une terminaison : 1) Verbes normaux + -s : walk → walks, cook → cooks. 2) Verbes en -sh, -ch, -o, -ss, -x + -es : wash → washes, go → goes, watch → watches. 3) Verbes en consonne + y → -ies : study → studies, carry → carries. MAIS voyelle + y → -s : play → plays.',
+    examples: [
+      { sentence: 'She walks to school.', translation: 'Elle marche à l\'école.', isCorrect: true },
+      { sentence: 'He studys English.', translation: '', isCorrect: false },
+      { sentence: 'My mother washes the dishes.', translation: 'Ma mère fait la vaisselle.', isCorrect: true },
+      { sentence: 'He plays football on Sunday.', translation: 'Il joue au football le dimanche.', isCorrect: true },
+    ],
+    commonMistakes: [
+      { wrong: 'He studys English.', correct: 'He studies English.', explanation: 'Consonne + y → -ies : study → studies. Pas "studys".' },
+      { wrong: 'She watchs TV.', correct: 'She watches TV.', explanation: 'Verbe en -ch → on ajoute -es : watch → watches.' },
+    ],
+  },
+  conversation: [
+    { speaker: 'Amina', role: 'A', text: 'Does your husband cook dinner?', translation: 'Ton mari cuisine-t-il le dîner ?' },
+    { speaker: 'Isabelle', role: 'B', text: 'Yes, he cooks every evening. He makes great pasta!', translation: 'Oui, il cuisine chaque soir. Il fait d\'excellentes pâtes !' },
+    { speaker: 'Amina', role: 'A', text: 'Lucky you! My boyfriend never cooks. He always drives to get takeout.', translation: 'Tu as de la chance ! Mon petit ami ne cuisine jamais. Il conduit toujours chercher à emporter.' },
+    { speaker: 'Isabelle', role: 'B', text: 'Does he clean the house at least?', translation: 'Nettoie-t-il la maison au moins ?' },
+    { speaker: 'Amina', role: 'A', text: 'Sometimes! He cleans on weekends. I walk the dog every morning.', translation: 'Parfois ! Il nettoie le week-end. Je promène le chien chaque matin.' },
+    { speaker: 'Isabelle', role: 'B', text: 'We all have our tasks. I walk the dog too!', translation: 'On a tous nos tâches. Je promène le chien aussi !' },
+  ],
+  pronunciation: [
+    { word: 'Cooks', phonetic: '/kʊks/', meaning: 'Cuisine (3e pers.)', tip: 'Le "s" final est sourd : "kouks". Après un son sourd (k, p, t, f), -s se prononce "s".' },
+    { word: 'Cleans', phonetic: '/kliːnz/', meaning: 'Nettoie (3e pers.)', tip: 'Le "s" final est sonore : "kliinz". Après un son sonore (n, b, d, g, v), -s se prononce "z".' },
+    { word: 'Washes', phonetic: '/ˈwɒʃɪz/', meaning: 'Lave (3e pers.)', tip: 'Après -sh, -ch, -s, -x, -z, la terminaison -es se prononce "iz" : "ouch-iz".' },
+    { word: 'Studies', phonetic: '/ˈstʌdiz/', meaning: 'Étudie (3e pers.)', tip: 'Le "y" devient "ie" : "steu-diz". Le son "i" final est court.' },
+  ],
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// UNIT 7: HOME (a1-l31 to a1-l35)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+export const A1_L31: LessonContent = {
+  vocab: [
+    { english: 'Kitchen', french: 'Cuisine', phonetic: '/ˈkɪtʃɪn/', example: 'The kitchen is downstairs.', exampleTranslation: 'La cuisine est en bas.' },
+    { english: 'Bedroom', french: 'Chambre', phonetic: '/ˈbedruːm/', example: 'My bedroom is small but cozy.', exampleTranslation: 'Ma chambre est petite mais cozy.' },
+    { english: 'Bathroom', french: 'Salle de bain', phonetic: '/ˈbæθruːm/', example: 'The bathroom has a big mirror.', exampleTranslation: 'La salle de bain a un grand miroir.' },
+    { english: 'Living room', french: 'Salon', phonetic: '/ˈlɪvɪŋ ruːm/', example: 'We watch TV in the living room.', exampleTranslation: 'Nous regardons la télé dans le salon.' },
+    { english: 'Garden', french: 'Jardin', phonetic: '/ˈɡɑːrdən/', example: 'There are flowers in the garden.', exampleTranslation: 'Il y a des fleurs dans le jardin.' },
+  ],
+  grammar: {
+    title: 'Prépositions de lieu — Upstairs, Downstairs, Next to',
+    explanation: 'Pour situer les pièces : "upstairs" (à l\'étage), "downstairs" (en bas). Autres prépositions utiles : "next to" (à côté de), "near" (près de), "opposite" (en face de), "above" (au-dessus de), "below" (en dessous de). Exemples : "The bedroom is upstairs, next to the bathroom."',
+    examples: [
+      { sentence: 'The kitchen is downstairs.', translation: 'La cuisine est en bas.', isCorrect: true },
+      { sentence: 'The bedroom is next to the bathroom.', translation: 'La chambre est à côté de la salle de bain.', isCorrect: true },
+      { sentence: 'The garden is upstairs.', translation: '', isCorrect: false },
+      { sentence: 'The living room is near the kitchen.', translation: 'Le salon est près de la cuisine.', isCorrect: true },
+    ],
+    commonMistakes: [
+      { wrong: 'The garden is upstairs.', correct: 'The garden is outside. / The garden is downstairs.', explanation: 'Un jardin est à l\'extérieur, pas à l\'étage ! On dit "outside" ou "downstairs".' },
+      { wrong: 'The bedroom is next the bathroom.', correct: 'The bedroom is next to the bathroom.', explanation: 'Il faut "next TO", pas juste "next".' },
+    ],
+  },
+  conversation: [
+    { speaker: 'Claire', role: 'A', text: 'Where is the bathroom in your house?', translation: 'Où est la salle de bain dans ta maison ?' },
+    { speaker: 'Antoine', role: 'B', text: 'It\'s upstairs, next to my bedroom.', translation: 'Elle est à l\'étage, à côté de ma chambre.' },
+    { speaker: 'Claire', role: 'A', text: 'And the kitchen? Is it near the living room?', translation: 'Et la cuisine ? Elle est près du salon ?' },
+    { speaker: 'Antoine', role: 'B', text: 'Yes! The kitchen is downstairs, opposite the living room.', translation: 'Oui ! La cuisine est en bas, en face du salon.' },
+    { speaker: 'Claire', role: 'A', text: 'Do you have a garden?', translation: 'As-tu un jardin ?' },
+    { speaker: 'Antoine', role: 'B', text: 'Yes, the garden is behind the kitchen. It\'s beautiful in spring!', translation: 'Oui, le jardin est derrière la cuisine. Il est beau au printemps !' },
+  ],
+  pronunciation: [
+    { word: 'Kitchen', phonetic: '/ˈkɪtʃɪn/', meaning: 'Cuisine', tip: 'Le "ch" = "tch" : "kit-chinn". Pas "kitchen" à la française.' },
+    { word: 'Bedroom', phonetic: '/ˈbedruːm/', meaning: 'Chambre', tip: 'Prononcez "béd-roum" — le "d" et le "r" se lient naturellement.' },
+    { word: 'Bathroom', phonetic: '/ˈbæθruːm/', meaning: 'Salle de bain', tip: 'Le "th" est expiré : langue entre les dents. "Bath-roum". Pas "bad-room".' },
+    { word: 'Garden', phonetic: '/ˈɡɑːrdən/', meaning: 'Jardin', tip: 'Le "ar" est long et ouvert : "gar-denn". Comme dans "gare" mais plus long.' },
+  ],
+}
+
+export const A1_L32: LessonContent = {
+  vocab: [
+    { english: 'Sofa', french: 'Canapé', phonetic: '/ˈsoʊfə/', example: 'The sofa is very comfortable.', exampleTranslation: 'Le canapé est très confortable.' },
+    { english: 'Bed', french: 'Lit', phonetic: '/bed/', example: 'The bed is in the bedroom.', exampleTranslation: 'Le lit est dans la chambre.' },
+    { english: 'Fridge', french: 'Réfrigérateur', phonetic: '/frɪdʒ/', example: 'The food is in the fridge.', exampleTranslation: 'La nourriture est dans le frigo.' },
+    { english: 'Television', french: 'Télévision', phonetic: '/ˈtelɪvɪʒən/', example: 'The television is in the living room.', exampleTranslation: 'La télévision est dans le salon.' },
+    { english: 'Wardrobe', french: 'Armoire', phonetic: '/ˈwɔːrdroʊb/', example: 'My clothes are in the wardrobe.', exampleTranslation: 'Mes vêtements sont dans l\'armoire.' },
+  ],
+  grammar: {
+    title: 'L\'ordre adjectif + nom — A big red sofa',
+    explanation: 'En anglais, les adjectifs se placent AVANT le nom : "a big sofa" (un grand canapé), "a red bed" (un lit rouge). Avec plusieurs adjectifs, l\'ordre est : taille → couleur : "a big red sofa" (un grand canapé rouge). On ne met JAMAIS "and" entre les adjectifs avant un nom singulier.',
+    examples: [
+      { sentence: 'I have a big white fridge.', translation: 'J\'ai un grand frigo blanc.', isCorrect: true },
+      { sentence: 'She has a red big wardrobe.', translation: '', isCorrect: false },
+      { sentence: 'The small blue television is old.', translation: 'La petite télévision bleue est vieille.', isCorrect: true },
+      { sentence: 'We need a comfortable new sofa.', translation: 'Nous avons besoin d\'un nouveau canapé confortable.', isCorrect: true },
+    ],
+    commonMistakes: [
+      { wrong: 'A red big sofa', correct: 'A big red sofa', explanation: 'L\'ordre est taille AVANT couleur : "big" (taille) vient avant "red" (couleur).' },
+      { wrong: 'A big and red sofa', correct: 'A big red sofa', explanation: 'Pas de "and" entre les adjectifs avant un nom singulier. On dit "a big red sofa".' },
+    ],
+  },
+  conversation: [
+    { speaker: 'Lucie', role: 'A', text: 'I love your living room! That big blue sofa is beautiful.', translation: 'J\'adore ton salon ! Ce grand canapé bleu est magnifique.' },
+    { speaker: 'Benoît', role: 'B', text: 'Thank you! We also have a new white wardrobe in the bedroom.', translation: 'Merci ! Nous avons aussi une nouvelle armoire blanche dans la chambre.' },
+    { speaker: 'Lucie', role: 'A', text: 'Is your bed comfortable?', translation: 'Ton lit est confortable ?' },
+    { speaker: 'Benoît', role: 'B', text: 'Very! It\'s a large brown bed. I sleep so well.', translation: 'Très ! C\'est un grand lit marron. Je dors très bien.' },
+    { speaker: 'Lucie', role: 'A', text: 'I need a small black television for my kitchen.', translation: 'J\'ai besoin d\'une petite télévision noire pour ma cuisine.' },
+    { speaker: 'Benoît', role: 'B', text: 'My old television is small and black! You can have it.', translation: 'Ma vieille télé est petite et noire ! Tu peux la prendre.' },
+  ],
+  pronunciation: [
+    { word: 'Sofa', phonetic: '/ˈsoʊfə/', meaning: 'Canapé', tip: 'Le "o" est long : "so-fa". Le "a" final est très réduit. Pas "so-fà".' },
+    { word: 'Fridge', phonetic: '/frɪdʒ/', meaning: 'Réfrigérateur', tip: 'Prononcez "fridj" — le "i" est court et le "dge" = "dj".' },
+    { word: 'Television', phonetic: '/ˈtelɪvɪʒən/', meaning: 'Télévision', tip: 'L\'accent est sur "tel" : "TE-li-vi-jonn". Le "sion" = "jonn".' },
+    { word: 'Wardrobe', phonetic: '/ˈwɔːrdroʊb/', meaning: 'Armoire', tip: 'Prononcez "ouor-drob" — le "w" arrondit les lèvres et le "e" final est muet.' },
+  ],
+}
+
+export const A1_L33: LessonContent = {
+  vocab: [
+    { english: 'Some', french: 'Du/De la/Des', phonetic: '/sʌm/', example: 'There are some chairs in the kitchen.', exampleTranslation: 'Il y a des chaises dans la cuisine.' },
+    { english: 'Any', french: 'Du/De la (négatif/question)', phonetic: '/ˈeni/', example: 'There aren\'t any books on the table.', exampleTranslation: 'Il n\'y a pas de livres sur la table.' },
+    { english: 'Many', french: 'Beaucoup de (dénombrable)', phonetic: '/ˈmeni/', example: 'There are many rooms in this house.', exampleTranslation: 'Il y a beaucoup de pièces dans cette maison.' },
+    { english: 'Much', french: 'Beaucoup de (indénombrable)', phonetic: '/mʌtʃ/', example: 'There isn\'t much space in the bedroom.', exampleTranslation: 'Il n\'y a pas beaucoup d\'espace dans la chambre.' },
+  ],
+  grammar: {
+    title: 'There is / There are — Singulier, pluriel et quantités',
+    explanation: 'On utilise "there is" avec un nom singulier ou indénombrable : "There is a sofa" / "There is some water". On utilise "there are" avec un nom pluriel : "There are three bedrooms". Négatif : "There isn\'t a sofa" / "There aren\'t any chairs". Question : "Is there a kitchen?" / "Are there any windows?"',
+    examples: [
+      { sentence: 'There is a big fridge in the kitchen.', translation: 'Il y a un grand frigo dans la cuisine.', isCorrect: true },
+      { sentence: 'There are two sofa in the living room.', translation: '', isCorrect: false },
+      { sentence: 'Is there any milk in the fridge?', translation: 'Y a-t-il du lait dans le frigo ?', isCorrect: true },
+      { sentence: 'There isn\'t much space in the bathroom.', translation: 'Il n\'y a pas beaucoup d\'espace dans la salle de bain.', isCorrect: true },
+    ],
+    commonMistakes: [
+      { wrong: 'There are two sofa.', correct: 'There are two sofas.', explanation: 'Avec "there are", le nom doit être au pluriel : "sofas", pas "sofa".' },
+      { wrong: 'There is many rooms.', correct: 'There are many rooms.', explanation: '"Rooms" est pluriel → on utilise "there are", pas "there is".' },
+    ],
+  },
+  conversation: [
+    { speaker: 'Nadia', role: 'A', text: 'Is there a garden in your new apartment?', translation: 'Y a-t-il un jardin dans ton nouvel appartement ?' },
+    { speaker: 'Romain', role: 'B', text: 'No, there isn\'t a garden. But there are some plants on the balcony.', translation: 'Non, il n\'y a pas de jardin. Mais il y a des plantes sur le balcon.' },
+    { speaker: 'Nadia', role: 'A', text: 'How many rooms are there?', translation: 'Combien de pièces y a-t-il ?' },
+    { speaker: 'Romain', role: 'B', text: 'There are three rooms. There isn\'t much space, but it\'s cozy.', translation: 'Il y a trois pièces. Il n\'y a pas beaucoup d\'espace, mais c\'est cozy.' },
+    { speaker: 'Nadia', role: 'A', text: 'Are there any bookshelves?', translation: 'Y a-t-il des étagères ?' },
+    { speaker: 'Romain', role: 'B', text: 'Yes, there are many bookshelves! I have a lot of books.', translation: 'Oui, il y a beaucoup d\'étagères ! J\'ai beaucoup de livres.' },
+  ],
+  pronunciation: [
+    { word: 'Some', phonetic: '/sʌm/', meaning: 'Du/De la/Des', tip: 'Le "o" est ouvert : "seum". Très différent du mot français "somme".' },
+    { word: 'Any', phonetic: '/ˈeni/', meaning: 'Du/De la (nég./quest.)', tip: 'Prononcez "é-ni" — le "a" est comme "é" et non "a".' },
+    { word: 'Many', phonetic: '/ˈmeni/', meaning: 'Beaucoup de', tip: 'Prononcez "mé-ni" — le "a" se prononce "é" et le "y" final = "i" court.' },
+    { word: 'Much', phonetic: '/mʌtʃ/', meaning: 'Beaucoup de (indén.)', tip: 'Le "u" est ouvert : "meutch". Le "ch" final = "tch" français.' },
+  ],
+}
+
+export const A1_L34: LessonContent = {
+  vocab: [
+    { english: 'Apartment', french: 'Appartement', phonetic: '/əˈpɑːrtmənt/', example: 'I live in a small apartment.', exampleTranslation: 'J\'habite dans un petit appartement.' },
+    { english: 'Rent', french: 'Loyer', phonetic: '/rent/', example: 'The rent is eight hundred euros.', exampleTranslation: 'Le loyer est de huit cents euros.' },
+    { english: 'Neighbor', french: 'Voisin(e)', phonetic: '/ˈneɪbər/', example: 'My neighbor is very friendly.', exampleTranslation: 'Mon voisin est très sympa.' },
+    { english: 'Balcony', french: 'Balcon', phonetic: '/ˈbælkəni/', example: 'There is a balcony with a nice view.', exampleTranslation: 'Il y a un balcon avec une belle vue.' },
+  ],
+  grammar: {
+    title: 'Décrire son logement — Adjectifs et possessifs',
+    explanation: 'Pour décrire votre maison ou appartement, utilisez : "My house is big/small/old/new/beautiful/comfortable". "I live in a + adjective + apartment/house" : "I live in a small apartment". "It has + nombre + rooms" : "It has three rooms". "There is/are..." pour décrire ce qu\'il y a.',
+    examples: [
+      { sentence: 'I live in a beautiful old apartment.', translation: 'J\'habite dans un bel vieux appartement.', isCorrect: true },
+      { sentence: 'It has three bedrooms and a big kitchen.', translation: 'Il a trois chambres et une grande cuisine.', isCorrect: true },
+      { sentence: 'My apartment has a balcon.', translation: '', isCorrect: false },
+      { sentence: 'The rent is very expensive.', translation: 'Le loyer est très cher.', isCorrect: true },
+    ],
+    commonMistakes: [
+      { wrong: 'My apartment has a balcon.', correct: 'My apartment has a balcony.', explanation: 'Le mot anglais est "balcony", pas "balcon" (mot français).' },
+      { wrong: 'I live in apartment small.', correct: 'I live in a small apartment.', explanation: 'L\'adjectif se place AVANT le nom : "a small apartment", pas "apartment small".' },
+    ],
+  },
+  conversation: [
+    { speaker: 'Alice', role: 'A', text: 'Do you live in a house or an apartment?', translation: 'Habites-tu dans une maison ou un appartement ?' },
+    { speaker: 'François', role: 'B', text: 'I live in a small apartment. It has two rooms and a balcony.', translation: 'J\'habite dans un petit appartement. Il a deux pièces et un balcon.' },
+    { speaker: 'Alice', role: 'A', text: 'That sounds nice! Is the rent expensive?', translation: 'Ça a l\'air sympa ! Le loyer est cher ?' },
+    { speaker: 'François', role: 'B', text: 'The rent is seven hundred euros. My neighbor is very friendly though!', translation: 'Le loyer est de sept cents euros. Mais mon voisin est très sympa !' },
+    { speaker: 'Alice', role: 'A', text: 'That\'s important! My apartment has a balcony too. I love it.', translation: 'C\'est important ! Mon appartement a aussi un balcon. Je l\'adore.' },
+    { speaker: 'François', role: 'B', text: 'We\'re lucky! A balcony makes a small apartment feel bigger.', translation: 'On a de la chance ! Un balcon fait paraître un petit appartement plus grand.' },
+  ],
+  pronunciation: [
+    { word: 'Apartment', phonetic: '/əˈpɑːrtmənt/', meaning: 'Appartement', tip: 'L\'accent est sur "par" : "e-PAR-ment". Le "a" de "par" est long et ouvert.' },
+    { word: 'Rent', phonetic: '/rent/', meaning: 'Loyer', tip: 'Prononcez "rent" — le "e" est bref et ouvert. Pas "rant".' },
+    { word: 'Neighbor', phonetic: '/ˈneɪbər/', meaning: 'Voisin(e)', tip: 'Le "ei" = "éi" : "néi-ber". Le "gh" est MUET !' },
+    { word: 'Balcony', phonetic: '/ˈbælkəni/', meaning: 'Balcon', tip: 'L\'accent sur "BAL" : "BAL-ke-ni". Le "a" est ouvert comme dans "cat".' },
+  ],
+}
+
+export const A1_L35: LessonContent = {
+  vocab: [
+    { english: 'Cupboard', french: 'Placard', phonetic: '/ˈkʌbərd/', example: 'The cups are in the cupboard.', exampleTranslation: 'Les tasses sont dans le placard.' },
+    { english: 'Cushion', french: 'Coussin', phonetic: '/ˈkʊʃən/', example: 'The cushion is on the sofa.', exampleTranslation: 'Le coussin est sur le canapé.' },
+    { english: 'Drawer', french: 'Tiroir', phonetic: '/drɔːr/', example: 'The keys are in the drawer.', exampleTranslation: 'Les clés sont dans le tiroir.' },
+    { english: 'Ceiling', french: 'Plafond', phonetic: '/ˈsiːlɪŋ/', example: 'The ceiling is very high.', exampleTranslation: 'Le plafond est très haut.' },
+  ],
+  grammar: {
+    title: 'Les noms composés — Living room, Coffee table',
+    explanation: 'Les noms composés combinent deux mots pour former un nouveau nom. Le premier mot décrit ou modifie le deuxième : "living room" (salle de séjour), "coffee table" (table basse), "bedroom" (chambre), "bathroom" (salle de bain). L\'accent tonique est généralement sur le PREMIER mot : "LIVING room", "COFFEE table".',
+    examples: [
+      { sentence: 'The coffee table is in the living room.', translation: 'La table basse est dans le salon.', isCorrect: true },
+      { sentence: 'The bedroom light is broken.', translation: 'La lumière de la chambre est cassée.', isCorrect: true },
+      { sentence: 'The room bedroom is big.', translation: '', isCorrect: false },
+      { sentence: 'There is a bookshelf in the bedroom.', translation: 'Il y a une étagère dans la chambre.', isCorrect: true },
+    ],
+    commonMistakes: [
+      { wrong: 'The room bedroom', correct: 'The bedroom', explanation: '"Bedroom" est déjà un nom composé. On ne dit pas "room bedroom".' },
+      { wrong: 'Living ROOM', correct: 'LIVING room', explanation: 'Dans les noms composés, l\'accent tonique est sur le PREMIER mot : "LIVING room".' },
+    ],
+  },
+  conversation: [
+    { speaker: 'Sophie', role: 'A', text: 'Where are the glasses? Are they in the cupboard?', translation: 'Où sont les verres ? Sont-ils dans le placard ?' },
+    { speaker: 'Marc', role: 'B', text: 'Yes, they\'re in the kitchen cupboard, next to the plates.', translation: 'Oui, ils sont dans le placard de la cuisine, à côté des assiettes.' },
+    { speaker: 'Sophie', role: 'A', text: 'I love the cushions on your sofa. Where did you buy them?', translation: 'J\'adore les coussins sur ton canapé. Où les as-tu achetés ?' },
+    { speaker: 'Marc', role: 'B', text: 'Thanks! My mother made them. Look up — the ceiling has beautiful moldings.', translation: 'Merci ! Ma mère les a faits. Regarde en haut — le plafond a de belles moulures.' },
+    { speaker: 'Sophie', role: 'A', text: 'Wow! Can you open the drawer? I need a pen.', translation: 'Waouh ! Peux-tu ouvrir le tiroir ? J\'ai besoin d\'un stylo.' },
+    { speaker: 'Marc', role: 'B', text: 'Sure, it\'s the top drawer of the coffee table.', translation: 'Bien sûr, c\'est le tiroir du haut de la table basse.' },
+  ],
+  pronunciation: [
+    { word: 'Cupboard', phonetic: '/ˈkʌbərd/', meaning: 'Placard', tip: 'On prononce "keu-berd" — le "p" et le "oa" disparaissent ! Pas "cup-board".' },
+    { word: 'Cushion', phonetic: '/ˈkʊʃən/', meaning: 'Coussin', tip: 'Prononcez "kouch-enn" — le "sh" est comme le "ch" français.' },
+    { word: 'Drawer', phonetic: '/drɔːr/', meaning: 'Tiroir', tip: 'Prononcez "dro-r" — le "aw" est un "o" long ouvert. Pas "draw-er".' },
+    { word: 'Ceiling', phonetic: '/ˈsiːlɪŋ/', meaning: 'Plafond', tip: 'Le "ei" = "ii" long : "sii-ling". Le "ng" final : langue contre le palais.' },
+  ],
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// UNIT 8: SHOPPING (a1-l36 to a1-l40)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+export const A1_L36: LessonContent = {
+  vocab: [
+    { english: 'Buy', french: 'Acheter', phonetic: '/baɪ/', example: 'I want to buy a new shirt.', exampleTranslation: 'Je veux acheter une nouvelle chemise.' },
+    { english: 'Sell', french: 'Vendre', phonetic: '/sel/', example: 'They sell fresh bread here.', exampleTranslation: 'Ils vendent du pain frais ici.' },
+    { english: 'Price', french: 'Prix', phonetic: '/praɪs/', example: 'What is the price of this bag?', exampleTranslation: 'Quel est le prix de ce sac ?' },
+    { english: 'Cheap', french: 'Bon marché', phonetic: '/tʃiːp/', example: 'This market is very cheap.', exampleTranslation: 'Ce marché est très bon marché.' },
+    { english: 'Expensive', french: 'Cher', phonetic: '/ɪkˈspensɪv/', example: 'The hotel is too expensive.', exampleTranslation: 'L\'hôtel est trop cher.' },
+  ],
+  grammar: {
+    title: 'This / That / These / Those — Au magasin',
+    explanation: 'Au magasin, on utilise les démonstratifs pour montrer les objets : "This" (ceci, proche) : "This shirt is nice." "That" (cela, éloigné) : "That bag is expensive." "These" (ces, proches, pluriel) : "These shoes are cheap." "Those" (ces, éloignés, pluriel) : "Those jackets are beautiful."',
+    examples: [
+      { sentence: 'This shirt is too expensive.', translation: 'Cette chemise est trop chère.', isCorrect: true },
+      { sentence: 'That shoes are cheap.', translation: '', isCorrect: false },
+      { sentence: 'These prices are very good.', translation: 'Ces prix sont très bons.', isCorrect: true },
+      { sentence: 'I want to buy those books.', translation: 'Je veux acheter ces livres.', isCorrect: true },
+    ],
+    commonMistakes: [
+      { wrong: 'That shoes are cheap.', correct: 'Those shoes are cheap.', explanation: '"Shoes" est pluriel, on utilise "those" au lieu de "that".' },
+      { wrong: 'This is a nice shoes.', correct: 'These are nice shoes.', explanation: '"Shoes" est pluriel → "these are", pas "this is".' },
+    ],
+  },
+  conversation: [
+    { speaker: 'Inès', role: 'A', text: 'Look at this dress! It\'s beautiful. What\'s the price?', translation: 'Regarde cette robe ! Elle est magnifique. Quel est le prix ?' },
+    { speaker: 'Léa', role: 'B', text: 'It\'s sixty euros. That\'s expensive for me.', translation: 'C\'est soixante euros. C\'est cher pour moi.' },
+    { speaker: 'Inès', role: 'A', text: 'What about those skirts? They sell them for twenty euros.', translation: 'Et ces jupes ? Elles les vendent vingt euros.' },
+    { speaker: 'Léa', role: 'B', text: 'Twenty euros is cheap! I want to buy one.', translation: 'Vingt euros, c\'est bon marché ! Je veux en acheter une.' },
+    { speaker: 'Inès', role: 'A', text: 'These skirts are really nice. Where do they sell them?', translation: 'Ces jupes sont vraiment sympa. Où les vendent-ils ?' },
+    { speaker: 'Léa', role: 'B', text: 'At the market next to the bakery. Everything is cheap there!', translation: 'Au marché à côté de la boulangerie. Tout y est bon marché !' },
+  ],
+  pronunciation: [
+    { word: 'Buy', phonetic: '/baɪ/', meaning: 'Acheter', tip: 'Le "u" = "aï" : "baï". Ne dites pas "bou-ill".' },
+    { word: 'Sell', phonetic: '/sel/', meaning: 'Vendre', tip: 'Le "e" est ouvert et bref : "sèl". Pas "sil".' },
+    { word: 'Price', phonetic: '/praɪs/', meaning: 'Prix', tip: 'Le "i" est long : "praïce". Ne confondez pas avec "prize" (récompense) — même son en pratique.' },
+    { word: 'Cheap', phonetic: '/tʃiːp/', meaning: 'Bon marché', tip: 'Le "ch" = "tch" et le "ea" = "ii" long : "tchiiip".' },
+  ],
+}
+
+export const A1_L37: LessonContent = {
+  vocab: [
+    { english: 'Cost', french: 'Coûter', phonetic: '/kɒst/', example: 'How much does this cost?', exampleTranslation: 'Combien ça coûte ?' },
+    { english: 'Discount', french: 'Réduction', phonetic: '/ˈdɪskaʊnt/', example: 'There is a discount on shoes today.', exampleTranslation: 'Il y a une réduction sur les chaussures aujourd\'hui.' },
+    { english: 'Receipt', french: 'Reçu', phonetic: '/rɪˈsiːt/', example: 'Can I have the receipt, please?', exampleTranslation: 'Puis-je avoir le reçu, s\'il vous plaît ?' },
+    { english: 'Cash', french: 'Espèces', phonetic: '/kæʃ/', example: 'Do you pay by card or cash?', exampleTranslation: 'Payez-vous par carte ou en espèces ?' },
+  ],
+  grammar: {
+    title: 'How much / How many — Questions de prix et quantité',
+    explanation: '"How much" + singulier/indénombrable : "How much is this?" (Combien ça coûte ?), "How much money?" (Combien d\'argent ?). "How many" + pluriel : "How many apples?" (Combien de pommes ?), "How many shirts do you want?" (Combien de chemises veux-tu ?). Pour les prix : "How much is...?" ou "How much does... cost?"',
+    examples: [
+      { sentence: 'How much is this shirt?', translation: 'Combien coûte cette chemise ?', isCorrect: true },
+      { sentence: 'How many do this cost?', translation: '', isCorrect: false },
+      { sentence: 'How many bags do you need?', translation: 'De combien de sacs as-tu besoin ?', isCorrect: true },
+      { sentence: 'How much does it cost?', translation: 'Combien ça coûte ?', isCorrect: true },
+    ],
+    commonMistakes: [
+      { wrong: 'How many does this cost?', correct: 'How much does this cost?', explanation: 'Pour les prix, on utilise "how much" (l\'argent est indénombrable), pas "how many".' },
+      { wrong: 'How much shirts do you want?', correct: 'How many shirts do you want?', explanation: '"Shirts" est dénombrable → on utilise "how many", pas "how much".' },
+    ],
+  },
+  conversation: [
+    { speaker: 'Julie', role: 'A', text: 'Excuse me, how much does this cost?', translation: 'Excusez-moi, combien ça coûte ?' },
+    { speaker: 'Clerk', role: 'B', text: 'It\'s forty-five euros. But there\'s a twenty percent discount today!', translation: 'C\'est quarante-cinq euros. Mais il y a vingt pour cent de réduction aujourd\'hui !' },
+    { speaker: 'Julie', role: 'A', text: 'That\'s great! How many colors does it come in?', translation: 'Super ! En combien de couleurs est-il disponible ?' },
+    { speaker: 'Clerk', role: 'B', text: 'Three colors. How many would you like?', translation: 'Trois couleurs. Combien en voulez-vous ?' },
+    { speaker: 'Julie', role: 'A', text: 'Just one, please. I\'ll pay cash. Can I have the receipt?', translation: 'Juste une, s\'il vous plaît. Je paie en espèces. Puis-je avoir le reçu ?' },
+    { speaker: 'Clerk', role: 'B', text: 'Of course! Here is your receipt. Thank you for your purchase!', translation: 'Bien sûr ! Voici votre reçu. Merci pour votre achat !' },
+  ],
+  pronunciation: [
+    { word: 'Cost', phonetic: '/kɒst/', meaning: 'Coûter', tip: 'Le "o" est ouvert comme dans "bon" : "kost". Pas "koust".' },
+    { word: 'Discount', phonetic: '/ˈdɪskaʊnt/', meaning: 'Réduction', tip: 'L\'accent sur "DIS" : "DIS-kaount". Le "ou" = "aou" comme dans "house".' },
+    { word: 'Receipt', phonetic: '/rɪˈsiːt/', meaning: 'Reçu', tip: 'Le "p" est MUET : "ri-siit". Ne dites PAS "re-seep" !' },
+    { word: 'Cash', phonetic: '/kæʃ/', meaning: 'Espèces', tip: 'Le "a" est ouvert comme dans "cat" : "kaech". Le "sh" = "ch" français.' },
+  ],
+}
+
+export const A1_L38: LessonContent = {
+  vocab: [
+    { english: 'Would like', french: 'Voudrais', phonetic: '/wʊd laɪk/', example: 'I would like a blue shirt, please.', exampleTranslation: 'Je voudrais une chemise bleue, s\'il vous plaît.' },
+    { english: 'Could', french: 'Pourrais', phonetic: '/kʊd/', example: 'Could I try this on?', exampleTranslation: 'Pourrais-je essayer ceci ?' },
+    { english: 'May', french: 'Puis-je', phonetic: '/meɪ/', example: 'May I see the menu?', exampleTranslation: 'Puis-je voir le menu ?' },
+    { english: 'Please', french: 'S\'il vous plaît', phonetic: '/pliːz/', example: 'A glass of water, please.', exampleTranslation: 'Un verre d\'eau, s\'il vous plaît.' },
+  ],
+  grammar: {
+    title: 'Les demandes polies — Can I, Could I, I\'d like',
+    explanation: 'Pour faire une demande polie au magasin : "Can I have...?" (Puis-je avoir...?) — poli. "Could I have...?" (Pourrais-je avoir...?) — PLUS poli. "I would like..." (Je voudrais...) — poli et courant. "May I...?" (Puis-je...?) — très formel. On ajoute toujours "please" à la fin !',
+    examples: [
+      { sentence: 'Could I have a smaller size, please?', translation: 'Pourrais-je avoir une taille plus petite, s\'il vous plaît ?', isCorrect: true },
+      { sentence: 'I want a coffee.', translation: '', isCorrect: false },
+      { sentence: 'I would like to try this on.', translation: 'Je voudrais essayer ceci.', isCorrect: true },
+      { sentence: 'May I pay by card?', translation: 'Puis-je payer par carte ?', isCorrect: true },
+    ],
+    commonMistakes: [
+      { wrong: 'I want a coffee.', correct: 'I would like a coffee, please.', explanation: '"I want" est trop direct et impoli. Utilisez "I would like" + "please".' },
+      { wrong: 'Can I to try this on?', correct: 'Can I try this on?', explanation: 'Après "can/could/may", on utilise le verbe de base SANS "to".' },
+    ],
+  },
+  conversation: [
+    { speaker: 'Nadia', role: 'A', text: 'Good morning! I would like to buy a winter jacket.', translation: 'Bonjour ! Je voudrais acheter une veste d\'hiver.' },
+    { speaker: 'Shop assistant', role: 'B', text: 'Of course! Could I show you our new collection?', translation: 'Bien sûr ! Pourrais-je vous montrer notre nouvelle collection ?' },
+    { speaker: 'Nadia', role: 'A', text: 'Yes, please! May I try this red one on?', translation: 'Oui, s\'il vous plaît ! Puis-je essayer celle rouge ?' },
+    { speaker: 'Shop assistant', role: 'B', text: 'Certainly! The fitting room is over there. What size would you like?', translation: 'Certainement ! La cabine d\'essayage est par là. Quelle taille voudriez-vous ?' },
+    { speaker: 'Nadia', role: 'A', text: 'Could I have a medium, please?', translation: 'Pourrais-je avoir un M, s\'il vous plaît ?' },
+    { speaker: 'Shop assistant', role: 'B', text: 'Here you go! I\'ll be right here if you need anything.', translation: 'Voilà ! Je serai juste là si vous avez besoin de quoi que ce soit.' },
+  ],
+  pronunciation: [
+    { word: 'Would', phonetic: '/wʊd/', meaning: 'Voudrais (auxiliaire)', tip: 'Prononcez "ououd" — le "l" est MUET ! Pas "oul-d".' },
+    { word: 'Could', phonetic: '/kʊd/', meaning: 'Pourrais', tip: 'Prononcez "koud" — le "l" est MUET. Même voyelle que "book".' },
+    { word: 'May', phonetic: '/meɪ/', meaning: 'Puis-je', tip: 'Le "ay" = "éi" : "méi". Comme le mois de "mai" français mais plus long.' },
+    { word: 'Please', phonetic: '/pliːz/', meaning: 'S\'il vous plaît', tip: 'Le "ea" = "ii" long : "pliiz". Le "s" final est sonore : "z".' },
+  ],
+}
+
+export const A1_L39: LessonContent = {
+  vocab: [
+    { english: 'Red', french: 'Rouge', phonetic: '/red/', example: 'I like the red dress.', exampleTranslation: 'J\'aime la robe rouge.' },
+    { english: 'Blue', french: 'Bleu(e)', phonetic: '/bluː/', example: 'The blue shirt is nice.', exampleTranslation: 'La chemise bleue est sympa.' },
+    { english: 'Large', french: 'Grand(e)', phonetic: '/lɑːrdʒ/', example: 'Do you have this in large?', exampleTranslation: 'Avez-vous ceci en grand ?' },
+    { english: 'Small', french: 'Petit(e)', phonetic: '/smɔːl/', example: 'This is too small for me.', exampleTranslation: 'C\'est trop petit pour moi.' },
+    { english: 'Medium', french: 'Moyen(ne)', phonetic: '/ˈmiːdiəm/', example: 'I wear a medium size.', exampleTranslation: 'Je porte du moyen.' },
+  ],
+  grammar: {
+    title: 'Décrire un article — Couleur et taille ensemble',
+    explanation: 'Quand on décrit un article au magasin, on met la taille AVANT la couleur : "a large red shirt" (une grande chemise rouge), "a small blue bag" (un petit sac bleu). L\'ordre : taille → couleur → nom. Pour demander une taille : "Do you have this in a medium/large/small?" ou "What size is this?"',
+    examples: [
+      { sentence: 'I want a small blue jacket.', translation: 'Je veux une petite veste bleue.', isCorrect: true },
+      { sentence: 'She wears a red large coat.', translation: '', isCorrect: false },
+      { sentence: 'Do you have this in a large size?', translation: 'Avez-vous ceci en grande taille ?', isCorrect: true },
+      { sentence: 'This medium green sweater is perfect.', translation: 'Ce pull moyen vert est parfait.', isCorrect: true },
+    ],
+    commonMistakes: [
+      { wrong: 'A red large shirt', correct: 'A large red shirt', explanation: 'Taille AVANT couleur : "large" (taille) vient avant "red" (couleur).' },
+      { wrong: 'A size medium', correct: 'A medium', explanation: 'On dit simplement "a medium", pas "a size medium" (sauf pour préciser "a medium size").' },
+    ],
+  },
+  conversation: [
+    { speaker: 'Paul', role: 'A', text: 'I\'m looking for a large blue sweater. Do you have one?', translation: 'Je cherche un grand pull bleu. En avez-vous un ?' },
+    { speaker: 'Shop assistant', role: 'B', text: 'Let me check... Yes! Here is a large blue sweater.', translation: 'Laissez-moi vérifier... Oui ! Voici un grand pull bleu.' },
+    { speaker: 'Paul', role: 'A', text: 'It\'s nice! But do you also have it in small and red?', translation: 'Il est sympa ! Mais l\'avez-vous aussi en petit et rouge ?' },
+    { speaker: 'Shop assistant', role: 'B', text: 'We have a small red sweater, yes. But only in medium for the green one.', translation: 'Nous avons un petit pull rouge, oui. Mais le vert est seulement en moyen.' },
+    { speaker: 'Paul', role: 'A', text: 'I\'ll take the small red one. How much is it?', translation: 'Je prends le petit rouge. Combien coûte-t-il ?' },
+    { speaker: 'Shop assistant', role: 'B', text: 'It\'s thirty-five euros. That\'s a great price for a wool sweater!', translation: 'C\'est trente-cinq euros. C\'est un bon prix pour un pull en laine !' },
+  ],
+  pronunciation: [
+    { word: 'Red', phonetic: '/red/', meaning: 'Rouge', tip: 'Le "e" est ouvert comme dans "bed" : "rèd". Pas "rid".' },
+    { word: 'Blue', phonetic: '/bluː/', meaning: 'Bleu(e)', tip: 'Le "ue" = "ou" long : "blouuu". Ne dites pas "bliou".' },
+    { word: 'Large', phonetic: '/lɑːrdʒ/', meaning: 'Grand(e)', tip: 'Le "ar" est long : "lardj". Le "ge" final = "dj" doux.' },
+    { word: 'Small', phonetic: '/smɔːl/', meaning: 'Petit(e)', tip: 'Le "a" = "o" long ouvert : "smol". Pas "smal".' },
+  ],
+}
+
+export const A1_L40: LessonContent = {
+  vocab: [
+    { english: 'Bargain', french: 'Bonne affaire', phonetic: '/ˈbɑːrɡɪn/', example: 'This jacket is a real bargain!', exampleTranslation: 'Cette veste est une vraie bonne affaire !' },
+    { english: 'Wallet', french: 'Portefeuille', phonetic: '/ˈwɒlɪt/', example: 'I keep my money in my wallet.', exampleTranslation: 'Je garde mon argent dans mon portefeuille.' },
+    { english: 'Change', french: 'Monnaie', phonetic: '/tʃeɪndʒ/', example: 'Here is your change.', exampleTranslation: 'Voici votre monnaie.' },
+    { english: 'Customer', french: 'Client(e)', phonetic: '/ˈkʌstəmər/', example: 'The customer is always right.', exampleTranslation: 'Le client a toujours raison.' },
+  ],
+  grammar: {
+    title: 'Comparer les prix — Cheaper, More expensive',
+    explanation: 'Pour comparer les prix : adjectifs courts (1 syllabe) → + -er + than : "cheap → cheaper than" (moins cher que), "small → smaller than" (plus petit que). Adjectifs longs (2+ syllabes) → more + adjectif + than : "expensive → more expensive than" (plus cher que). "Too" = trop : "too expensive" (trop cher). "Enough" = assez : "cheap enough" (assez bon marché).',
+    examples: [
+      { sentence: 'This shirt is cheaper than that one.', translation: 'Cette chemise est moins chère que celle-là.', isCorrect: true },
+      { sentence: 'This bag is more cheaper.', translation: '', isCorrect: false },
+      { sentence: 'The red jacket is more expensive than the blue one.', translation: 'La veste rouge est plus chère que la bleue.', isCorrect: true },
+      { sentence: 'It\'s too expensive for me.', translation: 'C\'est trop cher pour moi.', isCorrect: true },
+    ],
+    commonMistakes: [
+      { wrong: 'More cheaper', correct: 'Cheaper', explanation: '"Cheap" est un adjectif court → on ajoute -er : "cheaper". Pas "more cheaper".' },
+      { wrong: 'Expensiver', correct: 'More expensive', explanation: '"Expensive" est un adjectif long → on utilise "more" : "more expensive". Pas "expensiver".' },
+    ],
+  },
+  conversation: [
+    { speaker: 'Marie', role: 'A', text: 'Look at these wallets! The black one is cheaper than the brown one.', translation: 'Regarde ces portefeuilles ! Le noir est moins cher que le marron.' },
+    { speaker: 'Julien', role: 'B', text: 'You\'re right! But the brown one is nicer. Is it a bargain?', translation: 'Tu as raison ! Mais le marron est plus joli. C\'est une bonne affaire ?' },
+    { speaker: 'Marie', role: 'A', text: 'Yes! It\'s twenty euros. The black one is fifteen euros.', translation: 'Oui ! Il est à vingt euros. Le noir est à quinze euros.' },
+    { speaker: 'Julien', role: 'B', text: 'Both are cheap enough. Let me get my wallet from my bag.', translation: 'Les deux sont assez bon marché. Laisse-moi sortir mon portefeuille de mon sac.' },
+    { speaker: 'Marie', role: 'A', text: 'Good idea! The customer next to us is buying three wallets!', translation: 'Bonne idée ! Le client à côté de nous achète trois portefeuilles !' },
+    { speaker: 'Julien', role: 'B', text: 'Ha! Don\'t forget your change at the counter!', translation: 'Ha ! N\'oublie pas ta monnaie au comptoir !' },
+  ],
+  pronunciation: [
+    { word: 'Bargain', phonetic: '/ˈbɑːrɡɪn/', meaning: 'Bonne affaire', tip: 'L\'accent sur "BAR" : "BAR-ginn". Le "ai" ne se prononce PAS "é" mais "i" court.' },
+    { word: 'Wallet', phonetic: '/ˈwɒlɪt/', meaning: 'Portefeuille', tip: 'Le "w" : arrondissez les lèvres. "Ool-lit". Le "a" est ouvert comme dans "bon".' },
+    { word: 'Change', phonetic: '/tʃeɪndʒ/', meaning: 'Monnaie', tip: 'Le "ch" = "tch" et le "ge" = "dj" : "tchéindj". Comme "échange" sans le premier "é".' },
+    { word: 'Customer', phonetic: '/ˈkʌstəmər/', meaning: 'Client(e)', tip: 'L\'accent sur "CUS" : "KEUS-te-mer". Le "u" est ouvert comme dans "bus".' },
+  ],
+}
+
+// ─── LESSON CONTENT MAP (by lesson ID) ────────────────────────────────────────
 
 const LESSON_CONTENT_MAP: Record<string, LessonContent> = {
-  // A1
-  'a1-u1': A1_U1, 'a1-u2': A1_U2, 'a1-u3': A1_U3, 'a1-u4': A1_U4,
-  'a1-u5': A1_U5, 'a1-u6': A1_U6, 'a1-u7': A1_U7, 'a1-u8': A1_U8,
-  // A2
-  'a2-u1': A2_U1, 'a2-u2': A2_U2, 'a2-u3': A2_U3, 'a2-u4': A2_U4,
-  // A2 5-10 use generic themed content
-  'a2-u5': makeB1Content('a2-u5','Clothes','Vêtements',
-    [['Shirt','Chemise','/ʃɜːrt/','I need a new shirt for work.','J\'ai besoin d\'une nouvelle chemise pour le travail.'],['Dress','Robe','/dres/','She bought a beautiful dress.','Elle a acheté une belle robe.'],['Jacket','Veste','/ˈdʒækɪt/','It\'s cold, wear a jacket.','Il fait froid, mets une veste.'],['Shoes','Chaussures','/ʃuːz/','These shoes are very comfortable.','Ces chaussures sont très confortables.']],
-    'Comparatives','Les comparatifs : adjectif court + -er + than (cheaper than), more + adjectif long + than (more expensive than). Irréguliers : good → better, bad → worse.',
-    [{s:'This shirt is cheaper than that one.',t:'Cette chemise est moins chère que celle-là.',c:true},{s:'This is more cheaper.',t:'',c:false},{s:'The blue dress is better than the red one.',t:'La robe bleue est meilleure que la rouge.',c:true},{s:'She is more tall than him.',t:'',c:false}],
-    [{w:'This is more cheaper.',cr:'This is cheaper.',e:'On n\'ajoute pas "more" avec un adjectif court qui prend déjà -er.'},{w:'She is more tall.',cr:'She is taller.',e:'"Tall" est court : taller, pas more tall.'}],
-    [['Customer','A','Excuse me, do you have this dress in a smaller size?','Excusez-moi, avez-vous cette robe en plus petit ?'],['Seller','B','Let me check. Yes, we have a size S.','Laissez-moi vérifier. Oui, nous avons du S.'],['Customer','A','Is it more expensive than the blue one?','Est-ce plus cher que la bleue ?'],['Seller','B','No, it\'s actually cheaper! It\'s on sale.','Non, c\'est en fait moins cher ! C\'est en promotion.'],['Customer','A','Great! Can I try on the jacket too?','Super ! Puis-je essayer la veste aussi ?'],['Seller','B','Of course! The fitting room is over there.','Bien sûr ! La cabine d\'essayage est par là.']],
-    [['Shirt','/ʃɜːrt/','Chemise','Le "ir" = "eur" : "cheurt".'],['Dress','/dres/','Robe','Prononcez "drès" avec un "e" ouvert.'],['Jacket','/ˈdʒækɪt/','Veste','Le "j" anglais = "djeu" : "dja-kit".'],['Shoes','/ʃuːz/','Chaussures','Le "sh" = "ch" français : "chouz".']]
-  ),
-  'a2-u6': makeB1Content('a2-u6','Hobbies','Loisirs',
-    [['Swimming','Natation','/ˈswɪmɪŋ/','Swimming is my favorite hobby.','La natation est mon loisir préféré.'],['Painting','Peinture','/ˈpeɪntɪŋ/','She enjoys painting landscapes.','Elle aime peindre des paysages.'],['Cooking','Cuisine','/ˈkʊkɪŋ/','Cooking helps me relax.','Cuisiner m\'aide à me détendre.'],['Reading','Lecture','/ˈriːdɪŋ/','Reading opens your mind.','La lecture ouvre l\'esprit.']],
-    'Past Simple — Irregular Verbs','Les verbes irréguliers au passé ne suivent pas la règle -ed : go→went, see→saw, eat→ate, drink→drank, take→took. Il faut les mémoriser.',
-    [{s:'I went to the cinema yesterday.',t:'Je suis allé au cinéma hier.',c:true},{s:'She goed to the park.',t:'',c:false},{s:'They ate pizza for dinner.',t:'Ils ont mangé des pizzas pour le dîner.',c:true},{s:'He did went home.',t:'',c:false}],
-    [{w:'She goed to the park.',cr:'She went to the park.',e:'"Go" est irrégulier : went, pas goed.'},{w:'He did went home.',cr:'He went home. / He did go home.',e:'On ne combine pas "did" et le passé. "Did" + base verbale.'}],
-    [['Lucy','A','What did you do last weekend?','Qu\'as-tu fait le week-end dernier ?'],['Alex','B','I went swimming and then I cooked dinner.','Je suis allé nager et ensuite j\'ai cuisiné le dîner.'],['Lucy','A','Did you see the new exhibition?','As-tu vu la nouvelle exposition ?'],['Alex','B','No, I didn\'t. I took a painting class instead.','Non. J\'ai pris un cours de peinture à la place.'],['Lucy','A','That sounds fun! I read a great book last weekend.','Ça a l\'air amusant ! J\'ai lu un super livre le week-end dernier.'],['Alex','B','We should do something together next time!','On devrait faire quelque chose ensemble la prochaine fois !']],
-    [['Swimming','/ˈswɪmɪŋ/','Natation','Le "swi" = "soui" : "souï-ming".'],['Painting','/ˈpeɪntɪŋ/','Peinture','Prononcez "pèin-ting".'],['Cooking','/ˈkʊkɪŋ/','Cuisine','Le "oo" est court : "kou-king".'],['Reading','/ˈriːdɪŋ/','Lecture','Le "ea" = "ii" long : "rii-ding".']]
-  ),
-  'a2-u7': makeB1Content('a2-u7','Work','Travail',
-    [['Teacher','Professeur','/ˈtiːtʃər/','My teacher is very kind.','Mon professeur est très gentil.'],['Engineer','Ingénieur','/ˌendʒɪˈnɪr/','He works as an engineer.','Il travaille comme ingénieur.'],['Office','Bureau','/ˈɒfɪs/','The office is downtown.','Le bureau est au centre-ville.'],['Salary','Salaire','/ˈsæləri/','The salary is competitive.','Le salaire est compétitif.']],
-    'Present Continuous','Le Present Continuous : am/is/are + verbe-en -ing. Il exprime une action en cours. "I am working right now." = Je travaille en ce moment.',
-    [{s:'She is working from home today.',t:'Elle travaille à domicile aujourd\'hui.',c:true},{s:'He working on a project.',t:'',c:false},{s:'They aren\'t working this week.',t:'Ils ne travaillent pas cette semaine.',c:true},{s:'I am work on it.',t:'',c:false}],
-    [{w:'He working on a project.',cr:'He is working on a project.',e:'Il faut "is" avant le verbe en -ing.'},{w:'I am work on it.',cr:'I am working on it.',e:'Le Present Continuous nécessite le verbe en -ing.'}],
-    [['Interviewer','A','What are you currently doing?','Que faites-vous actuellement ?'],['Candidate','B','I am working as a teacher, but I\'m looking for a new position.','Je travaille comme professeur, mais je cherche un nouveau poste.'],['Interviewer','A','What is your expected salary?','Quel est votre salaire souhaité ?'],['Candidate','B','I am expecting a competitive salary based on my experience.','Je m\'attends à un salaire compétitif basé sur mon expérience.'],['Interviewer','A','Are you available to start next month?','Êtes-vous disponible pour commencer le mois prochain ?'],['Candidate','B','Yes, I am! I\'m very excited about this opportunity.','Oui ! Je suis très enthousiaste à propos de cette opportunité.']],
-    [['Teacher','/ˈtiːtʃər/','Professeur','Le "ea" = "ii" long : "tii-tcher".'],['Engineer','/ˌendʒɪˈnɪr/','Ingénieur','L\'accent sur "gi" : "en-dji-NIR".'],['Office','/ˈɒfɪs/','Bureau','Prononcez "o-fiss" avec le premier "o" ouvert.'],['Salary','/ˈsæləri/','Salaire','L\'accent sur "sal" : "SAL-a-ri".']]
-  ),
-  'a2-u8': makeB1Content('a2-u8','Education','Éducation',
-    [['Student','Étudiant','/ˈstjuːdənt/','She is a hard-working student.','C\'est une étudiante travailleuse.'],['Homework','Devoirs','/ˈhoʊmwɜːrk/','I finished my homework early.','J\'ai fini mes devoirs tôt.'],['Exam','Examen','/ɪɡˈzæm/','The exam is next Monday.','L\'examen est lundi prochain.'],['Library','Bibliothèque','/ˈlaɪbreri/','I study at the library.','J\'étudie à la bibliothèque.']],
-    'Future with Will','Le futur avec "will" : sujet + will + verbe. Pour les prédictions et décisions spontanées. Négatif : won\'t + verbe. "I will study harder." = J\'étudierai plus dur.',
-    [{s:'I will pass the exam.',t:'Je réussirai l\'examen.',c:true},{s:'She will to graduate next year.',t:'',c:false},{s:'They won\'t fail the test.',t:'Ils ne rateront pas le test.',c:true},{s:'He will can come tomorrow.',t:'',c:false}],
-    [{w:'She will to graduate.',cr:'She will graduate.',e:'Après "will", pas de "to".'},{w:'He will can come.',cr:'He will be able to come.',e:'On ne peut pas combiner deux modaux. Utilisez "will be able to".'}],
-    [['Teacher','A','What will you do after graduation?','Que feras-tu après l\'obtention du diplôme ?'],['Student','B','I will look for a job in marketing.','Je chercherai un emploi dans le marketing.'],['Teacher','A','Will you continue your studies?','Continueras-tu tes études ?'],['Student','B','I might. I won\'t decide until I get my exam results.','Peut-être. Je ne déciderai pas avant d\'avoir mes résultats d\'examen.'],['Teacher','A','You should study at the library more often.','Tu devrais étudier à la bibliothèque plus souvent.'],['Student','B','You\'re right. I will do my homework there from now on.','Vous avez raison. Je ferai mes devoirs là-bas à partir de maintenant.']],
-    [['Student','/ˈstjuːdənt/','Étudiant','Prononcez "stiou-dent" — le "u" après "st" est comme "iou".'],['Homework','/ˈhoʊmwɜːrk/','Devoirs','Le "o" est long : "hôme-ouerk".'],['Exam','/ɪɡˈzæm/','Examen','L\'accent sur "zam" : "ig-ZAM".'],['Library','/ˈlaɪbreri/','Bibliothèque','Attention : "laï-bre-ri" — ne prononcez pas "li-bé-ri".']]
-  ),
-  'a2-u9': makeB1Content('a2-u9','Housing','Logement',
-    [['Apartment','Appartement','/əˈpɑːrtmənt/','The apartment has two bedrooms.','L\'appartement a deux chambres.'],['Rent','Loyer','/rent/','The rent is $800 per month.','Le loyer est de 800$ par mois.'],['Neighbor','Voisin','/ˈneɪbər/','My neighbor is very friendly.','Mon voisin est très sympa.'],['Landlord','Propriétaire','/ˈlændlɔːrd/','The landlord fixed the heating.','Le propriétaire a réparé le chauffage.']],
-    'Prepositions of Place','Les prépositions de lieu : next to (à côté de), across from (en face de), between (entre), behind (derrière), in front of (devant), above (au-dessus de).',
-    [{s:'The bank is next to the supermarket.',t:'La banque est à côté du supermarché.',c:true},{s:'The park is across of the school.',t:'',c:false},{s:'My apartment is between the café and the library.',t:'Mon appartement est entre le café et la bibliothèque.',c:true},{s:'He lives in front the station.',t:'',c:false}],
-    [{w:'Across of the school.',cr:'Across from the school.',e:'On dit "across from", pas "across of".'},{w:'In front the station.',cr:'In front of the station.',e:'Il faut "of" après "in front".'}],
-    [['Tenant','A','I\'m calling about the apartment for rent.','J\'appelle à propos de l\'appartement à louer.'],['Landlord','B','Yes! It\'s a two-bedroom apartment next to the park.','Oui ! C\'est un appartement de deux chambres à côté du parc.'],['Tenant','A','How much is the rent?','Combien est le loyer ?'],['Landlord','B','It\'s $800 per month. It\'s across from the subway station.','C\'est 800$ par mois. C\'est en face de la station de métro.'],['Tenant','A','That sounds great! When can I visit it?','Ça a l\'air super ! Quand puis-je le visiter ?'],['Landlord','B','How about tomorrow at 3 PM? I\'ll be there between 3 and 5.','Et si on disait demain à 15h ? Je serai là entre 15h et 17h.']],
-    [['Apartment','/əˈpɑːrtmənt/','Appartement','L\'accent sur "part" : "a-PART-ment".'],['Rent','/rent/','Loyer','Prononcez "rent" avec le "r" anglais, langue recourbée.'],['Neighbor','/ˈneɪbər/','Voisin','Le "ei" = "é" : "né-ber" — le "gh" est muet.'],['Landlord','/ˈlændlɔːrd/','Propriétaire','Prononcez "lænd-lord" — "land" + "lord".']]
-  ),
-  'a2-u10': makeB1Content('a2-u10','Technology','Technologie',
-    [['Download','Télécharger','/ˈdaʊnloʊd/','I downloaded a new app.','J\'ai téléchargé une nouvelle application.'],['Password','Mot de passe','/ˈpæswɜːrd/','Don\'t share your password with anyone.','Ne partagez pas votre mot de passe.'],['Software','Logiciel','/ˈsɒftwer/','This software is free.','Ce logiciel est gratuit.'],['Internet','Internet','/ˈɪntərnet/','I need internet access.','J\'ai besoin d\'un accès internet.']],
-    'Can / Could — Ability & Permission','"Can" exprime la capacité et la permission (informel). "Could" est le passé de "can" ou une demande plus polie. "I can use Excel." = Je sais utiliser Excel.',
-    [{s:'Can you help me with this software?',t:'Pouvez-vous m\'aider avec ce logiciel ?',c:true},{s:'Could I use your computer?',t:'Puis-je utiliser votre ordinateur ?',c:true},{s:'I could to type fast.',t:'',c:false},{s:'She can speaks English.',t:'',c:false}],
-    [{w:'I could to type fast.',cr:'I could type fast.',e:'Après "could", pas de "to".'},{w:'She can speaks English.',cr:'She can speak English.',e:'Après un modal, le verbe reste à la base, pas de "s".'}],
-    [['User','A','I can\'t log in to my account. Can you help?','Je ne peux pas me connecter. Pouvez-vous aider ?'],['Support','B','Of course! Could you tell me your username?','Bien sûr ! Pourriez-vous me donner votre nom d\'utilisateur ?'],['User','A','It\'s j.smith. I forgot my password.','C\'est j.smith. J\'ai oublié mon mot de passe.'],['Support','B','I can reset it for you. Could you check your email?','Je peux le réinitialiser. Pourriez-vous vérifier votre email ?'],['User','A','I got it! I can log in now. Thank you!','Je l\'ai ! Je peux me connecter maintenant. Merci !'],['Support','B','You\'re welcome! You should download our app for easier access.','De rien ! Vous devriez télécharger notre application pour un accès plus facile.']],
-    [['Download','/ˈdaʊnloʊd/','Télécharger','Prononcez "daoun-lod" — le "ow" = "ao".'],['Password','/ˈpæswɜːrd/','Mot de passe','L\'accent sur "pass" : "PASS-ouerd".'],['Software','/ˈsɒftwer/','Logiciel','Prononcez "soft-ouér" — le "ware" = "ouér".'],['Internet','/ˈɪntərnet/','Internet','L\'accent sur "in" : "IN-ter-net".']]
-  ),
-  // B1
-  'b1-u1': B1_U1, 'b1-u2': B1_U2, 'b1-u3': B1_U3, 'b1-u4': B1_U4,
-  'b1-u5': B1_U5, 'b1-u6': B1_U6, 'b1-u7': B1_U7, 'b1-u8': B1_U8,
-  'b1-u9': B1_U9, 'b1-u10': B1_U10, 'b1-u11': B1_U11, 'b1-u12': B1_U12,
-  // B2
-  'b2-u1': B2_U1, 'b2-u2': B2_U2, 'b2-u3': B2_U3, 'b2-u4': B2_U4,
-  'b2-u5': B2_U5, 'b2-u6': B2_U6, 'b2-u7': B2_U7, 'b2-u8': B2_U8,
-  'b2-u9': B2_U9, 'b2-u10': B2_U10, 'b2-u11': B2_U11, 'b2-u12': B2_U12,
-  // C1
-  'c1-u1': C1_U1, 'c1-u2': C1_U2, 'c1-u3': C1_U3, 'c1-u4': C1_U4,
-  'c1-u5': C1_U5, 'c1-u6': C1_U6, 'c1-u7': C1_U7, 'c1-u8': C1_U8,
-  'c1-u9': C1_U9, 'c1-u10': C1_U10, 'c1-u11': C1_U11, 'c1-u12': C1_U12,
-  'c1-u13': C1_U13, 'c1-u14': C1_U14,
-  // C2
-  'c2-u1': C2_U1, 'c2-u2': C2_U2, 'c2-u3': C2_U3, 'c2-u4': C2_U4,
-  'c2-u5': C2_U5, 'c2-u6': C2_U6, 'c2-u7': C2_U7, 'c2-u8': C2_U8,
-  'c2-u9': C2_U9, 'c2-u10': C2_U10, 'c2-u11': C2_U11, 'c2-u12': C2_U12,
+  // A1 Beginner — Unit 1: Greetings & Introductions
+  'a1-l1': A1_L1,
+  'a1-l2': A1_L2,
+  'a1-l3': A1_L3,
+  'a1-l4': A1_L4,
+  'a1-l5': A1_L5,
+  // A1 Beginner — Unit 2: Numbers & Counting
+  'a1-l6': A1_L6,
+  'a1-l7': A1_L7,
+  'a1-l8': A1_L8,
+  'a1-l9': A1_L9,
+  'a1-l10': A1_L10,
+  // A1 Beginner — Unit 3: Everyday Objects
+  'a1-l11': A1_L11,
+  'a1-l12': A1_L12,
+  'a1-l13': A1_L13,
+  'a1-l14': A1_L14,
+  'a1-l15': A1_L15,
+  // A1 Beginner — Unit 4: Food & Drinks
+  'a1-l16': A1_L16,
+  'a1-l17': A1_L17,
+  'a1-l18': A1_L18,
+  'a1-l19': A1_L19,
+  'a1-l20': A1_L20,
+  // A1 Beginner — Unit 5: Family & Relationships
+  'a1-l21': A1_L21,
+  'a1-l22': A1_L22,
+  'a1-l23': A1_L23,
+  'a1-l24': A1_L24,
+  'a1-l25': A1_L25,
+  // A1 Beginner — Unit 6: Daily Routine
+  'a1-l26': A1_L26,
+  'a1-l27': A1_L27,
+  'a1-l28': A1_L28,
+  'a1-l29': A1_L29,
+  'a1-l30': A1_L30,
+  // A1 Beginner — Unit 7: Around the House
+  'a1-l31': A1_L31,
+  'a1-l32': A1_L32,
+  'a1-l33': A1_L33,
+  'a1-l34': A1_L34,
+  'a1-l35': A1_L35,
+  // A1 Beginner — Unit 8: At the Store
+  'a1-l36': A1_L36,
+  'a1-l37': A1_L37,
+  'a1-l38': A1_L38,
+  'a1-l39': A1_L39,
+  'a1-l40': A1_L40,
 }
 
-// ─── PUBLIC API ──────────────────────────────────────────────────────────────
-
-export function getLessonContent(unitId: string): LessonContent {
-  return LESSON_CONTENT_MAP[unitId] ?? A1_U1
+export function getLessonContent(lessonId: string): LessonContent {
+  return LESSON_CONTENT_MAP[lessonId] ?? FALLBACK_CONTENT
 }

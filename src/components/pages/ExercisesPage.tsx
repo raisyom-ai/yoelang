@@ -1135,9 +1135,9 @@ function PronunciationTab({ level }: { level: string }) {
       {/* Progress */}
       <div className="flex items-center gap-3">
         <span className="text-sm font-medium text-muted-foreground">
-          Mot {currentIndex + 1}/{PRONUNCIATION_WORDS.length}
+          Mot {currentIndex + 1}/{pronunciationWords.length}
         </span>
-        <Progress value={((currentIndex + 1) / PRONUNCIATION_WORDS.length) * 100} className="flex-1 h-2" />
+        <Progress value={((currentIndex + 1) / pronunciationWords.length) * 100} className="flex-1 h-2" />
         <div className="flex items-center gap-2">
           <span className="flex items-center gap-1 text-sm font-semibold text-yoel-green">
             <CheckCircle2 className="h-4 w-4" />
@@ -1180,15 +1180,10 @@ function PronunciationTab({ level }: { level: string }) {
                 </Badge>
               </div>
 
-              {/* Word image + word display */}
-              <div className="flex items-center gap-4 justify-center">
-                <div className="relative w-20 h-20 rounded-xl overflow-hidden shrink-0">
-                  <Image
-                    src={currentWord.image}
-                    alt={currentWord.word}
-                    fill
-                    className="object-cover"
-                  />
+              {/* Word display */}
+              <div className="flex flex-col items-center gap-2 justify-center">
+                <div className="flex h-20 w-20 items-center justify-center rounded-xl bg-yoel-blue/10 shrink-0">
+                  <Volume2 className="h-10 w-10 text-yoel-blue" />
                 </div>
                 <div className="text-center space-y-1">
                   <h3 className="text-4xl font-bold gradient-text-blue">
