@@ -19,6 +19,7 @@ import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { useSpeechRecognition, type SpeechRecognitionResult } from '@/hooks/use-speech-recognition'
+import { getLessonContent, type VocabWord, type GrammarRule, type DialogueLine, type PronunciationItem } from '@/lib/lesson-content'
 
 // ─── Animation Variants ─────────────────────────────────────────────────────
 
@@ -59,157 +60,9 @@ const itemVariants = {
   },
 }
 
-// ─── Sample Data ─────────────────────────────────────────────────────────────
-
-interface VocabWord {
-  english: string
-  french: string
-  phonetic: string
-  example: string
-  exampleTranslation: string
-}
-
-interface GrammarRule {
-  title: string
-  explanation: string
-  examples: { sentence: string; translation: string; isCorrect: boolean }[]
-  commonMistakes: { wrong: string; correct: string; explanation: string }[]
-}
-
-interface DialogueLine {
-  speaker: string
-  role: 'A' | 'B'
-  text: string
-  translation: string
-}
-
-interface PronunciationItem {
-  word: string
-  phonetic: string
-  meaning: string
-  tip: string
-}
-
-const VOCAB_WORDS: VocabWord[] = [
-  {
-    english: 'Hello',
-    french: 'Bonjour',
-    phonetic: '/həˈloʊ/',
-    example: 'Hello, how are you today?',
-    exampleTranslation: 'Bonjour, comment allez-vous aujourd\'hui ?',
-  },
-  {
-    english: 'Goodbye',
-    french: 'Au revoir',
-    phonetic: '/ɡʊdˈbaɪ/',
-    example: 'It was nice meeting you. Goodbye!',
-    exampleTranslation: 'C\'était sympa de vous rencontrer. Au revoir !',
-  },
-  {
-    english: 'Please',
-    french: 'S\'il vous plaît',
-    phonetic: '/pliːz/',
-    example: 'Could you help me, please?',
-    exampleTranslation: 'Pourriez-vous m\'aider, s\'il vous plaît ?',
-  },
-  {
-    english: 'Thank you',
-    french: 'Merci',
-    phonetic: '/θæŋk juː/',
-    example: 'Thank you for your help!',
-    exampleTranslation: 'Merci pour votre aide !',
-  },
-]
-
-const GRAMMAR_RULE: GrammarRule = {
-  title: 'Present Simple Tense',
-  explanation:
-    'The Present Simple is used for habits, routines, and general truths. For he/she/it, add -s or -es to the verb. For I/you/we/they, use the base form.',
-  examples: [
-    { sentence: 'She walks to school every day.', translation: 'Elle marche à l\'école tous les jours.', isCorrect: true },
-    { sentence: 'They plays football on weekends.', translation: '', isCorrect: false },
-    { sentence: 'I eat breakfast at 7 AM.', translation: 'Je prends le petit-déjeuner à 7h.', isCorrect: true },
-    { sentence: 'He go to work by bus.', translation: '', isCorrect: false },
-  ],
-  commonMistakes: [
-    {
-      wrong: 'She walk to school.',
-      correct: 'She walks to school.',
-      explanation: 'Add -s for third person singular (he/she/it).',
-    },
-    {
-      wrong: 'They doesn\'t likes pizza.',
-      correct: 'They don\'t like pizza.',
-      explanation: 'Use "don\'t" with I/you/we/they. Use base form after don\'t/doesn\'t.',
-    },
-  ],
-}
-
-const DIALOGUE: DialogueLine[] = [
-  {
-    speaker: 'Sarah',
-    role: 'A',
-    text: 'Hi! My name is Sarah. Nice to meet you!',
-    translation: 'Salut ! Je m\'appelle Sarah. Enchantée !',
-  },
-  {
-    speaker: 'Marc',
-    role: 'B',
-    text: 'Nice to meet you too! I\'m Marc. Where are you from?',
-    translation: 'Enchanté aussi ! Je suis Marc. D\'où viens-tu ?',
-  },
-  {
-    speaker: 'Sarah',
-    role: 'A',
-    text: 'I\'m from Paris, France. And you?',
-    translation: 'Je suis de Paris, en France. Et toi ?',
-  },
-  {
-    speaker: 'Marc',
-    role: 'B',
-    text: 'I\'m from London. I\'m learning French!',
-    translation: 'Je suis de Londres. J\'apprends le français !',
-  },
-  {
-    speaker: 'Sarah',
-    role: 'A',
-    text: 'That\'s great! Your French is very good.',
-    translation: 'C\'est super ! Ton français est très bon.',
-  },
-  {
-    speaker: 'Marc',
-    role: 'B',
-    text: 'Thank you! I practice every day.',
-    translation: 'Merci ! Je pratique tous les jours.',
-  },
-]
-
-const PRONUNCIATION_ITEMS: PronunciationItem[] = [
-  {
-    word: 'Hello',
-    phonetic: '/həˈloʊ/',
-    meaning: 'Bonjour',
-    tip: 'Commencez par un "h" doux (expiré), puis "lo" comme dans "lôt".',
-  },
-  {
-    word: 'Thank you',
-    phonetic: '/θæŋk juː/',
-    meaning: 'Merci',
-    tip: 'Le "th" se prononce en plaçant la langue entre les dents et en soufflant de l\'air.',
-  },
-  {
-    word: 'Water',
-    phonetic: '/ˈwɔːtər/',
-    meaning: 'Eau',
-    tip: 'Le "w" se forme en arrondissant les lèvres. Le "t" américain est souvent adouci.',
-  },
-  {
-    word: 'Beautiful',
-    phonetic: '/ˈbjuːtɪfəl/',
-    meaning: 'Beau/Belle',
-    tip: 'Commencez par "biou", puis "ti" et "foul". Le "eau" anglais se dit "iou".',
-  },
-]
+// ─── Dynamic Lesson Content ──────────────────────────────────────────────────
+// Content is loaded from lesson-content.ts based on the selected lesson's unit
+// Types VocabWord, GrammarRule, DialogueLine, PronunciationItem are imported from lesson-content.ts
 
 // ─── Lesson Steps ────────────────────────────────────────────────────────────
 
@@ -333,6 +186,18 @@ export default function CoursePage() {
 
   // ─── Study mode variables ───────────────────────────────────────────────
   const lesson = currentLesson ?? (allLessons.find((l) => !l.completed) ?? allLessons[0])
+
+  // Load dynamic lesson content based on the selected lesson's unit
+  const lessonContent = useMemo(() => {
+    const unitId = selectedLessonData?.unitId ?? 'a1-u1'
+    return getLessonContent(unitId)
+  }, [selectedLessonData?.unitId])
+
+  const VOCAB_WORDS = lessonContent.vocab
+  const GRAMMAR_RULE = lessonContent.grammar
+  const DIALOGUE = lessonContent.conversation
+  const PRONUNCIATION_ITEMS = lessonContent.pronunciation
+
   const typeConfig = selectedLessonData ? getTypeConfig(selectedLessonData.type) : getTypeConfig(lesson?.type ?? 'vocabulary')
 
   const totalSteps = LESSON_STEPS.length
