@@ -1671,8 +1671,8 @@ function LessonCompletionModal({
             >
               <p className="text-sm font-medium">
                 {passed
-                  ? '🎉 Bravo ! Vous avez dépassé la moyenne. Vous pouvez passer à la leçon suivante !'
-                  : `Vous avez obtenu ${String(score)}%. Il faut au moins ${String(passingScore)}% pour avancer. Révisez et réessayez !`
+                  ? 'Félicitations ! Vous avez dépassé la moyenne. Vous pouvez passer à la leçon suivante !'
+                  : 'Vous n\'avez pas atteint la moyenne. Révisez et recommencez pour progresser !'
                 }
               </p>
             </motion.div>
@@ -1684,7 +1684,25 @@ function LessonCompletionModal({
               transition={{ delay: 0.9 }}
               className="flex gap-3 pt-2"
             >
-              {passed ? (
+              {passed && hasNextLesson ? (
+                <>
+                  <Button
+                    variant="outline"
+                    className="flex-1 rounded-xl"
+                    onClick={onBackToList}
+                  >
+                    <List className="h-4 w-4 mr-1" />
+                    Retour à la liste
+                  </Button>
+                  <Button
+                    className="flex-1 rounded-xl bg-yoel-green hover:bg-yoel-green/90 text-white shadow-md shadow-yoel-green/20"
+                    onClick={onAdvance}
+                  >
+                    Leçon suivante
+                    <ChevronRight className="h-4 w-4 ml-1" />
+                  </Button>
+                </>
+              ) : passed && !hasNextLesson ? (
                 <>
                   <Button
                     variant="outline"
@@ -1694,23 +1712,13 @@ function LessonCompletionModal({
                     <RotateCcw className="h-4 w-4 mr-1" />
                     Recommencer
                   </Button>
-                  {hasNextLesson ? (
-                    <Button
-                      className="flex-1 rounded-xl bg-yoel-green hover:bg-yoel-green/90 text-white"
-                      onClick={onAdvance}
-                    >
-                      <ChevronRight className="h-4 w-4 mr-1" />
-                      Leçon suivante
-                    </Button>
-                  ) : (
-                    <Button
-                      className="flex-1 rounded-xl bg-yoel-red hover:bg-yoel-red-dark text-white"
-                      onClick={onBackToList}
-                    >
-                      <List className="h-4 w-4 mr-1" />
-                      Toutes les leçons
-                    </Button>
-                  )}
+                  <Button
+                    className="flex-1 rounded-xl bg-yoel-green hover:bg-yoel-green/90 text-white"
+                    onClick={onBackToList}
+                  >
+                    <List className="h-4 w-4 mr-1" />
+                    Retour aux leçons
+                  </Button>
                 </>
               ) : (
                 <>
@@ -1720,14 +1728,14 @@ function LessonCompletionModal({
                     onClick={onBackToList}
                   >
                     <List className="h-4 w-4 mr-1" />
-                    Toutes les leçons
+                    Retour à la liste
                   </Button>
                   <Button
-                    className="flex-1 rounded-xl bg-yoel-red hover:bg-yoel-red-dark text-white"
+                    className="flex-1 rounded-xl bg-yoel-red hover:bg-yoel-red-dark text-white shadow-md shadow-yoel-red/20"
                     onClick={onRestart}
                   >
                     <RotateCcw className="h-4 w-4 mr-1" />
-                    Réessayer
+                    Recommencer
                   </Button>
                 </>
               )}

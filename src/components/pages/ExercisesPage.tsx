@@ -159,6 +159,8 @@ function ResultsSummary({
   type,
   onRestart,
   onBack,
+  onAdvance,
+  passingScore,
 }: {
   score: number
   total: number
@@ -166,16 +168,19 @@ function ResultsSummary({
   type: string
   onRestart: () => void
   onBack: () => void
+  onAdvance?: () => void
+  passingScore?: number
 }) {
   const addXP = useAppStore((s) => s.addXP)
   const percentage = Math.round((score / total) * 100)
+  const passed = percentage >= (passingScore ?? 60)
   const encouragement =
-    percentage >= 80
-      ? 'Excellent ! Vous maîtrisez ce sujet ! 🏆'
-      : percentage >= 60
-      ? 'Bien joué ! Continuez à pratiquer ! 💪'
+    passed
+      ? percentage >= 80
+        ? 'Excellent ! Vous maîtrisez ce sujet ! 🏆'
+        : 'Bien joué ! Vous avez dépassé la moyenne ! 💪'
       : percentage >= 40
-      ? 'Pas mal ! Révisez un peu plus ! 📚'
+      ? 'Pas mal ! Révisez un peu plus pour passer la moyenne ! 📚'
       : 'Continuez à apprendre, vous progresserez ! 🌱'
 
   // Award XP when results are shown
@@ -253,20 +258,58 @@ function ResultsSummary({
         transition={{ delay: 1 }}
         className="flex gap-3"
       >
-        <Button
-          variant="outline"
-          onClick={onBack}
-          className="rounded-full"
-        >
-          Retour
-        </Button>
-        <Button
-          onClick={onRestart}
-          className="bg-yoel-red hover:bg-yoel-red-dark text-white rounded-full"
-        >
-          <RotateCcw className="h-4 w-4 mr-1.5" />
-          Recommencer
-        </Button>
+        {passed && onAdvance ? (
+          <>
+            <Button
+              variant="outline"
+              onClick={onBack}
+              className="rounded-full"
+            >
+              Retour
+            </Button>
+            <Button
+              onClick={onAdvance}
+              className="bg-yoel-green hover:bg-yoel-green/90 text-white rounded-full shadow-md shadow-yoel-green/20"
+            >
+              Continuer
+              <ChevronRight className="h-4 w-4 ml-1.5" />
+            </Button>
+          </>
+        ) : passed && !onAdvance ? (
+          <>
+            <Button
+              variant="outline"
+              onClick={onBack}
+              className="rounded-full"
+            >
+              Retour
+            </Button>
+            <Button
+              onClick={onRestart}
+              className="bg-yoel-green hover:bg-yoel-green/90 text-white rounded-full"
+            >
+              <RotateCcw className="h-4 w-4 mr-1.5" />
+              Recommencer
+            </Button>
+          </>
+        ) : (
+          <>
+            <Button
+              variant="outline"
+              onClick={onBack}
+              className="rounded-full"
+            >
+              Retour
+            </Button>
+            <Button
+              onClick={onRestart}
+              className="bg-yoel-red hover:bg-yoel-red-dark text-white rounded-full shadow-md shadow-yoel-red/20"
+            >
+              <RotateCcw className="h-4 w-4 mr-1.5" />
+              Recommencer
+            </Button>
+          </>
+        )}
       </motion.div>
     </motion.div>
   )
@@ -331,6 +374,7 @@ function QuizTab({ level }: { level: string }) {
         type="Quiz"
         onRestart={handleRestart}
         onBack={handleRestart}
+        onAdvance={handleRestart}
       />
     )
   }
@@ -547,6 +591,7 @@ function GrammarTab({ level }: { level: string }) {
         type="Grammaire"
         onRestart={handleRestart}
         onBack={handleRestart}
+        onAdvance={handleRestart}
       />
     )
   }
@@ -749,6 +794,7 @@ function VocabularyTab({ level }: { level: string }) {
         type="Vocabulaire"
         onRestart={handleRestart}
         onBack={handleRestart}
+        onAdvance={handleRestart}
       />
     )
   }
@@ -1070,6 +1116,7 @@ function PronunciationTab({ level }: { level: string }) {
         type="Prononciation"
         onRestart={handleRestart}
         onBack={handleRestart}
+        onAdvance={handleRestart}
       />
     )
   }
