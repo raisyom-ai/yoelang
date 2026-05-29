@@ -9,6 +9,7 @@ import {
   Play, RefreshCw, SkipForward, AlertCircle, Loader2, Square
 } from 'lucide-react'
 import { useAppStore, DEMO_LESSONS, LEVELS, type LessonInfo } from '@/lib/store'
+import { speakWord } from '@/lib/speech-utils'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Button } from '@/components/ui/button'
@@ -261,9 +262,7 @@ export default function CoursePage() {
   // Preload speech synthesis voices (needed for Chrome)
   useEffect(() => {
     if ('speechSynthesis' in window) {
-      // Trigger voice loading
       window.speechSynthesis.getVoices()
-      // Chrome loads voices asynchronously
       window.speechSynthesis.onvoiceschanged = () => {
         window.speechSynthesis.getVoices()
       }
@@ -301,48 +300,21 @@ export default function CoursePage() {
   }
 
   const handleCompletionNavigate = () => {
-    // Mark lesson as completed in store
     if (currentLesson) {
       setCurrentLesson({ ...currentLesson, completed: true, score: 92 })
     }
     navigate('dashboard')
   }
 
-  // Audio playback using Web Speech API
-  const speakText = (text: string, lang: string = 'en-US', rate: number = 0.85) => {
-    if ('speechSynthesis' in window) {
-      // Cancel any ongoing speech first
-      window.speechSynthesis.cancel()
-      
-      // Chrome bug workaround: resume if paused
-      window.speechSynthesis.resume()
-      
-      const utterance = new SpeechSynthesisUtterance(text)
-      utterance.lang = lang
-      utterance.rate = rate
-      utterance.volume = 1
-      
-      // Try to use an English voice if available
-      const voices = window.speechSynthesis.getVoices()
-      const englishVoice = voices.find(v => v.lang.startsWith('en') && v.name.includes('Google')) 
-        || voices.find(v => v.lang.startsWith('en-US'))
-        || voices.find(v => v.lang.startsWith('en'))
-      if (englishVoice) {
-        utterance.voice = englishVoice
-      }
-      
-      utterance.onstart = () => setIsPlayingAudio(true)
-      utterance.onend = () => setIsPlayingAudio(false)
-      utterance.onerror = () => setIsPlayingAudio(false)
-      
-      // Small delay to ensure speechSynthesis is ready
-      setTimeout(() => {
-        window.speechSynthesis.speak(utterance)
-      }, 50)
-    } else {
-      // Fallback: just show visual feedback
-      setIsPlayingAudio(true)
-      setTimeout(() => setIsPlayingAudio(false), 1500)
+  // Audio playback using speakWord utility
+  const speakText = async (text: string, lang: string = 'en-US', rate: number = 0.85) => {
+    setIsPlayingAudio(true)
+    try {
+      await speakWord(text, { lang, rate })
+    } catch {
+      // Fallback visual feedback
+    } finally {
+      setIsPlayingAudio(false)
     }
   }
 

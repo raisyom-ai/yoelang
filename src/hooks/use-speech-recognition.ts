@@ -103,7 +103,6 @@ function blobToBase64(blob: Blob): Promise<string> {
     const reader = new FileReader()
     reader.onloadend = () => {
       const dataUrl = reader.result as string
-      // Strip the data URL prefix (e.g. "data:audio/webm;base64,")
       const base64 = dataUrl.split(',')[1] || dataUrl
       resolve(base64)
     }
@@ -137,19 +136,6 @@ export function useSpeechRecognition(
     language = 'en-US',
   } = options
 
-  // ── Derived: which method will be used ──
-  const SpeechRecognitionCtor = getSpeechRecognitionConstructor()
-  const hasMediaRecorder = typeof window !== 'undefined' && typeof MediaRecorder !== 'undefined'
-  const hasGetUserMedia = typeof navigator !== 'undefined' && !!navigator.mediaDevices?.getUserMedia
-
-  let resolvedMethod: 'webspeech' | 'mediaRecorder' | 'none' = 'none'
-  if (SpeechRecognitionCtor && hasGetUserMedia) {
-    resolvedMethod = 'webspeech'
-  } else if (hasMediaRecorder && hasGetUserMedia) {
-    resolvedMethod = 'mediaRecorder'
-  }
-  const isSupported = resolvedMethod !== 'none'
-
   // ── State ──
   const [isRecording, setIsRecording] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false)
@@ -157,8 +143,10 @@ export function useSpeechRecognition(
   const [recordingSeconds, setRecordingSeconds] = useState(0)
   const [result, setResult] = useState<SpeechRecognitionResult | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [isSupported, setIsSupported] = useState(false)
+  const [method, setMethod] = useState<'webspeech' | 'mediaRecorder' | 'none'>('none')
 
-  // ── Refs for resources that need cleanup ──
+  // ── Refs ──
   const mediaStreamRef = useRef<MediaStream | null>(null)
   const audioContextRef = useRef<AudioContext | null>(null)
   const analyserRef = useRef<AnalyserNode | null>(null)
@@ -168,29 +156,39 @@ export function useSpeechRecognition(
   const autoStopTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const recordingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const chunksRef = useRef<Blob[]>([])
+  const isStoppedRef = useRef(false)
 
-  // Refs for current option values (avoid stale closures)
+  // Refs for current option values
   const targetWordRef = useRef(targetWord)
   const similarityThresholdRef = useRef(similarityThreshold)
   const autoStopMsRef = useRef(autoStopMs)
   const languageRef = useRef(language)
-  const methodRef = useRef(resolvedMethod)
 
+  useEffect(() => { targetWordRef.current = targetWord }, [targetWord])
+  useEffect(() => { similarityThresholdRef.current = similarityThreshold }, [similarityThreshold])
+  useEffect(() => { autoStopMsRef.current = autoStopMs }, [autoStopMs])
+  useEffect(() => { languageRef.current = language }, [language])
+
+  // ── Detect supported method on mount ──
   useEffect(() => {
-    targetWordRef.current = targetWord
-  }, [targetWord])
-  useEffect(() => {
-    similarityThresholdRef.current = similarityThreshold
-  }, [similarityThreshold])
-  useEffect(() => {
-    autoStopMsRef.current = autoStopMs
-  }, [autoStopMs])
-  useEffect(() => {
-    languageRef.current = language
-  }, [language])
-  useEffect(() => {
-    methodRef.current = resolvedMethod
-  }, [resolvedMethod])
+    if (typeof window === 'undefined') return
+
+    const hasSpeechRecognition = !!getSpeechRecognitionConstructor()
+    const hasMediaRecorder = typeof MediaRecorder !== 'undefined'
+    const hasGetUserMedia = !!navigator.mediaDevices?.getUserMedia
+
+    if (hasSpeechRecognition) {
+      // Web Speech API does NOT need getUserMedia - it handles mic access internally
+      setMethod('webspeech')
+      setIsSupported(true)
+    } else if (hasMediaRecorder && hasGetUserMedia) {
+      setMethod('mediaRecorder')
+      setIsSupported(true)
+    } else {
+      setMethod('none')
+      setIsSupported(false)
+    }
+  }, [])
 
   // ── Mic level visualisation loop ──
 
@@ -202,13 +200,11 @@ export function useSpeechRecognition(
 
     const tick = () => {
       analyser.getByteFrequencyData(dataArray)
-      // Calculate RMS-like value from frequency data
       let sum = 0
       for (let i = 0; i < dataArray.length; i++) {
         sum += dataArray[i] * dataArray[i]
       }
       const rms = Math.sqrt(sum / dataArray.length)
-      // Normalise to 0-1 (255 is max byte value, but typical speech is much lower)
       const normalized = Math.min(1, rms / 128)
       setMicLevel(normalized)
       animFrameRef.current = requestAnimationFrame(tick)
@@ -242,9 +238,9 @@ export function useSpeechRecognition(
     }
   }, [])
 
-  // ── Acquire media stream + audio context + analyser ──
+  // ── Try to get mic stream + analyser (optional, for visualization) ──
 
-  const acquireStreamAndAnalyser = useCallback(async (): Promise<MediaStream | null> => {
+  const tryAcquireStreamForVisualization = useCallback(async (): Promise<void> => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: {
@@ -255,14 +251,40 @@ export function useSpeechRecognition(
       })
       mediaStreamRef.current = stream
 
-      // Create AudioContext and AnalyserNode for mic level
       const audioCtx = new AudioContext()
       const source = audioCtx.createMediaStreamSource(stream)
       const analyser = audioCtx.createAnalyser()
       analyser.fftSize = 512
       analyser.smoothingTimeConstant = 0.8
       source.connect(analyser)
-      // Do NOT connect analyser to destination – we only want analysis, not playback
+
+      audioContextRef.current = audioCtx
+      analyserRef.current = analyser
+    } catch {
+      // Visualization is optional - don't block speech recognition
+      console.log('[SpeechRecognition] Mic visualization not available, continuing without it')
+    }
+  }, [])
+
+  // ── Acquire stream for MediaRecorder (required) ──
+
+  const acquireStreamForRecording = useCallback(async (): Promise<MediaStream | null> => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+        },
+      })
+      mediaStreamRef.current = stream
+
+      const audioCtx = new AudioContext()
+      const source = audioCtx.createMediaStreamSource(stream)
+      const analyser = audioCtx.createAnalyser()
+      analyser.fftSize = 512
+      analyser.smoothingTimeConstant = 0.8
+      source.connect(analyser)
 
       audioContextRef.current = audioCtx
       analyserRef.current = analyser
@@ -271,11 +293,11 @@ export function useSpeechRecognition(
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err)
       if (msg.includes('NotAllowed') || msg.includes('Permission')) {
-        setError('Microphone permission denied. Please allow microphone access and try again.')
+        setError('Permission du microphone refusée. Veuillez autoriser l\'accès au microphone et réessayer.')
       } else if (msg.includes('NotFound') || msg.includes('DevicesNotFound')) {
-        setError('No microphone found. Please connect a microphone and try again.')
+        setError('Aucun microphone trouvé. Veuillez connecter un microphone.')
       } else {
-        setError(`Could not access microphone: ${msg}`)
+        setError(`Impossible d'accéder au microphone: ${msg}`)
       }
       return null
     }
@@ -284,47 +306,32 @@ export function useSpeechRecognition(
   // ── Release all resources ──
 
   const releaseResources = useCallback(() => {
-    // Stop media stream tracks
     if (mediaStreamRef.current) {
       mediaStreamRef.current.getTracks().forEach((track) => track.stop())
       mediaStreamRef.current = null
     }
-    // Close AudioContext
     if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
       audioContextRef.current.close().catch(() => {})
       audioContextRef.current = null
     }
     analyserRef.current = null
-    // Stop MediaRecorder
     if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
-      try {
-        mediaRecorderRef.current.stop()
-      } catch (_) {
-        // ignore
-      }
+      try { mediaRecorderRef.current.stop() } catch (_) { /* ignore */ }
       mediaRecorderRef.current = null
     }
-    // Stop SpeechRecognition
     if (speechRecognitionRef.current) {
-      try {
-        speechRecognitionRef.current.abort()
-      } catch (_) {
-        // ignore
-      }
+      try { speechRecognitionRef.current.abort() } catch (_) { /* ignore */ }
       speechRecognitionRef.current = null
     }
-    // Clear auto-stop timer
     if (autoStopTimerRef.current !== null) {
       clearTimeout(autoStopTimerRef.current)
       autoStopTimerRef.current = null
     }
-    // Stop mic level loop
     stopMicLevelLoop()
-    // Stop recording timer
     stopRecordingTimer()
   }, [stopMicLevelLoop, stopRecordingTimer])
 
-  // ── Process result (shared by both paths) ──
+  // ── Process result ──
 
   const processTranscript = useCallback(
     (transcript: string, confidenceFromApi?: number) => {
@@ -334,7 +341,6 @@ export function useSpeechRecognition(
 
       const similarity = calculateSimilarity(normalizedTranscript, target)
 
-      // Also consider containment as a match helper
       const isCorrect =
         similarity >= threshold ||
         (normalizedTranscript.length > 0 &&
@@ -351,13 +357,13 @@ export function useSpeechRecognition(
     []
   )
 
-  // ── MediaRecorder + Backend ASR fallback ──
+  // ── MediaRecorder + Backend ASR path ──
 
   const startMediaRecorderPath = useCallback(
     async (stream: MediaStream) => {
       const mimeType = getSupportedMimeType()
       if (!mimeType) {
-        setError('No supported audio MIME type found for MediaRecorder.')
+        setError('Format audio non supporté par votre navigateur.')
         releaseResources()
         return
       }
@@ -374,7 +380,7 @@ export function useSpeechRecognition(
       }
 
       recorder.onerror = () => {
-        setError('Audio recording failed.')
+        setError('L\'enregistrement audio a échoué.')
         setIsRecording(false)
         releaseResources()
       }
@@ -384,8 +390,13 @@ export function useSpeechRecognition(
         stopMicLevelLoop()
         stopRecordingTimer()
 
+        if (isStoppedRef.current) {
+          releaseResources()
+          return
+        }
+
         if (chunksRef.current.length === 0) {
-          setError('No audio data was recorded.')
+          setError('Aucune donnée audio n\'a été enregistrée.')
           releaseResources()
           return
         }
@@ -408,7 +419,7 @@ export function useSpeechRecognition(
             const errBody = await response.json().catch(() => ({}))
             throw new Error(
               (errBody as Record<string, unknown>).error?.toString() ||
-                `Server error (${response.status})`
+              `Erreur serveur (${response.status})`
             )
           }
 
@@ -421,19 +432,18 @@ export function useSpeechRecognition(
           processTranscript(data.transcript, data.confidence)
         } catch (err: unknown) {
           const msg = err instanceof Error ? err.message : String(err)
-          setError(`Processing failed: ${msg}`)
+          setError(`Traitement échoué: ${msg}`)
         } finally {
           setIsProcessing(false)
           releaseResources()
         }
       }
 
-      recorder.start(100) // collect data every 100ms
+      recorder.start(100)
       setIsRecording(true)
       startMicLevelLoop()
       startRecordingTimer()
 
-      // Auto-stop
       autoStopTimerRef.current = setTimeout(() => {
         if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
           mediaRecorderRef.current.stop()
@@ -444,143 +454,152 @@ export function useSpeechRecognition(
   )
 
   // ── Web Speech API path ──
+  // KEY FIX: Web Speech API handles microphone access internally.
+  // We don't need getUserMedia for speech recognition itself.
+  // We only try getUserMedia for the optional mic level visualization.
 
-  const startWebSpeechPath = useCallback(
-    async (stream: MediaStream) => {
-      const Ctor = getSpeechRecognitionConstructor()
-      if (!Ctor) {
-        // Should not happen since we checked before, but fallback
-        startMediaRecorderPath(stream)
-        return
-      }
+  const startWebSpeechPath = useCallback(async () => {
+    const Ctor = getSpeechRecognitionConstructor()
+    if (!Ctor) {
+      setError('API de reconnaissance vocale non disponible dans ce navigateur.')
+      return
+    }
 
-      const recognition = new Ctor()
-      speechRecognitionRef.current = recognition
+    // Try to get mic stream for visualization (optional)
+    await tryAcquireStreamForVisualization()
 
-      recognition.lang = languageRef.current
-      recognition.continuous = false
-      recognition.interimResults = false
-      recognition.maxAlternatives = 1
+    const recognition = new Ctor()
+    speechRecognitionRef.current = recognition
 
-      recognition.onstart = () => {
-        setIsRecording(true)
+    recognition.lang = languageRef.current
+    recognition.continuous = false
+    recognition.interimResults = false
+    recognition.maxAlternatives = 3
+
+    recognition.onstart = () => {
+      setIsRecording(true)
+      if (analyserRef.current) {
         startMicLevelLoop()
-        startRecordingTimer()
       }
+      startRecordingTimer()
+    }
 
-      recognition.onresult = (event: SpeechRecognitionEvent) => {
-        try {
-          const firstResult = event.results[0]
-          if (!firstResult || firstResult.length === 0) {
-            setError('No speech was detected. Please try again.')
-            return
-          }
-
-          const transcript = firstResult[0].transcript
-          const apiConfidence = firstResult[0].confidence
-            ? Math.round(firstResult[0].confidence * 100)
-            : undefined
-
-          processTranscript(transcript, apiConfidence)
-        } catch {
-          setError('Failed to process speech recognition result.')
-        }
-      }
-
-      recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
-        const errName = event.error
-
-        // "no-speech" and "aborted" are not critical errors, just no result
-        if (errName === 'no-speech') {
-          setError('No speech was detected. Please try again.')
-        } else if (errName === 'aborted') {
-          // User-initiated abort, do nothing
-        } else if (errName === 'not-allowed') {
-          setError('Microphone permission denied. Please allow microphone access.')
-        } else if (errName === 'network') {
-          // Network error with Web Speech API – fall back to MediaRecorder
-          setIsRecording(false)
-          stopMicLevelLoop()
-          stopRecordingTimer()
-          if (speechRecognitionRef.current) {
-            speechRecognitionRef.current = null
-          }
-          // Try MediaRecorder fallback
-          if (hasMediaRecorder && stream.active) {
-            setError(null)
-            startMediaRecorderPath(stream)
-            return
-          }
-          setError('Speech recognition failed due to a network error.')
-        } else {
-          // For other errors, try falling back to MediaRecorder
-          setIsRecording(false)
-          stopMicLevelLoop()
-          stopRecordingTimer()
-          if (speechRecognitionRef.current) {
-            speechRecognitionRef.current = null
-          }
-          if (hasMediaRecorder && stream.active) {
-            setError(null)
-            startMediaRecorderPath(stream)
-            return
-          }
-          setError(`Speech recognition error: ${errName}`)
-        }
-
-        setIsRecording(false)
-        stopMicLevelLoop()
-        stopRecordingTimer()
-      }
-
-      recognition.onend = () => {
-        setIsRecording(false)
-        stopMicLevelLoop()
-        stopRecordingTimer()
-
-        // Clear auto-stop timer if still pending
-        if (autoStopTimerRef.current !== null) {
-          clearTimeout(autoStopTimerRef.current)
-          autoStopTimerRef.current = null
-        }
-
-        // Small delay then release resources (give onresult a moment to fire)
-        setTimeout(() => {
-          releaseResources()
-        }, 200)
-      }
-
+    recognition.onresult = (event: SpeechRecognitionEvent) => {
       try {
-        recognition.start()
-      } catch (err: unknown) {
-        const msg = err instanceof Error ? err.message : String(err)
-        setError(`Could not start speech recognition: ${msg}`)
-        releaseResources()
-        return
-      }
+        // Try all alternatives to find the best match
+        const firstResult = event.results[0]
+        if (!firstResult || firstResult.length === 0) {
+          setError('Aucune parole détectée. Veuillez réessayer.')
+          return
+        }
 
-      // Auto-stop: stop the recognition after timeout
-      autoStopTimerRef.current = setTimeout(() => {
-        if (speechRecognitionRef.current) {
-          try {
-            speechRecognitionRef.current.stop()
-          } catch (_) {
-            // ignore
+        // Get the best transcript from alternatives
+        let bestTranscript = ''
+        let bestSimilarity = -1
+        let apiConfidence: number | undefined
+
+        for (let i = 0; i < firstResult.length; i++) {
+          const alt = firstResult[i]
+          const altTranscript = alt.transcript.trim()
+          const altSimilarity = calculateSimilarity(
+            altTranscript.toLowerCase(),
+            targetWordRef.current.toLowerCase()
+          )
+          if (altSimilarity > bestSimilarity) {
+            bestSimilarity = altSimilarity
+            bestTranscript = altTranscript
+            apiConfidence = alt.confidence ? Math.round(alt.confidence * 100) : undefined
           }
         }
-      }, autoStopMsRef.current)
-    },
-    [
-      startMediaRecorderPath,
-      startMicLevelLoop,
-      startRecordingTimer,
-      stopMicLevelLoop,
-      stopRecordingTimer,
-      releaseResources,
-      processTranscript,
-      hasMediaRecorder,
-    ]
-  )
+
+        processTranscript(bestTranscript, apiConfidence)
+      } catch {
+        setError('Erreur lors du traitement de la reconnaissance vocale.')
+      }
+    }
+
+    recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+      const errName = event.error
+      console.log('[SpeechRecognition] Error:', errName)
+
+      if (errName === 'no-speech') {
+        setError('Aucune parole détectée. Parlez plus fort et réessayez.')
+      } else if (errName === 'aborted') {
+        // User-initiated abort, do nothing
+      } else if (errName === 'not-allowed') {
+        setError('Permission du microphone refusée. Autorisez l\'accès au microphone dans les paramètres de votre navigateur.')
+      } else if (errName === 'network') {
+        // Network error with Web Speech API – try MediaRecorder fallback
+        setIsRecording(false)
+        stopMicLevelLoop()
+        stopRecordingTimer()
+        speechRecognitionRef.current = null
+
+        // Try fallback
+        const canFallback = typeof MediaRecorder !== 'undefined' && !!navigator.mediaDevices?.getUserMedia
+        if (canFallback) {
+          setError(null)
+          setMethod('mediaRecorder')
+          // Start the fallback path
+          acquireStreamForRecording().then((stream) => {
+            if (stream) startMediaRecorderPath(stream)
+          })
+          return
+        }
+        setError('Erreur réseau. Vérifiez votre connexion internet.')
+      } else {
+        setError(`Erreur de reconnaissance vocale: ${errName}`)
+      }
+
+      setIsRecording(false)
+      stopMicLevelLoop()
+      stopRecordingTimer()
+    }
+
+    recognition.onend = () => {
+      setIsRecording(false)
+      stopMicLevelLoop()
+      stopRecordingTimer()
+
+      if (autoStopTimerRef.current !== null) {
+        clearTimeout(autoStopTimerRef.current)
+        autoStopTimerRef.current = null
+      }
+
+      // Delay resource release to let onresult fire
+      setTimeout(() => {
+        releaseResources()
+      }, 300)
+    }
+
+    try {
+      recognition.start()
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err)
+      setError(`Impossible de démarrer la reconnaissance vocale: ${msg}`)
+      releaseResources()
+      return
+    }
+
+    // Auto-stop
+    autoStopTimerRef.current = setTimeout(() => {
+      if (speechRecognitionRef.current) {
+        try {
+          speechRecognitionRef.current.stop()
+        } catch (_) { /* ignore */ }
+      }
+    }, autoStopMsRef.current)
+  }, [
+    tryAcquireStreamForVisualization,
+    startMicLevelLoop,
+    startRecordingTimer,
+    stopMicLevelLoop,
+    stopRecordingTimer,
+    releaseResources,
+    processTranscript,
+    acquireStreamForRecording,
+    startMediaRecorderPath,
+  ])
 
   // ── Public Actions ──
 
@@ -590,50 +609,46 @@ export function useSpeechRecognition(
     setResult(null)
     setMicLevel(0)
     setRecordingSeconds(0)
+    isStoppedRef.current = false
 
     if (!isSupported) {
-      setError('Speech recognition is not supported in this browser.')
+      setError('La reconnaissance vocale n\'est pas supportée dans ce navigateur. Essayez Chrome ou Edge.')
       return
     }
 
-    // Acquire mic stream + analyser
-    const stream = await acquireStreamAndAnalyser()
-    if (!stream) return // error already set in acquireStreamAndAnalyser
-
-    // Choose path
-    if (methodRef.current === 'webspeech') {
-      await startWebSpeechPath(stream)
-    } else if (methodRef.current === 'mediaRecorder') {
-      await startMediaRecorderPath(stream)
+    if (method === 'webspeech') {
+      await startWebSpeechPath()
+    } else if (method === 'mediaRecorder') {
+      const stream = await acquireStreamForRecording()
+      if (stream) {
+        await startMediaRecorderPath(stream)
+      }
     } else {
-      setError('Speech recognition is not supported in this browser.')
-      releaseResources()
+      setError('La reconnaissance vocale n\'est pas supportée dans ce navigateur.')
     }
-  }, [isSupported, acquireStreamAndAnalyser, startWebSpeechPath, startMediaRecorderPath, releaseResources])
+  }, [isSupported, method, startWebSpeechPath, acquireStreamForRecording, startMediaRecorderPath])
 
   const stopRecording = useCallback(() => {
-    // If using Web Speech API
+    isStoppedRef.current = true
+
     if (speechRecognitionRef.current) {
       try {
         speechRecognitionRef.current.stop()
-      } catch (_) {
-        // ignore
-      }
+      } catch (_) { /* ignore */ }
       return
     }
 
-    // If using MediaRecorder
     if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
       mediaRecorderRef.current.stop()
       return
     }
 
-    // Fallback: just release everything
     setIsRecording(false)
     releaseResources()
   }, [releaseResources])
 
   const reset = useCallback(() => {
+    isStoppedRef.current = true
     releaseResources()
     setIsRecording(false)
     setIsProcessing(false)
@@ -648,6 +663,7 @@ export function useSpeechRecognition(
 
   useEffect(() => {
     return () => {
+      isStoppedRef.current = true
       releaseResources()
     }
   }, [releaseResources])
@@ -660,7 +676,7 @@ export function useSpeechRecognition(
     result,
     error,
     isSupported,
-    method: resolvedMethod,
+    method,
     startRecording,
     stopRecording,
     reset,

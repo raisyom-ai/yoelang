@@ -9,6 +9,7 @@ import {
   Zap, Award, Crown
 } from 'lucide-react'
 import { useAppStore, LEVELS, BADGES, DEMO_LESSONS, type PageId } from '@/lib/store'
+import { speakWord } from '@/lib/speech-utils'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Button } from '@/components/ui/button'
@@ -831,14 +832,7 @@ export default function DashboardPage() {
                     size="sm"
                     className="rounded-full"
                     onClick={() => {
-                      if ('speechSynthesis' in window) {
-                        const utterance = new SpeechSynthesisUtterance(
-                          WORD_OF_THE_DAY.english
-                        )
-                        utterance.lang = 'en-US'
-                        utterance.rate = 0.85
-                        speechSynthesis.speak(utterance)
-                      }
+                      speakWord(WORD_OF_THE_DAY.english)
                     }}
                   >
                     <Volume2 className="h-4 w-4 mr-1" />

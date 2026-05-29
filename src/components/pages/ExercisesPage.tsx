@@ -7,10 +7,11 @@ import {
   ArrowLeft, Home, CheckCircle2, XCircle, Star, Zap, Clock,
   Brain, BookOpen, MessageSquareText, Mic, RotateCcw,
   ChevronRight, Trophy, Sparkles, Volume2, Eye, EyeOff,
-  Hash, SkipForward, RefreshCw, AlertCircle, Loader2
+  Hash, SkipForward, RefreshCw, AlertCircle, Loader2, Keyboard
 } from 'lucide-react'
 import { useAppStore } from '@/lib/store'
 import { useSpeechRecognition, type SpeechRecognitionResult } from '@/hooks/use-speech-recognition'
+import { speakWord } from '@/lib/speech-utils'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -960,12 +961,7 @@ function VocabularyTab() {
                       className="flex items-center gap-1.5 text-xs text-yoel-blue hover:text-yoel-blue-dark transition-colors mt-1"
                       onClick={(e) => {
                         e.stopPropagation()
-                        if ('speechSynthesis' in window) {
-                          const utterance = new SpeechSynthesisUtterance(currentCard.english)
-                          utterance.lang = 'en-US'
-                          utterance.rate = 0.85
-                          window.speechSynthesis.speak(utterance)
-                        }
+                        speakWord(currentCard.english)
                       }}
                     >
                       <Volume2 className="h-3.5 w-3.5" />
@@ -1044,6 +1040,8 @@ function PronunciationTab() {
   const [attemptHistory, setAttemptHistory] = useState<Record<string, SpeechRecognitionResult[]>>({})
   const [correctWords, setCorrectWords] = useState<Set<string>>(new Set())
   const [showEncouragement, setShowEncouragement] = useState(false)
+  const [inputMode, setInputMode] = useState<'mic' | 'type'>('mic')
+  const [typedAnswer, setTypedAnswer] = useState('')
 
   const currentWord = PRONUNCIATION_WORDS[currentIndex]
   const wordAttempts = attemptHistory[currentWord.id] ?? []
@@ -1097,12 +1095,65 @@ function PronunciationTab() {
   const handleRetry = () => {
     setCurrentAttempt(null)
     resetRecording()
+    setTypedAnswer('')
   }
+
+  // Handle typed answer submission
+  const handleTypedSubmit = useCallback(() => {
+    const answer = typedAnswer.trim().toLowerCase()
+    const target = currentWord.word.toLowerCase()
+
+    // Calculate similarity
+    const maxLen = Math.max(answer.length, target.length)
+    let similarity = 0
+    if (maxLen > 0) {
+      const matrix: number[][] = []
+      for (let i = 0; i <= target.length; i++) matrix[i] = [i]
+      for (let j = 0; j <= answer.length; j++) matrix[0][j] = j
+      for (let i = 1; i <= target.length; i++) {
+        for (let j = 1; j <= answer.length; j++) {
+          if (target.charAt(i - 1) === answer.charAt(j - 1)) {
+            matrix[i][j] = matrix[i - 1][j - 1]
+          } else {
+            matrix[i][j] = Math.min(
+              matrix[i - 1][j - 1] + 1,
+              matrix[i][j - 1] + 1,
+              matrix[i - 1][j] + 1
+            )
+          }
+        }
+      }
+      const dist = matrix[target.length][answer.length]
+      similarity = Math.round(((maxLen - dist) / maxLen) * 100)
+    }
+
+    const isCorrect =
+      similarity >= 70 ||
+      (answer.length > 0 && (answer.includes(target) || target.includes(answer)))
+
+    const typedResult: SpeechRecognitionResult = {
+      transcript: answer,
+      confidence: similarity,
+      isCorrect,
+    }
+
+    setCurrentAttempt(typedResult)
+    setAttemptHistory((prev) => ({
+      ...prev,
+      [currentWord.id]: [...(prev[currentWord.id] ?? []), typedResult],
+    }))
+
+    if (isCorrect) {
+      setCorrectWords((prev) => new Set([...prev, currentWord.id]))
+      setShowEncouragement(true)
+    }
+  }, [typedAnswer, currentWord])
 
   // Auto-advance after correct pronunciation
   const handleAdvance = useCallback(() => {
     setCurrentAttempt(null)
     resetRecording()
+    setTypedAnswer('')
     if (currentIndex < PRONUNCIATION_WORDS.length - 1) {
       setCurrentIndex((prev) => prev + 1)
     } else {
@@ -1124,12 +1175,7 @@ function PronunciationTab() {
   }
 
   const handleSpeakWord = () => {
-    if ('speechSynthesis' in window) {
-      const utterance = new SpeechSynthesisUtterance(currentWord.word)
-      utterance.lang = 'en-US'
-      utterance.rate = 0.8
-      speechSynthesis.speak(utterance)
-    }
+    speakWord(currentWord.word, { rate: 0.8 })
   }
 
   const handleRestart = () => {
@@ -1140,6 +1186,8 @@ function PronunciationTab() {
     setCorrectWords(new Set())
     setIsCompleted(false)
     setShowEncouragement(false)
+    setTypedAnswer('')
+    setInputMode('mic')
   }
 
   const totalAttempts = Object.values(attemptHistory).reduce((acc, attempts) => acc + attempts.length, 0)
@@ -1283,8 +1331,8 @@ function PronunciationTab() {
                 </div>
               </div>
 
-              {/* Step indicator */}
-              <div className="flex items-center justify-center gap-4">
+              {/* Step indicator + mode toggle */}
+              <div className="flex items-center justify-center gap-3 flex-wrap">
                 <Button
                   variant="outline"
                   size="sm"
@@ -1292,19 +1340,33 @@ function PronunciationTab() {
                   className="rounded-full text-yoel-blue hover:text-yoel-blue hover:bg-yoel-blue/5"
                 >
                   <Volume2 className="h-4 w-4 mr-1.5" />
-                  1. Écouter
+                  Écouter
                 </Button>
                 <div className="text-muted-foreground/40">→</div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleMicPress}
-                  disabled={isRecording || isProcessing || showEncouragement}
-                  className="rounded-full text-yoel-red hover:text-yoel-red hover:bg-yoel-red/5 disabled:opacity-50"
-                >
-                  <Mic className="h-4 w-4 mr-1.5" />
-                  2. Prononcer
-                </Button>
+                <div className="flex items-center gap-1 bg-muted/30 rounded-full p-0.5">
+                  <button
+                    onClick={() => setInputMode('mic')}
+                    className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                      inputMode === 'mic'
+                        ? 'bg-yoel-red text-white shadow-sm'
+                        : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    <Mic className="h-3.5 w-3.5" />
+                    Micro
+                  </button>
+                  <button
+                    onClick={() => setInputMode('type')}
+                    className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                      inputMode === 'type'
+                        ? 'bg-yoel-blue text-white shadow-sm'
+                        : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    <Keyboard className="h-3.5 w-3.5" />
+                    Taper
+                  </button>
+                </div>
               </div>
 
               {/* Tip */}
@@ -1315,110 +1377,153 @@ function PronunciationTab() {
                 </p>
               </div>
 
-              {/* Microphone section */}
-              <div className="flex flex-col items-center gap-3 py-3">
-                {/* Waveform — real mic level from Web Audio API */}
-                <div className="flex items-center gap-1 h-10">
-                  {Array.from({ length: 16 }).map((_, i) => (
-                    <motion.div
-                      key={i}
-                      className={`w-1.5 rounded-full ${isRecording ? 'bg-yoel-red' : 'bg-muted-foreground/20'}`}
-                      animate={
-                        isRecording
-                          ? {
-                              height: [8, Math.max(8, micLevel * 30 + Math.random() * 8), 8],
-                            }
-                          : { height: 8 }
-                      }
-                      transition={
-                        isRecording
-                          ? { duration: 0.15, repeat: Infinity, repeatType: 'reverse', delay: i * 0.03 }
-                          : { duration: 0.3 }
-                      }
-                    />
-                  ))}
-                </div>
-
-                {/* Recording timer */}
-                {isRecording && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="flex items-center gap-2"
-                  >
-                    <span className="relative flex h-3 w-3">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yoel-red opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-3 w-3 bg-yoel-red"></span>
-                    </span>
-                    <span className="text-sm font-mono font-semibold text-yoel-red tabular-nums">
-                      {recordingSeconds}s / 5s
-                    </span>
-                  </motion.div>
-                )}
-
-                {/* Mic / Stop / Processing button */}
-                {!isRecording && !isProcessing ? (
-                  <motion.button
-                    whileTap={{ scale: 0.9 }}
-                    onClick={handleMicPress}
-                    disabled={showEncouragement}
-                    className={`relative flex h-16 w-16 items-center justify-center rounded-full transition-all ${
-                      showEncouragement
-                        ? 'bg-yoel-green/20 text-yoel-green'
-                        : 'bg-yoel-red/10 text-yoel-red hover:bg-yoel-red/20'
-                    }`}
-                  >
-                    {showEncouragement ? (
-                      <CheckCircle2 className="h-7 w-7" />
-                    ) : (
-                      <Mic className="h-7 w-7" />
-                    )}
-                  </motion.button>
-                ) : isRecording ? (
-                  <motion.button
-                    whileTap={{ scale: 0.9 }}
-                    onClick={handleStopRecording}
-                    className="relative flex h-16 w-16 items-center justify-center rounded-full bg-yoel-red text-white shadow-lg shadow-yoel-red/30"
-                  >
-                    <motion.div
-                      className="absolute inset-0 rounded-full border-2 border-yoel-red"
-                      animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
-                      transition={{ duration: 1.5, repeat: Infinity }}
-                    />
-                    <div className="h-6 w-6 rounded-sm bg-white" />
-                  </motion.button>
-                ) : (
-                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-yoel-gold/10">
-                    <Loader2 className="h-7 w-7 text-yoel-gold animate-spin" />
+              {/* Input section - Microphone or Typing */}
+              {inputMode === 'mic' ? (
+                <div className="flex flex-col items-center gap-3 py-3">
+                  {/* Waveform — real mic level from Web Audio API */}
+                  <div className="flex items-center gap-1 h-10">
+                    {Array.from({ length: 16 }).map((_, i) => (
+                      <motion.div
+                        key={i}
+                        className={`w-1.5 rounded-full ${isRecording ? 'bg-yoel-red' : 'bg-muted-foreground/20'}`}
+                        animate={
+                          isRecording
+                            ? {
+                                height: [8, Math.max(8, micLevel * 30 + Math.random() * 8), 8],
+                              }
+                            : { height: 8 }
+                        }
+                        transition={
+                          isRecording
+                            ? { duration: 0.15, repeat: Infinity, repeatType: 'reverse', delay: i * 0.03 }
+                            : { duration: 0.3 }
+                        }
+                      />
+                    ))}
                   </div>
-                )}
 
-                <p className="text-sm font-medium text-muted-foreground text-center">
-                  {isProcessing
-                    ? '🔄 Analyse de votre prononciation...'
-                    : isRecording
-                    ? '🎤 Parlez maintenant ! Cliquez pour arrêter'
-                    : showEncouragement
-                    ? '✅ Parfait ! Mot suivant...'
-                    : '👆 Appuyez sur le micro pour prononcer le mot'}
-                </p>
-              </div>
+                  {/* Recording timer */}
+                  {isRecording && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="flex items-center gap-2"
+                    >
+                      <span className="relative flex h-3 w-3">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yoel-red opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-3 w-3 bg-yoel-red"></span>
+                      </span>
+                      <span className="text-sm font-mono font-semibold text-yoel-red tabular-nums">
+                        {recordingSeconds}s / 5s
+                      </span>
+                    </motion.div>
+                  )}
 
-              {/* Not supported */}
-              {!isSupported && !isBusy && (
-                <div className="rounded-xl border bg-yoel-gold/5 border-yoel-gold/20 p-4">
-                  <div className="flex items-start gap-2">
-                    <AlertCircle className="h-5 w-5 text-yoel-gold shrink-0 mt-0.5" />
-                    <div>
-                      <p className="text-sm font-medium text-yoel-gold">Reconnaissance vocale non disponible</p>
-                      <p className="text-xs text-muted-foreground mt-1">Votre navigateur ne supporte pas la reconnaissance vocale. Essayez Chrome ou Edge.</p>
+                  {/* Mic / Stop / Processing button */}
+                  {!isSupported ? (
+                    <div className="flex flex-col items-center gap-2 py-2">
+                      <div className="flex h-14 w-14 items-center justify-center rounded-full bg-muted/30 text-muted-foreground">
+                        <Mic className="h-6 w-6" />
+                      </div>
+                      <p className="text-sm text-muted-foreground text-center">
+                        Micro non disponible dans ce navigateur
+                      </p>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setInputMode('type')}
+                        className="rounded-full text-xs"
+                      >
+                        <Keyboard className="h-3.5 w-3.5 mr-1" />
+                        Passer en mode clavier
+                      </Button>
+                    </div>
+                  ) : !isRecording && !isProcessing ? (
+                    <motion.button
+                      whileTap={{ scale: 0.9 }}
+                      onClick={handleMicPress}
+                      disabled={showEncouragement}
+                      className={`relative flex h-16 w-16 items-center justify-center rounded-full transition-all ${
+                        showEncouragement
+                          ? 'bg-yoel-green/20 text-yoel-green'
+                          : 'bg-yoel-red/10 text-yoel-red hover:bg-yoel-red/20'
+                      }`}
+                    >
+                      {showEncouragement ? (
+                        <CheckCircle2 className="h-7 w-7" />
+                      ) : (
+                        <Mic className="h-7 w-7" />
+                      )}
+                    </motion.button>
+                  ) : isRecording ? (
+                    <motion.button
+                      whileTap={{ scale: 0.9 }}
+                      onClick={handleStopRecording}
+                      className="relative flex h-16 w-16 items-center justify-center rounded-full bg-yoel-red text-white shadow-lg shadow-yoel-red/30"
+                    >
+                      <motion.div
+                        className="absolute inset-0 rounded-full border-2 border-yoel-red"
+                        animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
+                        transition={{ duration: 1.5, repeat: Infinity }}
+                      />
+                      <div className="h-6 w-6 rounded-sm bg-white" />
+                    </motion.button>
+                  ) : (
+                    <div className="flex h-16 w-16 items-center justify-center rounded-full bg-yoel-gold/10">
+                      <Loader2 className="h-7 w-7 text-yoel-gold animate-spin" />
+                    </div>
+                  )}
+
+                  <p className="text-sm font-medium text-muted-foreground text-center">
+                    {isProcessing
+                      ? '🔄 Analyse de votre prononciation...'
+                      : isRecording
+                      ? '🎤 Parlez maintenant ! Cliquez pour arrêter'
+                      : showEncouragement
+                      ? '✅ Parfait ! Mot suivant...'
+                      : isSupported
+                      ? '👆 Appuyez sur le micro pour prononcer le mot'
+                      : 'Utilisez le mode clavier pour taper le mot'}
+                  </p>
+                </div>
+              ) : (
+                /* Typing mode */
+                <div className="flex flex-col items-center gap-3 py-3">
+                  <div className="w-full max-w-xs space-y-2">
+                    <label className="text-sm font-medium text-muted-foreground text-center block">
+                      Tapez le mot en anglais :
+                    </label>
+                    <div className="flex gap-2">
+                      <Input
+                        value={typedAnswer}
+                        onChange={(e) => setTypedAnswer(e.target.value)}
+                        placeholder="Tapez ici..."
+                        className="flex-1 rounded-xl text-center text-lg font-semibold"
+                        disabled={!!currentAttempt && !showEncouragement}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && typedAnswer.trim() && !currentAttempt) {
+                            handleTypedSubmit()
+                          }
+                        }}
+                        autoFocus
+                      />
+                      <Button
+                        onClick={handleTypedSubmit}
+                        disabled={!typedAnswer.trim() || (!!currentAttempt && !showEncouragement)}
+                        className="bg-yoel-blue hover:bg-yoel-blue/90 text-white rounded-xl px-4"
+                      >
+                        Vérifier
+                      </Button>
                     </div>
                   </div>
+                  <p className="text-xs text-muted-foreground text-center">
+                    Écoutez le mot avec le bouton 🔊 puis tapez ce que vous entendez
+                  </p>
                 </div>
               )}
 
               {/* Mic error */}
-              {micError && !isBusy && (
+              {micError && !isBusy && inputMode === 'mic' && (
                 <motion.div
                   initial={{ opacity: 0, y: 5 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -1429,6 +1534,14 @@ function PronunciationTab() {
                     <div>
                       <p className="text-sm font-medium text-yoel-red">Microphone non disponible</p>
                       <p className="text-xs text-muted-foreground mt-1">{micError}</p>
+                      <Button
+                        variant="link"
+                        size="sm"
+                        onClick={() => setInputMode('type')}
+                        className="text-yoel-blue p-0 h-auto mt-1"
+                      >
+                        Passer en mode clavier →
+                      </Button>
                     </div>
                   </div>
                 </motion.div>
