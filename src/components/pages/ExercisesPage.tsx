@@ -12,6 +12,7 @@ import {
 import { useAppStore } from '@/lib/store'
 import { useSpeechRecognition, type SpeechRecognitionResult } from '@/hooks/use-speech-recognition'
 import { speakWord } from '@/lib/speech-utils'
+import { VOCAB_BY_LEVEL, QUIZ_BY_LEVEL, GRAMMAR_BY_LEVEL, PRONUNCIATION_BY_LEVEL, type VocabCard, type QuizQuestion, type GrammarExercise, type PronunciationWord } from '@/lib/course-data'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -57,166 +58,33 @@ const feedbackVariants = {
 }
 
 // ─── Sample Data ────────────────────────────────────────────────────────────
+// Types and data are imported from course-data.ts
 
-interface QuizQuestion {
-  id: string
-  question: string
-  options: string[]
-  correctIndex: number
-  explanation: string
+// Re-export types for local use
+type VocabCardLocal = VocabCard
+type QuizQuestionLocal = QuizQuestion
+type GrammarExerciseLocal = GrammarExercise
+type PronunciationWordLocal = PronunciationWord
+
+// Level-specific data is now loaded from course-data.ts via hooks
+// The QuizTab, GrammarTab, VocabularyTab, and PronunciationTab components
+// receive their data as props from the parent ExercisesPage component.
+
+function getQuizForLevel(level: string): QuizQuestion[] {
+  return QUIZ_BY_LEVEL[level] || QUIZ_BY_LEVEL['A1']
 }
 
-const QUIZ_QUESTIONS: QuizQuestion[] = [
-  {
-    id: 'q1',
-    question: 'Which sentence is correct?',
-    options: ['She don\'t like coffee', 'She doesn\'t likes coffee', 'She doesn\'t like coffee', 'She not like coffee'],
-    correctIndex: 2,
-    explanation: '"Doesn\'t" is the negative form for third person singular, followed by the base form of the verb.',
-  },
-  {
-    id: 'q2',
-    question: 'What is the past tense of "go"?',
-    options: ['Goed', 'Went', 'Gone', 'Going'],
-    correctIndex: 1,
-    explanation: '"Go" is an irregular verb. Its past tense is "went".',
-  },
-  {
-    id: 'q3',
-    question: 'Choose the correct article: "___ apple a day keeps the doctor away."',
-    options: ['A', 'An', 'The', 'No article'],
-    correctIndex: 1,
-    explanation: 'We use "an" before words that begin with a vowel sound. "Apple" starts with a vowel sound.',
-  },
-  {
-    id: 'q4',
-    question: 'Which word means "a person who teaches"?',
-    options: ['Teacher', 'Teaching', 'Teached', 'Teachness'],
-    correctIndex: 0,
-    explanation: '"Teacher" is the noun form — a person who teaches. The suffix "-er" denotes a person who does the action.',
-  },
-  {
-    id: 'q5',
-    question: 'Complete: "If it ___ tomorrow, we will stay home."',
-    options: ['rains', 'rain', 'rained', 'raining'],
-    correctIndex: 0,
-    explanation: 'In first conditional sentences, the "if" clause uses present simple: "if it rains".',
-  },
-]
-
-interface GrammarExercise {
-  id: string
-  sentence: string
-  answer: string
-  hint: string
+function getGrammarForLevel(level: string): GrammarExercise[] {
+  return GRAMMAR_BY_LEVEL[level] || GRAMMAR_BY_LEVEL['A1']
 }
 
-const GRAMMAR_EXERCISES: GrammarExercise[] = [
-  {
-    id: 'g1',
-    sentence: 'She ___ (to be) a doctor.',
-    answer: 'is',
-    hint: 'Third person singular of "to be"',
-  },
-  {
-    id: 'g2',
-    sentence: 'They ___ (to go) to school every day.',
-    answer: 'go',
-    hint: 'Plural subject, present simple',
-  },
-  {
-    id: 'g3',
-    sentence: 'I ___ (to eat) dinner when you called.',
-    answer: 'was eating',
-    hint: 'Past continuous: was/were + verb-ing',
-  },
-  {
-    id: 'g4',
-    sentence: 'The book ___ (to write) by a famous author.',
-    answer: 'was written',
-    hint: 'Passive voice in past tense',
-  },
-  {
-    id: 'g5',
-    sentence: 'If I ___ (to have) more time, I would travel.',
-    answer: 'had',
-    hint: 'Second conditional uses past simple',
-  },
-]
-
-interface VocabCard {
-  id: string
-  english: string
-  french: string
-  example: string
-  phonetic: string
-  level?: string
-  image?: string
+function getVocabForLevel(level: string): VocabCard[] {
+  return VOCAB_BY_LEVEL[level] || VOCAB_BY_LEVEL['A1']
 }
 
-const VOCAB_CARDS_A1: VocabCard[] = [
-  { id: 'v1', english: 'Hello', french: 'Bonjour', example: 'Hello, how are you?', phonetic: '/həˈloʊ/', level: 'A1', image: '/images/exercises/hello.png' },
-  { id: 'v2', english: 'Goodbye', french: 'Au revoir', example: 'Goodbye, see you tomorrow!', phonetic: '/ɡʊdˈbaɪ/', level: 'A1', image: '/images/exercises/hello.png' },
-  { id: 'v3', english: 'Thank you', french: 'Merci', example: 'Thank you very much!', phonetic: '/θæŋk juː/', level: 'A1', image: '/images/exercises/hello.png' },
-  { id: 'v4', english: 'Please', french: "S'il vous plaît", example: 'Can I have some water, please?', phonetic: '/pliːz/', level: 'A1', image: '/images/exercises/hello.png' },
-  { id: 'v5', english: 'Water', french: 'Eau', example: 'I would like a glass of water.', phonetic: '/ˈwɔːtər/', level: 'A1', image: '/images/exercises/water.png' },
-  { id: 'v6', english: 'House', french: 'Maison', example: 'My house is big.', phonetic: '/haʊs/', level: 'A1', image: '/images/exercises/house.png' },
-  { id: 'v7', english: 'Family', french: 'Famille', example: 'I love my family.', phonetic: '/ˈfæməli/', level: 'A1', image: '/images/exercises/family.png' },
-  { id: 'v8', english: 'Friend', french: 'Ami(e)', example: 'She is my best friend.', phonetic: '/frend/', level: 'A1', image: '/images/exercises/family.png' },
-  { id: 'v9', english: 'Book', french: 'Livre', example: 'I am reading a book.', phonetic: '/bʊk/', level: 'A1', image: '/images/exercises/book.png' },
-  { id: 'v10', english: 'School', french: 'École', example: 'I go to school every day.', phonetic: '/skuːl/', level: 'A1', image: '/images/exercises/school.png' },
-]
-
-const VOCAB_CARDS_A2: VocabCard[] = [
-  { id: 'v1', english: 'Weather', french: 'Météo', example: 'The weather is nice today.', phonetic: '/ˈwɛðər/', level: 'A2' },
-  { id: 'v2', english: 'Journey', french: 'Voyage', example: 'It was a long journey.', phonetic: '/ˈdʒɜːrni/', level: 'A2' },
-  { id: 'v3', english: 'Neighbor', french: 'Voisin(e)', example: 'My neighbor is very friendly.', phonetic: '/ˈneɪbər/', level: 'A2' },
-  { id: 'v4', english: 'Grocery', french: 'Épicerie', example: 'I need to buy groceries.', phonetic: '/ˈɡroʊsəri/', level: 'A2' },
-  { id: 'v5', english: 'Appointment', french: 'Rendez-vous', example: 'I have a doctor appointment.', phonetic: '/əˈpɔɪntmənt/', level: 'A2' },
-]
-
-const VOCAB_CARDS_B1: VocabCard[] = [
-  { id: 'v1', english: 'Achievement', french: 'Accomplissement', example: 'Winning the prize was a great achievement.', phonetic: '/əˈtʃiːvmənt/', level: 'B1' },
-  { id: 'v2', english: 'Knowledge', french: 'Connaissance', example: 'Knowledge is power.', phonetic: '/ˈnɒlɪdʒ/', level: 'B1' },
-  { id: 'v3', english: 'Environment', french: 'Environnement', example: 'We must protect the environment.', phonetic: '/ɪnˈvaɪrənmənt/', level: 'B1' },
-  { id: 'v4', english: 'Opportunity', french: 'Opportunité', example: 'This job is a great opportunity.', phonetic: '/ˌɒpəˈtjuːnəti/', level: 'B1' },
-  { id: 'v5', english: 'Determination', french: 'Détermination', example: 'Her determination led to success.', phonetic: '/dɪˌtɜːmɪˈneɪʃən/', level: 'B1' },
-]
-
-const VOCAB_BY_LEVEL: Record<string, VocabCard[]> = {
-  A1: VOCAB_CARDS_A1,
-  A2: VOCAB_CARDS_A2,
-  B1: VOCAB_CARDS_B1,
-  B2: VOCAB_CARDS_B1,
-  C1: VOCAB_CARDS_B1,
-  C2: VOCAB_CARDS_B1,
+function getPronunciationForLevel(level: string): PronunciationWord[] {
+  return PRONUNCIATION_BY_LEVEL[level] || PRONUNCIATION_BY_LEVEL['A1']
 }
-
-function getVocabCards(level: string): VocabCard[] {
-  return VOCAB_BY_LEVEL[level] || VOCAB_CARDS_A1
-}
-
-interface PronunciationWord {
-  id: string
-  word: string
-  phonetic: string
-  tip: string
-  difficulty: 'easy' | 'medium' | 'hard'
-  image: string
-}
-
-const PRONUNCIATION_WORDS: PronunciationWord[] = [
-  { id: 'p1', word: 'Hello', phonetic: '/həˈloʊ/', tip: 'Commencez par un "h" doux (expiré), puis "lo" comme dans "lôt".', difficulty: 'easy', image: '/images/exercises/hello.png' },
-  { id: 'p2', word: 'Goodbye', phonetic: '/ɡʊdˈbaɪ/', tip: 'Dites "goud" puis "baï". Le "g" est dur comme dans "gâteau".', difficulty: 'easy', image: '/images/exercises/hello.png' },
-  { id: 'p3', word: 'Thank you', phonetic: '/θæŋk juː/', tip: 'Le "th" se prononce en plaçant la langue entre les dents et en soufflant de l\'air.', difficulty: 'medium', image: '/images/exercises/hello.png' },
-  { id: 'p4', word: 'Please', phonetic: '/pliːz/', tip: 'Prolongez le "ee" comme dans "lit". Le "z" final est doux.', difficulty: 'medium', image: '/images/exercises/hello.png' },
-  { id: 'p5', word: 'Sorry', phonetic: '/ˈsɒri/', tip: 'Le "r" anglais est différent du français. Ne roulez pas le "r".', difficulty: 'medium', image: '/images/exercises/hello.png' },
-  { id: 'p6', word: 'Water', phonetic: '/ˈwɔːtər/', tip: 'Le "w" se forme en arrondissant les lèvres. Le "t" américain est souvent adouci.', difficulty: 'easy', image: '/images/exercises/water.png' },
-  { id: 'p7', word: 'Beautiful', phonetic: '/ˈbjuːtɪfəl/', tip: 'Commencez par "biou", puis "ti" et "foul". Le "eau" anglais se dit "iou".', difficulty: 'hard', image: '/images/exercises/beautiful.png' },
-  { id: 'p8', word: 'Three', phonetic: '/θriː/', tip: 'Le "th" est crucial : langue entre les dents, soufflez. Puis "ri" prolongé.', difficulty: 'medium', image: '/images/exercises/book.png' },
-  { id: 'p9', word: 'Woman', phonetic: '/ˈwʊmən/', tip: 'Le "w" initial nécessite des lèvres arrondies. "Ouman" avec un "ou" court.', difficulty: 'medium', image: '/images/exercises/family.png' },
-  { id: 'p10', word: 'World', phonetic: '/wɜːrld/', tip: 'Le "rld" final est difficile. Dites "weur-ld" en reliant le "r" au "l".', difficulty: 'hard', image: '/images/exercises/world.png' },
-]
 
 const ENCOURAGEMENTS = [
   'Excellent ! Continuez comme ça ! 🎉',
@@ -406,7 +274,7 @@ function ResultsSummary({
 
 // ─── Quiz Tab ───────────────────────────────────────────────────────────────
 
-function QuizTab() {
+function QuizTab({ level }: { level: string }) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null)
   const [isAnswered, setIsAnswered] = useState(false)
@@ -414,7 +282,8 @@ function QuizTab() {
   const [isCompleted, setIsCompleted] = useState(false)
   const [showExplanation, setShowExplanation] = useState(false)
 
-  const currentQuestion = QUIZ_QUESTIONS[currentIndex]
+  const quizQuestions = getQuizForLevel(level)
+  const currentQuestion = quizQuestions[currentIndex]
 
   const handleTimeout = useCallback(() => {
     if (!isAnswered) {
@@ -434,7 +303,7 @@ function QuizTab() {
   }
 
   const handleNext = () => {
-    if (currentIndex < QUIZ_QUESTIONS.length - 1) {
+    if (currentIndex < quizQuestions.length - 1) {
       setCurrentIndex((prev) => prev + 1)
       setSelectedAnswer(null)
       setIsAnswered(false)
@@ -457,7 +326,7 @@ function QuizTab() {
     return (
       <ResultsSummary
         score={score}
-        total={QUIZ_QUESTIONS.length}
+        total={quizQuestions.length}
         xpEarned={score * XP_REWARDS.quiz}
         type="Quiz"
         onRestart={handleRestart}
@@ -471,9 +340,9 @@ function QuizTab() {
       {/* Progress */}
       <div className="flex items-center gap-3">
         <span className="text-sm font-medium text-muted-foreground">
-          Question {currentIndex + 1}/{QUIZ_QUESTIONS.length}
+          Question {currentIndex + 1}/{quizQuestions.length}
         </span>
-        <Progress value={((currentIndex + 1) / QUIZ_QUESTIONS.length) * 100} className="flex-1 h-2" />
+        <Progress value={((currentIndex + 1) / quizQuestions.length) * 100} className="flex-1 h-2" />
         <div className="flex items-center gap-1 text-sm font-semibold text-yoel-green">
           <CheckCircle2 className="h-4 w-4" />
           {score}
@@ -608,7 +477,7 @@ function QuizTab() {
                     onClick={handleNext}
                     className="bg-yoel-red hover:bg-yoel-red-dark text-white rounded-full"
                   >
-                    {currentIndex < QUIZ_QUESTIONS.length - 1 ? (
+                    {currentIndex < quizQuestions.length - 1 ? (
                       <>
                         Suivante
                         <ChevronRight className="h-4 w-4 ml-1" />
@@ -632,13 +501,14 @@ function QuizTab() {
 
 // ─── Grammar Tab ────────────────────────────────────────────────────────────
 
-function GrammarTab() {
+function GrammarTab({ level }: { level: string }) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [answers, setAnswers] = useState<Record<string, string>>({})
   const [checked, setChecked] = useState<Record<string, boolean | null>>({})
   const [isCompleted, setIsCompleted] = useState(false)
 
-  const currentExercise = GRAMMAR_EXERCISES[currentIndex]
+  const grammarExercises = getGrammarForLevel(level)
+  const currentExercise = grammarExercises[currentIndex]
   const isCurrentChecked = checked[currentExercise.id] !== undefined
   const isCurrentCorrect = checked[currentExercise.id] === true
 
@@ -652,7 +522,7 @@ function GrammarTab() {
   }
 
   const handleNext = () => {
-    if (currentIndex < GRAMMAR_EXERCISES.length - 1) {
+    if (currentIndex < grammarExercises.length - 1) {
       setCurrentIndex((prev) => prev + 1)
     } else {
       setIsCompleted(true)
@@ -672,7 +542,7 @@ function GrammarTab() {
     return (
       <ResultsSummary
         score={score}
-        total={GRAMMAR_EXERCISES.length}
+        total={grammarExercises.length}
         xpEarned={score * XP_REWARDS.grammar}
         type="Grammaire"
         onRestart={handleRestart}
@@ -686,9 +556,9 @@ function GrammarTab() {
       {/* Progress */}
       <div className="flex items-center gap-3">
         <span className="text-sm font-medium text-muted-foreground">
-          Exercice {currentIndex + 1}/{GRAMMAR_EXERCISES.length}
+          Exercice {currentIndex + 1}/{grammarExercises.length}
         </span>
-        <Progress value={((currentIndex + 1) / GRAMMAR_EXERCISES.length) * 100} className="flex-1 h-2" />
+        <Progress value={((currentIndex + 1) / grammarExercises.length) * 100} className="flex-1 h-2" />
         <div className="flex items-center gap-1 text-sm font-semibold text-yoel-green">
           <CheckCircle2 className="h-4 w-4" />
           {score}
@@ -808,7 +678,7 @@ function GrammarTab() {
                     onClick={handleNext}
                     className="bg-yoel-red hover:bg-yoel-red-dark text-white rounded-full"
                   >
-                    {currentIndex < GRAMMAR_EXERCISES.length - 1 ? (
+                    {currentIndex < grammarExercises.length - 1 ? (
                       <>
                         Suivant
                         <ChevronRight className="h-4 w-4 ml-1" />
@@ -832,15 +702,13 @@ function GrammarTab() {
 
 // ─── Vocabulary Tab ─────────────────────────────────────────────────────────
 
-function VocabularyTab() {
+function VocabularyTab({ level }: { level: string }) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isFlipped, setIsFlipped] = useState(false)
   const [results, setResults] = useState<Record<string, boolean>>({})
   const [isCompleted, setIsCompleted] = useState(false)
 
-  const { currentLevel, user } = useAppStore()
-  const level = user?.level ?? currentLevel
-  const vocabCards = getVocabCards(level)
+  const vocabCards = getVocabForLevel(level)
 
   const currentCard = vocabCards[currentIndex]
 
@@ -1033,7 +901,7 @@ function VocabularyTab() {
 
 // ─── Pronunciation Tab ──────────────────────────────────────────────────────
 
-function PronunciationTab() {
+function PronunciationTab({ level }: { level: string }) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isCompleted, setIsCompleted] = useState(false)
   const [currentAttempt, setCurrentAttempt] = useState<SpeechRecognitionResult | null>(null)
@@ -1043,7 +911,8 @@ function PronunciationTab() {
   const [inputMode, setInputMode] = useState<'mic' | 'type'>('mic')
   const [typedAnswer, setTypedAnswer] = useState('')
 
-  const currentWord = PRONUNCIATION_WORDS[currentIndex]
+  const pronunciationWords = getPronunciationForLevel(level)
+  const currentWord = pronunciationWords[currentIndex]
   const wordAttempts = attemptHistory[currentWord.id] ?? []
 
   const {
@@ -1154,7 +1023,7 @@ function PronunciationTab() {
     setCurrentAttempt(null)
     resetRecording()
     setTypedAnswer('')
-    if (currentIndex < PRONUNCIATION_WORDS.length - 1) {
+    if (currentIndex < pronunciationWords.length - 1) {
       setCurrentIndex((prev) => prev + 1)
     } else {
       setIsCompleted(true)
@@ -1196,7 +1065,7 @@ function PronunciationTab() {
     return (
       <ResultsSummary
         score={correctWords.size}
-        total={PRONUNCIATION_WORDS.length}
+        total={pronunciationWords.length}
         xpEarned={correctWords.size * XP_REWARDS.pronunciation}
         type="Prononciation"
         onRestart={handleRestart}
@@ -1777,16 +1646,16 @@ export default function ExercisesPage() {
             </TabsList>
 
             <TabsContent value="quiz" className="mt-0">
-              <QuizTab />
+              <QuizTab level={level} />
             </TabsContent>
             <TabsContent value="grammar" className="mt-0">
-              <GrammarTab />
+              <GrammarTab level={level} />
             </TabsContent>
             <TabsContent value="vocabulary" className="mt-0">
-              <VocabularyTab />
+              <VocabularyTab level={level} />
             </TabsContent>
             <TabsContent value="pronunciation" className="mt-0">
-              <PronunciationTab />
+              <PronunciationTab level={level} />
             </TabsContent>
           </Tabs>
         </motion.div>

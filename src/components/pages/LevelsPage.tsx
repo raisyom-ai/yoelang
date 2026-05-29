@@ -67,9 +67,8 @@ const connectorVariants = {
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 function isLevelLocked(level: LevelInfo, index: number): boolean {
-  if (index === 0) return false
-  const prevLevel = LEVELS[index - 1]
-  return prevLevel.progress < 100
+  // All levels are unlocked - users can access any level
+  return false
 }
 
 function getLevelStatus(level: LevelInfo, index: number): 'completed' | 'active' | 'locked' | 'available' {

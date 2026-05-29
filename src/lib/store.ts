@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { COURSE_DATA, getTotalLessonsForLevel } from '@/lib/course-data'
 
 export type PageId = 
   | 'splash' | 'home' | 'login' | 'register' 
@@ -172,15 +173,17 @@ export const useAppStore = create<AppState>((set, get) => ({
   completeDailyChallenge: () => set({ dailyChallengeCompleted: true }),
 }))
 
-// Demo data
-export const LEVELS: LevelInfo[] = [
-  { code: 'A1', name: 'Beginner', description: 'Start your English journey with basic words and phrases', progress: 75, units: 8, completedUnits: 6, icon: '🌱', color: 'from-green-400 to-emerald-600' },
-  { code: 'A2', name: 'Elementary', description: 'Build on basics with simple conversations', progress: 40, units: 10, completedUnits: 4, icon: '🌿', color: 'from-emerald-400 to-teal-600' },
-  { code: 'B1', name: 'Intermediate', description: 'Handle most travel and work situations', progress: 15, units: 12, completedUnits: 2, icon: '🌳', color: 'from-teal-400 to-cyan-600' },
-  { code: 'B2', name: 'Upper Intermediate', description: 'Communicate fluently on complex topics', progress: 0, units: 12, completedUnits: 0, icon: '🏔️', color: 'from-cyan-400 to-blue-600' },
-  { code: 'C1', name: 'Advanced', description: 'Express ideas with nuance and precision', progress: 0, units: 14, completedUnits: 0, icon: '⭐', color: 'from-blue-400 to-indigo-600' },
-  { code: 'C2', name: 'Mastery', description: 'Near-native proficiency and cultural fluency', progress: 0, units: 14, completedUnits: 0, icon: '👑', color: 'from-indigo-400 to-purple-600' },
-]
+// Demo data - built from course-data.ts
+export const LEVELS: LevelInfo[] = Object.values(COURSE_DATA).map((level) => ({
+  code: level.code,
+  name: level.name,
+  description: level.description,
+  progress: level.code === 'A1' ? 75 : level.code === 'A2' ? 40 : level.code === 'B1' ? 15 : 0,
+  units: level.units.length,
+  completedUnits: level.code === 'A1' ? 6 : level.code === 'A2' ? 4 : level.code === 'B1' ? 2 : 0,
+  icon: level.icon,
+  color: level.color,
+}))
 
 export const BADGES: Badge[] = [
   { id: 'first-lesson', name: 'First Step', icon: '👣', description: 'Complete your first lesson', earnedAt: '2025-01-15' },
@@ -195,13 +198,13 @@ export const BADGES: Badge[] = [
   { id: 'polyglot', name: 'Polyglot', icon: '🌍', description: 'Master all levels' },
 ]
 
-export const DEMO_LESSONS: LessonInfo[] = [
-  { id: '1', title: 'Greetings & Introductions', description: 'Learn to greet people and introduce yourself', type: 'vocabulary', xpReward: 15, duration: 5, completed: true, score: 95 },
-  { id: '2', title: 'Numbers & Counting', description: 'Master numbers from 1 to 100', type: 'vocabulary', xpReward: 15, duration: 8, completed: true, score: 88 },
-  { id: '3', title: 'Present Simple Tense', description: 'Form sentences in present simple', type: 'grammar', xpReward: 20, duration: 10, completed: true, score: 92 },
-  { id: '4', title: 'At the Restaurant', description: 'Order food and have a restaurant conversation', type: 'conversation', xpReward: 25, duration: 12, completed: false, score: 0 },
-  { id: '5', title: 'Family & Relationships', description: 'Talk about your family members', type: 'vocabulary', xpReward: 15, duration: 7, completed: false, score: 0 },
-  { id: '6', title: 'Articles: A, An, The', description: 'When and how to use articles correctly', type: 'grammar', xpReward: 20, duration: 10, completed: false, score: 0 },
-  { id: '7', title: 'Daily Routine', description: 'Describe your daily activities', type: 'conversation', xpReward: 25, duration: 12, completed: false, score: 0 },
-  { id: '8', title: 'Pronunciation Basics', description: 'Master English sounds and intonation', type: 'pronunciation', xpReward: 20, duration: 8, completed: false, score: 0 },
-]
+export const DEMO_LESSONS: LessonInfo[] = COURSE_DATA.A1.lessons.map((l, i) => ({
+  id: l.id,
+  title: l.title,
+  description: l.description,
+  type: l.type,
+  xpReward: l.xpReward,
+  duration: l.duration,
+  completed: i < 15, // first 15 lessons completed for demo
+  score: i < 15 ? Math.floor(Math.random() * 20 + 80) : 0,
+}))

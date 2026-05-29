@@ -896,7 +896,7 @@ export default function DashboardPage() {
               </div>
             </CardHeader>
             <CardContent className="space-y-3">
-              {LEVELS.slice(0, 3).map((lvl, idx) => (
+              {LEVELS.map((lvl, idx) => (
                 <div key={lvl.code} className="space-y-1">
                   <div className="flex items-center justify-between text-sm">
                     <span className="flex items-center gap-2">

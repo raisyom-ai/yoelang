@@ -9,6 +9,7 @@ import {
   Play, RefreshCw, SkipForward, AlertCircle, Loader2, Square
 } from 'lucide-react'
 import { useAppStore, DEMO_LESSONS, LEVELS, type LessonInfo } from '@/lib/store'
+import { COURSE_DATA, getLessonsForLevel } from '@/lib/course-data'
 import { speakWord } from '@/lib/speech-utils'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
@@ -270,7 +271,18 @@ export default function CoursePage() {
   }, [])
 
   // Current lesson and level info
-  const lesson = currentLesson ?? DEMO_LESSONS.find((l) => !l.completed) ?? DEMO_LESSONS[3]
+  const levelLessons = getLessonsForLevel(currentLevel)
+  const allLessons = levelLessons.length > 0 ? levelLessons.map((l, i) => ({
+    id: l.id,
+    title: l.title,
+    description: l.description,
+    type: l.type,
+    xpReward: l.xpReward,
+    duration: l.duration,
+    completed: i < Math.floor(levelLessons.length * 0.4), // 40% completed for demo
+    score: i < Math.floor(levelLessons.length * 0.4) ? Math.floor(Math.random() * 20 + 80) : 0,
+  })) : DEMO_LESSONS
+  const lesson = currentLesson ?? allLessons.find((l) => !l.completed) ?? allLessons[0]
   const levelInfo = LEVELS.find((l) => l.code === currentLevel) ?? LEVELS[0]
   const typeConfig = getTypeConfig(lesson.type)
 
