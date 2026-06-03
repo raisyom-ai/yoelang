@@ -36,7 +36,7 @@ const features = [
     icon: Bot,
     title: 'Tuteur IA',
     description: 'Conversez avec une IA intelligente qui s\'adapte à votre niveau et vous corrige en temps réel.',
-    color: 'from-yoel-red to-yoel-red-dark',
+    color: 'from-yoel-primary to-yoel-primary-dark',
   },
   {
     icon: BookOpen,
@@ -144,7 +144,7 @@ export default function HomePage() {
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-2">
             <img src="/yoelang-logo.png" alt="YOELANG" className="h-9 w-9" />
-            <span className="text-xl font-black gradient-text-red">YOELANG</span>
+            <span className="text-xl font-black gradient-text-primary">YOELANG</span>
           </div>
 
           {/* Desktop buttons (visible on sm+) */}
@@ -160,7 +160,7 @@ export default function HomePage() {
             <Button
               size="sm"
               onClick={() => navigate('register')}
-              className="bg-yoel-red hover:bg-yoel-red-dark text-white"
+              className="bg-yoel-primary hover:bg-yoel-primary-dark text-white"
             >
               Commencer
             </Button>
@@ -185,7 +185,7 @@ export default function HomePage() {
           <SheetHeader className="text-left">
             <div className="flex items-center gap-2">
               <img src="/yoelang-logo.png" alt="YOELANG" className="h-8 w-8" />
-              <SheetTitle className="text-lg font-black gradient-text-red">YOELANG</SheetTitle>
+              <SheetTitle className="text-lg font-black gradient-text-primary">YOELANG</SheetTitle>
             </div>
             <SheetDescription className="text-sm text-muted-foreground">
               Apprenez l&apos;anglais avec YOELANG
@@ -199,7 +199,7 @@ export default function HomePage() {
                 setMobileMenuOpen(false)
                 navigate('register')
               }}
-              className="w-full bg-yoel-red hover:bg-yoel-red-dark text-white text-base h-12"
+              className="w-full bg-yoel-primary hover:bg-yoel-primary-dark text-white text-base h-12"
             >
               <UserPlus className="mr-2 h-5 w-5" />
               Commencer gratuitement
@@ -250,7 +250,7 @@ export default function HomePage() {
       <header className="relative overflow-hidden">
         {/* Background decoration */}
         <div className="pointer-events-none absolute inset-0 -z-10">
-          <div className="absolute -right-40 -top-40 h-[500px] w-[500px] rounded-full bg-yoel-red/5 blur-3xl" />
+          <div className="absolute -right-40 -top-40 h-[500px] w-[500px] rounded-full bg-yoel-primary/5 blur-3xl" />
           <div className="absolute -left-40 top-20 h-[400px] w-[400px] rounded-full bg-yoel-blue/5 blur-3xl" />
           <div className="absolute bottom-0 right-1/4 h-[300px] w-[300px] rounded-full bg-yoel-gold/5 blur-3xl" />
         </div>
@@ -264,7 +264,7 @@ export default function HomePage() {
             className="flex flex-col items-start gap-6 text-center lg:text-left"
           >
             <h1 className="text-4xl font-black leading-tight tracking-tight sm:text-5xl md:text-6xl">
-              <span className="gradient-text-red">Master English</span>
+              <span className="gradient-text-primary">Master English</span>
               <br />
               <span className="gradient-text-blue">with YOELANG</span>
             </h1>
@@ -278,7 +278,7 @@ export default function HomePage() {
               <Button
                 size="lg"
                 onClick={() => navigate('register')}
-                className="bg-yoel-red hover:bg-yoel-red-dark text-white text-base px-8"
+                className="bg-yoel-primary hover:bg-yoel-primary-dark text-white text-base px-8"
               >
                 Commencer gratuitement
                 <ArrowRight className="ml-2 size-4" />
@@ -393,8 +393,8 @@ export default function HomePage() {
                 custom={i}
                 className="flex flex-col items-center gap-2 rounded-2xl border bg-card p-6 text-center shadow-sm"
               >
-                <stat.icon className="size-6 text-yoel-red" />
-                <span className="text-3xl font-black gradient-text-red sm:text-4xl">
+                <stat.icon className="size-6 text-yoel-primary" />
+                <span className="text-3xl font-black gradient-text-primary sm:text-4xl">
                   {stat.value}
                 </span>
                 <span className="text-sm text-muted-foreground">{stat.label}</span>
@@ -461,9 +461,9 @@ export default function HomePage() {
               >
                 {/* Connector line (hidden on mobile) */}
                 {i < steps.length - 1 && (
-                  <div className="absolute left-[calc(50%+3rem)] top-10 hidden h-0.5 w-[calc(100%-6rem)] bg-gradient-to-r from-yoel-red/30 to-yoel-blue/30 md:block" />
+                  <div className="absolute left-[calc(50%+3rem)] top-10 hidden h-0.5 w-[calc(100%-6rem)] bg-gradient-to-r from-yoel-primary/30 to-yoel-blue/30 md:block" />
                 )}
-                <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-yoel-red to-yoel-blue text-white shadow-lg">
+                <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-yoel-primary to-yoel-blue text-white shadow-lg">
                   <span className="text-2xl font-black">{step.number}</span>
                 </div>
                 <h3 className="mb-2 text-lg font-semibold">{step.title}</h3>
@@ -491,7 +491,7 @@ export default function HomePage() {
               custom={0}
               className="text-3xl font-bold tracking-tight sm:text-4xl"
             >
-              Aimé par les <span className="gradient-text-red">apprenants</span>
+              Aimé par les <span className="gradient-text-primary">apprenants</span>
             </motion.h2>
             <motion.p
               variants={fadeInUp}
@@ -516,12 +516,12 @@ export default function HomePage() {
                 custom={i}
                 className="glass rounded-2xl p-6"
               >
-                <Quote className="mb-3 size-8 text-yoel-red/40" />
+                <Quote className="mb-3 size-8 text-yoel-primary/40" />
                 <p className="mb-4 text-sm leading-relaxed text-foreground/90">
                   &ldquo;{t.text}&rdquo;
                 </p>
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-yoel-red to-yoel-blue text-xs font-bold text-white">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-yoel-primary to-yoel-blue text-xs font-bold text-white">
                     {t.avatar}
                   </div>
                   <div>
@@ -559,7 +559,7 @@ export default function HomePage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-80px' }}
               transition={{ duration: 0.6 }}
-              className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-yoel-red via-yoel-red-dark to-yoel-blue-dark p-8 text-center text-white shadow-2xl sm:p-12 md:p-16"
+              className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-yoel-primary via-yoel-primary-dark to-yoel-blue-dark p-8 text-center text-white shadow-2xl sm:p-12 md:p-16"
             >
             {/* Decorative circles */}
             <div className="pointer-events-none absolute -right-20 -top-20 h-60 w-60 rounded-full bg-white/10 blur-2xl" />
@@ -575,7 +575,7 @@ export default function HomePage() {
               <Button
                 size="lg"
                 onClick={() => navigate('register')}
-                className="bg-white text-yoel-red hover:bg-white/90 text-base px-8 font-semibold"
+                className="bg-white text-yoel-primary hover:bg-white/90 text-base px-8 font-semibold"
               >
                 Commencer gratuitement
                 <ArrowRight className="ml-2 size-4" />
@@ -600,7 +600,7 @@ export default function HomePage() {
           <div className="flex flex-col items-center gap-4 md:flex-row md:justify-between">
             <div className="flex items-center gap-2">
               <img src="/yoelang-logo.png" alt="YOELANG" className="h-7 w-7" />
-              <span className="text-lg font-black gradient-text-red">YOELANG</span>
+              <span className="text-lg font-black gradient-text-primary">YOELANG</span>
               <span className="text-xs text-muted-foreground">— YOEL ANGLAIS</span>
             </div>
 

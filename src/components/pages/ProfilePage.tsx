@@ -81,15 +81,15 @@ export default function ProfilePage() {
             variant="outline"
             size="sm"
             onClick={goBack}
-            className="shrink-0 rounded-full gap-1.5 border-yoel-red/20 hover:bg-yoel-red/5 hover:border-yoel-red/40 transition-all"
+            className="shrink-0 rounded-full gap-1.5 border-yoel-primary/20 hover:bg-yoel-primary/5 hover:border-yoel-primary/40 transition-all"
           >
-            <ArrowLeft className="h-4 w-4 text-yoel-red" />
-            <span className="text-xs font-medium text-yoel-red">Retour</span>
+            <ArrowLeft className="h-4 w-4 text-yoel-primary" />
+            <span className="text-xs font-medium text-yoel-primary">Retour</span>
           </Button>
-          <Button variant="ghost" size="icon" onClick={() => navigate('dashboard')} className="shrink-0 text-muted-foreground hover:text-yoel-red h-8 w-8">
+          <Button variant="ghost" size="icon" onClick={() => navigate('dashboard')} className="shrink-0 text-muted-foreground hover:text-yoel-primary h-8 w-8">
             <Home className="h-4 w-4" />
           </Button>
-          <h1 className="text-xl font-bold gradient-text-red ml-1">Profil</h1>
+          <h1 className="text-xl font-bold gradient-text-primary ml-1">Profil</h1>
         </div>
       </div>
 
@@ -105,12 +105,12 @@ export default function ProfilePage() {
           <Card className="glass border-0 overflow-hidden">
             <div className="relative">
               {/* Banner */}
-              <div className="h-24 bg-gradient-to-r from-yoel-red/30 via-yoel-gold/20 to-yoel-blue/30" />
+              <div className="h-24 bg-gradient-to-r from-yoel-primary/30 via-yoel-gold/20 to-yoel-blue/30" />
               <CardContent className="relative px-6 pb-6">
                 <div className="-mt-12 flex flex-col sm:flex-row items-center sm:items-end gap-4">
                   <Avatar className="h-24 w-24 ring-4 ring-background shadow-xl">
                     <AvatarImage src={avatar ?? undefined} alt={displayName} />
-                    <AvatarFallback className="bg-yoel-red/10 text-yoel-red font-bold text-2xl">
+                    <AvatarFallback className="bg-yoel-primary/10 text-yoel-primary font-bold text-2xl">
                       {initials}
                     </AvatarFallback>
                   </Avatar>
@@ -155,10 +155,10 @@ export default function ProfilePage() {
           <div className="grid grid-cols-4 gap-3">
             <Card className="glass border-0">
               <CardContent className="p-3 text-center">
-                <div className="mx-auto mb-1 flex h-8 w-8 items-center justify-center rounded-lg bg-yoel-red/10">
-                  <Zap className="h-4 w-4 text-yoel-red" />
+                <div className="mx-auto mb-1 flex h-8 w-8 items-center justify-center rounded-lg bg-yoel-primary/10">
+                  <Zap className="h-4 w-4 text-yoel-primary" />
                 </div>
-                <p className="text-lg font-bold gradient-text-red">{xp.toLocaleString()}</p>
+                <p className="text-lg font-bold gradient-text-primary">{xp.toLocaleString()}</p>
                 <p className="text-[10px] text-muted-foreground">XP</p>
               </CardContent>
             </Card>
@@ -203,7 +203,7 @@ export default function ProfilePage() {
               <CardContent className="p-5 pl-6">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-yoel-red/10 to-yoel-gold/10 text-2xl">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-yoel-primary/10 to-yoel-gold/10 text-2xl">
                       {currentLevelInfo.icon}
                     </div>
                     <div>
@@ -215,7 +215,7 @@ export default function ProfilePage() {
                       </p>
                     </div>
                   </div>
-                  <span className="text-sm font-bold gradient-text-red">
+                  <span className="text-sm font-bold gradient-text-primary">
                     {currentLevelInfo.progress}%
                   </span>
                 </div>
@@ -247,9 +247,9 @@ export default function ProfilePage() {
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.1 * idx, type: 'spring' }}
-                    className="flex flex-col items-center gap-1.5 rounded-xl bg-gradient-to-br from-yoel-gold/5 to-yoel-red/5 border border-yoel-gold/15 p-3"
+                    className="flex flex-col items-center gap-1.5 rounded-xl bg-gradient-to-br from-yoel-gold/5 to-yoel-primary/5 border border-yoel-gold/15 p-3"
                   >
-                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-yoel-gold/20 to-yoel-red/10 text-2xl">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-yoel-gold/20 to-yoel-primary/10 text-2xl">
                       {badge.icon}
                     </div>
                     <span className="text-[11px] font-medium text-center leading-tight">{badge.name}</span>
@@ -315,11 +315,11 @@ export default function ProfilePage() {
         {!isPremium && (
           <motion.div variants={itemVariants}>
             <Card
-              className="overflow-hidden border-0 cursor-pointer bg-gradient-to-r from-yoel-red/10 via-yoel-gold/10 to-yoel-blue/10"
+              className="overflow-hidden border-0 cursor-pointer bg-gradient-to-r from-yoel-primary/10 via-yoel-gold/10 to-yoel-blue/10"
               onClick={() => navigate('premium')}
             >
               <CardContent className="flex items-center gap-4 p-5">
-                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-yoel-red to-yoel-gold text-white text-2xl shadow-lg">
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-yoel-primary to-yoel-gold text-white text-2xl shadow-lg">
                   <Crown className="h-7 w-7" />
                 </div>
                 <div className="flex-1">
@@ -339,7 +339,7 @@ export default function ProfilePage() {
         {/* ─── Certificate Card ────────────────────────────────────────── */}
         <motion.div variants={itemVariants}>
           <Card
-            className="overflow-hidden border-0 cursor-pointer bg-gradient-to-r from-yoel-gold/10 via-yoel-red/5 to-yoel-blue/10"
+            className="overflow-hidden border-0 cursor-pointer bg-gradient-to-r from-yoel-gold/10 via-yoel-primary/5 to-yoel-blue/10"
             onClick={() => navigate('certificate')}
           >
             <CardContent className="flex items-center gap-4 p-5">

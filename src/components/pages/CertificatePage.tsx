@@ -116,9 +116,9 @@ export default function CertificatePage() {
 
         {/* ─── Certificate ──────────────────────────────────────────────── */}
         <motion.div variants={itemVariants} ref={certificateRef}>
-          <div className="relative overflow-hidden rounded-2xl border-2 border-yoel-gold/40 bg-gradient-to-br from-yoel-gold/5 via-background to-yoel-red/5 p-1">
+          <div className="relative overflow-hidden rounded-2xl border-2 border-yoel-gold/40 bg-gradient-to-br from-yoel-gold/5 via-background to-yoel-primary/5 p-1">
             {/* Decorative gradient border overlay */}
-            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-yoel-gold/20 via-transparent to-yoel-red/20 pointer-events-none" />
+            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-yoel-gold/20 via-transparent to-yoel-primary/20 pointer-events-none" />
 
             <div className="relative rounded-xl bg-background/95 backdrop-blur-sm p-6 sm:p-10 space-y-8">
               {/* Corner decorations */}
@@ -138,7 +138,7 @@ export default function CertificatePage() {
               {/* Header */}
               <div className="text-center space-y-2">
                 <div className="flex justify-center">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-yoel-red to-yoel-gold shadow-lg">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-yoel-primary to-yoel-gold shadow-lg">
                     <Award className="h-7 w-7 text-white" />
                   </div>
                 </div>
@@ -158,13 +158,13 @@ export default function CertificatePage() {
               {/* Body */}
               <div className="text-center space-y-4 py-2">
                 <p className="text-sm text-muted-foreground">Ce certificat est decerne a</p>
-                <h3 className="text-2xl sm:text-3xl font-bold gradient-text-red">
+                <h3 className="text-2xl sm:text-3xl font-bold gradient-text-primary">
                   {userName}
                 </h3>
                 <p className="text-sm text-muted-foreground">
                   pour avoir complete avec succes le niveau
                 </p>
-                <div className="inline-flex items-center gap-3 rounded-xl bg-gradient-to-r from-yoel-red/10 to-yoel-gold/10 px-6 py-3 border border-yoel-gold/20">
+                <div className="inline-flex items-center gap-3 rounded-xl bg-gradient-to-r from-yoel-primary/10 to-yoel-gold/10 px-6 py-3 border border-yoel-gold/20">
                   <span className="text-3xl sm:text-4xl font-black gradient-text-premium">
                     {level}
                   </span>
@@ -181,7 +181,7 @@ export default function CertificatePage() {
                   <p className="text-xs text-muted-foreground">XP Total</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-lg font-bold text-yoel-red">{user?.streak ?? 0}</p>
+                  <p className="text-lg font-bold text-yoel-primary">{user?.streak ?? 0}</p>
                   <p className="text-xs text-muted-foreground">Jours consecutifs</p>
                 </div>
                 <div className="text-center">
@@ -212,8 +212,8 @@ export default function CertificatePage() {
               {/* Seal */}
               <div className="flex justify-center pt-2">
                 <div className="relative flex h-20 w-20 items-center justify-center">
-                  <div className="absolute inset-0 rounded-full bg-gradient-to-br from-yoel-red/20 to-yoel-gold/20 border-2 border-yoel-gold/30" />
-                  <div className="absolute inset-1 rounded-full bg-gradient-to-br from-yoel-red/10 to-yoel-gold/10 border border-yoel-gold/20" />
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-br from-yoel-primary/20 to-yoel-gold/20 border-2 border-yoel-gold/30" />
+                  <div className="absolute inset-1 rounded-full bg-gradient-to-br from-yoel-primary/10 to-yoel-gold/10 border border-yoel-gold/20" />
                   <Award className="h-8 w-8 text-yoel-gold" />
                 </div>
               </div>
@@ -226,7 +226,7 @@ export default function CertificatePage() {
           <Button
             onClick={handleDownload}
             disabled={isDownloading}
-            className="flex-1 bg-yoel-red hover:bg-yoel-red-dark text-white rounded-xl h-12"
+            className="flex-1 bg-yoel-primary hover:bg-yoel-primary-dark text-white rounded-xl h-12"
           >
             <Download className="h-5 w-5 mr-2" />
             {isDownloading ? 'Preparation...' : 'Telecharger'}

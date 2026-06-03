@@ -57,7 +57,7 @@ const MONTHLY_PROGRESS_DATA = [
 ]
 
 const SKILLS = [
-  { name: 'Lecture', key: 'reading', value: 72, color: 'from-yoel-red to-yoel-red-dark' },
+  { name: 'Lecture', key: 'reading', value: 72, color: 'from-yoel-primary to-yoel-primary-dark' },
   { name: 'Écriture', key: 'writing', value: 58, color: 'from-yoel-blue to-yoel-blue-dark' },
   { name: 'Écoute', key: 'listening', value: 65, color: 'from-yoel-green to-emerald-700' },
   { name: 'Expression', key: 'speaking', value: 45, color: 'from-yoel-gold to-amber-700' },
@@ -83,7 +83,7 @@ function CustomTooltip({ active, payload, label }: { active?: boolean; payload?:
     return (
       <div className="glass rounded-lg px-3 py-2 text-sm shadow-lg">
         <p className="font-medium text-foreground">{label}</p>
-        <p className="text-yoel-red font-semibold">{payload[0].value} XP</p>
+        <p className="text-yoel-primary font-semibold">{payload[0].value} XP</p>
       </div>
     )
   }
@@ -120,11 +120,11 @@ export default function StatsPage() {
           <Button variant="ghost" size="icon" onClick={goBack} className="shrink-0">
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <Button variant="ghost" size="icon" onClick={() => navigate('dashboard')} className="shrink-0 text-muted-foreground hover:text-yoel-red">
+          <Button variant="ghost" size="icon" onClick={() => navigate('dashboard')} className="shrink-0 text-muted-foreground hover:text-yoel-primary">
             <Home className="h-4 w-4" />
           </Button>
           <div>
-            <h1 className="text-xl font-bold gradient-text-red">Statistiques</h1>
+            <h1 className="text-xl font-bold gradient-text-primary">Statistiques</h1>
             <p className="text-xs text-muted-foreground">Suivez vos progrès</p>
           </div>
           {isPremium && (
@@ -139,10 +139,10 @@ export default function StatsPage() {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             <Card className="glass border-0">
               <CardContent className="p-4 text-center">
-                <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-xl bg-yoel-red/10">
-                  <Zap className="h-5 w-5 text-yoel-red" />
+                <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-xl bg-yoel-primary/10">
+                  <Zap className="h-5 w-5 text-yoel-primary" />
                 </div>
-                <p className="text-2xl font-bold gradient-text-red">{xp.toLocaleString()}</p>
+                <p className="text-2xl font-bold gradient-text-primary">{xp.toLocaleString()}</p>
                 <p className="text-xs text-muted-foreground">XP Total</p>
               </CardContent>
             </Card>
@@ -191,7 +191,7 @@ export default function StatsPage() {
               <Card className="glass border-0">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base flex items-center gap-2">
-                    <BarChart3 className="h-5 w-5 text-yoel-red" />
+                    <BarChart3 className="h-5 w-5 text-yoel-primary" />
                     XP cette semaine
                   </CardTitle>
                 </CardHeader>
@@ -484,9 +484,9 @@ export default function StatsPage() {
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: 0.1 * idx, type: 'spring' }}
-                        className="flex flex-col items-center gap-2 rounded-xl bg-gradient-to-br from-yoel-gold/5 to-yoel-red/5 border border-yoel-gold/20 p-3"
+                        className="flex flex-col items-center gap-2 rounded-xl bg-gradient-to-br from-yoel-gold/5 to-yoel-primary/5 border border-yoel-gold/20 p-3"
                       >
-                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-yoel-gold/20 to-yoel-red/10 text-2xl">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-yoel-gold/20 to-yoel-primary/10 text-2xl">
                           {badge.icon}
                         </div>
                         <span className="text-xs font-medium text-center leading-tight">{badge.name}</span>

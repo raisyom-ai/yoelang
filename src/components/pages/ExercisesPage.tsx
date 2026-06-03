@@ -191,7 +191,7 @@ function ResultsSummary({
         transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
         className="relative"
       >
-        <div className="flex h-28 w-28 items-center justify-center rounded-full bg-gradient-to-br from-yoel-red/20 to-yoel-gold/20 border-2 border-yoel-red/30">
+        <div className="flex h-28 w-28 items-center justify-center rounded-full bg-gradient-to-br from-yoel-primary/20 to-yoel-gold/20 border-2 border-yoel-primary/30">
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
@@ -200,7 +200,7 @@ function ResultsSummary({
             {percentage >= 80 ? (
               <Trophy className="h-12 w-12 text-yoel-gold" />
             ) : percentage >= 50 ? (
-              <Star className="h-12 w-12 text-yoel-red" />
+              <Star className="h-12 w-12 text-yoel-primary" />
             ) : (
               <Sparkles className="h-12 w-12 text-yoel-blue" />
             )}
@@ -214,7 +214,7 @@ function ResultsSummary({
         transition={{ delay: 0.4 }}
         className="space-y-2"
       >
-        <h3 className="text-2xl font-bold gradient-text-red">
+        <h3 className="text-2xl font-bold gradient-text-primary">
           {score}/{total}
         </h3>
         <p className="text-muted-foreground">{encouragement}</p>
@@ -291,7 +291,7 @@ function ResultsSummary({
             </Button>
             <Button
               onClick={onRestart}
-              className="bg-yoel-red hover:bg-yoel-red-dark text-white rounded-full shadow-md shadow-yoel-red/20"
+              className="bg-yoel-primary hover:bg-yoel-primary-dark text-white rounded-full shadow-md shadow-yoel-primary/20"
             >
               <RotateCcw className="h-4 w-4 mr-1.5" />
               Recommencer
@@ -438,7 +438,7 @@ function QuizTab({ level, onAdvance }: { level: string; onAdvance?: () => void }
                     }
                   } else {
                     optionClass +=
-                      ' bg-background border-border hover:border-yoel-red/40 hover:bg-yoel-red/5 cursor-pointer active:scale-[0.98]'
+                      ' bg-background border-border hover:border-yoel-primary/40 hover:bg-yoel-primary/5 cursor-pointer active:scale-[0.98]'
                   }
 
                   return (
@@ -485,7 +485,7 @@ function QuizTab({ level, onAdvance }: { level: string; onAdvance?: () => void }
                     <div className={`rounded-xl p-4 ${
                       selectedAnswer === currentQuestion.correctIndex
                         ? 'bg-yoel-green/10 border border-yoel-green/20'
-                        : 'bg-yoel-red/5 border border-yoel-red/20'
+                        : 'bg-yoel-primary/5 border border-yoel-primary/20'
                     }`}>
                       <p className="text-sm font-medium">
                         {selectedAnswer === currentQuestion.correctIndex ? '✓ Correct !' : '✗ Incorrect'}
@@ -507,7 +507,7 @@ function QuizTab({ level, onAdvance }: { level: string; onAdvance?: () => void }
                 >
                   <Button
                     onClick={handleNext}
-                    className="bg-yoel-red hover:bg-yoel-red-dark text-white rounded-full"
+                    className="bg-yoel-primary hover:bg-yoel-primary-dark text-white rounded-full"
                   >
                     {currentIndex < quizQuestions.length - 1 ? (
                       <>
@@ -709,7 +709,7 @@ function GrammarTab({ level, onAdvance }: { level: string; onAdvance?: () => voi
                 >
                   <Button
                     onClick={handleNext}
-                    className="bg-yoel-red hover:bg-yoel-red-dark text-white rounded-full"
+                    className="bg-yoel-primary hover:bg-yoel-primary-dark text-white rounded-full"
                   >
                     {currentIndex < grammarExercises.length - 1 ? (
                       <>
@@ -886,7 +886,7 @@ function VocabularyTab({ level, onAdvance }: { level: string; onAdvance?: () => 
                     <Badge variant="secondary" className="text-xs bg-yoel-green/10 text-yoel-green">
                       🇫🇷 Traduction en français
                     </Badge>
-                    <h3 className="text-3xl font-bold gradient-text-red">
+                    <h3 className="text-3xl font-bold gradient-text-primary">
                       {currentCard.french}
                     </h3>
                     <Separator className="w-16" />
@@ -1118,19 +1118,19 @@ function PronunciationTab({ level, onAdvance }: { level: string; onAdvance?: () 
   const difficultyColor = {
     easy: 'bg-yoel-green/10 text-yoel-green border-yoel-green/30',
     medium: 'bg-yoel-gold/10 text-yoel-gold border-yoel-gold/30',
-    hard: 'bg-yoel-red/10 text-yoel-red border-yoel-red/30',
+    hard: 'bg-yoel-primary/10 text-yoel-primary border-yoel-primary/30',
   }
 
   const getConfidenceColor = (confidence: number) => {
     if (confidence >= 80) return 'text-yoel-green'
     if (confidence >= 50) return 'text-yoel-gold'
-    return 'text-yoel-red'
+    return 'text-yoel-primary'
   }
 
   const getConfidenceBg = (confidence: number) => {
     if (confidence >= 80) return 'bg-yoel-green/10 border-yoel-green/30'
     if (confidence >= 50) return 'bg-yoel-gold/10 border-yoel-gold/30'
-    return 'bg-yoel-red/10 border-yoel-red/30'
+    return 'bg-yoel-primary/10 border-yoel-primary/30'
   }
 
   const getConfidenceLabel = (confidence: number) => {
@@ -1153,7 +1153,7 @@ function PronunciationTab({ level, onAdvance }: { level: string; onAdvance?: () 
 
           return (
             <div key={i} className="flex flex-col items-center gap-0.5">
-              <span className={`text-lg font-mono font-bold px-1 rounded ${saidChar ? (isMatch ? 'text-yoel-green bg-yoel-green/10' : 'text-yoel-red bg-yoel-red/10') : 'text-muted-foreground/30'}`}>
+              <span className={`text-lg font-mono font-bold px-1 rounded ${saidChar ? (isMatch ? 'text-yoel-green bg-yoel-green/10' : 'text-yoel-primary bg-yoel-primary/10') : 'text-muted-foreground/30'}`}>
                 {saidChar || '_'}
               </span>
               <span className={`text-lg font-mono font-bold px-1 rounded ${expectedChar ? (isMatch ? 'text-yoel-green bg-yoel-green/10' : 'text-yoel-blue bg-yoel-blue/10') : 'text-muted-foreground/30'}`}>
@@ -1261,7 +1261,7 @@ function PronunciationTab({ level, onAdvance }: { level: string; onAdvance?: () 
                     onClick={() => setInputMode('mic')}
                     className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
                       inputMode === 'mic'
-                        ? 'bg-yoel-red text-white shadow-sm'
+                        ? 'bg-yoel-primary text-white shadow-sm'
                         : 'text-muted-foreground hover:text-foreground'
                     }`}
                   >
@@ -1298,7 +1298,7 @@ function PronunciationTab({ level, onAdvance }: { level: string; onAdvance?: () 
                     {Array.from({ length: 16 }).map((_, i) => (
                       <motion.div
                         key={i}
-                        className={`w-1.5 rounded-full ${isRecording ? 'bg-yoel-red' : 'bg-muted-foreground/20'}`}
+                        className={`w-1.5 rounded-full ${isRecording ? 'bg-yoel-primary' : 'bg-muted-foreground/20'}`}
                         animate={
                           isRecording
                             ? {
@@ -1323,10 +1323,10 @@ function PronunciationTab({ level, onAdvance }: { level: string; onAdvance?: () 
                       className="flex items-center gap-2"
                     >
                       <span className="relative flex h-3 w-3">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yoel-red opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-3 w-3 bg-yoel-red"></span>
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yoel-primary opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-3 w-3 bg-yoel-primary"></span>
                       </span>
-                      <span className="text-sm font-mono font-semibold text-yoel-red tabular-nums">
+                      <span className="text-sm font-mono font-semibold text-yoel-primary tabular-nums">
                         {recordingSeconds}s / 5s
                       </span>
                     </motion.div>
@@ -1359,7 +1359,7 @@ function PronunciationTab({ level, onAdvance }: { level: string; onAdvance?: () 
                       className={`relative flex h-16 w-16 items-center justify-center rounded-full transition-all ${
                         showEncouragement
                           ? 'bg-yoel-green/20 text-yoel-green'
-                          : 'bg-yoel-red/10 text-yoel-red hover:bg-yoel-red/20'
+                          : 'bg-yoel-primary/10 text-yoel-primary hover:bg-yoel-primary/20'
                       }`}
                     >
                       {showEncouragement ? (
@@ -1372,10 +1372,10 @@ function PronunciationTab({ level, onAdvance }: { level: string; onAdvance?: () 
                     <motion.button
                       whileTap={{ scale: 0.9 }}
                       onClick={handleStopRecording}
-                      className="relative flex h-16 w-16 items-center justify-center rounded-full bg-yoel-red text-white shadow-lg shadow-yoel-red/30"
+                      className="relative flex h-16 w-16 items-center justify-center rounded-full bg-yoel-primary text-white shadow-lg shadow-yoel-primary/30"
                     >
                       <motion.div
-                        className="absolute inset-0 rounded-full border-2 border-yoel-red"
+                        className="absolute inset-0 rounded-full border-2 border-yoel-primary"
                         animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
                         transition={{ duration: 1.5, repeat: Infinity }}
                       />
@@ -1440,12 +1440,12 @@ function PronunciationTab({ level, onAdvance }: { level: string; onAdvance?: () 
                 <motion.div
                   initial={{ opacity: 0, y: 5 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="rounded-xl border bg-yoel-red/5 border-yoel-red/20 p-4"
+                  className="rounded-xl border bg-yoel-primary/5 border-yoel-primary/20 p-4"
                 >
                   <div className="flex items-start gap-2">
-                    <AlertCircle className="h-5 w-5 text-yoel-red shrink-0 mt-0.5" />
+                    <AlertCircle className="h-5 w-5 text-yoel-primary shrink-0 mt-0.5" />
                     <div>
-                      <p className="text-sm font-medium text-yoel-red">Microphone non disponible</p>
+                      <p className="text-sm font-medium text-yoel-primary">Microphone non disponible</p>
                       <p className="text-xs text-muted-foreground mt-1">{micError}</p>
                       <Button
                         variant="link"
@@ -1482,7 +1482,7 @@ function PronunciationTab({ level, onAdvance }: { level: string; onAdvance?: () 
                       </div>
                       <Progress
                         value={currentAttempt.confidence}
-                        className={`h-2 ${currentAttempt.confidence >= 80 ? '[&>div]:bg-yoel-green' : currentAttempt.confidence >= 50 ? '[&>div]:bg-yoel-gold' : '[&>div]:bg-yoel-red'}`}
+                        className={`h-2 ${currentAttempt.confidence >= 80 ? '[&>div]:bg-yoel-green' : currentAttempt.confidence >= 50 ? '[&>div]:bg-yoel-gold' : '[&>div]:bg-yoel-primary'}`}
                       />
                     </div>
 
@@ -1492,7 +1492,7 @@ function PronunciationTab({ level, onAdvance }: { level: string; onAdvance?: () 
                         <div className="flex flex-col sm:flex-row gap-3">
                           <div className="flex-1 text-center sm:text-left">
                             <p className="text-xs font-medium text-muted-foreground mb-1">Vous avez dit :</p>
-                            <p className="text-lg font-semibold text-yoel-red">{currentAttempt.transcript}</p>
+                            <p className="text-lg font-semibold text-yoel-primary">{currentAttempt.transcript}</p>
                           </div>
                           <div className="hidden sm:flex items-center">
                             <span className="text-muted-foreground">→</span>
@@ -1507,7 +1507,7 @@ function PronunciationTab({ level, onAdvance }: { level: string; onAdvance?: () 
                         <div className="pt-2 border-t">
                           <p className="text-xs text-muted-foreground text-center mb-2">Comparaison lettre par lettre :</p>
                           <div className="flex justify-center gap-4 text-xs text-muted-foreground mb-2">
-                            <span className="flex items-center gap-1"><span className="inline-block w-2 h-2 rounded-full bg-yoel-red/50" /> Votre voix</span>
+                            <span className="flex items-center gap-1"><span className="inline-block w-2 h-2 rounded-full bg-yoel-primary/50" /> Votre voix</span>
                             <span className="flex items-center gap-1"><span className="inline-block w-2 h-2 rounded-full bg-yoel-blue/50" /> Attendu</span>
                           </div>
                           {renderCharComparison(currentAttempt.transcript, currentWord.word)}
@@ -1528,7 +1528,7 @@ function PronunciationTab({ level, onAdvance }: { level: string; onAdvance?: () 
                     <div className="flex gap-3">
                       <Button
                         onClick={handleRetry}
-                        className="flex-1 bg-yoel-red hover:bg-yoel-red-dark text-white rounded-xl"
+                        className="flex-1 bg-yoel-primary hover:bg-yoel-primary-dark text-white rounded-xl"
                       >
                         <RefreshCw className="h-4 w-4 mr-1.5" />
                         Réessayer
@@ -1645,7 +1645,7 @@ export default function ExercisesPage() {
     : undefined
 
   const tabConfig = [
-    { id: 'quiz', label: 'Quiz', emoji: '🧠', color: 'text-yoel-red' },
+    { id: 'quiz', label: 'Quiz', emoji: '🧠', color: 'text-yoel-primary' },
     { id: 'grammar', label: 'Grammaire', emoji: '📖', color: 'text-yoel-blue' },
     { id: 'vocabulary', label: 'Vocabulaire', emoji: '💬', color: 'text-yoel-green' },
     { id: 'pronunciation', label: 'Prononciation', emoji: '🎤', color: 'text-yoel-gold' },
@@ -1677,7 +1677,7 @@ export default function ExercisesPage() {
                     <ArrowLeft className="h-5 w-5" />
                   </Button>
                   <div>
-                    <h1 className="text-lg font-bold gradient-text-red">Exercices</h1>
+                    <h1 className="text-lg font-bold gradient-text-primary">Exercices</h1>
                     <p className="text-xs text-muted-foreground">Choisissez votre niveau</p>
                   </div>
                 </div>

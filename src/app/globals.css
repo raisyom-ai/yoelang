@@ -41,9 +41,9 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-  --color-yoel-red: var(--yoel-red);
-  --color-yoel-red-light: var(--yoel-red-light);
-  --color-yoel-red-dark: var(--yoel-red-dark);
+  --color-yoel-primary: var(--yoel-primary);
+  --color-yoel-primary-light: var(--yoel-primary-light);
+  --color-yoel-primary-dark: var(--yoel-primary-dark);
   --color-yoel-blue: var(--yoel-blue);
   --color-yoel-blue-light: var(--yoel-blue-light);
   --color-yoel-blue-dark: var(--yoel-blue-dark);
@@ -87,9 +87,9 @@
 
   /* YOELANG Brand Colors - Calming Learning Palette */
   /* Primary: Teal (calming, focused, like a clear ocean) */
-  --yoel-red: oklch(0.52 0.10 190);
-  --yoel-red-light: oklch(0.68 0.08 190);
-  --yoel-red-dark: oklch(0.38 0.10 190);
+  --yoel-primary: oklch(0.52 0.10 190);
+  --yoel-primary-light: oklch(0.68 0.08 190);
+  --yoel-primary-dark: oklch(0.38 0.10 190);
   /* Secondary: Soft Indigo (depth, wisdom, knowledge) */
   --yoel-blue: oklch(0.52 0.12 265);
   --yoel-blue-light: oklch(0.68 0.09 265);
@@ -134,9 +134,9 @@
   --sidebar-ring: oklch(0.58 0.10 190);
 
   /* Dark mode YOELANG Colors */
-  --yoel-red: oklch(0.58 0.10 190);
-  --yoel-red-light: oklch(0.68 0.08 190);
-  --yoel-red-dark: oklch(0.42 0.10 190);
+  --yoel-primary: oklch(0.58 0.10 190);
+  --yoel-primary-light: oklch(0.68 0.08 190);
+  --yoel-primary-dark: oklch(0.42 0.10 190);
   --yoel-blue: oklch(0.55 0.12 265);
   --yoel-blue-light: oklch(0.65 0.09 265);
   --yoel-blue-dark: oklch(0.40 0.12 265);
@@ -222,7 +222,7 @@
 }
 
 /* Gradient text - Updated to calming palette */
-.gradient-text-red {
+.gradient-text-primary {
   background: linear-gradient(135deg, oklch(0.52 0.10 190), oklch(0.58 0.08 210));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;

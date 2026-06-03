@@ -696,7 +696,7 @@ function ChatMessage({
       <div
         className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full shadow-md ${
           isUser
-            ? 'bg-gradient-to-br from-yoel-red to-yoel-red-dark text-white'
+            ? 'bg-gradient-to-br from-yoel-primary to-yoel-primary-dark text-white'
             : 'bg-gradient-to-br from-yoel-blue to-yoel-blue-dark text-white'
         }`}
       >
@@ -710,7 +710,7 @@ function ChatMessage({
         <div
           className={`rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
             isUser
-              ? 'bg-yoel-red text-white rounded-tr-sm'
+              ? 'bg-yoel-primary text-white rounded-tr-sm'
               : 'glass rounded-tl-sm text-foreground'
           }`}
         >
@@ -1182,7 +1182,7 @@ export default function ChatPage() {
               variant="ghost"
               size="icon"
               onClick={() => navigate('dashboard')}
-              className="h-9 w-9 rounded-full text-muted-foreground hover:text-yoel-red"
+              className="h-9 w-9 rounded-full text-muted-foreground hover:text-yoel-primary"
             >
               <Home className="h-4 w-4" />
             </Button>
@@ -1344,20 +1344,20 @@ export default function ChatPage() {
               exit={{ opacity: 0, height: 0 }}
               className="px-4 pb-2"
             >
-              <div className="flex items-center gap-3 rounded-xl bg-yoel-red/5 border border-yoel-red/20 px-4 py-3">
+              <div className="flex items-center gap-3 rounded-xl bg-yoel-primary/5 border border-yoel-primary/20 px-4 py-3">
                 <div className="relative flex h-4 w-4 items-center justify-center">
                   <motion.div
-                    className="absolute h-4 w-4 rounded-full bg-yoel-red/30"
+                    className="absolute h-4 w-4 rounded-full bg-yoel-primary/30"
                     animate={{ scale: [1, 1.8, 1] }}
                     transition={{ duration: 1, repeat: Infinity }}
                   />
-                  <div className="h-2.5 w-2.5 rounded-full bg-yoel-red" />
+                  <div className="h-2.5 w-2.5 rounded-full bg-yoel-primary" />
                 </div>
                 <div className="flex items-center gap-1 flex-1">
                   {Array.from({ length: 8 }).map((_, i) => (
                     <motion.div
                       key={i}
-                      className="w-1 rounded-full bg-yoel-red/60"
+                      className="w-1 rounded-full bg-yoel-primary/60"
                       animate={{
                         height: isRecording
                           ? [4, Math.max(4, recordingLevel * 0.12 + Math.random() * 8), 4]
@@ -1371,7 +1371,7 @@ export default function ChatPage() {
                     />
                   ))}
                 </div>
-                <span className="text-xs font-medium text-yoel-red">
+                <span className="text-xs font-medium text-yoel-primary">
                   Enregistrement...
                 </span>
               </div>
@@ -1391,7 +1391,7 @@ export default function ChatPage() {
               onClick={handleMicToggle}
               className={`h-10 w-10 shrink-0 rounded-full transition-all ${
                 isRecording
-                  ? 'bg-yoel-red text-white hover:bg-yoel-red-dark'
+                  ? 'bg-yoel-primary text-white hover:bg-yoel-primary-dark'
                   : 'text-muted-foreground hover:text-foreground hover:bg-muted'
               }`}
             >
@@ -1406,7 +1406,7 @@ export default function ChatPage() {
                 onKeyDown={handleKeyDown}
                 placeholder="Posez votre question en anglais..."
                 disabled={isChatLoading}
-                className="rounded-full pr-12 h-10 bg-muted/30 border-border/50 focus-visible:ring-yoel-red/30"
+                className="rounded-full pr-12 h-10 bg-muted/30 border-border/50 focus-visible:ring-yoel-primary/30"
               />
             </div>
 
@@ -1414,7 +1414,7 @@ export default function ChatPage() {
               onClick={handleSend}
               disabled={!inputValue.trim() || isChatLoading}
               size="icon"
-              className="h-10 w-10 shrink-0 rounded-full bg-yoel-red hover:bg-yoel-red-dark text-white disabled:opacity-40"
+              className="h-10 w-10 shrink-0 rounded-full bg-yoel-primary hover:bg-yoel-primary-dark text-white disabled:opacity-40"
             >
               <Send className="h-4 w-4" />
             </Button>

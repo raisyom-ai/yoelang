@@ -181,12 +181,12 @@ export default function RegisterPage() {
         initial={{ opacity: 0, x: -40 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.6, ease: 'easeOut' }}
-        className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-gradient-to-br from-yoel-blue-dark via-yoel-blue to-yoel-red-dark items-center justify-center p-12"
+        className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-gradient-to-br from-yoel-blue-dark via-yoel-blue to-yoel-primary-dark items-center justify-center p-12"
       >
         {/* Background decorations */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-white/5 blur-3xl" />
-          <div className="absolute -bottom-32 -left-32 w-[500px] h-[500px] rounded-full bg-yoel-red/10 blur-3xl" />
+          <div className="absolute -bottom-32 -left-32 w-[500px] h-[500px] rounded-full bg-yoel-primary/10 blur-3xl" />
           <div className="absolute top-1/3 right-1/4 w-64 h-64 rounded-full bg-yoel-gold/10 blur-2xl" />
           {/* Floating decorative elements */}
           <motion.div
@@ -315,7 +315,7 @@ export default function RegisterPage() {
 
           {/* Header */}
           <motion.div custom={1} variants={fadeInUp} className="mb-6">
-            <h2 className="text-3xl font-bold gradient-text-red">Créer un compte</h2>
+            <h2 className="text-3xl font-bold gradient-text-primary">Créer un compte</h2>
             <p className="text-muted-foreground mt-2">
               Rejoignez des millions d&apos;apprenants
             </p>
@@ -527,7 +527,7 @@ export default function RegisterPage() {
                   J&apos;accepte les{' '}
                   <button
                     type="button"
-                    className="text-yoel-red hover:text-yoel-red-dark font-medium transition-colors"
+                    className="text-yoel-primary hover:text-yoel-primary-dark font-medium transition-colors"
                     onClick={() => toast.info('Fonctionnalité à venir', { description: 'Les conditions seront disponibles prochainement.' })}
                   >
                     conditions d&apos;utilisation
@@ -535,7 +535,7 @@ export default function RegisterPage() {
                   {' '}et la{' '}
                   <button
                     type="button"
-                    className="text-yoel-red hover:text-yoel-red-dark font-medium transition-colors"
+                    className="text-yoel-primary hover:text-yoel-primary-dark font-medium transition-colors"
                     onClick={() => toast.info('Fonctionnalité à venir', { description: 'La politique de confidentialité sera disponible prochainement.' })}
                   >
                     politique de confidentialité
@@ -552,7 +552,7 @@ export default function RegisterPage() {
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="w-full h-11 text-base font-semibold bg-gradient-to-r from-yoel-red to-yoel-red-dark hover:from-yoel-red-dark hover:to-yoel-red text-white shadow-lg hover:shadow-xl transition-all duration-300"
+                className="w-full h-11 text-base font-semibold bg-gradient-to-r from-yoel-primary to-yoel-primary-dark hover:from-yoel-primary-dark hover:to-yoel-primary text-white shadow-lg hover:shadow-xl transition-all duration-300"
               >
                 {isLoading ? (
                   <Loader2 className="w-5 h-5 animate-spin" />
@@ -682,7 +682,7 @@ export default function RegisterPage() {
             <button
               type="button"
               onClick={() => navigate('login')}
-              className="text-yoel-red hover:text-yoel-red-dark font-semibold transition-colors"
+              className="text-yoel-primary hover:text-yoel-primary-dark font-semibold transition-colors"
             >
               Connectez-vous
             </button>

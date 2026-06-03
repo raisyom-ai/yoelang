@@ -108,7 +108,7 @@ export default function SplashScreen() {
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 flex flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-yoel-red via-yoel-red-dark to-yoel-blue-dark">
+      <div className="fixed inset-0 flex flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-yoel-primary via-yoel-primary-dark to-yoel-blue-dark">
         {/* Particle effects */}
         {particles.map((i) => (
           <Particle key={i} index={i} />

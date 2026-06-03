@@ -146,7 +146,7 @@ function CircularProgress({
       </svg>
       <div className="absolute flex flex-col items-center justify-center">
         <motion.span
-          className="text-2xl font-bold gradient-text-red"
+          className="text-2xl font-bold gradient-text-primary"
           initial={{ opacity: 0, scale: 0.5 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.8, type: 'spring' }}
@@ -177,7 +177,7 @@ function QuickAction({
       whileHover={{ scale: 1.04, y: -2 }}
       whileTap={{ scale: 0.96 }}
       onClick={onClick}
-      className="flex flex-col items-center justify-center gap-2 rounded-2xl p-4 glass transition-colors hover:bg-yoel-red/5 dark:hover:bg-yoel-red/10 cursor-pointer min-h-[100px]"
+      className="flex flex-col items-center justify-center gap-2 rounded-2xl p-4 glass transition-colors hover:bg-yoel-primary/5 dark:hover:bg-yoel-primary/10 cursor-pointer min-h-[100px]"
     >
       <div
         className={`flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${color} shadow-md`}
@@ -208,7 +208,7 @@ function BottomNavItem({
       onClick={onClick}
       className={`flex flex-col items-center justify-center gap-0.5 px-3 py-2 rounded-lg transition-colors cursor-pointer ${
         active
-          ? 'text-yoel-red'
+          ? 'text-yoel-primary'
           : 'text-muted-foreground hover:text-foreground'
       }`}
     >
@@ -217,7 +217,7 @@ function BottomNavItem({
       {active && (
         <motion.div
           layoutId="bottomNavIndicator"
-          className="h-0.5 w-4 rounded-full bg-yoel-red mt-0.5"
+          className="h-0.5 w-4 rounded-full bg-yoel-primary mt-0.5"
         />
       )}
     </motion.button>
@@ -298,14 +298,14 @@ export default function DashboardPage() {
               variant="outline"
               size="sm"
               onClick={() => navigate('home')}
-              className="shrink-0 rounded-full gap-1.5 border-yoel-red/20 hover:bg-yoel-red/5 hover:border-yoel-red/40 transition-all"
+              className="shrink-0 rounded-full gap-1.5 border-yoel-primary/20 hover:bg-yoel-primary/5 hover:border-yoel-primary/40 transition-all"
             >
-              <ArrowLeft className="h-4 w-4 text-yoel-red" />
-              <span className="text-xs font-medium text-yoel-red">Retour</span>
+              <ArrowLeft className="h-4 w-4 text-yoel-primary" />
+              <span className="text-xs font-medium text-yoel-primary">Retour</span>
             </Button>
-            <Avatar className="h-9 w-9 ring-2 ring-yoel-red/30">
+            <Avatar className="h-9 w-9 ring-2 ring-yoel-primary/30">
               <AvatarImage src={user?.avatar ?? undefined} alt={displayName} />
-              <AvatarFallback className="bg-yoel-red/10 text-yoel-red font-semibold text-xs">
+              <AvatarFallback className="bg-yoel-primary/10 text-yoel-primary font-semibold text-xs">
                 {displayName
                   .split(' ')
                   .map((n) => n[0])
@@ -318,7 +318,7 @@ export default function DashboardPage() {
               <p className="text-xs text-muted-foreground truncate">
                 {greeting} 👋
               </p>
-              <p className="font-semibold truncate gradient-text-red text-sm">
+              <p className="font-semibold truncate gradient-text-primary text-sm">
                 {displayName}
               </p>
             </div>
@@ -351,7 +351,7 @@ export default function DashboardPage() {
               onClick={() => navigate('settings')}
             >
               <Bell className="h-4 w-4" />
-              <span className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-yoel-red ring-2 ring-background" />
+              <span className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-yoel-primary ring-2 ring-background" />
             </Button>
 
             {/* Dark Mode Toggle */}
@@ -433,8 +433,8 @@ export default function DashboardPage() {
                     : `Encore ${DAILY_XP_GOAL - DAILY_XP_EARNED} XP pour atteindre votre objectif !`}
                 </p>
                 <div className="flex items-center gap-2 justify-center sm:justify-start">
-                  <Target className="h-4 w-4 text-yoel-red" />
-                  <span className="text-sm font-medium text-yoel-red">
+                  <Target className="h-4 w-4 text-yoel-primary" />
+                  <span className="text-sm font-medium text-yoel-primary">
                     {Math.round((DAILY_XP_EARNED / DAILY_XP_GOAL) * 100)}%
                     compl\u00e9t\u00e9
                   </span>
@@ -452,9 +452,9 @@ export default function DashboardPage() {
           >
             <div className="relative">
               {/* Accent bar */}
-              <div className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-yoel-red to-yoel-gold rounded-l-xl" />
+              <div className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-yoel-primary to-yoel-gold rounded-l-xl" />
               <CardContent className="flex items-center gap-4 p-5 pl-6">
-                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-yoel-red/20 to-yoel-gold/20 overflow-hidden">
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-yoel-primary/20 to-yoel-gold/20 overflow-hidden">
                   <img src="/practice-english.png" alt="Practice" className="h-14 w-14 object-cover rounded-xl" />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -484,7 +484,7 @@ export default function DashboardPage() {
                 >
                   <Button
                     size="sm"
-                    className="bg-yoel-red hover:bg-yoel-red-dark text-white rounded-full"
+                    className="bg-yoel-primary hover:bg-yoel-primary-dark text-white rounded-full"
                   >
                     Continuer
                     <ChevronRight className="h-4 w-4 ml-0.5" />
@@ -501,7 +501,7 @@ export default function DashboardPage() {
             <QuickAction
               icon={BookOpen}
               label="Leçons"
-              color="from-yoel-red to-yoel-red-dark"
+              color="from-yoel-primary to-yoel-primary-dark"
               onClick={() => navigate('levels')}
             />
             <QuickAction
@@ -566,7 +566,7 @@ export default function DashboardPage() {
                       }
                     } else {
                       btnClass +=
-                        ' bg-background border-border hover:border-yoel-red/50 hover:bg-yoel-red/5 cursor-pointer'
+                        ' bg-background border-border hover:border-yoel-primary/50 hover:bg-yoel-primary/5 cursor-pointer'
                     }
 
                     return (
@@ -675,7 +675,7 @@ export default function DashboardPage() {
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-base flex items-center gap-2">
-                  <Award className="h-5 w-5 text-yoel-red" />
+                  <Award className="h-5 w-5 text-yoel-primary" />
                   Badges r\u00e9cents
                 </CardTitle>
                 <Button
@@ -699,7 +699,7 @@ export default function DashboardPage() {
                     transition={{ delay: 0.4 + idx * 0.1 }}
                     className="flex flex-col items-center gap-1.5 min-w-[72px] shrink-0"
                   >
-                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-yoel-red/10 to-yoel-gold/10 border border-yoel-red/10 text-2xl">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-yoel-primary/10 to-yoel-gold/10 border border-yoel-primary/10 text-2xl">
                       {badge.icon}
                     </div>
                     <span className="text-[10px] text-muted-foreground text-center leading-tight font-medium">
@@ -779,12 +779,12 @@ export default function DashboardPage() {
 
                 {/* Current user rank hint */}
                 <Separator />
-                <div className="flex items-center gap-3 rounded-xl bg-yoel-red/5 p-3">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-yoel-red/10 font-bold text-sm text-yoel-red">
+                <div className="flex items-center gap-3 rounded-xl bg-yoel-primary/5 p-3">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-yoel-primary/10 font-bold text-sm text-yoel-primary">
                     12
                   </div>
                   <Avatar className="h-8 w-8">
-                    <AvatarFallback className="text-xs font-semibold bg-yoel-red/10 text-yoel-red">
+                    <AvatarFallback className="text-xs font-semibold bg-yoel-primary/10 text-yoel-primary">
                       {displayName
                         .split(' ')
                         .map((n) => n[0])
@@ -796,7 +796,7 @@ export default function DashboardPage() {
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium truncate">{displayName} (vous)</p>
                   </div>
-                  <span className="text-sm font-semibold text-yoel-red">
+                  <span className="text-sm font-semibold text-yoel-primary">
                     {xp.toLocaleString()} XP
                   </span>
                 </div>
@@ -862,11 +862,11 @@ export default function DashboardPage() {
         {!isPremium && (
           <motion.div variants={itemVariants}>
             <Card
-              className="overflow-hidden border-0 cursor-pointer bg-gradient-to-r from-yoel-red/10 via-yoel-gold/10 to-yoel-blue/10"
+              className="overflow-hidden border-0 cursor-pointer bg-gradient-to-r from-yoel-primary/10 via-yoel-gold/10 to-yoel-blue/10"
               onClick={() => navigate('premium')}
             >
               <CardContent className="flex items-center gap-4 p-5">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-yoel-red to-yoel-gold text-white text-xl">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-yoel-primary to-yoel-gold text-white text-xl">
                   👑
                 </div>
                 <div className="flex-1">
@@ -889,7 +889,7 @@ export default function DashboardPage() {
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-base flex items-center gap-2">
-                  <Star className="h-5 w-5 text-yoel-red" />
+                  <Star className="h-5 w-5 text-yoel-primary" />
                   Progression par niveau
                 </CardTitle>
                 <Button

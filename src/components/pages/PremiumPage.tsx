@@ -182,7 +182,7 @@ export default function PremiumPage() {
           <Button variant="ghost" size="icon" onClick={goBack} className="shrink-0">
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <Button variant="ghost" size="icon" onClick={() => navigate('dashboard')} className="shrink-0 text-muted-foreground hover:text-yoel-red">
+          <Button variant="ghost" size="icon" onClick={() => navigate('dashboard')} className="shrink-0 text-muted-foreground hover:text-yoel-primary">
             <Home className="h-4 w-4" />
           </Button>
           <h1 className="text-xl font-bold gradient-text-premium">YOELANG Premium</h1>
@@ -334,7 +334,7 @@ export default function PremiumPage() {
                         plan.recommended
                           ? 'glass ring-2 ring-yoel-gold/50 shadow-lg'
                           : selectedPlan === plan.id
-                          ? 'glass ring-2 ring-yoel-red/50'
+                          ? 'glass ring-2 ring-yoel-primary/50'
                           : 'glass'
                       }`}
                       onClick={() => setSelectedPlan(plan.id)}
@@ -372,8 +372,8 @@ export default function PremiumPage() {
                         <Button
                           className={`w-full rounded-xl ${
                             plan.recommended
-                              ? 'bg-gradient-to-r from-yoel-red to-yoel-gold text-white hover:opacity-90'
-                              : 'bg-yoel-red text-white hover:bg-yoel-red-dark'
+                              ? 'bg-gradient-to-r from-yoel-primary to-yoel-gold text-white hover:opacity-90'
+                              : 'bg-yoel-primary text-white hover:bg-yoel-primary-dark'
                           }`}
                           onClick={(e) => {
                             e.stopPropagation()
@@ -428,7 +428,7 @@ export default function PremiumPage() {
               <Card className="glass border-0">
                 <CardContent className="p-6">
                   <div className="flex flex-col sm:flex-row gap-4">
-                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-yoel-blue/20 to-yoel-red/20 text-3xl">
+                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-yoel-blue/20 to-yoel-primary/20 text-3xl">
                       👩‍💻
                     </div>
                     <div>

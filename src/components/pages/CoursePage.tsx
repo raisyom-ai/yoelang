@@ -228,7 +228,7 @@ function getLessonSteps(lessonType: string): LessonStep[] {
 function getTypeConfig(type: string) {
   switch (type) {
     case 'vocabulary':
-      return { label: 'Vocabulaire', icon: BookOpen, color: 'bg-yoel-red/15 text-yoel-red' }
+      return { label: 'Vocabulaire', icon: BookOpen, color: 'bg-yoel-primary/15 text-yoel-primary' }
     case 'grammar':
       return { label: 'Grammaire', icon: PenTool, color: 'bg-yoel-blue/15 text-yoel-blue' }
     case 'conversation':
@@ -473,13 +473,13 @@ export default function CoursePage() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-10 w-10 rounded-xl text-muted-foreground hover:text-yoel-red"
+                  className="h-10 w-10 rounded-xl text-muted-foreground hover:text-yoel-primary"
                   onClick={() => navigate('dashboard')}
                 >
                   <Home className="h-4 w-4" />
                 </Button>
                 <div>
-                  <h1 className="text-xl font-bold gradient-text-red">
+                  <h1 className="text-xl font-bold gradient-text-primary">
                     {levelInfo.code} — {levelInfo.name}
                   </h1>
                   <p className="text-xs text-muted-foreground">
@@ -491,7 +491,7 @@ export default function CoursePage() {
 
             {/* Level Progress Summary */}
             <motion.div variants={itemVariants}>
-              <Card className="overflow-hidden border-0 bg-gradient-to-r from-yoel-red/5 via-transparent to-yoel-gold/5">
+              <Card className="overflow-hidden border-0 bg-gradient-to-r from-yoel-primary/5 via-transparent to-yoel-gold/5">
                 <CardContent className="p-5">
                   <div className="flex items-center gap-4 mb-3">
                     <div className={`flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${levelInfo.color} text-3xl shadow-lg`}>
@@ -499,7 +499,7 @@ export default function CoursePage() {
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
-                        <Badge variant="secondary" className="text-xs font-bold bg-yoel-red/15 text-yoel-red">
+                        <Badge variant="secondary" className="text-xs font-bold bg-yoel-primary/15 text-yoel-primary">
                           {levelInfo.code}
                         </Badge>
                         <span className="font-semibold">{levelInfo.name}</span>
@@ -512,7 +512,7 @@ export default function CoursePage() {
                       <span className="text-muted-foreground">
                         {completedCount} sur {totalLessons} leçons complétées
                       </span>
-                      <span className="font-semibold gradient-text-red">{progressPercent}%</span>
+                      <span className="font-semibold gradient-text-primary">{progressPercent}%</span>
                     </div>
                     <Progress value={progressPercent} className="h-3" />
                   </div>
@@ -522,7 +522,7 @@ export default function CoursePage() {
                       {completedCount} terminée{completedCount > 1 ? 's' : ''}
                     </span>
                     <span className="flex items-center gap-1">
-                      <span className="h-2 w-2 rounded-full bg-yoel-red" />
+                      <span className="h-2 w-2 rounded-full bg-yoel-primary" />
                       {totalLessons - completedCount} restante{totalLessons - completedCount > 1 ? 's' : ''}
                     </span>
                   </div>
@@ -543,7 +543,7 @@ export default function CoursePage() {
                     {/* Unit Header */}
                     <div className="p-4 pb-3">
                       <div className="flex items-center gap-3 mb-2">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-yoel-red/10 text-xl shrink-0">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-yoel-primary/10 text-xl shrink-0">
                           {unit.icon}
                         </div>
                         <div className="flex-1 min-w-0">
@@ -583,7 +583,7 @@ export default function CoursePage() {
                             className={`w-full text-left rounded-xl p-3 transition-all flex items-center gap-3 ${
                               isCompleted
                                 ? 'bg-yoel-green/5 hover:bg-yoel-green/10 border border-yoel-green/20'
-                                : 'bg-muted/30 hover:bg-muted/50 border border-transparent hover:border-yoel-red/20'
+                                : 'bg-muted/30 hover:bg-muted/50 border border-transparent hover:border-yoel-primary/20'
                             }`}
                           >
                             {/* Status icon */}
@@ -648,10 +648,10 @@ export default function CoursePage() {
                 </Card>
                 <Card className="glass border-0 overflow-hidden">
                   <CardContent className="flex flex-col items-center justify-center p-4">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-yoel-red/15 mb-2">
-                      <BookOpen className="h-5 w-5 text-yoel-red" />
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-yoel-primary/15 mb-2">
+                      <BookOpen className="h-5 w-5 text-yoel-primary" />
                     </div>
-                    <span className="text-xl font-bold gradient-text-red">{totalLessons - completedCount}</span>
+                    <span className="text-xl font-bold gradient-text-primary">{totalLessons - completedCount}</span>
                     <span className="text-[10px] text-muted-foreground font-medium">Restantes</span>
                   </CardContent>
                 </Card>
@@ -670,7 +670,7 @@ export default function CoursePage() {
             {/* Go to Exercises button */}
             <motion.div variants={itemVariants}>
               <Button
-                className="w-full bg-yoel-red hover:bg-yoel-red-dark text-white rounded-xl h-12"
+                className="w-full bg-yoel-primary hover:bg-yoel-primary-dark text-white rounded-xl h-12"
                 onClick={() => navigate('exercises')}
               >
                 <Sparkles className="h-5 w-5 mr-2" />
@@ -708,7 +708,7 @@ export default function CoursePage() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-9 w-9 rounded-xl text-muted-foreground hover:text-yoel-red"
+                className="h-9 w-9 rounded-xl text-muted-foreground hover:text-yoel-primary"
                 onClick={() => navigate('dashboard')}
               >
                 <Home className="h-4 w-4" />
@@ -848,7 +848,7 @@ export default function CoursePage() {
                 key={i}
                 className={`h-1.5 rounded-full transition-all ${
                   i === currentStep
-                    ? 'w-6 bg-yoel-red'
+                    ? 'w-6 bg-yoel-primary'
                     : i < currentStep
                     ? 'w-3 bg-yoel-green'
                     : 'w-3 bg-muted-foreground/20'
@@ -875,7 +875,7 @@ export default function CoursePage() {
             return (
               <Button
                 size="sm"
-                className="rounded-xl bg-yoel-red hover:bg-yoel-red-dark text-white"
+                className="rounded-xl bg-yoel-primary hover:bg-yoel-primary-dark text-white"
                 onClick={goNext}
               >
                 Suivant
@@ -936,7 +936,7 @@ function VocabularyStep({
     >
       {/* Header */}
       <motion.div variants={itemVariants} className="text-center">
-        <Badge className="bg-yoel-red/15 text-yoel-red border-0 text-xs mb-2">
+        <Badge className="bg-yoel-primary/15 text-yoel-primary border-0 text-xs mb-2">
           Mot {index + 1}/{totalVocabCount}
         </Badge>
         <h2 className="text-2xl font-bold">{lessonTitle}</h2>
@@ -945,10 +945,10 @@ function VocabularyStep({
       {/* Word Card */}
       <motion.div variants={itemVariants}>
         <Card className="overflow-hidden border-0 shadow-lg">
-          <div className="h-2 bg-gradient-to-r from-yoel-red to-yoel-gold" />
+          <div className="h-2 bg-gradient-to-r from-yoel-primary to-yoel-gold" />
           <CardContent className="p-6 space-y-5">
             <div className="text-center space-y-2">
-              <h3 className="text-4xl font-bold gradient-text-red">{word.french}</h3>
+              <h3 className="text-4xl font-bold gradient-text-primary">{word.french}</h3>
               <p className="text-sm text-muted-foreground">🇫🇷 Français</p>
               <Button
                 variant="outline"
@@ -958,7 +958,7 @@ function VocabularyStep({
               >
                 {isPlayingAudio ? (
                   <>
-                    <Volume2 className="h-4 w-4 mr-1 animate-pulse text-yoel-red" />
+                    <Volume2 className="h-4 w-4 mr-1 animate-pulse text-yoel-primary" />
                     Lecture...
                   </>
                 ) : (
@@ -1012,7 +1012,7 @@ function VocabularyStep({
               <div className="flex items-start gap-2">
                 <p className="text-sm font-medium italic flex-1">&ldquo;{word.example}&rdquo;</p>
                 <button
-                  className="shrink-0 text-muted-foreground hover:text-yoel-red transition-colors p-1"
+                  className="shrink-0 text-muted-foreground hover:text-yoel-primary transition-colors p-1"
                   onClick={(e) => {
                     e.stopPropagation()
                     speakWord(word.example, { rate: 0.8 })
@@ -1195,7 +1195,7 @@ function ConversationStep({
             >
               <div className="max-w-[85%] cursor-pointer" onClick={() => onReveal(idx)}>
                 <div className="flex items-center gap-2 mb-1">
-                  <span className={`text-[10px] font-bold ${isSpeakerA ? 'text-yoel-red' : 'text-yoel-blue'}`}>
+                  <span className={`text-[10px] font-bold ${isSpeakerA ? 'text-yoel-primary' : 'text-yoel-blue'}`}>
                     {line.speaker}
                   </span>
                   <Button
@@ -1208,7 +1208,7 @@ function ConversationStep({
                     }}
                   >
                     {isPlayingAudio ? (
-                      <Volume2 className="h-3 w-3 animate-pulse text-yoel-red" />
+                      <Volume2 className="h-3 w-3 animate-pulse text-yoel-primary" />
                     ) : (
                       <Volume2 className="h-3 w-3 text-muted-foreground" />
                     )}
@@ -1217,7 +1217,7 @@ function ConversationStep({
                 <Card
                   className={`border-0 overflow-hidden ${
                     isSpeakerA
-                      ? 'bg-gradient-to-br from-yoel-red/10 to-yoel-red/5'
+                      ? 'bg-gradient-to-br from-yoel-primary/10 to-yoel-primary/5'
                       : 'bg-gradient-to-br from-yoel-blue/10 to-yoel-blue/5'
                   }`}
                 >
@@ -1449,8 +1449,8 @@ function PronunciationStep({
 
   const isBusy = isRecording || isProcessing
 
-  const getConfidenceColor = (c: number) => c >= 80 ? 'text-yoel-green' : c >= 50 ? 'text-yoel-gold' : 'text-yoel-red'
-  const getConfidenceBg = (c: number) => c >= 80 ? 'bg-yoel-green/10 border-yoel-green/30' : c >= 50 ? 'bg-yoel-gold/10 border-yoel-gold/30' : 'bg-yoel-red/10 border-yoel-red/30'
+  const getConfidenceColor = (c: number) => c >= 80 ? 'text-yoel-green' : c >= 50 ? 'text-yoel-gold' : 'text-yoel-primary'
+  const getConfidenceBg = (c: number) => c >= 80 ? 'bg-yoel-green/10 border-yoel-green/30' : c >= 50 ? 'bg-yoel-gold/10 border-yoel-gold/30' : 'bg-yoel-primary/10 border-yoel-primary/30'
   const getConfidenceLabel = (c: number) => c >= 80 ? 'Excellent !' : c >= 50 ? 'Presque !' : 'Réessayez'
 
   // Mic level bars - use real-time micLevel from the hook
@@ -1476,7 +1476,7 @@ function PronunciationStep({
           <CardContent className="p-6 space-y-5">
             {/* Word display */}
             <div className="text-center space-y-2">
-              <h3 className="text-4xl font-bold gradient-text-red">{item.word}</h3>
+              <h3 className="text-4xl font-bold gradient-text-primary">{item.word}</h3>
               <p className="text-sm font-mono text-muted-foreground">{item.phonetic}</p>
               <p className="text-sm text-muted-foreground">= {item.meaning}</p>
             </div>
@@ -1591,7 +1591,7 @@ function PronunciationStep({
                     <div className="flex justify-center">
                       {isBusy ? (
                         <Button
-                          className="bg-yoel-red hover:bg-yoel-red-dark text-white rounded-full h-14 w-14"
+                          className="bg-yoel-primary hover:bg-yoel-primary-dark text-white rounded-full h-14 w-14"
                           onClick={isRecording ? handleStopRecording : undefined}
                           disabled={isProcessing}
                         >
@@ -1620,8 +1620,8 @@ function PronunciationStep({
 
                     {/* Mic error */}
                     {micError && (
-                      <div className="text-center p-3 rounded-xl bg-yoel-red/10 border border-yoel-red/20">
-                        <p className="text-xs text-yoel-red">{micError}</p>
+                      <div className="text-center p-3 rounded-xl bg-yoel-primary/10 border border-yoel-primary/20">
+                        <p className="text-xs text-yoel-primary">{micError}</p>
                         <Button size="sm" variant="outline" className="rounded-full mt-2 text-xs" onClick={() => setInputMode('type')}>
                           <PenTool className="h-3 w-3 mr-1" />
                           Passer en mode clavier
@@ -1792,7 +1792,7 @@ function VocabMatchStep({
   return (
     <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-4">
       <motion.div variants={itemVariants} className="text-center">
-        <Badge className="bg-yoel-red/15 text-yoel-red border-0 text-xs mb-2">
+        <Badge className="bg-yoel-primary/15 text-yoel-primary border-0 text-xs mb-2">
           🎯 Association
         </Badge>
         <h2 className="text-2xl font-bold">Associez les mots</h2>
@@ -1803,7 +1803,7 @@ function VocabMatchStep({
 
       <motion.div variants={itemVariants}>
         <Card className="border-0 shadow-lg overflow-hidden">
-          <div className="h-2 bg-gradient-to-r from-yoel-red to-yoel-gold" />
+          <div className="h-2 bg-gradient-to-r from-yoel-primary to-yoel-gold" />
           <CardContent className="p-4 space-y-4">
             <div className="grid grid-cols-2 gap-3">
               {/* French column */}
@@ -1825,8 +1825,8 @@ function VocabMatchStep({
                           : isWrong
                           ? 'bg-destructive/10 border-destructive/40 text-destructive'
                           : isSelected
-                          ? 'bg-yoel-red/15 border-yoel-red/40 text-yoel-red ring-2 ring-yoel-red/20'
-                          : 'bg-background border-border hover:border-yoel-red/30 hover:bg-yoel-red/5'
+                          ? 'bg-yoel-primary/15 border-yoel-primary/40 text-yoel-primary ring-2 ring-yoel-primary/20'
+                          : 'bg-background border-border hover:border-yoel-primary/30 hover:bg-yoel-primary/5'
                       }`}
                     >
                       {word.french}
@@ -1998,7 +1998,7 @@ function VocabListeningStep({
 
             {isAnswered && (
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex justify-center">
-                <Button onClick={handleNext} className="bg-yoel-red hover:bg-yoel-red-dark text-white rounded-xl">
+                <Button onClick={handleNext} className="bg-yoel-primary hover:bg-yoel-primary-dark text-white rounded-xl">
                   {round < totalRounds - 1 ? 'Mot suivant' : 'Terminé'}
                   <ChevronRight className="h-4 w-4 ml-1" />
                 </Button>
@@ -2078,7 +2078,7 @@ function GrammarFillStep({
           <CardContent className="p-6 text-center space-y-4">
             <h2 className="text-xl font-bold">Grammaire pratique</h2>
             <p className="text-sm text-muted-foreground">Pas assez de données pour cet exercice. Passez à l&apos;étape suivante.</p>
-            <Button onClick={onComplete} className="bg-yoel-red hover:bg-yoel-red-dark text-white rounded-xl">
+            <Button onClick={onComplete} className="bg-yoel-primary hover:bg-yoel-primary-dark text-white rounded-xl">
               Suivant <ChevronRight className="h-4 w-4 ml-1" />
             </Button>
           </CardContent>
@@ -2155,7 +2155,7 @@ function GrammarFillStep({
 
             {isAnswered && (
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex justify-center">
-                <Button onClick={handleNext} className="bg-yoel-red hover:bg-yoel-red-dark text-white rounded-xl">
+                <Button onClick={handleNext} className="bg-yoel-primary hover:bg-yoel-primary-dark text-white rounded-xl">
                   {currentQ < questions.length - 1 ? 'Question suivante' : 'Terminé'}
                   <ChevronRight className="h-4 w-4 ml-1" />
                 </Button>
@@ -2278,7 +2278,7 @@ function ConversationReorderStep({
                       {pos + 1}
                     </span>
                     <div className="flex-1 min-w-0">
-                      <span className={`text-[10px] font-bold ${isSpeakerA ? 'text-yoel-red' : 'text-yoel-blue'}`}>
+                      <span className={`text-[10px] font-bold ${isSpeakerA ? 'text-yoel-primary' : 'text-yoel-blue'}`}>
                         {line.speaker}
                       </span>
                       <p className="text-sm font-medium truncate">{line.text}</p>
@@ -2308,7 +2308,7 @@ function ConversationReorderStep({
                       isComplete ? 'opacity-50' : ''
                     }`}
                   >
-                    <span className={`text-[10px] font-bold ${isSpeakerA ? 'text-yoel-red' : 'text-yoel-blue'}`}>
+                    <span className={`text-[10px] font-bold ${isSpeakerA ? 'text-yoel-primary' : 'text-yoel-blue'}`}>
                       {line.speaker}
                     </span>
                     <p className="text-sm font-medium">{line.text}</p>
@@ -2420,7 +2420,7 @@ function SentenceBuilderStep({
   return (
     <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-4">
       <motion.div variants={itemVariants} className="text-center">
-        <Badge className="bg-yoel-red/15 text-yoel-red border-0 text-xs mb-2">
+        <Badge className="bg-yoel-primary/15 text-yoel-primary border-0 text-xs mb-2">
           🧩 Construire une phrase
         </Badge>
         <h2 className="text-2xl font-bold">Formez la phrase</h2>
@@ -2431,7 +2431,7 @@ function SentenceBuilderStep({
 
       <motion.div variants={itemVariants}>
         <Card className="border-0 shadow-lg overflow-hidden">
-          <div className="h-2 bg-gradient-to-r from-yoel-red to-yoel-gold" />
+          <div className="h-2 bg-gradient-to-r from-yoel-primary to-yoel-gold" />
           <CardContent className="p-4 space-y-4">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-muted-foreground">
@@ -2459,7 +2459,7 @@ function SentenceBuilderStep({
                         ? 'bg-yoel-green/15 border-yoel-green/40 text-yoel-green'
                         : isCorrect === false
                         ? 'bg-destructive/10 border-destructive/40 text-destructive'
-                        : 'bg-yoel-red/10 border-yoel-red/30 text-yoel-red hover:bg-yoel-red/20'
+                        : 'bg-yoel-primary/10 border-yoel-primary/30 text-yoel-primary hover:bg-yoel-primary/20'
                     }`}
                   >
                     {word} <XCircle className="h-3 w-3 inline ml-1" />
@@ -2489,7 +2489,7 @@ function SentenceBuilderStep({
             {/* Check button */}
             {availableTiles.length === 0 && isCorrect === null && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex justify-center">
-                <Button onClick={handleCheck} className="bg-yoel-red hover:bg-yoel-red-dark text-white rounded-xl">
+                <Button onClick={handleCheck} className="bg-yoel-primary hover:bg-yoel-primary-dark text-white rounded-xl">
                   <CheckCircle2 className="h-4 w-4 mr-2" />
                   Vérifier
                 </Button>
@@ -2530,7 +2530,7 @@ function SentenceBuilderStep({
                     <RefreshCw className="h-4 w-4 mr-2" />
                     Réessayer
                   </Button>
-                  <Button onClick={onComplete} className="bg-yoel-red hover:bg-yoel-red-dark text-white rounded-xl">
+                  <Button onClick={onComplete} className="bg-yoel-primary hover:bg-yoel-primary-dark text-white rounded-xl">
                     Passer
                   </Button>
                 </div>
@@ -2619,7 +2619,7 @@ function MixedReviewStep({
           <CardContent className="p-6 text-center space-y-4">
             <h2 className="text-xl font-bold">Révision mixte</h2>
             <p className="text-sm text-muted-foreground">Pas assez de données pour cet exercice. Passez à l&apos;étape suivante.</p>
-            <Button onClick={onComplete} className="bg-yoel-red hover:bg-yoel-red-dark text-white rounded-xl">
+            <Button onClick={onComplete} className="bg-yoel-primary hover:bg-yoel-primary-dark text-white rounded-xl">
               Suivant <ChevronRight className="h-4 w-4 ml-1" />
             </Button>
           </CardContent>
@@ -2630,7 +2630,7 @@ function MixedReviewStep({
 
   const typeIcon = currentQuestion.type === 'vocab' ? '📚' : currentQuestion.type === 'grammar' ? '✍️' : '🗣️'
   const typeLabel = currentQuestion.type === 'vocab' ? 'Vocabulaire' : currentQuestion.type === 'grammar' ? 'Grammaire' : 'Prononciation'
-  const typeColor = currentQuestion.type === 'vocab' ? 'bg-yoel-red/15 text-yoel-red' : currentQuestion.type === 'grammar' ? 'bg-yoel-blue/15 text-yoel-blue' : 'bg-yoel-gold/15 text-yoel-gold'
+  const typeColor = currentQuestion.type === 'vocab' ? 'bg-yoel-primary/15 text-yoel-primary' : currentQuestion.type === 'grammar' ? 'bg-yoel-blue/15 text-yoel-blue' : 'bg-yoel-gold/15 text-yoel-gold'
 
   const handleAnswer = (idx: number) => {
     if (isAnswered) return
@@ -2663,7 +2663,7 @@ function MixedReviewStep({
 
       <motion.div variants={itemVariants}>
         <Card className="border-0 shadow-lg overflow-hidden">
-          <div className="h-2 bg-gradient-to-r from-yoel-gold via-yoel-red to-yoel-blue" />
+          <div className="h-2 bg-gradient-to-r from-yoel-gold via-yoel-primary to-yoel-blue" />
           <CardContent className="p-6 space-y-5">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-muted-foreground">
@@ -2712,7 +2712,7 @@ function MixedReviewStep({
 
             {isAnswered && (
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex justify-end">
-                <Button onClick={handleNext} className="bg-yoel-red hover:bg-yoel-red-dark text-white rounded-full">
+                <Button onClick={handleNext} className="bg-yoel-primary hover:bg-yoel-primary-dark text-white rounded-full">
                   {currentQ < questions.length - 1 ? (
                     <>Suivante <ChevronRight className="h-4 w-4 ml-1" /></>
                   ) : (
@@ -2955,7 +2955,7 @@ function LessonQuizStep({
                     <div className={`rounded-xl p-4 ${
                       selectedAnswer === currentQuestion.correctIndex
                         ? 'bg-yoel-green/10 border border-yoel-green/20'
-                        : 'bg-yoel-red/5 border border-yoel-red/20'
+                        : 'bg-yoel-primary/5 border border-yoel-primary/20'
                     }`}>
                       <p className="text-sm font-medium">
                         {selectedAnswer === currentQuestion.correctIndex ? '✓ Correct !' : '✗ Incorrect'}
@@ -2977,7 +2977,7 @@ function LessonQuizStep({
                 >
                   <Button
                     onClick={handleNext}
-                    className="bg-yoel-red hover:bg-yoel-red-dark text-white rounded-full"
+                    className="bg-yoel-primary hover:bg-yoel-primary-dark text-white rounded-full"
                   >
                     {currentIndex < questions.length - 1 ? (
                       <>
@@ -3046,7 +3046,7 @@ function LessonCompletionModal({
           <div className={`p-8 text-center text-white ${
             passed
               ? 'bg-gradient-to-br from-yoel-green via-emerald-500 to-yoel-blue'
-              : 'bg-gradient-to-br from-yoel-red via-rose-500 to-orange-500'
+              : 'bg-gradient-to-br from-yoel-primary via-rose-500 to-orange-500'
           }`}>
             <motion.div
               initial={{ scale: 0 }}
@@ -3087,18 +3087,18 @@ function LessonCompletionModal({
             >
               <div className="flex items-center gap-3">
                 <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${
-                  passed ? 'bg-yoel-green/15' : 'bg-yoel-red/15'
+                  passed ? 'bg-yoel-green/15' : 'bg-yoel-primary/15'
                 }`}>
                   {passed ? (
                     <CheckCircle2 className="h-5 w-5 text-yoel-green" />
                   ) : (
-                    <XCircle className="h-5 w-5 text-yoel-red" />
+                    <XCircle className="h-5 w-5 text-yoel-primary" />
                   )}
                 </div>
                 <span className="font-medium text-sm">Score</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className={`text-2xl font-bold ${passed ? 'text-yoel-green' : 'text-yoel-red'}`}>
+                <span className={`text-2xl font-bold ${passed ? 'text-yoel-green' : 'text-yoel-primary'}`}>
                   {score}%
                 </span>
                 <span className="text-xs text-muted-foreground">
@@ -3154,7 +3154,7 @@ function LessonCompletionModal({
               className={`rounded-xl p-4 ${
                 passed
                   ? 'bg-yoel-green/10 border border-yoel-green/20'
-                  : 'bg-yoel-red/5 border border-yoel-red/20'
+                  : 'bg-yoel-primary/5 border border-yoel-primary/20'
               }`}
             >
               <p className="text-sm font-medium">
@@ -3219,7 +3219,7 @@ function LessonCompletionModal({
                     Retour à la liste
                   </Button>
                   <Button
-                    className="flex-1 rounded-xl bg-yoel-red hover:bg-yoel-red-dark text-white shadow-md shadow-yoel-red/20"
+                    className="flex-1 rounded-xl bg-yoel-primary hover:bg-yoel-primary-dark text-white shadow-md shadow-yoel-primary/20"
                     onClick={onRestart}
                   >
                     <RotateCcw className="h-4 w-4 mr-1" />

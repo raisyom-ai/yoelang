@@ -110,7 +110,7 @@ export default function LoginPage() {
         initial={{ opacity: 0, x: -40 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.6, ease: 'easeOut' }}
-        className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-gradient-to-br from-yoel-red via-yoel-red-dark to-yoel-blue-dark items-center justify-center p-12"
+        className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-gradient-to-br from-yoel-primary via-yoel-primary-dark to-yoel-blue-dark items-center justify-center p-12"
       >
         {/* Background decorations */}
         <div className="absolute inset-0 overflow-hidden">
@@ -240,7 +240,7 @@ export default function LoginPage() {
 
           {/* Header */}
           <motion.div custom={1} variants={fadeInUp} className="mb-8">
-            <h2 className="text-3xl font-bold gradient-text-red">Bon retour !</h2>
+            <h2 className="text-3xl font-bold gradient-text-primary">Bon retour !</h2>
             <p className="text-muted-foreground mt-2">
               Connectez-vous pour continuer votre apprentissage
             </p>
@@ -324,7 +324,7 @@ export default function LoginPage() {
               </div>
               <button
                 type="button"
-                className="text-sm text-yoel-red hover:text-yoel-red-dark transition-colors font-medium"
+                className="text-sm text-yoel-primary hover:text-yoel-primary-dark transition-colors font-medium"
                 onClick={() => toast.info('Fonctionnalité à venir', { description: 'La réinitialisation du mot de passe sera bientôt disponible.' })}
               >
                 Mot de passe oublié ?
@@ -336,7 +336,7 @@ export default function LoginPage() {
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="w-full h-11 text-base font-semibold bg-gradient-to-r from-yoel-red to-yoel-red-dark hover:from-yoel-red-dark hover:to-yoel-red text-white shadow-lg hover:shadow-xl transition-all duration-300"
+                className="w-full h-11 text-base font-semibold bg-gradient-to-r from-yoel-primary to-yoel-primary-dark hover:from-yoel-primary-dark hover:to-yoel-primary text-white shadow-lg hover:shadow-xl transition-all duration-300"
               >
                 {isLoading ? (
                   <Loader2 className="w-5 h-5 animate-spin" />
@@ -467,7 +467,7 @@ export default function LoginPage() {
             <button
               type="button"
               onClick={() => navigate('register')}
-              className="text-yoel-red hover:text-yoel-red-dark font-semibold transition-colors"
+              className="text-yoel-primary hover:text-yoel-primary-dark font-semibold transition-colors"
             >
               Inscrivez-vous
             </button>

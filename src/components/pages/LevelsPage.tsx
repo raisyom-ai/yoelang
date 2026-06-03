@@ -129,13 +129,13 @@ export default function LevelsPage() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-10 w-10 rounded-xl text-muted-foreground hover:text-yoel-red"
+                className="h-10 w-10 rounded-xl text-muted-foreground hover:text-yoel-primary"
                 onClick={() => navigate('dashboard')}
               >
                 <Home className="h-4 w-4" />
               </Button>
               <div>
-                <h1 className="text-xl font-bold gradient-text-red">
+                <h1 className="text-xl font-bold gradient-text-primary">
                   Parcours d&apos;apprentissage
                 </h1>
                 <p className="text-xs text-muted-foreground">
@@ -165,7 +165,7 @@ export default function LevelsPage() {
                   <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-yoel-gold/15 mb-2">
                     <Zap className="h-5 w-5 text-yoel-gold" />
                   </div>
-                  <span className="text-xl font-bold gradient-text-red">{xp.toLocaleString()}</span>
+                  <span className="text-xl font-bold gradient-text-primary">{xp.toLocaleString()}</span>
                   <span className="text-[10px] text-muted-foreground font-medium">Total XP</span>
                 </CardContent>
               </Card>
@@ -193,7 +193,7 @@ export default function LevelsPage() {
           {/* ─── Level Roadmap ────────────────────────────────────────── */}
           <motion.div variants={itemVariants}>
             <div className="flex items-center gap-2 mb-4">
-              <Map className="h-5 w-5 text-yoel-red" />
+              <Map className="h-5 w-5 text-yoel-primary" />
               <h2 className="text-lg font-semibold">Carte des niveaux</h2>
             </div>
           </motion.div>
@@ -330,7 +330,7 @@ export default function LevelsPage() {
                         status === 'locked'
                           ? 'opacity-60 cursor-not-allowed'
                           : 'glass'
-                      } ${isActive ? 'ring-2 ring-yoel-red/40' : ''}`}
+                      } ${isActive ? 'ring-2 ring-yoel-primary/40' : ''}`}
                       onClick={() => handleLevelClick(lvl, originalIndex)}
                     >
                       <CardContent className="p-4">
@@ -353,7 +353,7 @@ export default function LevelsPage() {
                                   status === 'completed'
                                     ? 'bg-yoel-green/15 text-yoel-green'
                                     : status === 'active'
-                                    ? 'bg-yoel-red/15 text-yoel-red'
+                                    ? 'bg-yoel-primary/15 text-yoel-primary'
                                     : status === 'locked'
                                     ? 'bg-muted/50 text-muted-foreground'
                                     : 'bg-yoel-blue/15 text-yoel-blue'
@@ -397,7 +397,7 @@ export default function LevelsPage() {
                                 size="sm"
                                 className={`rounded-full text-xs ${
                                   status === 'active'
-                                    ? 'bg-yoel-red hover:bg-yoel-red-dark text-white'
+                                    ? 'bg-yoel-primary hover:bg-yoel-primary-dark text-white'
                                     : 'bg-yoel-blue hover:bg-yoel-blue-dark text-white'
                                 }`}
                                 onClick={(e) => {
@@ -421,11 +421,11 @@ export default function LevelsPage() {
 
           {/* ─── Journey Progress Summary ──────────────────────────────── */}
           <motion.div variants={itemVariants}>
-            <Card className="overflow-hidden border-0 bg-gradient-to-r from-yoel-red/5 via-transparent to-yoel-blue/5">
+            <Card className="overflow-hidden border-0 bg-gradient-to-r from-yoel-primary/5 via-transparent to-yoel-blue/5">
               <CardContent className="p-5">
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-yoel-red/15">
-                    <Trophy className="h-5 w-5 text-yoel-red" />
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-yoel-primary/15">
+                    <Trophy className="h-5 w-5 text-yoel-primary" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-sm">Progression globale</h3>
@@ -439,7 +439,7 @@ export default function LevelsPage() {
                     <span className="text-muted-foreground">
                       {totalCompletedUnits} sur {totalUnits} unités complétées
                     </span>
-                    <span className="font-semibold gradient-text-red">
+                    <span className="font-semibold gradient-text-primary">
                       {Math.round((totalCompletedUnits / totalUnits) * 100)}%
                     </span>
                   </div>
@@ -454,7 +454,7 @@ export default function LevelsPage() {
                     {LEVELS.filter((l) => l.progress >= 100).length} terminé{LEVELS.filter((l) => l.progress >= 100).length > 1 ? 's' : ''}
                   </span>
                   <span className="flex items-center gap-1">
-                    <span className="h-2 w-2 rounded-full bg-yoel-red" />
+                    <span className="h-2 w-2 rounded-full bg-yoel-primary" />
                     {LEVELS.filter((l) => l.progress > 0 && l.progress < 100).length} en cours
                   </span>
                   <span className="flex items-center gap-1">
@@ -497,7 +497,7 @@ function LevelCard({
             : isActive
             ? 'bg-gradient-to-br from-card to-card shadow-lg'
             : 'glass hover:shadow-md'
-        } ${isActive ? 'ring-2 ring-yoel-red/50' : ''}`}
+        } ${isActive ? 'ring-2 ring-yoel-primary/50' : ''}`}
         onClick={status !== 'locked' ? onClick : undefined}
       >
         {/* Glow effect for active level */}
@@ -532,7 +532,7 @@ function LevelCard({
                 status === 'completed'
                   ? 'bg-yoel-green/15 text-yoel-green'
                   : status === 'active'
-                  ? 'bg-yoel-red/15 text-yoel-red'
+                  ? 'bg-yoel-primary/15 text-yoel-primary'
                   : 'bg-muted/50 text-muted-foreground'
               }`}
             >
@@ -578,7 +578,7 @@ function LevelCard({
               size="sm"
               className={`w-full rounded-full text-xs h-8 ${
                 status === 'active'
-                  ? 'bg-yoel-red hover:bg-yoel-red-dark text-white'
+                  ? 'bg-yoel-primary hover:bg-yoel-primary-dark text-white'
                   : 'bg-yoel-blue hover:bg-yoel-blue-dark text-white'
               }`}
               onClick={(e) => {
