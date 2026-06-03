@@ -3,6 +3,7 @@ import { A2_L26, A2_L27, A2_L28, A2_L29, A2_L30, A2_L31, A2_L32, A2_L33, A2_L34,
 import { B1_L1, B1_L2, B1_L3, B1_L4, B1_L5, B1_L6, B1_L7, B1_L8, B1_L9, B1_L10, B1_L11, B1_L12, B1_L13, B1_L14, B1_L15, B1_L16, B1_L17, B1_L18, B1_L19, B1_L20 } from './b1-lesson-content-units1-4'
 import { B1_L21, B1_L22, B1_L23, B1_L24, B1_L25, B1_L26, B1_L27, B1_L28, B1_L29, B1_L30, B1_L31, B1_L32, B1_L33, B1_L34, B1_L35, B1_L36, B1_L37, B1_L38, B1_L39, B1_L40 } from './b1-lesson-content-units5-8'
 import { B1_L41, B1_L42, B1_L43, B1_L44, B1_L45, B1_L46, B1_L47, B1_L48, B1_L49, B1_L50, B1_L51, B1_L52, B1_L53, B1_L54, B1_L55, B1_L56, B1_L57, B1_L58, B1_L59, B1_L60 } from './b1-lesson-content-units9-12'
+import { B2_L1, B2_L2, B2_L3, B2_L4, B2_L5 } from './b2-unit1-content'
 import { C2_L1, C2_L2, C2_L3, C2_L4, C2_L5 } from './c2-unit1-content'
 import { C2_L6, C2_L7, C2_L8, C2_L9, C2_L10 } from './c2-unit2-content'
 import { C2_L11, C2_L12, C2_L13, C2_L14, C2_L15 } from './c2-unit3-content'
@@ -1874,6 +1875,14 @@ const LESSON_CONTENT_MAP: Record<string, LessonContent> = {
   'b1-l58': B1_L58,
   'b1-l59': B1_L59,
   'b1-l60': B1_L60,
+
+  // ─── B2 Upper Intermediate ─────────────────────────────────────────────
+  // B2 Unit 1: Professional Communication
+  'b2-l1': B2_L1,
+  'b2-l2': B2_L2,
+  'b2-l3': B2_L3,
+  'b2-l4': B2_L4,
+  'b2-l5': B2_L5,
 
   // ─── C2 Mastery ────────────────────────────────────────────────────────
   // C2 Unit 1: Native-level Expressions
