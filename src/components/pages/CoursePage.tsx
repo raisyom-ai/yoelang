@@ -74,63 +74,124 @@ interface LessonStep {
 }
 
 function getLessonSteps(lessonType: string): LessonStep[] {
+  // Enhanced lesson steps — each vocab word & pronunciation item gets its own step
+  // Grammar is split into explanation + examples
+  // Conversation is split into 2 parts for better pacing
   // All lesson types end with a quiz step
   switch (lessonType) {
     case 'vocabulary':
       return [
-        { type: 'vocab', title: 'Vocabulaire' },
-        { type: 'vocab', title: 'Vocabulaire' },
-        { type: 'vocab', title: 'Vocabulaire' },
-        { type: 'vocab', title: 'Vocabulaire' },
-        { type: 'grammar', title: 'Grammaire' },
-        { type: 'conversation', title: 'Conversation' },
-        { type: 'pronunciation', title: 'Prononciation' },
-        { type: 'pronunciation', title: 'Prononciation' },
+        // 5 vocab cards (one per word)
+        { type: 'vocab', title: 'Mot 1/5' },
+        { type: 'vocab', title: 'Mot 2/5' },
+        { type: 'vocab', title: 'Mot 3/5' },
+        { type: 'vocab', title: 'Mot 4/5' },
+        { type: 'vocab', title: 'Mot 5/5' },
+        // Grammar: explanation then examples
+        { type: 'grammar', title: 'Grammaire — Explication' },
+        { type: 'grammar', title: 'Grammaire — Exemples' },
+        // Conversation in 2 parts
+        { type: 'conversation', title: 'Conversation (1/2)' },
+        { type: 'conversation', title: 'Conversation (2/2)' },
+        // 4 pronunciation items (one per item)
+        { type: 'pronunciation', title: 'Prononciation 1/4' },
+        { type: 'pronunciation', title: 'Prononciation 2/4' },
+        { type: 'pronunciation', title: 'Prononciation 3/4' },
+        { type: 'pronunciation', title: 'Prononciation 4/4' },
+        // Review & Quiz
+        { type: 'vocab', title: 'Révision vocabulaire' },
         { type: 'quiz', title: 'Quiz' },
       ]
     case 'grammar':
       return [
-        { type: 'grammar', title: 'Grammaire' },
-        { type: 'grammar', title: 'Grammaire' },
-        { type: 'vocab', title: 'Vocabulaire' },
-        { type: 'vocab', title: 'Vocabulaire' },
-        { type: 'conversation', title: 'Conversation' },
-        { type: 'pronunciation', title: 'Prononciation' },
-        { type: 'pronunciation', title: 'Prononciation' },
+        // Grammar: explanation then examples
+        { type: 'grammar', title: 'Grammaire — Explication' },
+        { type: 'grammar', title: 'Grammaire — Exemples' },
+        // 5 vocab cards (one per word)
+        { type: 'vocab', title: 'Mot 1/5' },
+        { type: 'vocab', title: 'Mot 2/5' },
+        { type: 'vocab', title: 'Mot 3/5' },
+        { type: 'vocab', title: 'Mot 4/5' },
+        { type: 'vocab', title: 'Mot 5/5' },
+        // Conversation in 2 parts
+        { type: 'conversation', title: 'Conversation (1/2)' },
+        { type: 'conversation', title: 'Conversation (2/2)' },
+        // 4 pronunciation items
+        { type: 'pronunciation', title: 'Prononciation 1/4' },
+        { type: 'pronunciation', title: 'Prononciation 2/4' },
+        { type: 'pronunciation', title: 'Prononciation 3/4' },
+        { type: 'pronunciation', title: 'Prononciation 4/4' },
+        // Review & Quiz
+        { type: 'grammar', title: 'Révision grammaire' },
         { type: 'quiz', title: 'Quiz' },
       ]
     case 'conversation':
       return [
-        { type: 'conversation', title: 'Conversation' },
-        { type: 'conversation', title: 'Conversation' },
-        { type: 'vocab', title: 'Vocabulaire' },
-        { type: 'vocab', title: 'Vocabulaire' },
-        { type: 'grammar', title: 'Grammaire' },
-        { type: 'pronunciation', title: 'Prononciation' },
-        { type: 'pronunciation', title: 'Prononciation' },
+        // Conversation in 2 parts
+        { type: 'conversation', title: 'Conversation (1/2)' },
+        { type: 'conversation', title: 'Conversation (2/2)' },
+        // 5 vocab cards (one per word)
+        { type: 'vocab', title: 'Mot 1/5' },
+        { type: 'vocab', title: 'Mot 2/5' },
+        { type: 'vocab', title: 'Mot 3/5' },
+        { type: 'vocab', title: 'Mot 4/5' },
+        { type: 'vocab', title: 'Mot 5/5' },
+        // Grammar: explanation then examples
+        { type: 'grammar', title: 'Grammaire — Explication' },
+        { type: 'grammar', title: 'Grammaire — Exemples' },
+        // 4 pronunciation items
+        { type: 'pronunciation', title: 'Prononciation 1/4' },
+        { type: 'pronunciation', title: 'Prononciation 2/4' },
+        { type: 'pronunciation', title: 'Prononciation 3/4' },
+        { type: 'pronunciation', title: 'Prononciation 4/4' },
+        // Review & Quiz
+        { type: 'conversation', title: 'Révision conversation' },
         { type: 'quiz', title: 'Quiz' },
       ]
     case 'pronunciation':
       return [
-        { type: 'pronunciation', title: 'Prononciation' },
-        { type: 'pronunciation', title: 'Prononciation' },
-        { type: 'pronunciation', title: 'Prononciation' },
-        { type: 'vocab', title: 'Vocabulaire' },
-        { type: 'vocab', title: 'Vocabulaire' },
-        { type: 'grammar', title: 'Grammaire' },
-        { type: 'conversation', title: 'Conversation' },
+        // 4 pronunciation items (one per item)
+        { type: 'pronunciation', title: 'Prononciation 1/4' },
+        { type: 'pronunciation', title: 'Prononciation 2/4' },
+        { type: 'pronunciation', title: 'Prononciation 3/4' },
+        { type: 'pronunciation', title: 'Prononciation 4/4' },
+        // 5 vocab cards (one per word)
+        { type: 'vocab', title: 'Mot 1/5' },
+        { type: 'vocab', title: 'Mot 2/5' },
+        { type: 'vocab', title: 'Mot 3/5' },
+        { type: 'vocab', title: 'Mot 4/5' },
+        { type: 'vocab', title: 'Mot 5/5' },
+        // Grammar: explanation then examples
+        { type: 'grammar', title: 'Grammaire — Explication' },
+        { type: 'grammar', title: 'Grammaire — Exemples' },
+        // Conversation in 2 parts
+        { type: 'conversation', title: 'Conversation (1/2)' },
+        { type: 'conversation', title: 'Conversation (2/2)' },
+        // Review & Quiz
+        { type: 'pronunciation', title: 'Révision prononciation' },
         { type: 'quiz', title: 'Quiz' },
       ]
     default:
       return [
-        { type: 'vocab', title: 'Vocabulaire' },
-        { type: 'vocab', title: 'Vocabulaire' },
-        { type: 'vocab', title: 'Vocabulaire' },
-        { type: 'vocab', title: 'Vocabulaire' },
-        { type: 'grammar', title: 'Grammaire' },
-        { type: 'conversation', title: 'Conversation' },
-        { type: 'pronunciation', title: 'Prononciation' },
-        { type: 'pronunciation', title: 'Prononciation' },
+        // 5 vocab cards (one per word)
+        { type: 'vocab', title: 'Mot 1/5' },
+        { type: 'vocab', title: 'Mot 2/5' },
+        { type: 'vocab', title: 'Mot 3/5' },
+        { type: 'vocab', title: 'Mot 4/5' },
+        { type: 'vocab', title: 'Mot 5/5' },
+        // Grammar: explanation then examples
+        { type: 'grammar', title: 'Grammaire — Explication' },
+        { type: 'grammar', title: 'Grammaire — Exemples' },
+        // Conversation in 2 parts
+        { type: 'conversation', title: 'Conversation (1/2)' },
+        { type: 'conversation', title: 'Conversation (2/2)' },
+        // 4 pronunciation items
+        { type: 'pronunciation', title: 'Prononciation 1/4' },
+        { type: 'pronunciation', title: 'Prononciation 2/4' },
+        { type: 'pronunciation', title: 'Prononciation 3/4' },
+        { type: 'pronunciation', title: 'Prononciation 4/4' },
+        // Review & Quiz
+        { type: 'vocab', title: 'Révision vocabulaire' },
         { type: 'quiz', title: 'Quiz' },
       ]
   }
@@ -347,17 +408,19 @@ export default function CoursePage() {
     if (item) speakText(item.word, 'en-US', 0.7)
   }
 
-  // Vocab index mapping
+  // Vocab index mapping — use modulo to wrap around (e.g., review step cycles back)
   const vocabStepIndices = LESSON_STEPS
     .map((s, i) => (s.type === 'vocab' ? i : -1))
     .filter((i) => i >= 0)
-  const currentVocabIndex = vocabStepIndices.indexOf(currentStep)
+  const rawVocabIndex = vocabStepIndices.indexOf(currentStep)
+  const currentVocabIndex = rawVocabIndex >= 0 ? rawVocabIndex % VOCAB_WORDS.length : 0
 
-  // Pronunciation index mapping
+  // Pronunciation index mapping — use modulo to wrap around
   const pronStepIndices = LESSON_STEPS
     .map((s, i) => (s.type === 'pronunciation' ? i : -1))
     .filter((i) => i >= 0)
-  const currentPronIndex = pronStepIndices.indexOf(currentStep)
+  const rawPronIndex = pronStepIndices.indexOf(currentStep)
+  const currentPronIndex = rawPronIndex >= 0 ? rawPronIndex % PRONUNCIATION_ITEMS.length : 0
 
   // ─── RENDER: Lesson List View ───────────────────────────────────────────
   if (viewMode === 'list') {
@@ -629,7 +692,7 @@ export default function CoursePage() {
                   {selectedLessonData?.title ?? lesson?.title ?? 'Leçon'}
                 </h1>
                 <p className="text-[10px] text-muted-foreground">
-                  Étape {currentStep + 1}/{totalSteps}
+                  {currentStepData?.title ?? `Étape ${currentStep + 1}`} · {currentStep + 1}/{totalSteps}
                 </p>
               </div>
             </div>
