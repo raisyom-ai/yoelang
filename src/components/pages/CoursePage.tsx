@@ -66,17 +66,28 @@ const itemVariants = {
 
 // ─── Lesson Steps ────────────────────────────────────────────────────────────
 
-type StepType = 'vocab' | 'grammar' | 'conversation' | 'pronunciation' | 'quiz'
+type StepType = 'vocab' | 'grammar' | 'conversation' | 'pronunciation' | 'quiz' | 'vocab_match' | 'vocab_listening' | 'grammar_fill' | 'conversation_reorder' | 'sentence_builder' | 'mixed_review'
 
 interface LessonStep {
   type: StepType
   title: string
 }
 
+// Interactive practice steps shared across all lesson types
+const INTERACTIVE_STEPS: LessonStep[] = [
+  { type: 'vocab_match', title: '🎯 Association' },
+  { type: 'vocab_listening', title: '👂 Écoute & Choix' },
+  { type: 'grammar_fill', title: '✍️ Grammaire pratique' },
+  { type: 'conversation_reorder', title: '🔄 Remettre en ordre' },
+  { type: 'sentence_builder', title: '🧩 Construire une phrase' },
+  { type: 'mixed_review', title: '🏆 Révision mixte' },
+]
+
 function getLessonSteps(lessonType: string): LessonStep[] {
   // Enhanced lesson steps — each vocab word & pronunciation item gets its own step
   // Grammar is split into explanation + examples
   // Conversation is split into 2 parts for better pacing
+  // NEW: 6 interactive practice steps added before the quiz
   // All lesson types end with a quiz step
   switch (lessonType) {
     case 'vocabulary':
@@ -98,8 +109,11 @@ function getLessonSteps(lessonType: string): LessonStep[] {
         { type: 'pronunciation', title: 'Prononciation 2/4' },
         { type: 'pronunciation', title: 'Prononciation 3/4' },
         { type: 'pronunciation', title: 'Prononciation 4/4' },
-        // Review & Quiz
+        // Review
         { type: 'vocab', title: 'Révision vocabulaire' },
+        // Interactive practice
+        ...INTERACTIVE_STEPS,
+        // Quiz
         { type: 'quiz', title: 'Quiz' },
       ]
     case 'grammar':
@@ -121,8 +135,11 @@ function getLessonSteps(lessonType: string): LessonStep[] {
         { type: 'pronunciation', title: 'Prononciation 2/4' },
         { type: 'pronunciation', title: 'Prononciation 3/4' },
         { type: 'pronunciation', title: 'Prononciation 4/4' },
-        // Review & Quiz
+        // Review
         { type: 'grammar', title: 'Révision grammaire' },
+        // Interactive practice
+        ...INTERACTIVE_STEPS,
+        // Quiz
         { type: 'quiz', title: 'Quiz' },
       ]
     case 'conversation':
@@ -144,8 +161,11 @@ function getLessonSteps(lessonType: string): LessonStep[] {
         { type: 'pronunciation', title: 'Prononciation 2/4' },
         { type: 'pronunciation', title: 'Prononciation 3/4' },
         { type: 'pronunciation', title: 'Prononciation 4/4' },
-        // Review & Quiz
+        // Review
         { type: 'conversation', title: 'Révision conversation' },
+        // Interactive practice
+        ...INTERACTIVE_STEPS,
+        // Quiz
         { type: 'quiz', title: 'Quiz' },
       ]
     case 'pronunciation':
@@ -167,8 +187,11 @@ function getLessonSteps(lessonType: string): LessonStep[] {
         // Conversation in 2 parts
         { type: 'conversation', title: 'Conversation (1/2)' },
         { type: 'conversation', title: 'Conversation (2/2)' },
-        // Review & Quiz
+        // Review
         { type: 'pronunciation', title: 'Révision prononciation' },
+        // Interactive practice
+        ...INTERACTIVE_STEPS,
+        // Quiz
         { type: 'quiz', title: 'Quiz' },
       ]
     default:
@@ -190,8 +213,11 @@ function getLessonSteps(lessonType: string): LessonStep[] {
         { type: 'pronunciation', title: 'Prononciation 2/4' },
         { type: 'pronunciation', title: 'Prononciation 3/4' },
         { type: 'pronunciation', title: 'Prononciation 4/4' },
-        // Review & Quiz
+        // Review
         { type: 'vocab', title: 'Révision vocabulaire' },
+        // Interactive practice
+        ...INTERACTIVE_STEPS,
+        // Quiz
         { type: 'quiz', title: 'Quiz' },
       ]
   }
@@ -765,6 +791,24 @@ export default function CoursePage() {
                     onComplete={goNext}
                     lessonTitle={selectedLessonData?.title ?? lesson?.title ?? 'Prononciation'}
                   />
+                )}
+                {currentStepData?.type === 'vocab_match' && VOCAB_WORDS.length > 0 && (
+                  <VocabMatchStep vocab={VOCAB_WORDS} onComplete={goNext} />
+                )}
+                {currentStepData?.type === 'vocab_listening' && VOCAB_WORDS.length > 0 && (
+                  <VocabListeningStep vocab={VOCAB_WORDS} onComplete={goNext} />
+                )}
+                {currentStepData?.type === 'grammar_fill' && GRAMMAR_RULE && (
+                  <GrammarFillStep grammar={GRAMMAR_RULE} onComplete={goNext} />
+                )}
+                {currentStepData?.type === 'conversation_reorder' && DIALOGUE.length > 0 && (
+                  <ConversationReorderStep dialogue={DIALOGUE} conversationTitle={lessonContent.conversationTitle} onComplete={goNext} />
+                )}
+                {currentStepData?.type === 'sentence_builder' && VOCAB_WORDS.length > 0 && (
+                  <SentenceBuilderStep vocab={VOCAB_WORDS} onComplete={goNext} />
+                )}
+                {currentStepData?.type === 'mixed_review' && VOCAB_WORDS.length > 0 && GRAMMAR_RULE && (
+                  <MixedReviewStep vocab={VOCAB_WORDS} grammar={GRAMMAR_RULE} pronunciation={PRONUNCIATION_ITEMS} onComplete={goNext} />
                 )}
                 {currentStepData?.type === 'quiz' && (
                   <LessonQuizStep
@@ -1685,6 +1729,997 @@ function PronunciationStep({
               <p className="text-center text-xs text-muted-foreground">
                 Essai{attemptCount > 1 ? 's' : ''} : {attemptCount}
               </p>
+            )}
+          </CardContent>
+        </Card>
+      </motion.div>
+    </motion.div>
+  )
+}
+
+// ─── Vocab Match Step (Association) ─────────────────────────────────────────
+
+function VocabMatchStep({
+  vocab,
+  onComplete,
+}: {
+  vocab: VocabWord[]
+  onComplete: () => void
+}) {
+  const [selectedFrench, setSelectedFrench] = useState<number | null>(null)
+  const [matched, setMatched] = useState<Set<number>>(new Set())
+  const [wrongPair, setWrongPair] = useState<{ fr: number; en: number } | null>(null)
+
+  // Shuffle English words for display
+  const shuffledEnIndices = useMemo(() => {
+    const indices = vocab.map((_, i) => i)
+    for (let i = indices.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1))
+      ;[indices[i], indices[j]] = [indices[j], indices[i]]
+    }
+    return indices
+  }, [vocab])
+
+  const handleFrenchClick = (frIdx: number) => {
+    if (matched.has(frIdx)) return
+    setSelectedFrench(frIdx)
+    setWrongPair(null)
+  }
+
+  const handleEnglishClick = (enIdx: number) => {
+    if (selectedFrench === null) return
+    if (matched.has(enIdx)) return
+    if (selectedFrench === enIdx) {
+      // Correct match!
+      const newMatched = new Set(matched)
+      newMatched.add(enIdx)
+      setMatched(newMatched)
+      setSelectedFrench(null)
+      setWrongPair(null)
+      if (newMatched.size === vocab.length) {
+        setTimeout(onComplete, 800)
+      }
+    } else {
+      // Wrong match
+      setWrongPair({ fr: selectedFrench, en: enIdx })
+      setTimeout(() => {
+        setWrongPair(null)
+        setSelectedFrench(null)
+      }, 600)
+    }
+  }
+
+  return (
+    <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-4">
+      <motion.div variants={itemVariants} className="text-center">
+        <Badge className="bg-yoel-red/15 text-yoel-red border-0 text-xs mb-2">
+          🎯 Association
+        </Badge>
+        <h2 className="text-2xl font-bold">Associez les mots</h2>
+        <p className="text-sm text-muted-foreground mt-1">
+          Touchez un mot français, puis sa traduction anglaise
+        </p>
+      </motion.div>
+
+      <motion.div variants={itemVariants}>
+        <Card className="border-0 shadow-lg overflow-hidden">
+          <div className="h-2 bg-gradient-to-r from-yoel-red to-yoel-gold" />
+          <CardContent className="p-4 space-y-4">
+            <div className="grid grid-cols-2 gap-3">
+              {/* French column */}
+              <div className="space-y-2">
+                <p className="text-xs font-semibold text-center text-muted-foreground uppercase">🇫🇷 Français</p>
+                {vocab.map((word, idx) => {
+                  const isMatched = matched.has(idx)
+                  const isSelected = selectedFrench === idx
+                  const isWrong = wrongPair?.fr === idx
+                  return (
+                    <motion.button
+                      key={`fr-${idx}`}
+                      whileTap={!isMatched ? { scale: 0.95 } : undefined}
+                      onClick={() => handleFrenchClick(idx)}
+                      disabled={isMatched}
+                      className={`w-full p-3 rounded-xl text-sm font-medium transition-all border-2 ${
+                        isMatched
+                          ? 'bg-yoel-green/15 border-yoel-green/40 text-yoel-green line-through'
+                          : isWrong
+                          ? 'bg-destructive/10 border-destructive/40 text-destructive'
+                          : isSelected
+                          ? 'bg-yoel-red/15 border-yoel-red/40 text-yoel-red ring-2 ring-yoel-red/20'
+                          : 'bg-background border-border hover:border-yoel-red/30 hover:bg-yoel-red/5'
+                      }`}
+                    >
+                      {word.french}
+                      {isMatched && <CheckCircle2 className="h-4 w-4 inline ml-2" />}
+                    </motion.button>
+                  )
+                })}
+              </div>
+
+              {/* English column */}
+              <div className="space-y-2">
+                <p className="text-xs font-semibold text-center text-muted-foreground uppercase">🇬🇧 English</p>
+                {shuffledEnIndices.map((enIdx) => {
+                  const word = vocab[enIdx]
+                  const isMatched = matched.has(enIdx)
+                  const isWrong = wrongPair?.en === enIdx
+                  return (
+                    <motion.button
+                      key={`en-${enIdx}`}
+                      whileTap={!isMatched ? { scale: 0.95 } : undefined}
+                      onClick={() => handleEnglishClick(enIdx)}
+                      disabled={isMatched || selectedFrench === null}
+                      className={`w-full p-3 rounded-xl text-sm font-medium transition-all border-2 ${
+                        isMatched
+                          ? 'bg-yoel-green/15 border-yoel-green/40 text-yoel-green line-through'
+                          : isWrong
+                          ? 'bg-destructive/10 border-destructive/40 text-destructive'
+                          : selectedFrench !== null
+                          ? 'bg-background border-border hover:border-yoel-blue/30 hover:bg-yoel-blue/5'
+                          : 'bg-muted/30 border-transparent text-muted-foreground'
+                      }`}
+                    >
+                      {word.english}
+                      {isMatched && <CheckCircle2 className="h-4 w-4 inline ml-2" />}
+                    </motion.button>
+                  )
+                })}
+              </div>
+            </div>
+
+            {matched.size === vocab.length && (
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-center">
+                <Badge className="bg-yoel-green/15 text-yoel-green border-0">
+                  <CheckCircle2 className="h-3 w-3 mr-1" />
+                  Bravo ! Toutes les paires trouvées !
+                </Badge>
+              </motion.div>
+            )}
+          </CardContent>
+        </Card>
+      </motion.div>
+    </motion.div>
+  )
+}
+
+// ─── Vocab Listening Step (Écoute & Choix) ──────────────────────────────────
+
+function VocabListeningStep({
+  vocab,
+  onComplete,
+}: {
+  vocab: VocabWord[]
+  onComplete: () => void
+}) {
+  const [round, setRound] = useState(0)
+  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null)
+  const [isAnswered, setIsAnswered] = useState(false)
+  const [score, setScore] = useState(0)
+  const totalRounds = Math.min(3, vocab.length)
+
+  // Pick words for each round
+  const roundWords = useMemo(() => {
+    const shuffled = [...vocab].sort(() => Math.random() - 0.5)
+    return shuffled.slice(0, totalRounds)
+  }, [vocab, totalRounds])
+
+  const currentWord = roundWords[round]
+  const options = useMemo(() => {
+    if (!currentWord) return []
+    const others = vocab.filter(w => w.english !== currentWord.english).sort(() => Math.random() - 0.5).slice(0, 3)
+    while (others.length < 3) others.push({ english: '---', french: '---', phonetic: '', example: '', exampleTranslation: '' })
+    const all = [currentWord, ...others].sort(() => Math.random() - 0.5)
+    return all
+  }, [round, vocab.length])
+
+  const handleAnswer = (idx: number) => {
+    if (isAnswered) return
+    setSelectedAnswer(idx)
+    setIsAnswered(true)
+    if (options[idx]?.english === currentWord.english) {
+      setScore(prev => prev + 1)
+    }
+  }
+
+  const handleNext = () => {
+    if (round < totalRounds - 1) {
+      setRound(prev => prev + 1)
+      setSelectedAnswer(null)
+      setIsAnswered(false)
+    } else {
+      onComplete()
+    }
+  }
+
+  const handlePlayAudio = () => {
+    if (currentWord) speakWord(currentWord.english, { rate: 0.8 })
+  }
+
+  if (!currentWord) return null
+
+  return (
+    <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-4">
+      <motion.div variants={itemVariants} className="text-center">
+        <Badge className="bg-yoel-gold/15 text-yoel-gold border-0 text-xs mb-2">
+          👂 Écoute & Choix
+        </Badge>
+        <h2 className="text-2xl font-bold">Écoutez et choisissez</h2>
+        <p className="text-sm text-muted-foreground mt-1">
+          Écoutez le mot en anglais et choisissez la bonne traduction
+        </p>
+      </motion.div>
+
+      <motion.div variants={itemVariants}>
+        <Card className="border-0 shadow-lg overflow-hidden">
+          <div className="h-2 bg-gradient-to-r from-yoel-gold to-amber-400" />
+          <CardContent className="p-6 space-y-5">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-muted-foreground">
+                Mot {round + 1}/{totalRounds}
+              </span>
+              <div className="flex items-center gap-1">
+                {Array.from({ length: totalRounds }).map((_, i) => (
+                  <div key={i} className={`h-2 w-2 rounded-full ${i < round ? 'bg-yoel-green' : i === round ? 'bg-yoel-gold' : 'bg-muted-foreground/20'}`} />
+                ))}
+              </div>
+            </div>
+
+            <div className="flex justify-center">
+              <Button
+                variant="outline"
+                size="lg"
+                className="rounded-full h-16 w-16"
+                onClick={handlePlayAudio}
+              >
+                <Volume2 className="h-8 w-8 text-yoel-gold" />
+              </Button>
+            </div>
+            <p className="text-center text-sm text-muted-foreground">Appuyez pour écouter</p>
+
+            <div className="grid grid-cols-2 gap-3">
+              {options.map((opt, idx) => {
+                const isCorrect = opt.english === currentWord.english
+                const isSelected = selectedAnswer === idx
+                let cls = 'relative text-sm py-3 px-4 rounded-xl border-2 transition-all font-medium text-center'
+                if (isAnswered) {
+                  if (isCorrect) cls += ' bg-yoel-green/15 border-yoel-green/50 text-yoel-green'
+                  else if (isSelected && !isCorrect) cls += ' bg-destructive/10 border-destructive/50 text-destructive'
+                  else cls += ' bg-muted/30 border-transparent text-muted-foreground'
+                } else {
+                  cls += ' bg-background border-border hover:border-yoel-gold/40 hover:bg-yoel-gold/5 cursor-pointer active:scale-[0.98]'
+                }
+                return (
+                  <motion.button key={idx} whileTap={!isAnswered ? { scale: 0.97 } : undefined} onClick={() => handleAnswer(idx)} disabled={isAnswered} className={cls}>
+                    {opt.french}
+                  </motion.button>
+                )
+              })}
+            </div>
+
+            {isAnswered && (
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex justify-center">
+                <Button onClick={handleNext} className="bg-yoel-red hover:bg-yoel-red-dark text-white rounded-xl">
+                  {round < totalRounds - 1 ? 'Mot suivant' : 'Terminé'}
+                  <ChevronRight className="h-4 w-4 ml-1" />
+                </Button>
+              </motion.div>
+            )}
+          </CardContent>
+        </Card>
+      </motion.div>
+    </motion.div>
+  )
+}
+
+// ─── Grammar Fill Step (Grammaire pratique) ──────────────────────────────────
+
+function GrammarFillStep({
+  grammar,
+  onComplete,
+}: {
+  grammar: GrammarRule
+  onComplete: () => void
+}) {
+  const [currentQ, setCurrentQ] = useState(0)
+  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null)
+  const [isAnswered, setIsAnswered] = useState(false)
+  const [score, setScore] = useState(0)
+
+  // Generate fill-in-the-blank questions from grammar examples
+  const questions = useMemo(() => {
+    const qs: { sentence: string; blank: string; options: string[]; correctIdx: number }[] = []
+    const correctExamples = grammar.examples.filter(e => e.isCorrect)
+    for (const ex of correctExamples.slice(0, 3)) {
+      const words = ex.sentence.split(' ')
+      if (words.length < 3) continue
+      // Pick a content word to blank out (not a short word)
+      const contentWordIndices = words.map((w, i) => ({ word: w, idx: i }))
+        .filter(({ word }) => word.length > 2)
+      if (contentWordIndices.length === 0) continue
+      const target = contentWordIndices[Math.floor(Math.random() * contentWordIndices.length)]
+      const blanked = words.map((w, i) => i === target.idx ? '___' : w).join(' ')
+
+      // Generate wrong options
+      const wrongOptions = grammar.examples
+        .filter(e => e.isCorrect)
+        .map(e => e.sentence.split(' '))
+        .flat()
+        .filter(w => w.length > 2 && w !== target.word)
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 3)
+
+      const allOptions = [target.word, ...wrongOptions].sort(() => Math.random() - 0.5)
+      qs.push({
+        sentence: blanked,
+        blank: target.word,
+        options: allOptions,
+        correctIdx: allOptions.indexOf(target.word),
+      })
+    }
+    // Fallback: if we couldn't generate enough questions
+    if (qs.length === 0 && grammar.commonMistakes.length > 0) {
+      const mistake = grammar.commonMistakes[0]
+      qs.push({
+        sentence: mistake.wrong + ' → ___',
+        blank: mistake.correct.split(' ').pop() || mistake.correct,
+        options: [mistake.correct, mistake.wrong, 'is', 'are'].sort(() => Math.random() - 0.5),
+        correctIdx: 0,
+      })
+    }
+    return qs.slice(0, 3)
+  }, [grammar])
+
+  const currentQuestion = questions[currentQ]
+  if (!currentQuestion) {
+    // Fallback if no questions could be generated
+    return (
+      <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-4">
+        <Card className="border-0 shadow-lg">
+          <CardContent className="p-6 text-center space-y-4">
+            <h2 className="text-xl font-bold">Grammaire pratique</h2>
+            <p className="text-sm text-muted-foreground">Pas assez de données pour cet exercice. Passez à l&apos;étape suivante.</p>
+            <Button onClick={onComplete} className="bg-yoel-red hover:bg-yoel-red-dark text-white rounded-xl">
+              Suivant <ChevronRight className="h-4 w-4 ml-1" />
+            </Button>
+          </CardContent>
+        </Card>
+      </motion.div>
+    )
+  }
+
+  const handleAnswer = (idx: number) => {
+    if (isAnswered) return
+    setSelectedAnswer(idx)
+    setIsAnswered(true)
+    if (idx === currentQuestion.correctIdx) setScore(prev => prev + 1)
+  }
+
+  const handleNext = () => {
+    if (currentQ < questions.length - 1) {
+      setCurrentQ(prev => prev + 1)
+      setSelectedAnswer(null)
+      setIsAnswered(false)
+    } else {
+      onComplete()
+    }
+  }
+
+  return (
+    <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-4">
+      <motion.div variants={itemVariants} className="text-center">
+        <Badge className="bg-yoel-blue/15 text-yoel-blue border-0 text-xs mb-2">
+          ✍️ Grammaire pratique
+        </Badge>
+        <h2 className="text-2xl font-bold">Complétez la phrase</h2>
+        <p className="text-sm text-muted-foreground mt-1">
+          Choisissez le mot manquant
+        </p>
+      </motion.div>
+
+      <motion.div variants={itemVariants}>
+        <Card className="border-0 shadow-lg overflow-hidden">
+          <div className="h-2 bg-gradient-to-r from-yoel-blue to-cyan-500" />
+          <CardContent className="p-6 space-y-5">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-muted-foreground">
+                Question {currentQ + 1}/{questions.length}
+              </span>
+              <div className="flex items-center gap-1 text-sm font-semibold text-yoel-green">
+                <CheckCircle2 className="h-4 w-4" /> {score}/{questions.length}
+              </div>
+            </div>
+
+            <div className="rounded-xl bg-yoel-blue/10 p-4">
+              <p className="text-lg font-semibold text-center leading-relaxed">{currentQuestion.sentence}</p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              {currentQuestion.options.map((opt, idx) => {
+                const isCorrect = idx === currentQuestion.correctIdx
+                const isSelected = selectedAnswer === idx
+                let cls = 'text-sm py-3 px-4 rounded-xl border-2 transition-all font-medium text-center'
+                if (isAnswered) {
+                  if (isCorrect) cls += ' bg-yoel-green/15 border-yoel-green/50 text-yoel-green'
+                  else if (isSelected && !isCorrect) cls += ' bg-destructive/10 border-destructive/50 text-destructive'
+                  else cls += ' bg-muted/30 border-transparent text-muted-foreground'
+                } else {
+                  cls += ' bg-background border-border hover:border-yoel-blue/40 hover:bg-yoel-blue/5 cursor-pointer active:scale-[0.98]'
+                }
+                return (
+                  <motion.button key={idx} whileTap={!isAnswered ? { scale: 0.97 } : undefined} onClick={() => handleAnswer(idx)} disabled={isAnswered} className={cls}>
+                    {opt}
+                  </motion.button>
+                )
+              })}
+            </div>
+
+            {isAnswered && (
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex justify-center">
+                <Button onClick={handleNext} className="bg-yoel-red hover:bg-yoel-red-dark text-white rounded-xl">
+                  {currentQ < questions.length - 1 ? 'Question suivante' : 'Terminé'}
+                  <ChevronRight className="h-4 w-4 ml-1" />
+                </Button>
+              </motion.div>
+            )}
+          </CardContent>
+        </Card>
+      </motion.div>
+    </motion.div>
+  )
+}
+
+// ─── Conversation Reorder Step ──────────────────────────────────────────────
+
+function ConversationReorderStep({
+  dialogue,
+  conversationTitle,
+  onComplete,
+}: {
+  dialogue: DialogueLine[]
+  conversationTitle: string
+  onComplete: () => void
+}) {
+  // Use a subset of 4-6 lines for the exercise
+  const exerciseLines = useMemo(() => {
+    const subset = dialogue.slice(0, Math.min(6, dialogue.length))
+    return subset
+  }, [dialogue])
+
+  // Shuffle helper
+  const shuffleIndices = (count: number) => {
+    const indices = Array.from({ length: count }, (_, i) => i)
+    for (let i = indices.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1))
+      ;[indices[i], indices[j]] = [indices[j], indices[i]]
+    }
+    return indices
+  }
+
+  // Initialize available indices in shuffled order
+  const [orderedIndices, setOrderedIndices] = useState<number[]>([])
+  const [availableIndices, setAvailableIndices] = useState<number[]>(() => shuffleIndices(exerciseLines.length))
+  const [isComplete, setIsComplete] = useState(false)
+
+  const handleSelectAvailable = (idx: number) => {
+    if (isComplete) return
+    setAvailableIndices(prev => prev.filter(i => i !== idx))
+    const newOrdered = [...orderedIndices, idx]
+    setOrderedIndices(newOrdered)
+    // Check if complete
+    if (newOrdered.length === exerciseLines.length) {
+      const isCorrect = newOrdered.every((val, i) => val === i)
+      if (isCorrect) {
+        setIsComplete(true)
+        setTimeout(onComplete, 1000)
+      }
+    }
+  }
+
+  const handleRemoveOrdered = (position: number) => {
+    if (isComplete) return
+    const idx = orderedIndices[position]
+    setOrderedIndices(prev => prev.filter((_, i) => i !== position))
+    // Insert back in available at correct position
+    setAvailableIndices(prev => [...prev, idx].sort((a, b) => a - b))
+  }
+
+  const handleReset = () => {
+    setAvailableIndices(shuffleIndices(exerciseLines.length))
+    setOrderedIndices([])
+    setIsComplete(false)
+  }
+
+  const isWrongOrder = orderedIndices.length === exerciseLines.length && !isComplete
+
+  return (
+    <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-4">
+      <motion.div variants={itemVariants} className="text-center">
+        <Badge className="bg-yoel-green/15 text-yoel-green border-0 text-xs mb-2">
+          🔄 Remettre en ordre
+        </Badge>
+        <h2 className="text-2xl font-bold">{conversationTitle}</h2>
+        <p className="text-sm text-muted-foreground mt-1">
+          Remettez les répliques dans le bon ordre
+        </p>
+      </motion.div>
+
+      <motion.div variants={itemVariants}>
+        <Card className="border-0 shadow-lg overflow-hidden">
+          <div className="h-2 bg-gradient-to-r from-yoel-green to-emerald-400" />
+          <CardContent className="p-4 space-y-4">
+            {/* Ordered lines */}
+            <div className="space-y-2">
+              <p className="text-xs font-semibold text-muted-foreground uppercase">Votre ordre :</p>
+              {orderedIndices.length === 0 && (
+                <div className="rounded-xl border-2 border-dashed border-muted-foreground/20 p-6 text-center">
+                  <p className="text-sm text-muted-foreground">Touchez les répliques ci-dessous pour les ajouter</p>
+                </div>
+              )}
+              {orderedIndices.map((lineIdx, pos) => {
+                const line = exerciseLines[lineIdx]
+                const isSpeakerA = line.role === 'A'
+                return (
+                  <motion.button
+                    key={`ordered-${lineIdx}`}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => handleRemoveOrdered(pos)}
+                    disabled={isComplete}
+                    className={`w-full text-left rounded-xl p-3 transition-all border-2 flex items-start gap-3 ${
+                      isComplete
+                        ? 'bg-yoel-green/10 border-yoel-green/30'
+                        : isWrongOrder
+                        ? 'bg-destructive/5 border-destructive/20'
+                        : 'bg-yoel-green/5 border-yoel-green/20 hover:border-yoel-green/40'
+                    }`}
+                  >
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-yoel-green/20 text-xs font-bold text-yoel-green">
+                      {pos + 1}
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <span className={`text-[10px] font-bold ${isSpeakerA ? 'text-yoel-red' : 'text-yoel-blue'}`}>
+                        {line.speaker}
+                      </span>
+                      <p className="text-sm font-medium truncate">{line.text}</p>
+                    </div>
+                    {!isComplete && <XCircle className="h-4 w-4 text-muted-foreground shrink-0 mt-1" />}
+                  </motion.button>
+                )
+              })}
+            </div>
+
+            <Separator />
+
+            {/* Available lines to select */}
+            <div className="space-y-2">
+              <p className="text-xs font-semibold text-muted-foreground uppercase">Répliques disponibles :</p>
+              {availableIndices.map((lineIdx) => {
+                const line = exerciseLines[lineIdx]
+                const isSpeakerA = line.role === 'A'
+                return (
+                  <motion.button
+                    key={`available-${lineIdx}`}
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => handleSelectAvailable(lineIdx)}
+                    disabled={isComplete}
+                    className={`w-full text-left rounded-xl p-3 transition-all border-2 bg-background border-border hover:border-yoel-green/30 hover:bg-yoel-green/5 ${
+                      isComplete ? 'opacity-50' : ''
+                    }`}
+                  >
+                    <span className={`text-[10px] font-bold ${isSpeakerA ? 'text-yoel-red' : 'text-yoel-blue'}`}>
+                      {line.speaker}
+                    </span>
+                    <p className="text-sm font-medium">{line.text}</p>
+                  </motion.button>
+                )
+              })}
+            </div>
+
+            {/* Wrong order feedback */}
+            {isWrongOrder && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex justify-center gap-3">
+                <Button variant="outline" onClick={handleReset} className="rounded-xl">
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Réessayer
+                </Button>
+              </motion.div>
+            )}
+
+            {isComplete && (
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-center">
+                <Badge className="bg-yoel-green/15 text-yoel-green border-0">
+                  <CheckCircle2 className="h-3 w-3 mr-1" />
+                  Parfait ! Ordre correct !
+                </Badge>
+              </motion.div>
+            )}
+          </CardContent>
+        </Card>
+      </motion.div>
+    </motion.div>
+  )
+}
+
+// ─── Sentence Builder Step ──────────────────────────────────────────────────
+
+function SentenceBuilderStep({
+  vocab,
+  onComplete,
+}: {
+  vocab: VocabWord[]
+  onComplete: () => void
+}) {
+  const [round, setRound] = useState(0)
+  const [selectedTiles, setSelectedTiles] = useState<number[]>([])
+  const [availableTiles, setAvailableTiles] = useState<{ word: string; originalIdx: number }[]>([])
+  const [isCorrect, setIsCorrect] = useState<boolean | null>(null)
+
+  const totalRounds = Math.min(3, vocab.length)
+
+  // Pick example sentences for each round
+  const roundSentences = useMemo(() => {
+    const shuffled = [...vocab].sort(() => Math.random() - 0.5)
+    return shuffled.slice(0, totalRounds)
+  }, [vocab, totalRounds])
+
+  const currentSentence = roundSentences[round]
+
+  // Initialize tiles when round changes
+  useEffect(() => {
+    if (!currentSentence) return
+    const words = currentSentence.example.replace(/[.!?]/g, '').split(' ').filter(w => w.length > 0)
+    const tiles = words.map((word, i) => ({ word, originalIdx: i }))
+    // Shuffle tiles
+    for (let i = tiles.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1))
+      ;[tiles[i], tiles[j]] = [tiles[j], tiles[i]]
+    }
+    setAvailableTiles(tiles)
+    setSelectedTiles([])
+    setIsCorrect(null)
+  }, [round, currentSentence])
+
+  const handleSelectTile = (tileIdx: number) => {
+    if (isCorrect !== null) return
+    const tile = availableTiles[tileIdx]
+    setSelectedTiles(prev => [...prev, tile.originalIdx])
+    setAvailableTiles(prev => prev.filter((_, i) => i !== tileIdx))
+  }
+
+  const handleRemoveTile = (position: number) => {
+    if (isCorrect !== null) return
+    const originalIdx = selectedTiles[position]
+    setSelectedTiles(prev => prev.filter((_, i) => i !== position))
+    const word = currentSentence.example.replace(/[.!?]/g, '').split(' ')[originalIdx]
+    setAvailableTiles(prev => [...prev, { word, originalIdx }])
+  }
+
+  const handleCheck = () => {
+    if (!currentSentence) return
+    const originalWords = currentSentence.example.replace(/[.!?]/g, '').split(' ').filter(w => w.length > 0)
+    const userWords = selectedTiles.map(idx => originalWords[idx])
+    const correct = userWords.join(' ') === originalWords.join(' ')
+    setIsCorrect(correct)
+    if (correct) {
+      setTimeout(() => {
+        if (round < totalRounds - 1) {
+          setRound(prev => prev + 1)
+        } else {
+          onComplete()
+        }
+      }, 1200)
+    }
+  }
+
+  if (!currentSentence) return null
+
+  const originalWords = currentSentence.example.replace(/[.!?]/g, '').split(' ').filter(w => w.length > 0)
+
+  return (
+    <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-4">
+      <motion.div variants={itemVariants} className="text-center">
+        <Badge className="bg-yoel-red/15 text-yoel-red border-0 text-xs mb-2">
+          🧩 Construire une phrase
+        </Badge>
+        <h2 className="text-2xl font-bold">Formez la phrase</h2>
+        <p className="text-sm text-muted-foreground mt-1">
+          {currentSentence.exampleTranslation}
+        </p>
+      </motion.div>
+
+      <motion.div variants={itemVariants}>
+        <Card className="border-0 shadow-lg overflow-hidden">
+          <div className="h-2 bg-gradient-to-r from-yoel-red to-yoel-gold" />
+          <CardContent className="p-4 space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-muted-foreground">
+                Phrase {round + 1}/{totalRounds}
+              </span>
+            </div>
+
+            {/* Selected tiles (user's sentence) */}
+            <div className="rounded-xl bg-muted/30 p-3 min-h-[60px] flex flex-wrap gap-2">
+              {selectedTiles.length === 0 && (
+                <p className="text-sm text-muted-foreground m-auto">Touchez les mots pour construire la phrase</p>
+              )}
+              {selectedTiles.map((originalIdx, pos) => {
+                const word = originalWords[originalIdx]
+                return (
+                  <motion.button
+                    key={`selected-${pos}`}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => handleRemoveTile(pos)}
+                    disabled={isCorrect !== null}
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-all border-2 ${
+                      isCorrect === true
+                        ? 'bg-yoel-green/15 border-yoel-green/40 text-yoel-green'
+                        : isCorrect === false
+                        ? 'bg-destructive/10 border-destructive/40 text-destructive'
+                        : 'bg-yoel-red/10 border-yoel-red/30 text-yoel-red hover:bg-yoel-red/20'
+                    }`}
+                  >
+                    {word} <XCircle className="h-3 w-3 inline ml-1" />
+                  </motion.button>
+                )
+              })}
+            </div>
+
+            <Separator />
+
+            {/* Available word tiles */}
+            <div className="flex flex-wrap gap-2 justify-center">
+              {availableTiles.map((tile, idx) => (
+                <motion.button
+                  key={`avail-${tile.originalIdx}`}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => handleSelectTile(idx)}
+                  disabled={isCorrect !== null}
+                  className="px-3 py-2 rounded-lg text-sm font-medium bg-background border-2 border-border hover:border-yoel-gold/40 hover:bg-yoel-gold/5 transition-all"
+                >
+                  {tile.word}
+                </motion.button>
+              ))}
+            </div>
+
+            {/* Check button */}
+            {availableTiles.length === 0 && isCorrect === null && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex justify-center">
+                <Button onClick={handleCheck} className="bg-yoel-red hover:bg-yoel-red-dark text-white rounded-xl">
+                  <CheckCircle2 className="h-4 w-4 mr-2" />
+                  Vérifier
+                </Button>
+              </motion.div>
+            )}
+
+            {/* Feedback */}
+            {isCorrect === true && (
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-center">
+                <Badge className="bg-yoel-green/15 text-yoel-green border-0">
+                  <CheckCircle2 className="h-3 w-3 mr-1" />
+                  Parfait ! Phrase correcte !
+                </Badge>
+              </motion.div>
+            )}
+            {isCorrect === false && (
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-center space-y-2">
+                <Badge className="bg-destructive/15 text-destructive border-0">
+                  <XCircle className="h-3 w-3 mr-1" />
+                  Pas tout à fait. Réessayez !
+                </Badge>
+                <div className="flex justify-center gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setSelectedTiles([])
+                      const words = currentSentence.example.replace(/[.!?]/g, '').split(' ').filter(w => w.length > 0)
+                      const tiles = words.map((word, i) => ({ word, originalIdx: i }))
+                      for (let i = tiles.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1))
+                        ;[tiles[i], tiles[j]] = [tiles[j], tiles[i]]
+                      }
+                      setAvailableTiles(tiles)
+                      setIsCorrect(null)
+                    }}
+                    className="rounded-xl"
+                  >
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                    Réessayer
+                  </Button>
+                  <Button onClick={onComplete} className="bg-yoel-red hover:bg-yoel-red-dark text-white rounded-xl">
+                    Passer
+                  </Button>
+                </div>
+              </motion.div>
+            )}
+          </CardContent>
+        </Card>
+      </motion.div>
+    </motion.div>
+  )
+}
+
+// ─── Mixed Review Step ──────────────────────────────────────────────────────
+
+function MixedReviewStep({
+  vocab,
+  grammar,
+  pronunciation,
+  onComplete,
+}: {
+  vocab: VocabWord[]
+  grammar: GrammarRule
+  pronunciation: PronunciationItem[]
+  onComplete: () => void
+}) {
+  const [currentQ, setCurrentQ] = useState(0)
+  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null)
+  const [isAnswered, setIsAnswered] = useState(false)
+  const [score, setScore] = useState(0)
+
+  // Generate a mix of questions
+  const questions = useMemo(() => {
+    const qs: { question: string; options: string[]; correctIdx: number; type: 'vocab' | 'grammar' | 'pron' }[] = []
+
+    // 2 vocab questions
+    const shuffledVocab = [...vocab].sort(() => Math.random() - 0.5)
+    for (const word of shuffledVocab.slice(0, 2)) {
+      const others = vocab.filter(w => w.english !== word.english).sort(() => Math.random() - 0.5).slice(0, 3)
+      while (others.length < 3) others.push({ english: '---', french: '---', phonetic: '', example: '', exampleTranslation: '' })
+      const allOptions = [word.english, ...others.map(o => o.english)].sort(() => Math.random() - 0.5)
+      qs.push({
+        question: `Que signifie « ${word.french} » ?`,
+        options: allOptions,
+        correctIdx: allOptions.indexOf(word.english),
+        type: 'vocab',
+      })
+    }
+
+    // 1 grammar question
+    const correctExamples = grammar.examples.filter(e => e.isCorrect)
+    if (correctExamples.length > 0) {
+      const ex = correctExamples[0]
+      const wrongSentences = grammar.examples.filter(e => !e.isCorrect).slice(0, 3).map(e => e.sentence)
+      while (wrongSentences.length < 3) wrongSentences.push('This are wrong.')
+      const allOptions = [ex.sentence, ...wrongSentences.slice(0, 3)].sort(() => Math.random() - 0.5)
+      qs.push({
+        question: 'Quelle phrase est correcte ?',
+        options: allOptions,
+        correctIdx: allOptions.indexOf(ex.sentence),
+        type: 'grammar',
+      })
+    }
+
+    // 1 pronunciation question
+    if (pronunciation.length > 0) {
+      const pronItem = pronunciation[Math.floor(Math.random() * pronunciation.length)]
+      const others = pronunciation.filter(p => p.phonetic !== pronItem.phonetic).sort(() => Math.random() - 0.5).slice(0, 3)
+      while (others.length < 3) others.push({ word: '---', phonetic: '/---/', meaning: '---', tip: '' })
+      const allOptions = [pronItem.word, ...others.map(o => o.word)].sort(() => Math.random() - 0.5)
+      qs.push({
+        question: `Quel mot correspond à la prononciation ${pronItem.phonetic} ?`,
+        options: allOptions,
+        correctIdx: allOptions.indexOf(pronItem.word),
+        type: 'pron',
+      })
+    }
+
+    return qs.slice(0, 4)
+  }, [vocab, grammar, pronunciation])
+
+  const currentQuestion = questions[currentQ]
+  if (!currentQuestion) {
+    return (
+      <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-4">
+        <Card className="border-0 shadow-lg">
+          <CardContent className="p-6 text-center space-y-4">
+            <h2 className="text-xl font-bold">Révision mixte</h2>
+            <p className="text-sm text-muted-foreground">Pas assez de données pour cet exercice. Passez à l&apos;étape suivante.</p>
+            <Button onClick={onComplete} className="bg-yoel-red hover:bg-yoel-red-dark text-white rounded-xl">
+              Suivant <ChevronRight className="h-4 w-4 ml-1" />
+            </Button>
+          </CardContent>
+        </Card>
+      </motion.div>
+    )
+  }
+
+  const typeIcon = currentQuestion.type === 'vocab' ? '📚' : currentQuestion.type === 'grammar' ? '✍️' : '🗣️'
+  const typeLabel = currentQuestion.type === 'vocab' ? 'Vocabulaire' : currentQuestion.type === 'grammar' ? 'Grammaire' : 'Prononciation'
+  const typeColor = currentQuestion.type === 'vocab' ? 'bg-yoel-red/15 text-yoel-red' : currentQuestion.type === 'grammar' ? 'bg-yoel-blue/15 text-yoel-blue' : 'bg-yoel-gold/15 text-yoel-gold'
+
+  const handleAnswer = (idx: number) => {
+    if (isAnswered) return
+    setSelectedAnswer(idx)
+    setIsAnswered(true)
+    if (idx === currentQuestion.correctIdx) setScore(prev => prev + 1)
+  }
+
+  const handleNext = () => {
+    if (currentQ < questions.length - 1) {
+      setCurrentQ(prev => prev + 1)
+      setSelectedAnswer(null)
+      setIsAnswered(false)
+    } else {
+      onComplete()
+    }
+  }
+
+  return (
+    <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-4">
+      <motion.div variants={itemVariants} className="text-center">
+        <Badge className="bg-yoel-gold/15 text-yoel-gold border-0 text-xs mb-2">
+          🏆 Révision mixte
+        </Badge>
+        <h2 className="text-2xl font-bold">Révision générale</h2>
+        <p className="text-sm text-muted-foreground mt-1">
+          Des questions de tous types pour tester vos connaissances
+        </p>
+      </motion.div>
+
+      <motion.div variants={itemVariants}>
+        <Card className="border-0 shadow-lg overflow-hidden">
+          <div className="h-2 bg-gradient-to-r from-yoel-gold via-yoel-red to-yoel-blue" />
+          <CardContent className="p-6 space-y-5">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-muted-foreground">
+                Question {currentQ + 1}/{questions.length}
+              </span>
+              <div className="flex items-center gap-2">
+                <Badge className={`${typeColor} border-0 text-[10px]`}>
+                  {typeIcon} {typeLabel}
+                </Badge>
+                <span className="text-sm font-semibold text-yoel-green">
+                  {score}/{questions.length}
+                </span>
+              </div>
+            </div>
+
+            <h3 className="text-lg font-semibold leading-relaxed">
+              {currentQuestion.question}
+            </h3>
+
+            <div className="grid grid-cols-1 gap-3">
+              {currentQuestion.options.map((opt, idx) => {
+                const isCorrect = idx === currentQuestion.correctIdx
+                const isSelected = selectedAnswer === idx
+                let cls = 'relative text-sm py-3 px-4 rounded-xl border-2 transition-all font-medium text-left'
+                if (isAnswered) {
+                  if (isCorrect) cls += ' bg-yoel-green/15 border-yoel-green/50 text-yoel-green'
+                  else if (isSelected && !isCorrect) cls += ' bg-destructive/10 border-destructive/50 text-destructive'
+                  else cls += ' bg-muted/30 border-transparent text-muted-foreground'
+                } else {
+                  cls += ' bg-background border-border hover:border-yoel-gold/40 hover:bg-yoel-gold/5 cursor-pointer active:scale-[0.98]'
+                }
+                return (
+                  <motion.button key={idx} whileTap={!isAnswered ? { scale: 0.97 } : undefined} onClick={() => handleAnswer(idx)} disabled={isAnswered} className={cls}>
+                    <span className="flex items-center gap-2">
+                      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-muted/50 text-xs font-bold">
+                        {String.fromCharCode(65 + idx)}
+                      </span>
+                      {opt}
+                      {isAnswered && isCorrect && <CheckCircle2 className="h-4 w-4 ml-auto text-yoel-green" />}
+                      {isAnswered && isSelected && !isCorrect && <XCircle className="h-4 w-4 ml-auto text-destructive" />}
+                    </span>
+                  </motion.button>
+                )
+              })}
+            </div>
+
+            {isAnswered && (
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex justify-end">
+                <Button onClick={handleNext} className="bg-yoel-red hover:bg-yoel-red-dark text-white rounded-full">
+                  {currentQ < questions.length - 1 ? (
+                    <>Suivante <ChevronRight className="h-4 w-4 ml-1" /></>
+                  ) : (
+                    <>Terminer <Trophy className="h-4 w-4 ml-1" /></>
+                  )}
+                </Button>
+              </motion.div>
             )}
           </CardContent>
         </Card>
