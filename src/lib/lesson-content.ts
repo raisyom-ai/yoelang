@@ -5,6 +5,16 @@ import { B1_L21, B1_L22, B1_L23, B1_L24, B1_L25, B1_L26, B1_L27, B1_L28, B1_L29,
 import { B1_L41, B1_L42, B1_L43, B1_L44, B1_L45, B1_L46, B1_L47, B1_L48, B1_L49, B1_L50, B1_L51, B1_L52, B1_L53, B1_L54, B1_L55, B1_L56, B1_L57, B1_L58, B1_L59, B1_L60 } from './b1-lesson-content-units9-12'
 import { B2_L1, B2_L2, B2_L3, B2_L4, B2_L5 } from './b2-unit1-content'
 import { B2_L6, B2_L7, B2_L8, B2_L9, B2_L10 } from './b2-unit2-content'
+import { B2_L11, B2_L12, B2_L13, B2_L14, B2_L15 } from './b2-unit3-content'
+import { B2_L16, B2_L17, B2_L18, B2_L19, B2_L20 } from './b2-unit4-content'
+import { B2_L21, B2_L22, B2_L23, B2_L24, B2_L25 } from './b2-unit5-content'
+import { B2_L26, B2_L27, B2_L28, B2_L29, B2_L30 } from './b2-unit6-content'
+import { B2_L31, B2_L32, B2_L33, B2_L34, B2_L35 } from './b2-unit7-content'
+import { B2_L36, B2_L37, B2_L38, B2_L39, B2_L40 } from './b2-unit8-content'
+import { B2_L41, B2_L42, B2_L43, B2_L44, B2_L45 } from './b2-unit9-content'
+import { B2_L46, B2_L47, B2_L48, B2_L49, B2_L50 } from './b2-unit10-content'
+import { B2_L51, B2_L52, B2_L53, B2_L54, B2_L55 } from './b2-unit11-content'
+import { B2_L56, B2_L57, B2_L58, B2_L59, B2_L60 } from './b2-unit12-content'
 import { C2_L1, C2_L2, C2_L3, C2_L4, C2_L5 } from './c2-unit1-content'
 import { C2_L6, C2_L7, C2_L8, C2_L9, C2_L10 } from './c2-unit2-content'
 import { C2_L11, C2_L12, C2_L13, C2_L14, C2_L15 } from './c2-unit3-content'
@@ -1890,6 +1900,68 @@ const LESSON_CONTENT_MAP: Record<string, LessonContent> = {
   'b2-l8': B2_L8,
   'b2-l9': B2_L9,
   'b2-l10': B2_L10,
+
+  // B2 Unit 3: Politics & Government
+  'b2-l11': B2_L11,
+  'b2-l12': B2_L12,
+  'b2-l13': B2_L13,
+  'b2-l14': B2_L14,
+  'b2-l15': B2_L15,
+  // B2 Unit 4: Philosophy & Ethics
+  'b2-l16': B2_L16,
+  'b2-l17': B2_L17,
+  'b2-l18': B2_L18,
+  'b2-l19': B2_L19,
+  'b2-l20': B2_L20,
+  // B2 Unit 5: Advanced Business
+  'b2-l21': B2_L21,
+  'b2-l22': B2_L22,
+  'b2-l23': B2_L23,
+  'b2-l24': B2_L24,
+  'b2-l25': B2_L25,
+  // B2 Unit 6: Medicine & Healthcare
+  'b2-l26': B2_L26,
+  'b2-l27': B2_L27,
+  'b2-l28': B2_L28,
+  'b2-l29': B2_L29,
+  'b2-l30': B2_L30,
+
+  // ─── B2 Upper Intermediate — Unit 7: Engineering & Innovation
+  'b2-l31': B2_L31,
+  'b2-l32': B2_L32,
+  'b2-l33': B2_L33,
+  'b2-l34': B2_L34,
+  'b2-l35': B2_L35,
+  // B2 Unit 8: Literature & Poetry
+  'b2-l36': B2_L36,
+  'b2-l37': B2_L37,
+  'b2-l38': B2_L38,
+  'b2-l39': B2_L39,
+  'b2-l40': B2_L40,
+  // B2 Unit 9: Psychology & Behavior
+  'b2-l41': B2_L41,
+  'b2-l42': B2_L42,
+  'b2-l43': B2_L43,
+  'b2-l44': B2_L44,
+  'b2-l45': B2_L45,
+  // B2 Unit 10: Global Economy
+  'b2-l46': B2_L46,
+  'b2-l47': B2_L47,
+  'b2-l48': B2_L48,
+  'b2-l49': B2_L49,
+  'b2-l50': B2_L50,
+  // B2 Unit 11: Legal English
+  'b2-l51': B2_L51,
+  'b2-l52': B2_L52,
+  'b2-l53': B2_L53,
+  'b2-l54': B2_L54,
+  'b2-l55': B2_L55,
+  // B2 Unit 12: Advanced Writing
+  'b2-l56': B2_L56,
+  'b2-l57': B2_L57,
+  'b2-l58': B2_L58,
+  'b2-l59': B2_L59,
+  'b2-l60': B2_L60,
 
   // ─── C2 Mastery ────────────────────────────────────────────────────────
   // C2 Unit 1: Native-level Expressions
