@@ -65,7 +65,7 @@ function getPasswordStrength(password: string): {
 }
 
 export default function RegisterPage() {
-  const { navigate, goBack, setUser } = useAppStore()
+  const { navigate, goBack, setUser, setCurrentLevel } = useAppStore()
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -149,6 +149,7 @@ export default function RegisterPage() {
       if (res.ok) {
         const data = await res.json()
         setUser(data.user)
+        setCurrentLevel(data.user?.level || level || 'A1')
         navigate('dashboard')
         toast.success('Bienvenue !', { description: 'Votre compte a été créé avec succès' })
       } else {
@@ -160,6 +161,7 @@ export default function RegisterPage() {
       })
       const demoUser = createDemoUser(email, name, level)
       setUser(demoUser)
+      setCurrentLevel(demoUser?.level || level || 'A1')
       navigate('dashboard')
     } finally {
       setIsLoading(false)

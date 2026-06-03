@@ -208,3 +208,4 @@ export const DEMO_LESSONS: LessonInfo[] = COURSE_DATA.A1.lessons.map((l, i) => (
   completed: i < 15, // first 15 lessons completed for demo
   score: i < 15 ? Math.floor(Math.random() * 20 + 80) : 0,
 }))
+

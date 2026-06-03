@@ -26,7 +26,7 @@ const fadeInUp = {
 }
 
 export default function LoginPage() {
-  const { navigate, goBack, setUser } = useAppStore()
+  const { navigate, goBack, setUser, setCurrentLevel } = useAppStore()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -84,6 +84,7 @@ export default function LoginPage() {
       if (res.ok) {
         const data = await res.json()
         setUser(data.user)
+        setCurrentLevel(data.user?.level || 'A1')
         navigate('dashboard')
         toast.success('Bienvenue !', { description: 'Connexion réussie' })
       } else {
@@ -95,6 +96,7 @@ export default function LoginPage() {
       })
       const demoUser = createDemoUser(email)
       setUser(demoUser)
+      setCurrentLevel(demoUser?.level || 'A1')
       navigate('dashboard')
     } finally {
       setIsLoading(false)
