@@ -332,7 +332,7 @@ export const B1_L29: LessonContent = {
   ],
   grammar: {
     title: 'Donner des conseils — Should, ought to, had better',
-    explanation: 'Pour donner des conseils de santé : "SHOULD" = conseil général (modéré) : "You should eat more vegetables" (Tu devrais manger plus de légumes). "OUGHT TO" = conseil formel (même sens que "should") : "You ought to exercise regularly". "HAD BETTER" = conseil urgent (attention aux conséquences si on ne suit pas le conseil) : "You had better see a doctor" (Tu ferais mieux de voir un médecin — c\'est urgent). "HAD BETTER" est plus fort que "SHOULD". Négatif : "shouldn\'t", "had better not". ATTENTION : "advise" (verbe) avec "s" ≠ "advice" (nom) sans "s".',
+    explanation: 'Rappel : vous avez déjà vu "should" pour les suggestions. Ici nous l\'utilisons pour donner des conseils de santé. "SHOULD" = conseil général (modéré) : "You should eat more vegetables" (Tu devrais manger plus de légumes). "OUGHT TO" = conseil formel (même sens que "should") : "You ought to exercise regularly". "HAD BETTER" = conseil urgent (attention aux conséquences si on ne suit pas le conseil) : "You had better see a doctor" (Tu ferais mieux de voir un médecin — c\'est urgent). "HAD BETTER" est plus fort que "SHOULD". Négatif : "shouldn\'t", "had better not". ATTENTION : "advise" (verbe) avec "s" ≠ "advice" (nom) sans "s".',
     examples: [
       { sentence: 'You should get more sleep.', translation: 'Tu devrais dormir plus.', isCorrect: true },
       { sentence: 'You had better to see a doctor.', translation: '', isCorrect: false },

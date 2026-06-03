@@ -374,11 +374,11 @@ export const C2_L44: LessonContent = {
 export const C2_L45: LessonContent = {
   vocab: [
     {
-      english: 'Register',
-      french: 'Registre (de langue)',
-      phonetic: '/ˈrɛdʒɪstər/',
-      example: 'The ability to modulate register — from the formality of a journal article to the conversational tone of a book review — distinguishes the accomplished academic.',
-      exampleTranslation: 'La capacité de moduler le registre — de la formalité d\'un article de revue au ton conversationnel d\'un compte rendu de livre — distingue l\'universitaire accompli.',
+      english: 'Tone',
+      french: 'Ton (de langue)',
+      phonetic: '/toʊn/',
+      example: 'The ability to modulate tone — from the measured formality of a journal article to the conversational warmth of a book review — distinguishes the accomplished academic.',
+      exampleTranslation: 'La capacité de moduler le ton — de la formalité mesurée d\'un article de revue à la chaleur conversationnelle d\'un compte rendu de livre — distingue l\'universitaire accompli.',
     },
     {
       english: 'Collocation',

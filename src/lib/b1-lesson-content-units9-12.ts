@@ -603,40 +603,40 @@ export const B1_L55: LessonContent = {
 
 export const B1_L56: LessonContent = {
   vocab: [
-    { english: 'Justice', french: 'Justice', phonetic: '/ˈdʒʌstɪs/', example: 'Justice should be equal for everyone.', exampleTranslation: 'La justice devrait être égale pour tous.' },
+    { english: 'Lawsuit', french: 'Procès', phonetic: '/ˈlɔːsuːt/', example: 'The company filed a lawsuit against the competitor.', exampleTranslation: "L'entreprise a déposé un procès contre le concurrent." },
     { english: 'Freedom', french: 'Liberté', phonetic: '/ˈfriːdəm/', example: 'Freedom of speech is a fundamental right.', exampleTranslation: "La liberté d'expression est un droit fondamental." },
     { english: 'Responsibility', french: 'Responsabilité', phonetic: '/rɪˌspɑːnsəˈbɪləti/', example: 'We all have a responsibility to respect the law.', exampleTranslation: "Nous avons tous une responsabilité de respecter la loi." },
-    { english: 'Rights', french: 'Droits', phonetic: '/raɪts/', example: 'Human rights must be protected.', exampleTranslation: "Les droits humains doivent être protégés." },
-    { english: 'Legislation', french: 'Législation', phonetic: '/ˌledʒɪˈsleɪʃən/', example: 'New legislation was introduced to protect workers.', exampleTranslation: "Une nouvelle législation a été introduite pour protéger les travailleurs." },
+    { english: 'Conviction', french: 'Condamnation', phonetic: '/kənˈvɪkʃən/', example: 'The conviction was based on strong evidence.', exampleTranslation: 'La condamnation était basée sur des preuves solides.' },
+    { english: 'Prosecution', french: 'Poursuite (judiciaire)', phonetic: '/ˌprɑːsɪˈkjuːʃən/', example: 'The prosecution presented strong evidence.', exampleTranslation: 'La poursuite a présenté des preuves solides.' },
   ],
   grammar: {
-    title: 'Vocabulaire juridique — Justice, liberté et responsabilité',
-    explanation: 'Le vocabulaire juridique : "Justice" = équité et application de la loi, "Freedom" = liberté (droit d\'agir), "Responsibility" = responsabilité (obligation morale/légale), "Rights" = droits (libertés garanties par la loi), "Legislation" = lois adoptées par le parlement. Collocations : "seek justice" (chercher la justice), "defend freedom" (défendre la liberté), "take responsibility" (prendre ses responsabilités), "protect rights" (protéger les droits), "pass legislation" (adopter une législation). ATTENTION : "rights" est généralement au pluriel : "human rights", "workers\' rights".',
+    title: 'Vocabulaire juridique — Procès, condamnation et responsabilité',
+    explanation: 'Le vocabulaire juridique : "Lawsuit" = procès (action en justice), "Freedom" = liberté (droit d\'agir), "Responsibility" = responsabilité (obligation morale/légale), "Conviction" = condamnation (décision de culpabilité), "Prosecution" = poursuite judiciaire (action de poursuivre en justice). Collocations : "file a lawsuit" (déposer un procès), "defend freedom" (défendre la liberté), "take responsibility" (prendre ses responsabilités), "secure a conviction" (obtenir une condamnation), "bring a prosecution" (engager des poursuites). ATTENTION : "lawsuit" est dénombrable : "a lawsuit", "lawsuits". "Prosecution" est indénombrable : "the prosecution" (la partie poursuivante).',
     examples: [
-      { sentence: 'Every citizen has the right to seek justice.', translation: 'Chaque citoyen a le droit de chercher la justice.', isCorrect: true },
+      { sentence: 'The company filed a lawsuit after the contract was broken.', translation: "L'entreprise a déposé un procès après la rupture du contrat.", isCorrect: true },
       { sentence: 'We must defend the freedom of speech.', translation: "Nous devons défendre la liberté d'expression.", isCorrect: true },
-      { sentence: 'The government passed a new legislation.', translation: '', isCorrect: false },
+      { sentence: 'The prosecution secured a convictions.', translation: '', isCorrect: false },
       { sentence: 'Taking responsibility for your actions is important.', translation: 'Prendre ses responsabilités pour ses actions est important.', isCorrect: true },
     ],
     commonMistakes: [
-      { wrong: 'The government passed a new legislation.', correct: 'The government passed new legislation.', explanation: '"Legislation" est indénombrable : "passed new legislation" (pas "a new legislation"). On peut dire "a new law" par contre.' },
-      { wrong: 'Human right must be respected.', correct: 'Human rights must be respected.', explanation: '"Rights" est presque toujours au pluriel dans ce contexte : "human rights", pas "human right".' },
+      { wrong: 'The prosecution secured a convictions.', correct: 'The prosecution secured a conviction.', explanation: '"Conviction" est dénombrable : "a conviction", "convictions". Mais pas "a convictions" avec article singulier et nom pluriel !' },
+      { wrong: 'He bringed a lawsuit against the company.', correct: 'He brought a lawsuit against the company.', explanation: '"Bring" est un verbe irrégulier : bring → brought → brought. Pas "bringed" ! On dit "brought a lawsuit".' },
     ],
   },
   conversation: [
-    { speaker: 'Kofi', role: 'A', text: 'What does justice mean to you?', translation: "Que signifie la justice pour toi ?" },
-    { speaker: 'Amina', role: 'B', text: 'Justice means equal rights and freedom for everyone. And responsibility from all citizens.', translation: "La justice signifie des droits égaux et la liberté pour tous. Et la responsabilité de tous les citoyens." },
-    { speaker: 'Kofi', role: 'A', text: 'I agree. New legislation is needed to protect those rights.', translation: "Je suis d'accord. Une nouvelle législation est nécessaire pour protéger ces droits." },
-    { speaker: 'Amina', role: 'B', text: 'Yes, but laws alone aren\'t enough. We must take responsibility for defending freedom.', translation: "Oui, mais les lois seules ne suffisent pas. Nous devons prendre la responsabilité de défendre la liberté." },
-    { speaker: 'Kofi', role: 'A', text: 'That\'s true. Seeking justice requires action from everyone.', translation: "C'est vrai. Chercher la justice exige l'action de tous." },
-    { speaker: 'Amina', role: 'B', text: 'Together we can build a society that truly protects human rights.', translation: "Ensemble nous pouvons construire une société qui protège véritablement les droits humains." },
+    { speaker: 'Kofi', role: 'A', text: 'Have you heard about the lawsuit against the big corporation?', translation: 'As-tu entendu parler du procès contre la grande corporation ?' },
+    { speaker: 'Amina', role: 'B', text: 'Yes! The prosecution presented very strong evidence. A conviction seems likely.', translation: 'Oui ! La poursuite a présenté des preuves très solides. Une condamnation semble probable.' },
+    { speaker: 'Kofi', role: 'A', text: 'The evidence is compelling. Responsibility must be taken for what happened.', translation: 'Les preuves sont convaincantes. La responsabilité doit être prise pour ce qui s\'est passé.' },
+    { speaker: 'Amina', role: 'B', text: 'Absolutely. Filing a lawsuit is sometimes the only way to defend our freedom.', translation: 'Absolument. Déposer un procès est parfois le seul moyen de défendre notre liberté.' },
+    { speaker: 'Kofi', role: 'A', text: 'The prosecution has a duty to act in the public interest.', translation: 'La poursuite a le devoir d\'agir dans l\'intérêt public.' },
+    { speaker: 'Amina', role: 'B', text: 'True. A just legal system ensures fair lawsuits and just convictions.', translation: 'Vrai. Un système juridique juste garantit des procès équitables et des condamnations justes.' },
   ],
-  conversationTitle: 'Discuter de justice et de droits',
+  conversationTitle: 'Discuter de procès et de condamnations',
   pronunciation: [
-    { word: 'Justice', phonetic: '/ˈdʒʌstɪs/', meaning: 'Justice', tip: 'L\'accent est sur "JUS" : "DJES-tis". Pas "ju-STICE" !' },
+    { word: 'Lawsuit', phonetic: '/ˈlɔːsuːt/', meaning: 'Procès', tip: 'Prononcez "LO-sout" — l\'accent est sur "LAW" et le "ui" = "ou". Pas "lo-suit" !' },
     { word: 'Freedom', phonetic: '/ˈfriːdəm/', meaning: 'Liberté', tip: 'L\'accent est sur "FREE" : "FRI-dem".' },
     { word: 'Responsibility', phonetic: '/rɪˌspɑːnsəˈbɪləti/', meaning: 'Responsabilité', tip: 'L\'accent est sur "BI" : "ri-spon-se-BI-li-ti".' },
-    { word: 'Legislation', phonetic: '/ˌledʒɪˈsleɪʃən/', meaning: 'Législation', tip: 'L\'accent est sur "SLA" : "le-dji-SLÉÿ-chenne".' },
+    { word: 'Conviction', phonetic: '/kənˈvɪkʃən/', meaning: 'Condamnation', tip: 'L\'accent est sur "VIC" : "ken-VIK-chenne". Pas "con-vic-SSION" !' },
   ],
 }
 
@@ -759,28 +759,28 @@ export const B1_L59: LessonContent = {
 
 export const B1_L60: LessonContent = {
   vocab: [
-    { english: 'Constitution', french: 'Constitution', phonetic: '/ˌkɑːnstɪˈtuːʃən/', example: 'The constitution guarantees fundamental rights.', exampleTranslation: "La constitution garantit les droits fondamentaux." },
+    { english: 'Penalty', french: 'Peine', phonetic: '/ˈpenəlti/', example: 'The penalty for theft can be up to five years in prison.', exampleTranslation: 'La peine pour vol peut aller jusqu\'à cinq ans de prison.' },
     { english: 'Amendment', french: 'Amendement', phonetic: '/əˈmendmənt/', example: 'The amendment was added to protect privacy.', exampleTranslation: "L'amendement a été ajouté pour protéger la vie privée." },
     { english: 'Jurisdiction', french: 'Juridiction', phonetic: '/ˌdʒʊrɪsˈdɪkʃən/', example: 'This falls under federal jurisdiction.', exampleTranslation: "Cela relève de la juridiction fédérale." },
     { english: 'Precedent', french: 'Précédent', phonetic: '/ˈpresɪdənt/', example: 'The court ruling set a new precedent.', exampleTranslation: "La décision du tribunal a établi un nouveau précédent." },
   ],
   grammar: {
     title: 'Prononciation des termes juridiques — Mots formels',
-    explanation: 'Les termes juridiques sont des mots formels avec des accents spécifiques : "Constitution" = "kon-sti-TOU-chenne" (accent sur "TU"), "Amendment" = "e-MEND-ment" (accent sur "MEND"), "Jurisdiction" = "djou-ris-DIK-chenne" (accent sur "DIC"), "Precedent" = "PRES-i-dent" (accent sur "PRE"). Ces mots sont souvent mal prononcés car leurs équivalents français ont des accents différents.',
+    explanation: 'Les termes juridiques sont des mots formels avec des accents spécifiques : "Penalty" = "PE-neul-ti" (accent sur "PE"), "Amendment" = "e-MEND-ment" (accent sur "MEND"), "Jurisdiction" = "djou-ris-DIK-chenne" (accent sur "DIC"), "Precedent" = "PRES-i-dent" (accent sur "PRE"). Ces mots sont souvent mal prononcés car leurs équivalents français ont des accents différents.',
     examples: [
-      { sentence: 'The kon-sti-TOU-tion guarantees our rights.', translation: 'La constitution garantit nos droits.', isCorrect: true },
-      { sentence: 'The con-sti-TU-tion guarantees our rights.', translation: '', isCorrect: false },
+      { sentence: 'The PE-neul-ti for this crime is severe.', translation: 'La peine pour ce crime est sévère.', isCorrect: true },
+      { sentence: 'The pe-NAL-i-ty for this crime is severe.', translation: '', isCorrect: false },
       { sentence: 'The amendment was passed by the parliament.', translation: "L'amendement a été adopté par le parlement.", isCorrect: true },
       { sentence: 'This case set a new precedent in legal history.', translation: "Cette affaire a établi un nouveau précédent dans l'histoire juridique.", isCorrect: true },
     ],
     commonMistakes: [
-      { wrong: 'The con-sti-TU-tion guarantees our rights.', correct: 'The kon-sti-TOU-tion guarantees our rights.', explanation: '"Constitution" a l\'accent sur "TU" : "kon-sti-TOU-chenne", pas "con-sti-TU-tion" !' },
+      { wrong: 'The pe-NAL-i-ty for this crime is severe.', correct: 'The PE-neul-ti for this crime is severe.', explanation: '"Penalty" a l\'accent sur "PE" : "PE-neul-ti", pas "pe-NAL-i-ty" à la française !' },
       { wrong: 'The pre-CE-dent was important.', correct: 'The PRES-i-dent was important.', explanation: '"Precedent" a l\'accent sur "PRE" : "PRES-i-dent" (comme "president"), pas "pre-CE-dent" !' },
     ],
   },
   conversation: [
-    { speaker: 'Amina', role: 'A', text: 'The constitution is the foundation of our legal system.', translation: "La constitution est la fondation de notre système juridique." },
-    { speaker: 'Kofi', role: 'B', text: 'Yes! And amendments can be added to update it. The latest amendment protects digital privacy.', translation: "Oui ! Et des amendements peuvent être ajoutés pour la mettre à jour. Le dernier amendement protège la vie privée numérique." },
+    { speaker: 'Amina', role: 'A', text: 'The penalty for fraud can be very severe.', translation: 'La peine pour fraude peut être très sévère.' },
+    { speaker: 'Kofi', role: 'B', text: 'Yes! And amendments can change the law. The latest amendment protects digital privacy.', translation: "Oui ! Et des amendements peuvent changer la loi. Le dernier amendement protège la vie privée numérique." },
     { speaker: 'Amina', role: 'A', text: 'Which jurisdiction handles cybercrime cases?', translation: "Quelle juridiction traite les affaires de cybercriminalité ?" },
     { speaker: 'Kofi', role: 'B', text: 'It depends on the country. But court precedents are important for future cases.', translation: "Ça dépend du pays. Mais les précédents judiciaires sont importants pour les affaires futures." },
     { speaker: 'Amina', role: 'A', text: 'Legal vocabulary pronunciation can be challenging!', translation: "La prononciation du vocabulaire juridique peut être difficile !" },
@@ -788,7 +788,7 @@ export const B1_L60: LessonContent = {
   ],
   conversationTitle: 'Termes juridiques en anglais',
   pronunciation: [
-    { word: 'Constitution', phonetic: '/ˌkɑːnstɪˈtuːʃən/', meaning: 'Constitution', tip: 'L\'accent est sur "TU" : "kon-sti-TOU-chenne".' },
+    { word: 'Penalty', phonetic: '/ˈpenəlti/', meaning: 'Peine', tip: 'L\'accent est sur "PE" : "PE-neul-ti". Pas "pe-NAL-i-ty" !' },
     { word: 'Amendment', phonetic: '/əˈmendmənt/', meaning: 'Amendement', tip: 'L\'accent est sur "MEND" : "e-MEND-ment".' },
     { word: 'Jurisdiction', phonetic: '/ˌdʒʊrɪsˈdɪkʃən/', meaning: 'Juridiction', tip: 'L\'accent est sur "DIC" : "djou-ris-DIK-chenne".' },
     { word: 'Precedent', phonetic: '/ˈpresɪdənt/', meaning: 'Précédent', tip: 'L\'accent est sur "PRE" : "PRES-i-dent" (comme "president").' },

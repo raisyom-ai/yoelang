@@ -77,18 +77,18 @@ export const B2_L56: LessonContent = {
 export const B2_L57: LessonContent = {
   vocab: [
     {
-      english: 'nevertheless',
-      french: 'néanmoins / toutefois',
-      phonetic: '/ˌnevərðəˈles/',
-      example: 'The evidence is limited; nevertheless, the findings suggest a clear trend.',
-      exampleTranslation: 'Les preuves sont limitées ; néanmoins, les résultats suggèrent une tendance claire.'
+      english: 'notwithstanding',
+      french: 'nonobstant / malgré',
+      phonetic: '/ˌnɒtwɪθˈstændɪŋ/',
+      example: 'The evidence is limited; notwithstanding, the findings suggest a clear trend.',
+      exampleTranslation: 'Les preuves sont limitées ; nonobstant cela, les résultats suggèrent une tendance claire.'
     },
     {
-      english: 'furthermore',
-      french: 'de plus / en outre',
-      phonetic: '/ˌfɜːrðərˈmɔːr/',
-      example: 'The proposal is cost-effective. Furthermore, it reduces environmental impact.',
-      exampleTranslation: 'La proposition est rentable. De plus, elle réduit l\'impact environnemental.'
+      english: 'in addition',
+      french: 'en outre / de surcroît',
+      phonetic: '/ɪn əˈdɪʃn/',
+      example: 'The proposal is cost-effective. In addition, it reduces environmental impact.',
+      exampleTranslation: 'La proposition est rentable. En outre, elle réduit l\'impact environnemental.'
     },
     {
       english: 'in contrast',
@@ -98,51 +98,51 @@ export const B2_L57: LessonContent = {
       exampleTranslation: 'Les zones urbaines ont des niveaux de pollution élevés. En revanche, les régions rurales restent relativement propres.'
     },
     {
-      english: 'consequently',
-      french: 'par conséquent',
-      phonetic: '/ˈkɒnsɪkwentli/',
-      example: 'Demand has fallen sharply; consequently, prices have dropped.',
-      exampleTranslation: 'La demande a fortement chuté ; par conséquent, les prix ont baissé.'
+      english: 'as a consequence',
+      french: 'en conséquence / par voie de conséquence',
+      phonetic: '/æz ə ˈkɒnsɪkwəns/',
+      example: 'Demand has fallen sharply; as a consequence, prices have dropped.',
+      exampleTranslation: 'La demande a fortement chuté ; en conséquence, les prix ont baissé.'
     },
     {
-      english: 'coherent',
-      french: 'cohérent',
-      phonetic: '/koʊˈhɪrənt/',
-      example: 'A coherent argument flows logically from one point to the next.',
-      exampleTranslation: 'Un argument cohérent s\'enchaîne logiquement d\'un point à l\'autre.'
+      english: 'cohesive',
+      french: 'cohésif',
+      phonetic: '/koʊˈhiːsɪv/',
+      example: 'A cohesive text flows logically from one paragraph to the next.',
+      exampleTranslation: 'Un texte cohésif s\'enchaîne logiquement d\'un paragraphe à l\'autre.'
     }
   ],
   grammar: {
     title: 'Les mots de liaison et la cohésion textuelle',
-    explanation: 'En anglais, les mots de liaison (linking words / discourse markers) sont essentiels pour assurer la cohésion et la cohérence d\'un texte. On les classe par fonction : addition (furthermore, moreover), contraste (however, nevertheless, in contrast), cause/conséquence (consequently, therefore, as a result), et conclusion (in conclusion, to sum up). Attention à la ponctuation : beaucoup de ces connecteurs sont suivis d\'une virgule quand ils sont en début de phrase. Cependant n\'est PAS suivi d\'une virgule quand il est en position médiane.',
+    explanation: 'En anglais, les mots de liaison (linking words / discourse markers) sont essentiels pour assurer la cohésion et la cohérence d\'un texte. On les classe par fonction : addition (in addition, moreover), contraste (however, notwithstanding, in contrast), cause/conséquence (as a consequence, therefore, as a result), et conclusion (in conclusion, to sum up). « Notwithstanding » est plus formel que « however » et s\'emploie souvent en début de phrase ou après un point-virgule. « In addition » est une alternative à « furthermore » pour ajouter un argument sans alourdir le style. « As a consequence » est plus emphatique que « consequently » et convient aux transitions entre paragraphes. « Cohesive » décrit un texte dont les parties sont bien liées, contrairement à « coherent » qui décrit un argument logique. Attention à la ponctuation : beaucoup de ces connecteurs sont suivis d\'une virgule quand ils sont en début de phrase.',
     examples: [
-      { sentence: 'However, the results were inconclusive.', translation: 'Cependant, les résultats n\'étaient pas concluants.', isCorrect: true },
-      { sentence: 'However the results were inconclusive.', translation: 'Cependant, les résultats n\'étaient pas concluants.', isCorrect: false },
-      { sentence: 'The results, however, were inconclusive.', translation: 'Les résultats, cependant, n\'étaient pas concluants.', isCorrect: true },
-      { sentence: 'The results, however were inconclusive.', translation: 'Les résultats, cependant, n\'étaient pas concluants.', isCorrect: false },
-      { sentence: 'The experiment failed; consequently, we revised our hypothesis.', translation: 'L\'expérience a échoué ; par conséquent, nous avons révisé notre hypothèse.', isCorrect: true },
-      { sentence: 'The experiment failed, consequently, we revised our hypothesis.', translation: 'L\'expérience a échoué ; par conséquent, nous avons révisé notre hypothèse.', isCorrect: false }
+      { sentence: 'Notwithstanding the limitations, the results suggest a clear pattern.', translation: 'Nonobstant les limites, les résultats suggèrent un schéma clair.', isCorrect: true },
+      { sentence: 'Notwithstanding of the limitations, the results suggest a clear pattern.', translation: '', isCorrect: false },
+      { sentence: 'The data is incomplete. In addition, the sample size is too small.', translation: 'Les données sont incomplètes. En outre, la taille de l\'échantillon est trop petite.', isCorrect: true },
+      { sentence: 'The data is incomplete, in addition, the sample size is too small.', translation: '', isCorrect: false },
+      { sentence: 'The experiment failed; as a consequence, we revised our hypothesis.', translation: 'L\'expérience a échoué ; en conséquence, nous avons révisé notre hypothèse.', isCorrect: true },
+      { sentence: 'The experiment failed, as a consequence, we revised our hypothesis.', translation: '', isCorrect: false }
     ],
     commonMistakes: [
-      { wrong: 'The project was delayed, nevertheless we met the deadline.', correct: 'The project was delayed; nevertheless, we met the deadline.', explanation: 'Nevertheless est un adverbe connecteur, pas une conjonction de coordination. Il faut un point-virgule ou un point devant, et une virgule après s\'il commence la phrase suivante.' },
-      { wrong: 'Although the data was incomplete, but we continued the analysis.', correct: 'Although the data was incomplete, we continued the analysis.', explanation: 'On ne peut pas combiner « although » et « but » dans la même phrase. Although suffit pour marquer le contraste. C\'est une erreur fréquente chez les francophones qui traduisent « bien que… mais… ».' },
-      { wrong: 'Furthermore is important to note that…', correct: 'Furthermore, it is important to note that…', explanation: 'Furthermore ne remplace pas le sujet « it ». On écrit : « Furthermore, it is important… ». Ne supprimez pas le sujet comme en français où on peut dire « De plus, il est important… ».' }
+      { wrong: 'The project was delayed, notwithstanding we met the deadline.', correct: 'The project was delayed; notwithstanding, we met the deadline.', explanation: 'Notwithstanding est un adverbe connecteur, pas une conjonction de coordination. Il faut un point-virgule ou un point devant, et une virgule après s\'il commence la phrase suivante.' },
+      { wrong: 'Notwithstanding of the risks, we proceeded.', correct: 'Notwithstanding the risks, we proceeded.', explanation: '« Notwithstanding » est suivi directement d\'un nom, sans « of ». On dit « notwithstanding the risks », pas « notwithstanding of the risks ». C\'est différent de « in spite of » qui exige « of ».' },
+      { wrong: 'In addition is important to note that…', correct: 'In addition, it is important to note that…', explanation: 'In addition ne remplace pas le sujet « it ». On écrit : « In addition, it is important… ». Ne supprimez pas le sujet comme en français où on peut dire « En outre, il est important… ».' }
     ]
   },
   conversation: [
-    { speaker: 'Priya', role: 'A', text: 'I\'m struggling with the coherence of my essay. The paragraphs feel disconnected.', translation: 'J\'ai du mal avec la cohérence de ma dissertation. Les paragraphes semblent déconnectés.' },
-    { speaker: 'Lukas', role: 'B', text: 'Have you tried using discourse markers? Words like \'furthermore\' and \'in contrast\' help guide the reader.', translation: 'As-tu essayé d\'utiliser des marqueurs discursifs ? Des mots comme « furthermore » et « in contrast » aident à guider le lecteur.' },
+    { speaker: 'Priya', role: 'A', text: 'I\'m struggling with the cohesion of my essay. The paragraphs feel disconnected.', translation: 'J\'ai du mal avec la cohésion de ma dissertation. Les paragraphes semblent déconnectés.' },
+    { speaker: 'Lukas', role: 'B', text: 'Have you tried using discourse markers? Words like \'in addition\' and \'in contrast\' help guide the reader between paragraphs.', translation: 'As-tu essayé d\'utiliser des marqueurs discursifs ? Des mots comme « in addition » et « in contrast » aident à guider le lecteur entre les paragraphes.' },
     { speaker: 'Priya', role: 'A', text: 'I\'ve used a few, but I\'m not sure about the punctuation. Do you always need a comma after them?', translation: 'J\'en ai utilisé quelques-uns, mais je ne suis pas sûr de la ponctuation. Faut-il toujours une virgule après ?' },
-    { speaker: 'Lukas', role: 'B', text: 'At the start of a sentence, yes. But in the middle, they\'re usually set off by commas on both sides.', translation: 'Au début d\'une phrase, oui. Mais au milieu, ils sont généralement encadrés par des virgules des deux côtés.' },
+    { speaker: 'Lukas', role: 'B', text: 'At the start of a sentence, yes. But \'notwithstanding\' can also come before a noun without a comma: \'Notwithstanding the risks…\'', translation: 'Au début d\'une phrase, oui. Mais « notwithstanding » peut aussi précéder un nom sans virgule : « Notwithstanding the risks… »' },
     { speaker: 'Priya', role: 'A', text: 'That makes sense. I also tend to overuse \'however\' — my tutor says it gets repetitive.', translation: 'Ça a du sens. J\'ai aussi tendance à trop utiliser « however » — mon tuteur dit que ça devient répétitif.' },
-    { speaker: 'Lukas', role: 'B', text: 'Try varying it with \'nevertheless\', \'on the other hand\', or \'yet\'. Each has a slightly different nuance.', translation: 'Essaie de varier avec « nevertheless », « on the other hand » ou « yet ». Chacun a une nuance légèrement différente.' }
+    { speaker: 'Lukas', role: 'B', text: 'Try varying it with \'notwithstanding\', \'on the other hand\', or \'yet\'. Each has a slightly different nuance for paragraph transitions.', translation: 'Essaie de varier avec « notwithstanding », « on the other hand » ou « yet ». Chacun a une nuance légèrement différente pour les transitions entre paragraphes.' }
   ],
   conversationTitle: 'Improving Text Coherence',
   pronunciation: [
-    { word: 'nevertheless', phonetic: '/ˌnevərðəˈles/', meaning: 'néanmoins', tip: 'L\'accent tonique tombe sur la dernière syllabe : /ˌnevərðəˈLES/. Ne dites pas /NEvertheless/ à la française. Le « th » /ð/ est sonore — placez la langue entre les dents et vibrez.' },
-    { word: 'furthermore', phonetic: '/ˌfɜːrðərˈmɔːr/', meaning: 'de plus', tip: 'Accent sur la dernière syllabe : /ˌfɜːrðərˈMƆːR/. Le « r » en anglais est rétroflexe, pas le « r » français roulé. Détendez la langue vers l\'arrière.' },
-    { word: 'consequently', phonetic: '/ˈkɒnsɪkwentli/', meaning: 'par conséquent', tip: 'Accent sur la première syllabe : /ˈKɒnsɪkwentli/. Les francophones ont tendance à accentuer la fin. De plus, le « o » est court /ɒ/, pas /əʊ/.' },
-    { word: 'coherent', phonetic: '/koʊˈhɪrənt/', meaning: 'cohérent', tip: 'Accent sur la deuxième syllabe : /koʊˈHɪrənt/. En français on dit « cohérent » avec l\'accent sur la même syllabe, mais attention au « h » anglais aspiré — il doit être prononcé faiblement, pas omis.' }
+    { word: 'notwithstanding', phonetic: '/ˌnɒtwɪθˈstændɪŋ/', meaning: 'nonobstant', tip: 'L\'accent est sur « STAND » : /ˌnɒtwɪθˈSTændɪŋ/. Le « th » /θ/ est sourd — langue entre les dents, soufflez. Ne dites PAS « not-wiss-tan-ding ». C\'est un mot formel parfait pour les transitions de paragraphe.' },
+    { word: 'in addition', phonetic: '/ɪn əˈdɪʃn/', meaning: 'en outre', tip: 'L\'accent est sur « DI » : /ɪn əˈDɪʃn/. Le « dd » se prononce comme un seul /d/. La terminaison « -tion » = /ʃn/ rapide. Ne dites pas « in a-dee-see-on » à la française.' },
+    { word: 'as a consequence', phonetic: '/æz ə ˈkɒnsɪkwəns/', meaning: 'en conséquence', tip: 'L\'accent est sur « CON » : /æz ə ˈKɒnsɪkwəns/. Plus emphatique que « consequently » — idéal pour les transitions fortes entre paragraphes. Le « qu » se prononce /kw/.' },
+    { word: 'cohesive', phonetic: '/koʊˈhiːsɪv/', meaning: 'cohésif', tip: 'Accent sur « HEE » : /koʊˈHIːsɪv/. Le « h » est aspiré ! Contrairement au français « cohésif » avec « h » muet. Attention aussi au « s » qui est /s/ sourd, pas /z/.' }
   ]
 }
 

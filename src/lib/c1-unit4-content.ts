@@ -129,7 +129,7 @@ export const C1_L18: LessonContent = {
 // ─── c1-l19: Stakeholder Communication ────────────────────────────────────────────
 export const C1_L19: LessonContent = {
   vocab: [
-    { english: 'to outline', french: 'exposer / présenter dans les grandes lignes', phonetic: '/ˈaʊtlaɪn/', example: 'The CEO outlined the restructuring plan to the board of directors.', exampleTranslation: 'Le PDG a exposé le plan de restructuration au conseil d\'administration.' },
+    { english: 'to articulate', french: 'articuler / exprimer clairement', phonetic: '/ɑːrˈtɪkjuleɪt/', example: 'The CEO articulated the restructuring plan to the board of directors.', exampleTranslation: 'Le PDG a articulé le plan de restructuration au conseil d\'administration.' },
     { english: 'to reassure', french: 'rassurer / tranquilliser', phonetic: '/ˌriːəˈʃʊər/', example: 'We need to reassure employees that no layoffs are planned.', exampleTranslation: 'Nous devons rassurer les employés qu\'aucun licenciement n\'est prévu.' },
     { english: 'disclosure', french: 'divulgation / communication d\'information', phonetic: '/dɪsˈkloʊʒər/', example: 'Full disclosure of the financial risks is required before the shareholder vote.', exampleTranslation: 'La divulgation complète des risques financiers est requise avant le vote des actionnaires.' },
     { english: 'to align', french: 'aligner / mettre en adéquation', phonetic: '/əˈlaɪn/', example: 'Our messaging must be aligned across all stakeholder communications.', exampleTranslation: 'Notre discours doit être aligné dans toutes les communications aux parties prenantes.' },
@@ -159,7 +159,7 @@ export const C1_L19: LessonContent = {
   ],
   conversationTitle: 'Communication parties prenantes : adapter le registre selon l\'auditoire',
   pronunciation: [
-    { word: 'Outline', phonetic: '/ˈaʊtlaɪn/', meaning: 'Exposer', tip: 'Verbe : « out-LINE » — l\'accent est sur « LINE ». Nom : « OUT-line ». L\'accent change selon la fonction ! Verbe = accent final, nom = accent initial.' },
+    { word: 'Articulate', phonetic: '/ɑːrˈtɪkjuleɪt/', meaning: 'Articuler / Exprimer clairement', tip: 'Verbe : « ar-TIK-yoo-layt » — l\'accent est sur « TIK ». Le « c » = « k ». Le « u » se prononce « yoo ». Nom/adjectif : « ar-TIK-yoo-lut » — l\'accent aussi sur « TIK » mais la finale se prononce « lut ».' },
     { word: 'Reassure', phonetic: '/ˌriːəˈʃʊər/', meaning: 'Rassurer', tip: 'L\'accent est sur « SHURE » : « ree-uh-SHOOR ». Le « re » est long comme dans « repeat ». Le « sure » rime avec « pure ». Ne dites pas « re-a-su-reu ».' },
     { word: 'Disclosure', phonetic: '/dɪsˈkloʊʒər/', meaning: 'Divulgation', tip: 'L\'accent est sur « CLO » : « dis-KLO-zhur ». Le « dis » est réduit. Le « sure » final = « zhur » comme dans « measure ». Ne dites pas « dis-klo-sur ».' },
     { word: 'Transparency', phonetic: '/trænsˈpærənsi/', meaning: 'Transparence', tip: 'L\'accent est sur « PAR » : « trans-PAR-un-si ». Le « a » de « par » est ouvert. Le « trans » peut aussi se prononcer « tranz ». Ne dites pas « trans-pa-ren-ceu ».' },

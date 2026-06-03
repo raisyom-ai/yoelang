@@ -49,7 +49,7 @@ export const C1_L26: LessonContent = {
 // ─── c1-l27: Impersonal Passive ──────────────────────────────────────────────────
 export const C1_L27: LessonContent = {
   vocab: [
-    { english: 'to establish', french: 'établir / prouver', phonetic: '/ɪˈstæblɪʃ/', example: 'It has been established that prolonged exposure increases the risk by 40%.', exampleTranslation: 'Il a été établi que l\'exposition prolongée augmente le risque de 40 %.' },
+    { english: 'to surmise', french: 'présumer / conjecturer', phonetic: '/sərˈmaɪz/', example: 'It has been surmised that prolonged exposure increases the risk by 40%.', exampleTranslation: 'Il a été présumé que l\'exposition prolongée augmente le risque de 40 %.' },
     { english: 'to postulate', french: 'postuler / poser comme hypothèse', phonetic: '/ˈpɒstjuleɪt/', example: 'It has been postulated that the variant originated through zoonotic transmission.', exampleTranslation: 'Il a été postulé que le variant est apparu par transmission zoonotique.' },
     { english: 'to correlate', french: 'corréler', phonetic: '/ˈkɒrəleɪt/', example: 'It is widely accepted that dietary habits correlate with cardiovascular health.', exampleTranslation: 'Il est largement admis que les habitudes alimentaires sont corrélées à la santé cardiovasculaire.' },
     { english: 'to hypothesise', french: 'formuler une hypothèse', phonetic: '/haɪˈpɒθəsaɪz/', example: 'It was hypothesised that the drug would inhibit tumour growth.', exampleTranslation: 'Il a été formulé l\'hypothèse que le médicament inhiberait la croissance tumorale.' },
@@ -79,7 +79,7 @@ export const C1_L27: LessonContent = {
   ],
   conversationTitle: 'Discussion de résultats : voix impersonnelle passive en contexte médical',
   pronunciation: [
-    { word: 'Established', phonetic: '/ɪˈstæblɪʃt/', meaning: 'Établi', tip: 'Prononcez « ih-STAB-lisht » — l\'accent est sur « STAB ». Le « ed » final se prononce « t » car le son précédent est « sh » (son sourd). Ne dites pas « é-sta-blis-ed ».' },
+    { word: 'Surmised', phonetic: '/sərˈmaɪzd/', meaning: 'Présumé', tip: 'Prononcez « sur-MYZD » — l\'accent est sur « MYZ ». Le « sur » initial est réduit en « ser ». Le « s » = « z » sonore. Le « -ed » final se prononce « d » car le son précédent est « z » sonore. Ne confondez pas avec « summarized ».' },
     { word: 'Postulated', phonetic: '/ˈpɒstjuleɪtɪd/', meaning: 'Postulé', tip: 'L\'accent est sur « POS » : « POS-choo-lay-tid ». Le « tu » se prononce « choo » comme dans « statue ». Le « -ed » final se prononce « id » car le son précédent est « t ».' },
     { word: 'Hypothesised', phonetic: '/haɪˈpɒθəsaɪzd/', meaning: 'Formulé (une hypothèse)', tip: 'L\'accent est sur « PO » : « hi-PO-thuh-sizd ». Le « th » est expiré (θ). Le « -sed » final se prononce « sizd » comme dans « realised ». Ne dites pas « i-po-thé-sis-ed ».' },
     { word: 'Warrant', phonetic: '/ˈwɒrənt/', meaning: 'Justifier', tip: 'Prononcez « WOR-unt » — l\'accent est sur « WOR ». Le « a » se prononce comme « o » ouvert. Ne dites pas « oua-rant ».' },

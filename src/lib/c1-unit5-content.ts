@@ -9,7 +9,7 @@ import type { LessonContent } from './lesson-content'
 // ─── c1-l21: IR Vocabulary ────────────────────────────────────────────────────────
 export const C1_L21: LessonContent = {
   vocab: [
-    { english: 'sovereignty', french: 'souveraineté', phonetic: '/ˈsɒvrənti/', example: 'The principle of state sovereignty is enshrined in the UN Charter.', exampleTranslation: 'Le principe de la souveraineté de l\'État est consacré dans la Charte des Nations Unies.' },
+    { english: 'sanction', french: 'sanctionner / approuver officiellement', phonetic: '/ˈsæŋkʃn/', example: 'The Security Council sanctioned the use of peacekeeping forces in the region.', exampleTranslation: 'Le Conseil de sécurité a sanctionné l\'utilisation de forces de maintien de la paix dans la région.' },
     { english: 'sanctions', french: 'sanctions', phonetic: '/ˈsæŋkʃnz/', example: 'The Security Council imposed sweeping sanctions on the regime.', exampleTranslation: 'Le Conseil de sécurité a imposé des sanctions massives au régime.' },
     { english: 'diplomacy', french: 'diplomatie', phonetic: '/dɪˈpləʊməsi/', example: 'Quiet diplomacy achieved what public condemnation could not.', exampleTranslation: 'La diplomatie discrète a obtenu ce que la condamnation publique n\'avait pu obtenir.' },
     { english: 'multilateral', french: 'multilatéral', phonetic: '/ˌmʌltɪˈlætərəl/', example: 'A multilateral approach remains the most effective means of addressing global challenges.', exampleTranslation: 'Une approche multilatérale reste le moyen le plus efficace de relever les défis mondiaux.' },
@@ -39,7 +39,7 @@ export const C1_L21: LessonContent = {
   ],
   conversationTitle: 'Réponse multilatérale : sanctions et diplomatie',
   pronunciation: [
-    { word: 'Sovereignty', phonetic: '/ˈsɒvrənti/', meaning: 'Souveraineté', tip: 'Prononcez « SOV-run-ti » — l\'accent est sur « SOV ». Le « eign » se réduit complètement en « run ». Ne dites pas « so-vrain-eu-ti » à la française.' },
+    { word: 'Sanction', phonetic: '/ˈsæŋkʃn/', meaning: 'Sanctionner / Approuver', tip: 'Prononcez « SANK-shun » — l\'accent est sur « SANK ». Le « a » est ouvert comme dans « cat ». La terminaison « -tion » = « shun ». Comme verbe, « sanction » peut signifier « approuver » ou « pénaliser » selon le contexte.' },
     { word: 'Sanctions', phonetic: '/ˈsæŋkʃnz/', meaning: 'Sanctions', tip: 'L\'accent est sur « SANC » : « SANK-shunz ». Le « a » est ouvert comme dans « cat ». La terminaison « -tions » = « shunz ». Ne prononcez pas « sonk-sion ».' },
     { word: 'Multilateral', phonetic: '/ˌmʌltɪˈlætərəl/', meaning: 'Multilatéral', tip: 'L\'accent est sur « LAT » : « mul-ti-LAT-er-al ». C\'est un mot de 5 syllabes — ne l\'avalez pas. Le « multi » initial se prononce « mul-ti », pas « mül-ti ».' },
     { word: 'Non-proliferation', phonetic: '/ˌnɒnprəˌlɪfəˈreɪʃn/', meaning: 'Non-prolifération', tip: 'L\'accent principal est sur « RA » : « non-pro-lif-er-A-shun ». Le « pro » de « proliferation » est réduit en schwa. La terminaison « -tion » = « shun ».' },
@@ -132,7 +132,7 @@ export const C1_L24: LessonContent = {
     { english: 'joint communiqué', french: 'communiqué conjoint', phonetic: '/dʒɔɪnt kəˈmjuːnɪkeɪ/', example: 'The leaders issued a joint communiqué reaffirming their commitment to the alliance.', exampleTranslation: 'Les dirigeants ont publié un communiqué conjoint réaffirmant leur engagement envers l\'alliance.' },
     { english: 'declaratory statement', french: 'déclaration solennelle', phonetic: '/dɪˈklærətəri ˈsteɪtmənt/', example: 'The declaratory statement stopped short of committing to binding obligations.', exampleTranslation: 'La déclaration solennelle s\'est arrêtée avant de s\'engager sur des obligations contraignantes.' },
     { english: 'to endorse', french: 'entériner / approuver solennellement', phonetic: '/ɪnˈdɔːs/', example: 'The summit endorsed the framework agreement in principle, pending further negotiation.', exampleTranslation: 'Le sommet a approuvé le cadre d\'accord en principe, dans l\'attente de négociations ultérieures.' },
-    { english: 'to reiterate', french: 'réitérer / réaffirmer', phonetic: '/riːˈɪtəreɪt/', example: 'The President reiterated that no option had been ruled out.', exampleTranslation: 'Le Président a réitéré qu\'aucune option n\'avait été écartée.' },
+    { english: 'to underscore', french: 'souligner / accentuer fortement', phonetic: '/ˌʌndərˈskɔːr/', example: 'The President underscored that no option had been ruled out.', exampleTranslation: 'Le Président a souligné qu\'aucune option n\'avait été écartée.' },
     { english: 'diplomatic hedging', french: 'prudence diplomatique / langage prudents', phonetic: '/ˌdɪpləˈmætɪk ˈhedʒɪŋ/', example: 'The final declaration was a masterpiece of diplomatic hedging — firm enough to satisfy domestic audiences, vague enough to avoid binding commitments.', exampleTranslation: 'La déclaration finale était un chef-d\'œuvre de prudence diplomatique — assez ferme pour satisfaire les opinions publiques, assez vague pour éviter des engagements contraignants.' },
   ],
   grammar: {

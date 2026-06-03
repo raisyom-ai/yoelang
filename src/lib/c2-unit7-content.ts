@@ -395,11 +395,11 @@ export const C2_L35: LessonContent = {
       exampleTranslation: 'La chute arriva trois temps plus tard que prévu, ce qui est précisément pourquoi elle a fait exploser la salle.',
     },
     {
-      english: 'Cadence',
-      french: 'Cadence (rythme de l\'énonciation)',
-      phonetic: '/ˈkeɪdəns/',
-      example: 'Her cadence — the measured rise and fall, the strategic elongation of vowels — turned a mundane anecdote into a virtuoso performance.',
-      exampleTranslation: 'Sa cadence — la montée et la descente mesurées, l\'allongement stratégique des voyelles — transforma une anecdote banale en une performance virtuose.',
+      english: 'Timing',
+      french: 'Timing (rythme de l\'énonciation)',
+      phonetic: '/ˈtaɪmɪŋ/',
+      example: 'Her timing — the measured rise and fall, the strategic elongation of vowels — turned a mundane anecdote into a virtuoso performance.',
+      exampleTranslation: 'Son timing — la montée et la descente mesurées, l\'allongement stratégique des voyelles — transforma une anecdote banale en une performance virtuose.',
     },
     {
       english: 'Throwaway line',
@@ -447,10 +447,10 @@ export const C2_L35: LessonContent = {
       tip: 'Accent sur "FLEC" : "in-FLEK-shun". Le "i" initial est bref comme dans "bit". Le "e" accentué est ouvert comme dans "bed". Le "-tion" = "shun".',
     },
     {
-      word: 'Cadence',
-      phonetic: '/ˈkeɪdəns/',
-      meaning: 'Cadence',
-      tip: 'Accent sur "KAY" : "KAY-dens". Le "a" est long comme dans "day". Le "e" de la deuxième syllabe est réduit. Ne dites pas "ka-DANSS" à la française.',
+      word: 'Timing',
+      phonetic: '/ˈtaɪmɪŋ/',
+      meaning: 'Timing',
+      tip: 'Accent sur la première syllabe : "TY-ming". Le "i" est long comme dans "time". Le "-ing" est doux. Ne dites pas "tee-MING" — l\'accent est sur la première syllabe en anglais.',
     },
     {
       word: 'Punchline',

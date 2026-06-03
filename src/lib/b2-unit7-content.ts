@@ -93,7 +93,7 @@ export const B2_L33: LessonContent = {
     { english: 'load-bearing', french: 'porteur / de charge', phonetic: '/ˈloʊd ˈberɪŋ/', example: 'The load-bearing walls cannot be removed without compromising the structure.', exampleTranslation: 'Les murs porteurs ne peuvent pas être retirés sans compromettre la structure.' },
     { english: 'redundancy', french: 'redondance (sécurité)', phonetic: '/rɪˈdʌndənsi/', example: 'The system includes redundancy to ensure continuous operation if one component fails.', exampleTranslation: 'Le système inclut une redondance pour assurer un fonctionnement continu si un composant tombe en panne.' },
     { english: 'to iterate', french: 'itérer / réviser', phonetic: '/ˈɪtəreɪt/', example: 'We need to iterate the design based on the simulation results.', exampleTranslation: 'Nous devons itérer la conception en fonction des résultats de la simulation.' },
-    { english: 'compliance', french: 'conformité', phonetic: '/kəmˈplaɪəns/', example: 'The design must ensure compliance with international safety standards.', exampleTranslation: 'La conception doit assurer la conformité avec les normes de sécurité internationales.' },
+    { english: 'conformity', french: 'conformité (aux normes)', phonetic: '/kənˈfɔːrməti/', example: 'The design must ensure conformity with international safety standards.', exampleTranslation: 'La conception doit assurer la conformité avec les normes de sécurité internationales.' },
   ],
   grammar: {
     title: 'Participer à une revue de conception en anglais : structures et registre',
@@ -102,7 +102,7 @@ export const B2_L33: LessonContent = {
       { sentence: 'We\'ve identified an issue with the load-bearing capacity of the support beams.', translation: 'Nous avons identifié un problème avec la capacité de charge des poutres de support.', isCorrect: true },
       { sentence: 'That design is bad, you need to change it.', translation: '', isCorrect: false },
       { sentence: 'One approach would be to introduce redundancy in the cooling system.', translation: 'Une approche consisterait à introduire une redondance dans le système de refroidissement.', isCorrect: true },
-      { sentence: 'Could you elaborate on how this design ensures compliance with the regulations?', translation: 'Pourriez-vous expliquer comment cette conception assure la conformité avec les réglementations ?', isCorrect: true },
+      { sentence: 'Could you elaborate on how this design ensures conformity with the regulations?', translation: 'Pourriez-vous expliquer comment cette conception assure la conformité avec les réglementations ?', isCorrect: true },
     ],
     commonMistakes: [
       { wrong: 'That design is bad, you need to change it.', correct: 'I have concerns about that design. Would it be possible to explore alternative approaches?', explanation: 'En revue de conception, évitez les jugements directs comme « bad ». Exprimez des préoccupations professionnelles et proposez des alternatives : « I have concerns about... » + suggestion constructive.' },
@@ -113,7 +113,7 @@ export const B2_L33: LessonContent = {
     { speaker: 'Amara', role: 'A', text: 'Let\'s move to item three on the agenda — the design review for the bridge extension. Kenji, could you walk us through the current status?', translation: 'Passons au point trois de l\'ordre du jour — la revue de conception pour l\'extension du pont. Kenji, pourriez-vous nous présenter l\'état actuel ?' },
     { speaker: 'Kenji', role: 'B', text: 'Certainly. The feasibility study confirmed the project is viable, but we\'ve identified an issue with the load-bearing calculations for the northern section.', translation: 'Certainement. L\'étude de faisabilité a confirmé que le projet est viable, mais nous avons identifié un problème avec les calculs de charge pour la section nord.' },
     { speaker: 'Amara', role: 'A', text: 'Could you elaborate on that? What specific concern do you have?', translation: 'Pourriez-vous développer ? Quelle préoccupation spécifique avez-vous ?' },
-    { speaker: 'Kenji', role: 'B', text: 'The current design may not meet compliance standards for heavy vehicle loads. One approach would be to reinforce the support columns and incorporate redundancy in the tension cables.', translation: 'La conception actuelle pourrait ne pas satisfaire les normes de conformité pour les charges de véhicules lourds. Une approche consisterait à renforcer les colonnes de support et à incorporer une redondance dans les câbles de tension.' },
+    { speaker: 'Kenji', role: 'B', text: 'The current design may not meet conformity standards for heavy vehicle loads. One approach would be to reinforce the support columns and incorporate redundancy in the tension cables.', translation: 'La conception actuelle pourrait ne pas satisfaire les normes de conformité pour les charges de véhicules lourds. Une approche consisterait à renforcer les colonnes de support et à incorporer une redondance dans les câbles de tension.' },
     { speaker: 'Amara', role: 'A', text: 'I see your point. While that\'s one option, I\'m concerned about the additional cost and timeline impact.', translation: 'Je comprends votre point. Bien que ce soit une option, je m\'inquiète de l\'impact sur le coût et le calendrier supplémentaires.' },
     { speaker: 'Kenji', role: 'B', text: 'Understood. We could iterate on the design to find a more cost-effective solution. Shall we schedule a follow-up session next Thursday?', translation: 'Compris. Nous pourrions itérer sur la conception pour trouver une solution plus rentable. Devons-nous planifier une session de suivi jeudi prochain ?' },
   ],
@@ -121,7 +121,7 @@ export const B2_L33: LessonContent = {
   pronunciation: [
     { word: 'Feasibility', phonetic: '/ˌfiːzəˈbɪləti/', meaning: 'Faisabilité', tip: 'L\'accent est sur « BIL » : « fee-zuh-BIL-uh-ti ». C\'est un mot long de 5 syllabes. Le « a » de « bility » est réduit en schwa.' },
     { word: 'Redundancy', phonetic: '/rɪˈdʌndənsi/', meaning: 'Redondance', tip: 'L\'accent est sur « DAN » : « rih-DAN-si ». Le « e » initial est un schwa rapide. Ne mettez pas l\'accent sur « re » comme en français.' },
-    { word: 'Compliance', phonetic: '/kəmˈplaɪəns/', meaning: 'Conformité', tip: 'L\'accent est sur « PLI » : « kuhm-PLAÏ-uhns ». Le « i » est long. Le « ance » final est réduit. Ne dites pas « kom-pli-ance ».' },
+    { word: 'Conformity', phonetic: '/kənˈfɔːrməti/', meaning: 'Conformité (aux normes)', tip: 'L\'accent est sur « FOR » : « kun-FOR-muh-ti ». En ingénierie, « conformity » désigne la conformité aux normes et spécifications, à ne pas confondre avec « compliance » (conformité réglementaire) ou « adherence » (observance thérapeutique).' },
     { word: 'Iterate', phonetic: '/ˈɪtəreɪt/', meaning: 'Itérer', tip: 'L\'accent est sur « IT » : « IT-uh-rayt ». Ne confondez pas avec « irritate » (irriter). Le « e » final se prononce « ayt » comme dans « create ».' },
   ],
 }

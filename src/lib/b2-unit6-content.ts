@@ -133,7 +133,7 @@ export const B2_L29: LessonContent = {
     { english: 'efficacy', french: 'efficacité', phonetic: '/ˈefɪkəsi/', example: 'The efficacy of the new treatment was demonstrated in a double-blind study.', exampleTranslation: 'L\'efficacité du nouveau traitement a été démontrée dans une étude en double aveugle.' },
     { english: 'mortality rate', french: 'taux de mortalité', phonetic: '/mɔːˈtæləti reɪt/', example: 'The mortality rate has decreased by 30% since the introduction of the vaccine.', exampleTranslation: 'Le taux de mortalité a diminué de 30 % depuis l\'introduction du vaccin.' },
     { english: 'onset', french: 'apparition / début (d\'une maladie)', phonetic: '/ˈɒnset/', example: 'Early onset of symptoms allows for more effective treatment.', exampleTranslation: 'L\'apparition précoce des symptômes permet un traitement plus efficace.' },
-    { english: 'compliance', french: 'observance (thérapeutique)', phonetic: '/kəmˈplaɪəns/', example: 'Patient compliance is essential for the treatment to be effective.', exampleTranslation: 'L\'observance des patients est essentielle pour que le traitement soit efficace.' },
+    { english: 'adherence', french: 'observance / adhésion (au traitement)', phonetic: '/ədˈhɪərəns/', example: 'Patient adherence is essential for the treatment to be effective.', exampleTranslation: 'L\'observance des patients est essentielle pour que le traitement soit efficace.' },
   ],
   grammar: {
     title: 'Décrire des résultats de recherche : données, tendances et preuves',
@@ -142,7 +142,7 @@ export const B2_L29: LessonContent = {
       { sentence: 'The data show a significant reduction in mortality rates among patients who received the vaccine.', translation: 'Les données montrent une réduction significative des taux de mortalité chez les patients ayant reçu le vaccin.', isCorrect: true },
       { sentence: 'The data shows a significant reduction in mortality rates among patients who received the vaccine.', translation: 'Les données montrent une réduction significative des taux de mortalité chez les patients ayant reçu le vaccin.', isCorrect: true },
       { sentence: 'The study proved that the drug is curing cancer.', translation: '', isCorrect: false },
-      { sentence: 'It was concluded that patient compliance improved when side effects were clearly explained.', translation: 'Il a été conclu que l\'observance des patients s\'est améliorée lorsque les effets secondaires étaient clairement expliqués.', isCorrect: true },
+      { sentence: 'It was concluded that patient adherence improved when side effects were clearly explained.', translation: 'Il a été conclu que l\'observance des patients s\'est améliorée lorsque les effets secondaires étaient clairement expliqués.', isCorrect: true },
     ],
     commonMistakes: [
       { wrong: 'The study proved that the drug is curing cancer.', correct: 'The study provided evidence that the drug may be effective in treating certain types of cancer.', explanation: 'En recherche médicale, on évite « prove » (prouver) qui est trop absolu. On ne dit jamais qu\'un médicament « cures » (guérit) le cancer — on dit qu\'il « may be effective in treating » (pourrait être efficace dans le traitement de). La prudence scientifique est de mise.' },
@@ -153,8 +153,8 @@ export const B2_L29: LessonContent = {
     { speaker: 'Dr. Adebayo', role: 'A', text: 'Let\'s look at the latest findings. The data show that the mortality rate dropped by 22% in the treatment group.', translation: 'Regardons les derniers résultats. Les données montrent que le taux de mortalité a chuté de 22 % dans le groupe traité.' },
     { speaker: 'Dr. Lefèvre', role: 'B', text: 'That\'s significant. But what about the placebo group? Was there any improvement there?', translation: 'C\'est significatif. Mais qu\'en est-il du groupe placebo ? Y a-t-il eu une amélioration là-bas ?' },
     { speaker: 'Dr. Adebayo', role: 'A', text: 'Only a 3% reduction, which is within the margin of error. It was observed that early onset of treatment correlates with better outcomes.', translation: 'Seulement une réduction de 3 %, ce qui est dans la marge d\'erreur. Il a été observé que le début précoce du traitement corrèle avec de meilleurs résultats.' },
-    { speaker: 'Dr. Lefèvre', role: 'B', text: 'And what about patient compliance? Did most participants complete the full course?', translation: 'Et qu\'en est-il de l\'observance des patients ? La plupart des participants ont-ils suivi le traitement complet ?' },
-    { speaker: 'Dr. Adebayo', role: 'A', text: 'Compliance was above 90%, which is excellent. The efficacy of the treatment was consistent across all age groups.', translation: 'L\'observance était supérieure à 90 %, ce qui est excellent. L\'efficacité du traitement était cohérente dans tous les groupes d\'âge.' },
+    { speaker: 'Dr. Lefèvre', role: 'B', text: 'And what about patient adherence? Did most participants complete the full course?', translation: 'Et qu\'en est-il de l\'observance des patients ? La plupart des participants ont-ils suivi le traitement complet ?' },
+    { speaker: 'Dr. Adebayo', role: 'A', text: 'Adherence was above 90%, which is excellent. The efficacy of the treatment was consistent across all age groups.', translation: 'L\'observance était supérieure à 90 %, ce qui est excellent. L\'efficacité du traitement était cohérente dans tous les groupes d\'âge.' },
     { speaker: 'Dr. Lefèvre', role: 'B', text: 'These are compelling results. It was concluded that the treatment should move to the next phase of trials, I assume?', translation: 'Ce sont des résultats convaincants. Il a été conclu que le traitement devrait passer à la prochaine phase d\'essais, je présume ?' },
   ],
   conversationTitle: 'Présentation de résultats : essai clinique',
@@ -162,7 +162,7 @@ export const B2_L29: LessonContent = {
     { word: 'Placebo', phonetic: '/pləˈsiːbəʊ/', meaning: 'Placebo', tip: 'L\'accent est sur « SEE » : « pluh-SEE-boh ». Le « a » est réduit en schwa. Ne prononcez PAS « pla-sé-bo » à la française — l\'accent est sur la deuxième syllabe en anglais.' },
     { word: 'Efficacy', phonetic: '/ˈefɪkəsi/', meaning: 'Efficacité', tip: 'L\'accent est sur « EF » : « EF-ih-kuh-si ». Comparez avec « efficiency » /ɪˈfɪʃənsi/ (efficience) — les deux mots ont des prononciations différentes ! Ne confondez pas ces faux amis.' },
     { word: 'Mortality', phonetic: '/mɔːˈtæləti/', meaning: 'Mortalité', tip: 'L\'accent est sur « TAL » : « mor-TAL-ih-ti ». Le « o » est long comme dans « more ». Les 4 syllabes sont claires. Ne dites pas « mor-ta-li-té » à la française.' },
-    { word: 'Onset', phonetic: '/ˈɒnset/', meaning: 'Apparition (d\'une maladie)', tip: 'Prononcez « ON-set » — l\'accent est sur « ON ». Le « o » est ouvert comme dans « hot ». Ce mot n\'a rien à voir avec « offset » — ne confondez pas !' },
+    { word: 'Adherence', phonetic: '/ədˈhɪərəns/', meaning: 'Observance / Adhésion', tip: 'L\'accent est sur « HIER » : « ud-HEER-uhns ». Le « h » est aspiré ! Contrairement au français « adhérence » avec « h » muet. En contexte médical, « adherence » désigne l\'observance thérapeutique, pas la conformité réglementaire (« compliance »).' },
   ],
 }
 

@@ -161,18 +161,18 @@ export const B2_L41: LessonContent = {
 export const B2_L42: LessonContent = {
   vocab: [
     {
-      english: 'whereas',
-      french: 'tandis que / alors que',
-      phonetic: '/werˈæz/',
-      example: 'Extroverts gain energy from social interaction, whereas introverts recharge in solitude.',
-      exampleTranslation: 'Les extravertis tirent de l\'énergie des interactions sociales, tandis que les introvertis se ressourcent dans la solitude.'
+      english: 'if + past perfect, would have',
+      french: '3e conditionnel (si + plus-que-parfait, conditionnel passé)',
+      phonetic: '/ɪf pɑːst ˈpɜːrfɪkt wʊd hæv/',
+      example: 'If the patient had received earlier intervention, the outcome would have been significantly better.',
+      exampleTranslation: 'Si le patient avait reçu une intervention plus précoce, le résultat aurait été nettement meilleur.'
     },
     {
-      english: 'nevertheless',
-      french: 'néanmoins / toutefois',
-      phonetic: '/ˌnevərðəˈles/',
-      example: 'The experiment had methodological flaws; nevertheless, the findings were significant.',
-      exampleTranslation: 'L\'expérience avait des failles méthodologiques ; néanmoins, les résultats étaient significatifs.'
+      english: 'unless + present',
+      french: 'à moins que + présent (prédictions comportementales)',
+      phonetic: '/ənˈles ˈprezənt/',
+      example: 'Unless the patient engages with the therapeutic process, behavioural change is unlikely.',
+      exampleTranslation: 'À moins que le patient ne s\'engage dans le processus thérapeutique, le changement comportemental est peu probable.'
     },
     {
       english: 'provided that',
@@ -189,58 +189,58 @@ export const B2_L42: LessonContent = {
       exampleTranslation: 'La théorie est valable dans la mesure où elle explique les modèles de comportement observés.'
     },
     {
-      english: 'albeit',
-      french: 'bien que / quoique',
-      phonetic: '/ˌɔːlˈbiːɪt/',
-      example: 'She completed the assessment, albeit with considerable difficulty.',
-      exampleTranslation: 'Elle a terminé l\'évaluation, bien qu\'avec des difficultés considérables.'
+      english: 'assuming that',
+      french: 'en supposant que / à supposer que',
+      phonetic: '/əˈsjuːmɪŋ ðæt/',
+      example: 'Assuming that the behavioral pattern is learned, we can design an intervention to modify it.',
+      exampleTranslation: 'En supposant que le schéma comportemental est acquis, nous pouvons concevoir une intervention pour le modifier.'
     }
   ],
   grammar: {
-    title: 'Les phrases complexes : subordination et conjonctions avancées',
-    explanation: 'Au niveau B2, vous devez maîtriser les structures de subordination complexes. Les conjonctions comme « whereas », « provided that », « inasmuch as » et « albeit » permettent d\'exprimer des nuances précises : contraste, condition, restriction, concession. Contrairement au français, ces conjonctions exigent souvent une structure syntaxique spécifique. « Provided that » est suivi de l\'indicatif (pas du subjonctif français). « Albeit » est toujours suivi d\'un adjectif, d\'un adverbe ou d\'une préposition, jamais d\'une proposition complète avec sujet + verbe conjugué.',
+    title: 'Les phrases complexes : structures conditionnelles en psychologie',
+    explanation: 'En psychologie, les structures conditionnelles permettent d\'analyser des comportements et de formuler des hypothèses cliniques. Le 3e conditionnel (« If + past perfect, would have + participe passé ») sert à analyser rétrospectivement : « If the patient had received CBT earlier, the symptoms would have diminished. » La structure « Unless + present » exprime une condition négative pour les prédictions comportementales : « Unless the client confronts the fear, avoidance will persist. » « Provided that » et « assuming that » introduisent des conditions nécessaires : « Provided that the therapeutic alliance is strong, outcomes improve. » « Assuming that » est particulièrement utile en analyse comportementale pour poser des hypothèses : « Assuming that the behavior is learned, extinction therapy should work. » « Inasmuch as » limite la portée d\'une affirmation : « The model is useful inasmuch as it predicts behaviour in controlled settings. » Attention : « unless » équivaut à « if...not » mais est plus formel et précis en contexte clinique.',
     examples: [
       {
-        sentence: 'He agreed to participate, provided that his data remained confidential.',
-        translation: 'Il a accepté de participer, à condition que ses données restent confidentielles.',
+        sentence: 'If the therapist had identified the trigger earlier, the crisis would have been prevented.',
+        translation: 'Si le thérapeute avait identifié le déclencheur plus tôt, la crise aurait été évitée.',
         isCorrect: true
       },
       {
-        sentence: 'He agreed to participate, provided that his data would remain confidential.',
-        translation: 'Il a accepté de participer, à condition que ses données resteraient confidentielles.',
+        sentence: 'If the therapist would have identified the trigger earlier, the crisis would have been prevented.',
+        translation: 'Si le thérapeute avait identifié le déclencheur plus tôt, la crise aurait été évitée.',
         isCorrect: false
       },
       {
-        sentence: 'Whereas cognitive therapy focuses on thoughts, behavioural therapy targets actions.',
-        translation: 'Tandis que la thérapie cognitive se concentre sur les pensées, la thérapie comportementale cible les actions.',
+        sentence: 'Unless the patient adheres to the treatment plan, relapse is highly likely.',
+        translation: 'À moins que le patient ne suive le plan de traitement, la rechute est très probable.',
         isCorrect: true
       },
       {
-        sentence: 'She continued the treatment, albeit reluctantly.',
-        translation: 'Elle a continué le traitement, bien qu\'à contrecœur.',
+        sentence: 'Assuming that the therapeutic setting feels safe, the client will open up gradually.',
+        translation: 'En supposant que le cadre thérapeutique semble sûr, le client s\'ouvrira progressivement.',
         isCorrect: true
       },
       {
-        sentence: 'She continued the treatment, albeit she was reluctant.',
-        translation: 'Elle a continué le traitement, bien qu\'elle fût réticente.',
-        isCorrect: false
+        sentence: 'The approach is effective inasmuch as it addresses the root cause of the behaviour.',
+        translation: 'L\'approche est efficace dans la mesure où elle traite la cause profonde du comportement.',
+        isCorrect: true
       }
     ],
     commonMistakes: [
       {
-        wrong: 'Provided that he would arrive on time, we can start.',
-        correct: 'Provided that he arrives on time, we can start.',
-        explanation: 'Après « provided that », on utilise l\'indicatif présent (arrives) et non le conditionnel (would arrive). C\'est une erreur fréquente des francophones qui calquent sur le subjonctif français.'
+        wrong: 'If the patient would have received treatment earlier, the outcome would have been different.',
+        correct: 'If the patient had received treatment earlier, the outcome would have been different.',
+        explanation: 'Dans la subordonnée conditionnelle (après « if »), on utilise JAMAIS « would ». On utilise le past perfect : « If the patient had received », pas « If the patient would have received ». C\'est l\'erreur la plus courante avec le 3e conditionnel.'
       },
       {
-        wrong: 'Albeit she was tired, she continued working.',
-        correct: 'Although she was tired, she continued working. / She continued working, albeit tired.',
-        explanation: '« Albeit » ne peut pas introduire une proposition complète avec sujet + verbe. On utilise « although » dans ce cas. « Albeit » est suivi directement d\'un adjectif, adverbe ou syntagme prépositionnel.'
+        wrong: 'Unless the patient does not engage, progress will be limited.',
+        correct: 'Unless the patient engages, progress will be limited. / If the patient does not engage, progress will be limited.',
+        explanation: '« Unless » signifie déjà « if...not ». Ajouter une négation (« does not ») crée une double négation. Dites « Unless the patient engages » ou « If the patient does not engage », mais PAS « Unless the patient does not engage ».'
       },
       {
-        wrong: 'He is anxious, whereas he performs well under pressure.',
-        correct: 'He is anxious, yet he performs well under pressure. / Although he is anxious, he performs well under pressure.',
-        explanation: '« Whereas » exprime une comparaison/contraste entre deux faits parallèles, pas une concession. Pour « bien que » au sens concessif, utilisez « although » ou « yet ».'
+        wrong: 'Assuming than the therapy continues, improvement is expected.',
+        correct: 'Assuming that the therapy continues, improvement is expected.',
+        explanation: 'L\'expression correcte est « assuming that » (en supposant que), pas « assuming than ». « That » est la conjonction standard après « assuming ». Ne confondez pas « that » et « than ».'
       }
     ]
   },
@@ -254,14 +254,14 @@ export const B2_L42: LessonContent = {
     {
       speaker: 'Rafael',
       role: 'B',
-      text: 'That\'s impressive, whereas the previous meta-analysis only showed a twenty percent reduction.',
-      translation: 'C\'est impressionnant, alors que la précédente méta-analyse ne montrait qu\'une réduction de vingt pour cent.'
+      text: 'That\'s impressive. If the previous meta-analysis had used the same methodology, the results would have been comparable.',
+      translation: 'C\'est impressionnant. Si la précédente méta-analyse avait utilisé la même méthodologie, les résultats auraient été comparables.'
     },
     {
       speaker: 'Yuki',
       role: 'A',
-      text: 'True, but the earlier study had a much smaller sample. Nevertheless, we should be cautious about generalising.',
-      translation: 'C\'est vrai, mais l\'étude précédente avait un échantillon bien plus petit. Néanmoins, nous devrions être prudents quant à la généralisation.'
+      text: 'True, but the earlier study had a much smaller sample. Unless we replicate these findings with a larger group, we should be cautious about generalising.',
+      translation: 'C\'est vrai, mais l\'étude précédente avait un échantillon bien plus petit. À moins que nous ne répliquions ces résultats avec un groupe plus large, nous devrions être prudents quant à la généralisation.'
     },
     {
       speaker: 'Rafael',
@@ -278,29 +278,29 @@ export const B2_L42: LessonContent = {
     {
       speaker: 'Rafael',
       role: 'B',
-      text: 'Let\'s hope so. The preliminary findings are promising, albeit limited in scope.',
-      translation: 'Espérons-le. Les résultats préliminaires sont prometteurs, bien que limités dans leur portée.'
+      text: 'Let\'s hope so. Assuming that the therapeutic model is well-defined, the findings should translate to other settings.',
+      translation: 'Espérons-le. En supposant que le modèle thérapeutique est bien défini, les résultats devraient s\'appliquer à d\'autres contextes.'
     }
   ],
-  conversationTitle: 'Research Findings Discussion',
+  conversationTitle: 'Analysing Outcomes with Conditional Structures',
   pronunciation: [
     {
-      word: 'whereas',
-      phonetic: '/werˈæz/',
-      meaning: 'tandis que',
-      tip: 'L\'accent tonique est sur la deuxième syllabe : wher-EAS. Les francophones tendent à accentuer la première syllabe. Le « wh » se prononce /w/ simplement, pas /vw/ ou /hw/ exagéré.'
+      word: 'unless',
+      phonetic: '/ənˈles/',
+      meaning: 'à moins que',
+      tip: 'L\'accent est sur « LESS » : un-LESS. Le « s » final est /s/ sourd. Les francophones ont tendance à dire « oune-les » — prononcez bien le /ʌ/ de la première syllabe comme dans « cup ».'
     },
     {
-      word: 'nevertheless',
-      phonetic: '/ˌnevərðəˈles/',
-      meaning: 'néanmoins',
-      tip: 'L\'accent principal est sur la dernière syllabe : ne-ver-the-LESS. Le « th » est interdental /ð/ (voisé) comme dans « the ». Les francophones le prononcent souvent /z/ ou l\'omettent.'
+      word: 'provided',
+      phonetic: '/prəˈvaɪdɪd/',
+      meaning: 'à condition que',
+      tip: 'L\'accent est sur « VI » : pruh-VY-did. En tant que conjonction (« provided that »), le « -ed » se prononce /ɪd/ distinctement. Ne dites pas « pro-vai-dé » à la française.'
     },
     {
-      word: 'albeit',
-      phonetic: '/ˌɔːlˈbiːɪt/',
-      meaning: 'bien que',
-      tip: 'Prononcez trois syllabes : all-BEE-it. Les francophones ont tendance à dire /al-bee/ en deux syllabes. L\'accent est sur la deuxième syllabe, et le « i » final se prononce /ɪ/ bref.'
+      word: 'assuming',
+      phonetic: '/əˈsjuːmɪŋ/',
+      meaning: 'en supposant',
+      tip: 'L\'accent est sur « SYU » : uh-SYOO-ming. Le « a » initial est un schwa rapide. Le « ss » se prononce /s/ simple. En contexte clinique, « assuming that » pose une hypothèse comportementale, ce qui diffère de « as long as » qui exprime une durée.'
     },
     {
       word: 'inasmuch',
@@ -462,32 +462,32 @@ export const B2_L43: LessonContent = {
 export const B2_L44: LessonContent = {
   vocab: [
     {
-      english: 'diagnosis',
-      french: 'diagnostic',
-      phonetic: '/ˌdaɪəɡˈnəʊsɪs/',
-      example: 'An accurate diagnosis requires a thorough evaluation of the patient\'s history.',
-      exampleTranslation: 'Un diagnostic précis nécessite une évaluation approfondie de l\'histoire du patient.'
+      english: 'assessment',
+      french: 'évaluation clinique',
+      phonetic: '/əˈsesmənt/',
+      example: 'A psychological assessment was conducted to evaluate the patient\'s cognitive functioning.',
+      exampleTranslation: 'Une évaluation psychologique a été réalisée pour évaluer le fonctionnement cognitif du patient.'
     },
     {
-      english: 'symptom',
-      french: 'symptôme',
-      phonetic: '/ˈsɪmptəm/',
-      example: 'One key symptom of depression is a persistent loss of interest in daily activities.',
-      exampleTranslation: 'Un symptôme clé de la dépression est une perte d\'intérêt persistante pour les activités quotidiennes.'
+      english: 'behavioral pattern',
+      french: 'comportement / schéma comportemental',
+      phonetic: '/bɪˈheɪvijərəl ˈpætərn/',
+      example: 'Anxiety can manifest in various ways, and each behavioral pattern requires a tailored approach.',
+      exampleTranslation: 'L\'anxiété peut se manifester de diverses manières, et chaque schéma comportemental nécessite une approche adaptée.'
     },
     {
-      english: 'onset',
-      french: 'apparition / début',
-      phonetic: '/ˈɒnsɛt/',
-      example: 'The onset of symptoms usually occurs in early adulthood.',
-      exampleTranslation: 'L\'apparition des symptômes se produit généralement au début de l\'âge adulte.'
+      english: 'catalyst',
+      french: 'catalyseur',
+      phonetic: '/ˈkætəlɪst/',
+      example: 'Trauma can act as a catalyst for psychological change, prompting patients to seek professional help.',
+      exampleTranslation: 'Le traumatisme peut agir comme catalyseur de changement psychologique, incitant les patients à chercher de l\'aide professionnelle.'
     },
     {
       english: 'prognosis',
-      french: 'pronostic',
+      french: 'pronostic psychologique',
       phonetic: '/prɒɡˈnəʊsɪs/',
-      example: 'The prognosis is favourable if treatment begins during the early stages.',
-      exampleTranslation: 'Le pronostic est favorable si le traitement commence aux stades précoces.'
+      example: 'The prognosis for recovery is positive with therapy and consistent support.',
+      exampleTranslation: 'Le pronostic psychologique de guérison est positif avec une thérapie et un soutien régulier.'
     },
     {
       english: 'comorbidity',
@@ -512,31 +512,31 @@ export const B2_L44: LessonContent = {
         isCorrect: true
       },
       {
-        sentence: 'A differential diagnosis was performed to rule out other conditions.',
-        translation: 'Un diagnostic différentiel a été effectué pour écarter d\'autres affections.',
+        sentence: 'A comprehensive assessment was performed to evaluate the patient\'s condition.',
+        translation: 'Une évaluation complète a été effectuée pour évaluer l\'état du patient.',
         isCorrect: true
       },
       {
-        sentence: 'They did a differential diagnosis to rule out other conditions.',
-        translation: 'Ils ont fait un diagnostic différentiel pour écarter d\'autres affections.',
+        sentence: 'They did a comprehensive assessment to rule out other conditions.',
+        translation: 'Ils ont fait une évaluation complète pour écarter d\'autres affections.',
         isCorrect: false
       },
       {
-        sentence: 'It has been demonstrated that early intervention improves prognosis significantly.',
-        translation: 'Il a été démontré que l\'intervention précoce améliore considérablement le pronostic.',
+        sentence: 'It has been demonstrated that early intervention improves the psychological prognosis significantly.',
+        translation: 'Il a été démontré que l\'intervention précoce améliore considérablement le pronostic psychologique.',
         isCorrect: true
       }
     ],
     commonMistakes: [
       {
-        wrong: 'It is important to remark that symptoms vary between individuals.',
-        correct: 'It is important to note that symptoms vary between individuals.',
+        wrong: 'It is important to remark that behavioral patterns vary between individuals.',
+        correct: 'It is important to note that behavioral patterns vary between individuals.',
         explanation: 'En anglais, « remark » signifie « faire remarquer » dans un contexte conversationnel, mais dans un contexte formel/clinique, on utilise « note ». « Remark » calqué sur le français « remarquer » est un anglicisme inverse.'
       },
       {
-        wrong: 'The diagnosis was done by a team of specialists.',
-        correct: 'The diagnosis was made by a team of specialists.',
-        explanation: 'En anglais, on « makes a diagnosis » (fait un diagnostic), on ne « does » pas un diagnostic. Le verbe associé à « diagnosis » est « make », pas « do ». Même chose pour « prognosis » et « assessment ».'
+        wrong: 'The assessment was done by a team of specialists.',
+        correct: 'The assessment was carried out by a team of specialists.',
+        explanation: 'En anglais, on « carries out an assessment » (réalise une évaluation) ou « conducts an assessment ». Le verbe « do » est trop informel pour un contexte clinique formel. On peut aussi dire « A comprehensive assessment was made ».'
       },
       {
         wrong: 'It was suggested that the patient to begin medication.',
@@ -549,26 +549,26 @@ export const B2_L44: LessonContent = {
     {
       speaker: 'Nadia',
       role: 'A',
-      text: 'Let\'s discuss the case of Patient 47. The onset of symptoms was reported six months ago.',
-      translation: 'Discutons du cas du Patient 47. L\'apparition des symptômes a été signalée il y a six mois.'
+      text: 'Let\'s discuss the case of Patient 47. The trigger for the anxiety episodes was reported six months ago.',
+      translation: 'Discutons du cas du Patient 47. Le déclencheur des épisodes anxieux a été signalé il y a six mois.'
     },
     {
       speaker: 'Tomás',
       role: 'B',
-      text: 'Yes, and the initial diagnosis was generalised anxiety disorder, although comorbidity with depression was noted.',
-      translation: 'Oui, et le diagnostic initial était un trouble d\'anxiété généralisée, bien qu\'une comorbidité avec la dépression ait été notée.'
+      text: 'Yes, and the initial assessment was generalised anxiety disorder, although comorbidity with depression was noted.',
+      translation: 'Oui, et l\'évaluation initiale était un trouble d\'anxiété généralisée, bien qu\'une comorbidité avec la dépression ait été notée.'
     },
     {
       speaker: 'Nadia',
       role: 'A',
-      text: 'It was observed that avoidance behaviour intensified after workplace-related stressors increased.',
-      translation: 'Il a été observé que le comportement d\'évitement s\'est intensifié après l\'augmentation des facteurs de stress liés au travail.'
+      text: 'It was observed that avoidance behaviour intensified after workplace-related stressors increased — a common behavioral pattern in chronic anxiety.',
+      translation: 'Il a été observé que le comportement d\'évitement s\'est intensifié après l\'augmentation des facteurs de stress liés au travail — un schéma comportemental courant dans l\'anxiété chronique.'
     },
     {
       speaker: 'Tomás',
       role: 'B',
       text: 'Given that pattern, what\'s the current prognosis? Is he responding to CBT?',
-      translation: 'Étant donné ce schéma, quel est le pronostic actuel ? Répond-il à la TCC ?'
+      translation: 'Étant donné ce schéma, quel est le pronostic psychologique actuel ? Répond-il à la TCC ?'
     },
     {
       speaker: 'Nadia',
@@ -579,23 +579,23 @@ export const B2_L44: LessonContent = {
     {
       speaker: 'Tomás',
       role: 'B',
-      text: 'I agree. Let\'s schedule a follow-up assessment in four weeks to reassess the symptom profile.',
-      translation: 'Je suis d\'accord. Planifions une évaluation de suivi dans quatre semaines pour réévaluer le profil des symptômes.'
+      text: 'I agree. Let\'s schedule a follow-up assessment in four weeks to reassess the behavioral patterns.',
+      translation: 'Je suis d\'accord. Planifions une évaluation de suivi dans quatre semaines pour réévaluer les schémas comportementaux.'
     }
   ],
   conversationTitle: 'Clinical Case Discussion',
   pronunciation: [
     {
-      word: 'diagnosis',
-      phonetic: '/ˌdaɪəɡˈnəʊsɪs/',
-      meaning: 'diagnostic',
-      tip: 'L\'accent est sur la troisième syllabe : dy-ug-NO-sis. Le « g » est prononcé /ɡ/ dur. Les francophones disent souvent /djaɡnoz/ — attention à l\'accent tonique et à la voyelle de la dernière syllabe /sɪs/ pas /sis/ français.'
+      word: 'assessment',
+      phonetic: '/əˈsesmənt/',
+      meaning: 'évaluation clinique',
+      tip: 'L\'accent est sur « SES » : uh-SES-ment. Le « a » initial est un schwa rapide. En contexte clinique, « assessment » désigne l\'évaluation psychologique complète, à ne pas confondre avec « diagnosis » qui est médical.'
     },
     {
-      word: 'symptom',
-      phonetic: '/ˈsɪmptəm/',
-      meaning: 'symptôme',
-      tip: 'Le « y » se prononce /ɪ/ comme dans « sit », PAS /ɛ/ comme en français « symptôme ». Dites « SIM-ptum » et non « saim-ptome ».'
+      word: 'behavioral pattern',
+      phonetic: '/bɪˈheɪvijərəl ˈpætərn/',
+      meaning: 'schéma comportemental',
+      tip: 'L\'accent est sur « HAY » pour « behavioral » et sur « PAT » pour « pattern » : bi-HAY-vyuh-rul PAT-urn. Ce terme est spécifique à la psychologie et diffère du terme médical « symptom » — un behavioral pattern décrit un comportement récurrent, pas un signe clinique.'
     },
     {
       word: 'prognosis',

@@ -15,20 +15,21 @@ export const A2_L1: LessonContent = {
     { english: 'Errand', french: 'Course / Tâche', phonetic: '/ˈerənd/', example: 'I have to run some errands.', exampleTranslation: 'Je dois faire quelques courses.' },
     { english: 'Laundry', french: 'Lessive', phonetic: '/ˈlɔːndri/', example: 'I do the laundry on Saturdays.', exampleTranslation: 'Je fais la lessive le samedi.' },
     { english: 'Groceries', french: 'Courses (alimentaires)', phonetic: '/ˈɡroʊsəriz/', example: 'We buy groceries every Friday.', exampleTranslation: 'Nous achetons des provisions chaque vendredi.' },
-    { english: 'Appointment', french: 'Rendez-vous', phonetic: '/əˈpɔɪntmənt/', example: 'I have a doctor\'s appointment at three.', exampleTranslation: "J'ai un rendez-vous chez le médecin à trois heures." },
+    { english: 'Breakfast', french: 'Petit-déjeuner', phonetic: '/ˈbrekfəst/', example: 'I have breakfast at seven o\'clock.', exampleTranslation: "Je prends le petit-déjeuner à sept heures." },
   ],
   grammar: {
     title: 'Vocabulaire des activités quotidiennes — Noms composés',
-    explanation: 'En anglais, beaucoup de mots du quotidien sont des noms composés : "commute" (trajet), "errand" (course/task), "laundry" (lessive), "groceries" (provisions). ATTENTION : "groceries" est toujours au pluriel avec un "s" quand on parle des provisions. "Laundry" est indénombrable : on dit "do the laundry", pas "do a laundry". Pour les rendez-vous : "an appointment" (avec un médecin), "a meeting" (au travail).',
+    explanation: 'En anglais, beaucoup de mots du quotidien sont des noms composés : "commute" (trajet), "errand" (course/task), "laundry" (lessive), "groceries" (provisions). ATTENTION : "groceries" est toujours au pluriel avec un "s" quand on parle des provisions. "Laundry" est indénombrable : on dit "do the laundry", pas "do a laundry". "Breakfast" (petit-déjeuner) s\'utilise sans article : "have breakfast", pas "have a breakfast". Pour les rendez-vous médicaux : "an appointment" (avec un médecin).',
     examples: [
       { sentence: 'I need to run some errands after work.', translation: "Je dois faire quelques courses après le travail.", isCorrect: true },
       { sentence: 'She does a laundry every week.', translation: '', isCorrect: false },
       { sentence: 'We buy groceries at the market.', translation: 'Nous achetons des provisions au marché.', isCorrect: true },
-      { sentence: 'I have an appointment at ten o\'clock.', translation: "J'ai un rendez-vous à dix heures.", isCorrect: true },
+      { sentence: 'I have breakfast at seven o\'clock.', translation: "Je prends le petit-déjeuner à sept heures.", isCorrect: true },
     ],
     commonMistakes: [
       { wrong: 'She does a laundry every week.', correct: 'She does the laundry every week.', explanation: '"Laundry" est indénombrable. On dit "do the laundry", pas "do a laundry".' },
       { wrong: 'I must buy grocery.', correct: 'I must buy groceries.', explanation: 'Quand on parle des provisions, "groceries" est toujours au pluriel : "buy groceries".' },
+      { wrong: 'I have a breakfast at seven.', correct: 'I have breakfast at seven.', explanation: '"Breakfast" s\'utilise sans article pour le repas : "have breakfast", pas "have a breakfast".' },
     ],
   },
   conversation: [
@@ -214,18 +215,18 @@ export const A2_L6: LessonContent = {
   vocab: [
     { english: 'Painting', french: 'Peinture', phonetic: '/ˈpeɪntɪŋ/', example: 'I enjoy painting on weekends.', exampleTranslation: "J'aime peindre le week-end." },
     { english: 'Swimming', french: 'Natation', phonetic: '/ˈswɪmɪŋ/', example: 'She goes swimming every Tuesday.', exampleTranslation: 'Elle va nager tous les mardis.' },
-    { english: 'Cooking', french: 'Cuisine', phonetic: '/ˈkʊkɪŋ/', example: 'Cooking is my favourite hobby.', exampleTranslation: 'Cuisiner est mon passe-temps préféré.' },
+    { english: 'Dancing', french: 'Danse', phonetic: '/ˈdænsɪŋ/', example: 'I go dancing every Saturday.', exampleTranslation: 'Je vais danser chaque samedi.' },
     { english: 'Reading', french: 'Lecture', phonetic: '/ˈriːdɪŋ/', example: 'He loves reading novels.', exampleTranslation: 'Il adore lire des romans.' },
     { english: 'Gardening', french: 'Jardinage', phonetic: '/ˈɡɑːrdnɪŋ/', example: 'My mother enjoys gardening.', exampleTranslation: 'Ma mère aime le jardinage.' },
   ],
   grammar: {
     title: 'Vocabulaire des loisirs — Noms en -ing',
-    explanation: 'En anglais, beaucoup de loisirs s\'expriment avec un verbe en -ing utilisé comme nom : "swimming" (natation), "reading" (lecture), "cooking" (cuisine). On les utilise après "I enjoy", "I like", "I love" : "I enjoy swimming" (J\'aime nager). ATTENTION : on dit "go swimming" (aller nager), pas "do swimming". De même : "go running", "go shopping", "go fishing".',
+    explanation: 'En anglais, beaucoup de loisirs s\'expriment avec un verbe en -ing utilisé comme nom : "swimming" (natation), "reading" (lecture), "dancing" (danse). On les utilise après "I enjoy", "I like", "I love" : "I enjoy swimming" (J\'aime nager). ATTENTION : on dit "go swimming" (aller nager), pas "do swimming". De même : "go running", "go shopping", "go dancing", "go fishing".',
     examples: [
       { sentence: 'I enjoy swimming in the river.', translation: "J'aime nager dans la rivière.", isCorrect: true },
       { sentence: 'She goes shopping every Saturday.', translation: 'Elle fait les courses chaque samedi.', isCorrect: true },
       { sentence: 'I do swimming on Monday.', translation: '', isCorrect: false },
-      { sentence: 'He loves cooking African food.', translation: 'Il adore cuisiner la cuisine africaine.', isCorrect: true },
+      { sentence: 'She loves dancing at parties.', translation: 'Elle adore danser aux fêtes.', isCorrect: true },
     ],
     commonMistakes: [
       { wrong: 'I do swimming.', correct: 'I go swimming. / I swim.', explanation: 'On dit "go swimming" ou "I swim", pas "do swimming". Le verbe "go" + -ing est la structure correcte pour les activités de loisir.' },
@@ -236,15 +237,15 @@ export const A2_L6: LessonContent = {
     { speaker: 'Amina', role: 'A', text: 'What do you do in your free time, Kofi?', translation: 'Que fais-tu pendant ton temps libre, Kofi ?' },
     { speaker: 'Kofi', role: 'B', text: 'I enjoy swimming and reading. What about you?', translation: "J'aime nager et lire. Et toi ?" },
     { speaker: 'Amina', role: 'A', text: 'I love painting! I paint landscapes every weekend.', translation: "J'adore peindre ! Je peins des paysages chaque week-end." },
-    { speaker: 'Kofi', role: 'B', text: 'That sounds wonderful! Do you also like cooking?', translation: 'Ça a l\'air merveilleux ! Aimes-tu aussi cuisiner ?' },
-    { speaker: 'Amina', role: 'A', text: 'Yes, I cook traditional dishes with my mother on Sundays.', translation: 'Oui, je cuisine des plats traditionnels avec ma mère le dimanche.' },
-    { speaker: 'Kofi', role: 'B', text: 'We should cook together sometime! I make great thieboudienne.', translation: 'On devrait cuisiner ensemble un jour ! Je fais un excellent thieboudienne.' },
+    { speaker: 'Kofi', role: 'B', text: 'That sounds wonderful! Do you also like dancing?', translation: 'Ça a l\'air merveilleux ! Aimes-tu aussi danser ?' },
+    { speaker: 'Amina', role: 'A', text: 'Yes, I go dancing every Saturday at the community centre.', translation: 'Oui, je vais danser chaque samedi au centre communautaire.' },
+    { speaker: 'Kofi', role: 'B', text: 'We should go dancing together sometime! I love Afrobeat music.', translation: 'On devrait aller danser ensemble un jour ! J\'adore la musique Afrobeat.' },
   ],
   conversationTitle: 'Parler de ses loisirs',
   pronunciation: [
     { word: 'Painting', phonetic: '/ˈpeɪntɪŋ/', meaning: 'Peinture', tip: 'Prononcez "PÉ-nin-g" — le "ng" final : langue contre le palais, ne dites pas "pein-tin".' },
     { word: 'Swimming', phonetic: '/ˈswɪmɪŋ/', meaning: 'Natation', tip: 'Le "w" initial : arrondissez les lèvres. "SOUIM-ming". Le "i" est court.' },
-    { word: 'Cooking', phonetic: '/ˈkʊkɪŋ/', meaning: 'Cuisine', tip: 'Le "oo" est court comme dans "book" : "KOU-king". Pas "kou-ki-g".' },
+    { word: 'Dancing', phonetic: '/ˈdænsɪŋ/', meaning: 'Danse', tip: 'Prononcez "DAN-sing" — le "a" est ouvert comme dans "cat" et l\'accent est sur "DAN".' },
     { word: 'Gardening', phonetic: '/ˈɡɑːrdnɪŋ/', meaning: 'Jardinage', tip: 'L\'accent est sur "GAR" : "GAR-dne-ning". Le "e" du milieu est réduit.' },
   ],
 }
@@ -539,7 +540,7 @@ export const A2_L14: LessonContent = {
   ],
   grammar: {
     title: 'Les comparatifs — Hotter than, colder than, as warm as',
-    explanation: 'Pour comparer la météo, on utilise les comparatifs : Adjectifs courts (1 syllabe) + "-er + than" : "hotter than" (plus chaud que), "colder than" (plus froid que), "wetter than" (plus humide que). Adjectifs longs (2+ syllabes) + "more + than" : "more beautiful than" (plus beau que), "more humid than" (plus humide que). Pour dire "aussi...que" : "as + adjectif + as" : "as warm as" (aussi chaud que). ATTENTION : irréguliers : good → better than, bad → worse than.',
+    explanation: 'Vous avez déjà vu les comparatifs dans les cours précédents. Ici, nous les appliquons au vocabulaire de la météo. Pour comparer la météo, on utilise les comparatifs : Adjectifs courts (1 syllabe) + "-er + than" : "hotter than" (plus chaud que), "colder than" (plus froid que), "wetter than" (plus humide que). Adjectifs longs (2+ syllabes) + "more + than" : "more beautiful than" (plus beau que), "more humid than" (plus humide que). Pour dire "aussi...que" : "as + adjectif + as" : "as warm as" (aussi chaud que). ATTENTION : irréguliers : good → better than, bad → worse than.',
     examples: [
       { sentence: 'Today is hotter than yesterday.', translation: "Aujourd'hui est plus chaud qu'hier.", isCorrect: true },
       { sentence: 'Summer is more hot than spring.', translation: '', isCorrect: false },

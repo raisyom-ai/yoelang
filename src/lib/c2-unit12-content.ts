@@ -206,11 +206,11 @@ export const C2_L58: LessonContent = {
       exampleTranslation: 'L\'essai fondateur de Greenberg sur la peinture moderniste a établi le cadre téléologique qui a dominé la critique américaine pendant trois décennies.',
     },
     {
-      english: 'Pastiche',
-      french: 'Pastiche',
-      phonetic: '/pæˈstiːʃ/',
-      example: 'The installation reads less as homage than as pastiche — a skilful mimicry that lacks the original\'s animating tension.',
-      exampleTranslation: 'L\'installation se lit moins comme un hommage que comme un pastiche — une imitation habile qui manque de la tension animatrice de l\'original.',
+      english: 'Formalism',
+      french: 'Formalisme',
+      phonetic: '/ˈfɔːrməlɪzəm/',
+      example: 'The formalism reads less as homage than as interpretation — an analytical approach that transforms the artwork into a study of pure form beyond its visual narrative.',
+      exampleTranslation: 'Le formalisme se lit moins comme un hommage que comme une interprétation — une approche analytique qui transforme l\'œuvre en une étude de forme pure au-delà de son récit visuel.',
     },
     {
       english: 'Juxtaposition',
@@ -297,11 +297,11 @@ export const C2_L59: LessonContent = {
       exampleTranslation: 'La tradition ecphrastique — du bouclier d\'Achille chez Homère au "Autoportrait dans un miroir convexe" d\'Ashbery — soulève des questions fondamentales sur la relation entre la représentation verbale et visuelle.',
     },
     {
-      english: 'Iconography',
-      french: 'Iconographie',
-      phonetic: '/ˌaɪkəˈnɒɡrəfi/',
-      example: 'Panofsky\'s iconography distinguishes between pre-iconographic description, iconographic analysis, and iconological interpretation — three layers of meaning that the viewer must progressively decode.',
-      exampleTranslation: 'L\'iconographie de Panofsky distingue la description pré-iconographique, l\'analyse iconographique et l\'interprétation iconologique — trois couches de signification que le spectateur doit progressivement décoder.',
+      english: 'Hermeneutic',
+      french: 'Herméneutique (adjectif)',
+      phonetic: '/ˌhɜːrməˈnjuːtɪk/',
+      example: 'Where iconography catalogues symbols, hermeneutic analysis seeks to uncover the deeper cultural interpretation and meaning systems that those symbols embody.',
+      exampleTranslation: 'Là où l\'iconographie catalogue les symboles, l\'analyse herméneutique cherche à mettre au jour l\'interprétation culturelle et les systèmes de sens plus profonds que ces symboles incarnent.',
     },
     {
       english: 'Pictorial',

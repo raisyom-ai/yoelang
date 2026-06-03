@@ -228,11 +228,11 @@ export const C2_L19: LessonContent = {
       exampleTranslation: 'La paralipse — "I will not mention his fraud, nor his perjury" — attire l\'attention sur quelque chose en prétendant l\'ignorer.',
     },
     {
-      english: 'Aporia',
-      french: 'Aporie',
-      phonetic: '/əˈpɔːriə/',
-      example: 'The aporia "I hardly know where to begin" feigns bewilderment to suggest the evidence is overwhelming.',
-      exampleTranslation: 'L\'aporie "I hardly know where to begin" feint la perplexité pour suggérer que les preuves sont accablantes.',
+      english: 'Occupatio',
+      french: 'Occupatio (prétérition rhétorique)',
+      phonetic: '/ˌɒkjʊˈpeɪʃɪoʊ/',
+      example: 'The occupatio "I hardly know where to begin" feigns bewilderment to suggest the evidence is overwhelming.',
+      exampleTranslation: 'L\'occupatio "I hardly know where to begin" feint la perplexité pour suggérer que les preuves sont accablantes.',
     },
     {
       english: 'Meiosis',
@@ -258,7 +258,7 @@ export const C2_L19: LessonContent = {
   ],
   grammar: {
     title: 'Les figures de l\'ironie et de l\'amplification : grammaire de l\'understatement et de l\'overstatement',
-    explanation: 'La méiose (litote) et l\'auxèse sont des outils grammaticaux d\'amplification ou de minimisation. La méiose utilise des structures atténuatrices — adverbes restrictifs ("hardly", "scarcely", "merely"), conditionnels ("It might be said that..."), et négations de l\'opposé ("not insignificant"). L\'auxèse utilise l\'accumulation graduelle : trois adjectifs d\'intensité croissante, trois propositions subordonnées de plus en plus dramatiques. La paralipse (prétérition) emploie la négation pour affirmer : "I will not speak of X" = "X est si important que je ne devrais pas en parler". L\'aporie utilise la question feinte : "How can one even begin to...?" pour suggérer l\'évidence. Ces figures exploitent la pragmatique linguistique — le décalage entre ce qui est dit et ce qui est signifié.',
+    explanation: 'La méiose (litote) et l\'auxèse sont des outils grammaticaux d\'amplification ou de minimisation. La méiose utilise des structures atténuatrices — adverbes restrictifs ("hardly", "scarcely", "merely"), conditionnels ("It might be said that..."), et négations de l\'opposé ("not insignificant"). L\'auxèse utilise l\'accumulation graduelle : trois adjectifs d\'intensité croissante, trois propositions subordonnées de plus en plus dramatiques. La paralipse (prétérition) emploie la négation pour affirmer : "I will not speak of X" = "X est si important que je ne devrais pas en parler". L\'antithèse utilise la juxtaposition contrastive : "It was the best of times, it was the worst of times" pour créer une tension rhétorique. Ces figures exploitent la pragmatique linguistique — le décalage entre ce qui est dit et ce qui est signifié.',
     examples: [
       { sentence: 'The loss of life was not insignificant.', translation: 'La perte de vies n\'était pas insignifiante.', isCorrect: true },
       { sentence: 'It was a setback, then a disaster, then a catastrophe.', translation: 'Ce fut un revers, puis un désastre, puis une catastrophe.', isCorrect: true },
@@ -273,7 +273,7 @@ export const C2_L19: LessonContent = {
   conversation: [
     { speaker: 'Professor Okafor', role: 'A', text: 'Paralipsis is the rhetorician\'s sleight of hand. By declaring "I shall not dwell on his duplicity," you ensure the jury dwells on nothing else.', translation: 'La paralipse est le tour de passe-passe du rhétoricien. En déclarant "I shall not dwell on his duplicity", vous assurez que le jury ne pense à rien d\'autre.' },
     { speaker: 'Dr. Descamps', role: 'B', text: 'Clever — but dangerously so. An audience that detects the device will resent the manipulation. The paralipsis must seem effortless, almost accidental.', translation: 'Astucieux — mais dangereusement. Un auditoire qui détecte le procédé en voudra à la manipulation. La paralipse doit paraître sans effort, presque accidentelle.' },
-    { speaker: 'Professor Okafor', role: 'A', text: 'Whereas aporia operates through feigned helplessness. "I scarcely know where to begin" implies the evidence is so voluminous that selection itself is daunting.', translation: 'Tandis que l\'aporie opère par une impuissance feinte. "I scarcely know where to begin" implique que les preuves sont si volumineuses que la sélection elle-même est décourageante.' },
+    { speaker: 'Professor Okafor', role: 'A', text: 'Whereas antithesis operates through structural contrast. "It was the best of times, it was the worst of times" creates a tension that compels the audience to hold both truths simultaneously.', translation: 'Tandis que l\'antithèse opère par un contraste structurel. "It was the best of times, it was the worst of times" crée une tension qui contraint l\'auditoire à tenir les deux vérités simultanément.' },
     { speaker: 'Dr. Descamps', role: 'B', text: 'And meiosis — the deliberate understatement — gains its force from the gap between expression and reality. "A minor inconvenience" to describe a natural disaster is devastating precisely because it withholds the expected gravity.', translation: 'Et la méiose — la litote délibérée — tire sa force du décalage entre l\'expression et la réalité. "A minor inconvenience" pour décrire une catastrophe naturelle est dévastateur précisément parce qu\'elle retient la gravité attendue.' },
     { speaker: 'Professor Okafor', role: 'A', text: 'Then auxesis provides the counter-movement — escalation. "It was regrettable; no, it was shameful; no, it was criminal." Each step intensifies the moral charge.', translation: 'Puis l\'auxèse fournit le contre-mouvement — l\'escalade. "It was regrettable; no, it was shameful; no, it was criminal." Chaque palier intensifie la charge morale.' },
     { speaker: 'Dr. Descamps', role: 'B', text: 'And when language itself fails, catachresis bends it into new shape. "The silence screamed" — logically impossible, rhetorically irrefutable. The strain on the word IS the argument.', translation: 'Et quand le langage lui-même défaille, la catachrèse le plie dans une forme nouvelle. "The silence screamed" — logiquement impossible, rhétoriquement irréfutable. La tension imposée au mot EST l\'argument.' },
@@ -281,7 +281,7 @@ export const C2_L19: LessonContent = {
   conversationTitle: 'Dire moins pour signifier plus',
   pronunciation: [
     { word: 'Paralipsis', phonetic: '/pəˈrælɪpsɪs/', meaning: 'Paralipse', tip: 'Accent sur la deuxième syllabe : "puh-RAL-ip-sis". Le "ps" final est muet comme en grec. Quatre syllabes audibles.' },
-    { word: 'Aporia', phonetic: '/əˈpɔːriə/', meaning: 'Aporie', tip: 'Prononcez "uh-POR-ee-uh" — accent sur "POR". Le "o" est ouvert comme dans "port". Quatre syllabes.' },
+    { word: 'Antithesis', phonetic: '/ænˈtɪθəsɪs/', meaning: 'Antithèse', tip: 'Accent sur la deuxième syllabe : "an-TITH-uh-sis". Le "th" est expiré comme dans "think", pas sonore comme dans "this". Ne dites pas "an-tee-THEE-sis".' },
     { word: 'Meiosis', phonetic: '/maɪˈoʊsɪs/', meaning: 'Méiose (litote)', tip: 'Prononcez "my-OH-sis" — comme "my" + "oh" + "sis". Accent sur la deuxième syllabe. Ne confondez pas avec le terme biologique.' },
     { word: 'Auxesis', phonetic: '/ɔːɡˈziːsɪs/', meaning: 'Auxèse', tip: 'Prononcez "awg-ZEE-sis" — le "x" = "gz" comme dans "examine". Accent sur la deuxième syllabe. Le "s" final est sonore.' },
   ],
@@ -319,16 +319,16 @@ export const C2_L20: LessonContent = {
       exampleTranslation: 'Les mêmes mots — "You will comply" — peuvent être une déclaration, une question ou une menace selon l\'intonation.',
     },
     {
-      english: 'Enjambment',
-      french: 'Enjambement',
-      phonetic: '/ɪnˈdʒæmmənt/',
-      example: 'Enjambment carries the sense beyond a syntactic break, creating momentum that propels the listener forward without pause.',
-      exampleTranslation: 'L\'enjambement porte le sens au-delà d\'une coupure syntaxique, créant un élan qui propulse l\'auditeur en avant sans pause.',
+      english: 'Diacope',
+      french: 'Diacope (répétition interrompue)',
+      phonetic: '/daɪˈækəpi/',
+      example: 'It was the best of times, it was the worst of times — a classic diacope of contrasts that captures the contradictions of an era through interrupted repetition.',
+      exampleTranslation: 'C\'était le meilleur des temps, c\'était le pire des temps — une diacope classique de contrastes qui saisit les contradictions d\'une époque par répétition interrompue.',
     },
   ],
   grammar: {
     title: 'La prosodie comme grammaire : comment l\'intonation modifie la structure',
-    explanation: 'En anglais, la prosodie n\'est pas un simple ornement — elle modifie la fonction grammaticale. Une déclaration avec intonation montante devient une question ("You\'re leaving↗?" = "Are you leaving?"). L\'accent d\'insistance peut transformer un verbe enFocus contrastif : "I DID warn you" ajoute un auxiliaire emphatique qui change la valeur pragmatique de l\'énoncé. La césure (pause stratégique) découpe la structure syntaxique attendue : "We shall prevail — if not today, then tomorrow" crée une périphrase que la ponctuation orale rend naturelle. Le rythme trimétrique (trois battements) crée une clôture rhétorique : "Government of the people, by the people, for the people." L\'enjambement oral — enchaîner deux phrases sans pause — fusionne deux propositions en un seul mouvement argumentatif.',
+    explanation: 'En anglais, la prosodie n\'est pas un simple ornement — elle modifie la fonction grammaticale. Une déclaration avec intonation montante devient une question ("You\'re leaving↗?" = "Are you leaving?"). L\'accent d\'insistance peut transformer un verbe enFocus contrastif : "I DID warn you" ajoute un auxiliaire emphatique qui change la valeur pragmatique de l\'énoncé. La césure (pause stratégique) découpe la structure syntaxique attendue : "We shall prevail — if not today, then tomorrow" crée une périphrase que la ponctuation orale rend naturelle. Le rythme trimétrique (trois battements) crée une clôture rhétorique : "Government of the people, by the people, for the people." La volta rhétorique — le tournant décisif — transforme la direction de l\'argument. Le rythme accentuel — l\'alternance régulière de syllabes fortes et faibles — crée un momentum qui emporte la conviction.',
     examples: [
       { sentence: 'You WILL comply.', translation: 'Vous OBÉIREZ.', isCorrect: true },
       { sentence: 'We shall prevail — if not today, then inevitably tomorrow.', translation: 'Nous prévaudrons — si ce n\'est aujourd\'hui, alors inévitablement demain.', isCorrect: true },
@@ -345,7 +345,7 @@ export const C2_L20: LessonContent = {
     { speaker: 'Dr. Mercier', role: 'B', text: 'And the caesura — that strategic silence — is worth a thousand words. Churchill mastered it: "We shall fight..." — pause — "...on the beaches." The silence lets the resolve crystallise.', translation: 'Et la césure — ce silence stratégique — vaut mille mots. Churchill la maîtrisait : "We shall fight..." — pause — "...on the beaches." Le silence laisse la résolution se cristalliser.' },
     { speaker: 'Professor Keita', role: 'A', text: 'Precisely. The pause creates expectation, and expectation creates receptivity. An audience that leans forward is already half-persuaded.', translation: 'Précisément. La pause crée l\'attente, et l\'attente crée la réceptivité. Un auditoire qui se penche en avant est déjà à moitié persuadé.' },
     { speaker: 'Dr. Mercier', role: 'B', text: 'Then there\'s the emphatic "do" — "I DO understand your concerns." The prosodic stress on "do" doesn\'t merely intensify; it counters an implicit doubt. It\'s grammatically redundant but rhetorically essential.', translation: 'Il y a ensuite le "do" emphatique — "I DO understand your concerns." L\'accent prosodique sur "do" ne fait pas qu\'intensifier ; il contrarie un doute implicite. Il est grammaticalement redondant mais rhétoriquement essentiel.' },
-    { speaker: 'Professor Keita', role: 'A', text: 'And enjambment — running one clause into the next without a breath — creates momentum that mirrors certainty. "We will not falter, we will not fail, we will not yield" — the absence of pause IS the argument.', translation: 'Et l\'enjambement — enchaîner une proposition à la suivante sans reprendre souffle — crée un élan qui reflète la certitude. "We will not falter, we will not fail, we will not yield" — l\'absence de pause EST l\'argument.' },
+    { speaker: 'Professor Keita', role: 'A', text: 'And the volta — the decisive turn in the argument — redirects the audience\'s commitment. "We have suffered, but from that suffering we draw our resolve" — the pivot from concession to conviction is where persuasion happens.', translation: 'Et la volta — le tournant décisif de l\'argument — redirige l\'engagement de l\'auditoire. "We have suffered, but from that suffering we draw our resolve" — le pivot de la concession vers la conviction est le moment où la persuasion opère.' },
     { speaker: 'Dr. Mercier', role: 'B', text: 'While cadence provides the period. A decisive drop in pitch and tempo at the close: "This... we... guarantee." The audience hears the full stop before you even reach it.', translation: 'Tandis que la cadence fournit le point final. Une chute décidée de la hauteur et du tempo à la clôture : "This... we... guarantee." L\'auditoire entend le point final avant même que vous ne l\'atteigniez.' },
   ],
   conversationTitle: 'La musique de la persuasion',
@@ -353,6 +353,6 @@ export const C2_L20: LessonContent = {
     { word: 'Prosody', phonetic: '/ˈprɒsədi/', meaning: 'Prosodie', tip: 'Accent sur la première syllabe : "PROS-uh-dee". Le "o" est ouvert comme dans "pot". Ne dites pas "pro-ZO-dee".' },
     { word: 'Cadence', phonetic: '/ˈkeɪdəns/', meaning: 'Cadence', tip: 'Prononcez "KAY-dens" — le "a" est long comme dans "day". L\'accent est sur la première syllabe. Le "ce" final est doux.' },
     { word: 'Caesura', phonetic: '/sɪˈzjʊərə/', meaning: 'Césure', tip: 'Prononcez "siz-YOO-ruh" — le "ae" latin = "i" comme dans "Caesar". Accent sur la deuxième syllabe. Quatre syllabes.' },
-    { word: 'Enjambment', phonetic: '/ɪnˈdʒæmmənt/', meaning: 'Enjambement', tip: 'Prononcez "in-JAM-ment" — accent sur la deuxième syllabe. Le "b" est doublé mais ne se prononce qu\'une fois. Du français "enjamber" adapté en anglais.' },
+    { word: 'Antithesis', phonetic: '/ænˈtɪθəsɪs/', meaning: 'Antithèse', tip: 'Accent sur la deuxième syllabe : « an-TITH-uh-sis ». Le « th » est expiré comme dans « think », pas sonore comme dans « this ».' },
   ],
 }

@@ -68,7 +68,7 @@ export const B1_L2: LessonContent = {
     ],
     commonMistakes: [
       { wrong: 'The article is write by a journalist.', correct: 'The article is written by a journalist.', explanation: 'La voix passive utilise le participe passé : "written" (pas "write"). Participe passé irrégulier : write → wrote → written.' },
-      { wrong: 'The news are broadcasted every day.', correct: 'The news is broadcast every day.', explanation: '"News" est singulier ! Et "broadcast" a la même forme pour le présent et le participe passé (pas "broadcasted" dans l\'usage standard).' },
+      { wrong: 'The article is publish every Monday.', correct: 'The article is published every Monday.', explanation: 'La voix passive nécessite le participe passé : "is published", pas "is publish". Le participe passé des verbes réguliers se termine par -ed.' },
     ],
   },
   conversation: [
@@ -102,12 +102,12 @@ export const B1_L3: LessonContent = {
     explanation: 'Pour donner votre opinion sur l\'actualité : "In my opinion..." (À mon avis...), "I believe that..." (Je crois que...), "It seems to me that..." (Il me semble que...), "From what I\'ve read..." (D\'après ce que j\'ai lu...). Pour être nuancé : "On the one hand... on the other hand..." (D\'un côté... de l\'autre côté...). Pour demander l\'avis de quelqu\'un : "What do you think about...?", "What\'s your take on this?". ATTENTION : "opinion" se prononce "e-PIN-yenn", pas "o-pi-nyon" à la française.',
     examples: [
       { sentence: 'In my opinion, the coverage is biased.', translation: 'À mon avis, la couverture est biaisée.', isCorrect: true },
-      { sentence: 'I think that the news are reliable.', translation: '', isCorrect: false },
+      { sentence: 'In my opinion, I think the coverage is biased.', translation: '', isCorrect: false },
       { sentence: 'What do you think about the new policy?', translation: 'Que penses-tu de la nouvelle politique ?', isCorrect: true },
       { sentence: 'From what I\'ve read, the situation is improving.', translation: "D'après ce que j'ai lu, la situation s'améliore.", isCorrect: true },
     ],
     commonMistakes: [
-      { wrong: 'I think that the news are reliable.', correct: 'I think that the news is reliable.', explanation: '"News" est TOUJOURS singulier : "the news IS", jamais "the news ARE".' },
+      { wrong: 'In my opinion, I think the coverage is biased.', correct: 'In my opinion, the coverage is biased. / I think the coverage is biased.', explanation: '"In my opinion" et "I think" expriment la même chose — ne les combinez pas ! Utilisez l\'un ou l\'autre, pas les deux ensemble.' },
       { wrong: 'According me, the article is wrong.', correct: 'According to me, the article is wrong.', explanation: 'On dit "according TO me", pas "according me". La préposition "to" est obligatoire.' },
     ],
   },

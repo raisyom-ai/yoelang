@@ -536,7 +536,7 @@ export const A2_L39: LessonContent = {
     { english: 'Meeting', french: 'Réunion', phonetic: '/ˈmiːtɪŋ/', example: 'We have a meeting at ten.', exampleTranslation: 'Nous avons une réunion à dix heures.' },
     { english: 'Deadline', french: 'Date limite', phonetic: '/ˈdedlaɪn/', example: 'The deadline is next Friday.', exampleTranslation: 'La date limite est vendredi prochain.' },
     { english: 'Colleague', french: 'Collègue', phonetic: '/ˈkɒliːɡ/', example: 'My colleague is very helpful.', exampleTranslation: 'Mon collègue est très serviable.' },
-    { english: 'Schedule', french: 'Emploi du temps', phonetic: '/ˈʃedjuːl/', example: 'My schedule is very busy.', exampleTranslation: 'Mon emploi du temps est très chargé.' },
+    { english: 'Project', french: 'Projet', phonetic: '/ˈprɒdʒekt/', example: 'Our project is due next month.', exampleTranslation: 'Notre projet est dû le mois prochain.' },
     { english: 'Overtime', french: 'Heures supplémentaires', phonetic: '/ˈoʊvərtaɪm/', example: 'I worked overtime last night.', exampleTranslation: "J'ai fait des heures supplémentaires hier soir." },
   ],
   grammar: {
@@ -556,7 +556,7 @@ export const A2_L39: LessonContent = {
   conversation: [
     { speaker: 'Kofi', role: 'A', text: 'Good morning, Amina. Do we have a meeting today?', translation: 'Bonjour, Amina. Avons-nous une réunion aujourd\'hui ?' },
     { speaker: 'Amina', role: 'B', text: 'Yes, at two o\'clock. I need to prepare the documents.', translation: "Oui, à deux heures. Je dois préparer les documents." },
-    { speaker: 'Kofi', role: 'A', text: 'Could you send me the schedule, please?', translation: "Pourriez-vous m'envoyer l'emploi du temps, s'il vous plaît ?" },
+    { speaker: 'Kofi', role: 'A', text: 'Could you send me the project details, please?', translation: "Pourriez-vous m'envoyer les détails du projet, s'il vous plaît ?" },
     { speaker: 'Amina', role: 'B', text: 'Of course! The deadline for the project is next Friday.', translation: "Bien sûr ! La date limite du projet est vendredi prochain." },
     { speaker: 'Kofi', role: 'A', text: 'I\'ll work overtime this week to finish it.', translation: "Je ferai des heures supplémentaires cette semaine pour le terminer." },
     { speaker: 'Amina', role: 'B', text: 'Thank you, Kofi. Let\'s ask our colleague Oumar for help too.', translation: "Merci, Kofi. Demandons aussi de l'aide à notre collègue Oumar." },
@@ -566,7 +566,7 @@ export const A2_L39: LessonContent = {
     { word: 'Meeting', phonetic: '/ˈmiːtɪŋ/', meaning: 'Réunion', tip: 'Prononcez "MII-ting" — le "ee" est long. Pas "mé-ting".' },
     { word: 'Deadline', phonetic: '/ˈdedlaɪn/', meaning: 'Date limite', tip: 'Prononcez "DED-laïn" — l\'accent est sur "DEAD".' },
     { word: 'Colleague', phonetic: '/ˈkɒliːɡ/', meaning: 'Collègue', tip: 'Prononcez "KO-liig" — le "ea" final = "i" long. Pas "ko-lè-gue".' },
-    { word: 'Schedule', phonetic: '/ˈʃedjuːl/', meaning: 'Emploi du temps', tip: 'En britannique : "CHÉ-diou". En américain : "SKÉ-doul".' },
+    { word: 'Project', phonetic: '/ˈprɒdʒekt/', meaning: 'Projet', tip: 'L\'accent est sur "PRO" : "PRO-djèkt". En verbe, l\'accent change : "pro-DJÈKT".' },
   ],
 }
 

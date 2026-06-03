@@ -157,11 +157,11 @@ export const B2_L52: LessonContent = {
       exampleTranslation: 'Les parties conviennent par la présente des termes énoncés à l\'Annexe A.'
     },
     {
-      english: 'notwithstanding',
-      french: 'nonobstant / malgré',
-      phonetic: '/ˌnɒtwɪθˈstændɪŋ/',
-      example: 'Notwithstanding the provisions of Section 3, the landlord may terminate the lease early.',
-      exampleTranslation: 'Nonobstant les dispositions de l\'article 3, le propriétaire peut résilier le bail par anticipation.'
+      english: 'hereinafter',
+      french: 'ci-après',
+      phonetic: '/ˌhɪərɪnˈæftər/',
+      example: 'Hereinafter referred to as "the Company", the party agrees to the terms outlined in Schedule A.',
+      exampleTranslation: 'Ci-après dénommée "la Société", la partie convient des termes énoncés à l\'Annexe A.'
     },
     {
       english: 'thereof',
