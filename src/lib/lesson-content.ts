@@ -15,6 +15,20 @@ import { B2_L41, B2_L42, B2_L43, B2_L44, B2_L45 } from './b2-unit9-content'
 import { B2_L46, B2_L47, B2_L48, B2_L49, B2_L50 } from './b2-unit10-content'
 import { B2_L51, B2_L52, B2_L53, B2_L54, B2_L55 } from './b2-unit11-content'
 import { B2_L56, B2_L57, B2_L58, B2_L59, B2_L60 } from './b2-unit12-content'
+import { C1_L1, C1_L2, C1_L3, C1_L4, C1_L5 } from './c1-unit1-content'
+import { C1_L6, C1_L7, C1_L8, C1_L9, C1_L10 } from './c1-unit2-content'
+import { C1_L11, C1_L12, C1_L13, C1_L14, C1_L15 } from './c1-unit3-content'
+import { C1_L16, C1_L17, C1_L18, C1_L19, C1_L20 } from './c1-unit4-content'
+import { C1_L21, C1_L22, C1_L23, C1_L24, C1_L25 } from './c1-unit5-content'
+import { C1_L26, C1_L27, C1_L28, C1_L29, C1_L30 } from './c1-unit6-content'
+import { C1_L31, C1_L32, C1_L33, C1_L34, C1_L35 } from './c1-unit7-content'
+import { C1_L36, C1_L37, C1_L38, C1_L39, C1_L40 } from './c1-unit8-content'
+import { C1_L41, C1_L42, C1_L43, C1_L44, C1_L45 } from './c1-unit9-content'
+import { C1_L46, C1_L47, C1_L48, C1_L49, C1_L50 } from './c1-unit10-content'
+import { C1_L51, C1_L52, C1_L53, C1_L54, C1_L55 } from './c1-unit11-content'
+import { C1_L56, C1_L57, C1_L58, C1_L59, C1_L60 } from './c1-unit12-content'
+import { C1_L61, C1_L62, C1_L63, C1_L64, C1_L65 } from './c1-unit13-content'
+import { C1_L66, C1_L67, C1_L68, C1_L69, C1_L70 } from './c1-unit14-content'
 import { C2_L1, C2_L2, C2_L3, C2_L4, C2_L5 } from './c2-unit1-content'
 import { C2_L6, C2_L7, C2_L8, C2_L9, C2_L10 } from './c2-unit2-content'
 import { C2_L11, C2_L12, C2_L13, C2_L14, C2_L15 } from './c2-unit3-content'
@@ -1962,6 +1976,92 @@ const LESSON_CONTENT_MAP: Record<string, LessonContent> = {
   'b2-l58': B2_L58,
   'b2-l59': B2_L59,
   'b2-l60': B2_L60,
+
+  // ─── C1 Advanced ────────────────────────────────────────────────────────
+  // C1 Unit 1: Diplomatic English
+  'c1-l1': C1_L1,
+  'c1-l2': C1_L2,
+  'c1-l3': C1_L3,
+  'c1-l4': C1_L4,
+  'c1-l5': C1_L5,
+  // C1 Unit 2: Academic Research
+  'c1-l6': C1_L6,
+  'c1-l7': C1_L7,
+  'c1-l8': C1_L8,
+  'c1-l9': C1_L9,
+  'c1-l10': C1_L10,
+  // C1 Unit 3: Advanced Literature
+  'c1-l11': C1_L11,
+  'c1-l12': C1_L12,
+  'c1-l13': C1_L13,
+  'c1-l14': C1_L14,
+  'c1-l15': C1_L15,
+  // C1 Unit 4: Corporate Strategy
+  'c1-l16': C1_L16,
+  'c1-l17': C1_L17,
+  'c1-l18': C1_L18,
+  'c1-l19': C1_L19,
+  'c1-l20': C1_L20,
+  // C1 Unit 5: International Relations
+  'c1-l21': C1_L21,
+  'c1-l22': C1_L22,
+  'c1-l23': C1_L23,
+  'c1-l24': C1_L24,
+  'c1-l25': C1_L25,
+  // C1 Unit 6: Medical Research
+  'c1-l26': C1_L26,
+  'c1-l27': C1_L27,
+  'c1-l28': C1_L28,
+  'c1-l29': C1_L29,
+  'c1-l30': C1_L30,
+  // C1 Unit 7: Technical Writing
+  'c1-l31': C1_L31,
+  'c1-l32': C1_L32,
+  'c1-l33': C1_L33,
+  'c1-l34': C1_L34,
+  'c1-l35': C1_L35,
+  // C1 Unit 8: Debate & Persuasion
+  'c1-l36': C1_L36,
+  'c1-l37': C1_L37,
+  'c1-l38': C1_L38,
+  'c1-l39': C1_L39,
+  'c1-l40': C1_L40,
+  // C1 Unit 9: Cultural Nuances
+  'c1-l41': C1_L41,
+  'c1-l42': C1_L42,
+  'c1-l43': C1_L43,
+  'c1-l44': C1_L44,
+  'c1-l45': C1_L45,
+  // C1 Unit 10: Financial Markets
+  'c1-l46': C1_L46,
+  'c1-l47': C1_L47,
+  'c1-l48': C1_L48,
+  'c1-l49': C1_L49,
+  'c1-l50': C1_L50,
+  // C1 Unit 11: Constitutional Law
+  'c1-l51': C1_L51,
+  'c1-l52': C1_L52,
+  'c1-l53': C1_L53,
+  'c1-l54': C1_L54,
+  'c1-l55': C1_L55,
+  // C1 Unit 12: Scientific Discourse
+  'c1-l56': C1_L56,
+  'c1-l57': C1_L57,
+  'c1-l58': C1_L58,
+  'c1-l59': C1_L59,
+  'c1-l60': C1_L60,
+  // C1 Unit 13: Media Analysis
+  'c1-l61': C1_L61,
+  'c1-l62': C1_L62,
+  'c1-l63': C1_L63,
+  'c1-l64': C1_L64,
+  'c1-l65': C1_L65,
+  // C1 Unit 14: Advanced Idioms
+  'c1-l66': C1_L66,
+  'c1-l67': C1_L67,
+  'c1-l68': C1_L68,
+  'c1-l69': C1_L69,
+  'c1-l70': C1_L70,
 
   // ─── C2 Mastery ────────────────────────────────────────────────────────
   // C2 Unit 1: Native-level Expressions
