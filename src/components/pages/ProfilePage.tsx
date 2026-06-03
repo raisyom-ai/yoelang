@@ -74,22 +74,31 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* ─── Sticky Top Bar ──────────────────────────────────────────── */}
+      <div className="sticky top-0 z-40 bg-background/80 backdrop-blur-lg border-b border-border/40">
+        <div className="mx-auto max-w-4xl flex items-center gap-2 px-4 py-3 lg:px-6">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={goBack}
+            className="shrink-0 rounded-full gap-1.5 border-yoel-red/20 hover:bg-yoel-red/5 hover:border-yoel-red/40 transition-all"
+          >
+            <ArrowLeft className="h-4 w-4 text-yoel-red" />
+            <span className="text-xs font-medium text-yoel-red">Retour</span>
+          </Button>
+          <Button variant="ghost" size="icon" onClick={() => navigate('dashboard')} className="shrink-0 text-muted-foreground hover:text-yoel-red h-8 w-8">
+            <Home className="h-4 w-4" />
+          </Button>
+          <h1 className="text-xl font-bold gradient-text-red ml-1">Profil</h1>
+        </div>
+      </div>
+
       <motion.div
         className="mx-auto max-w-4xl space-y-6 p-4 lg:p-6"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
       >
-        {/* ─── Top Bar ──────────────────────────────────────────────────── */}
-        <motion.div variants={itemVariants} className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" onClick={goBack} className="shrink-0">
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <Button variant="ghost" size="icon" onClick={() => navigate('dashboard')} className="shrink-0 text-muted-foreground hover:text-yoel-red">
-            <Home className="h-4 w-4" />
-          </Button>
-          <h1 className="text-xl font-bold gradient-text-red">Profil</h1>
-        </motion.div>
 
         {/* ─── Profile Header ──────────────────────────────────────────── */}
         <motion.div variants={itemVariants}>

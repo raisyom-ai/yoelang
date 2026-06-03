@@ -37,16 +37,31 @@ function calculateSimilarity(a: string, b: string): number {
   return Math.round(((maxLen - dist) / maxLen) * 100)
 }
 
+/**
+ * Clean base64 data by stripping data URI prefix if present.
+ * The frontend's blobToBase64 may include "data:audio/webm;base64," prefix.
+ * The ASR SDK expects raw base64 data only.
+ */
+function cleanBase64(data: string): string {
+  // Check for data URI pattern: data:<mediatype>;base64,<data>
+  const base64Match = data.match(/^data:[^;]+;base64,(.+)$/)
+  if (base64Match) {
+    return base64Match[1]
+  }
+  // Already clean base64
+  return data
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
     // Support both audio_base64 (from frontend) and audioBase64 (alternative)
-    const audioBase64 = body.audio_base64 || body.audioBase64
+    const rawAudioBase64 = body.audio_base64 || body.audioBase64
     const targetWord = body.target_word || body.targetWord
 
-    if (!audioBase64 || !targetWord) {
+    if (!rawAudioBase64 || !targetWord) {
       console.error('[Pronunciation API] Missing required fields:', {
-        hasAudio: !!audioBase64,
+        hasAudio: !!rawAudioBase64,
         hasTarget: !!targetWord,
         bodyKeys: Object.keys(body),
       })
@@ -56,7 +71,13 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    console.log('[Pronunciation API] Processing request for word:', targetWord, 'audio length:', audioBase64.length)
+    // Clean the base64 data - strip data URI prefix if present
+    const audioBase64 = cleanBase64(rawAudioBase64)
+
+    console.log('[Pronunciation API] Processing request for word:', targetWord, 
+      'raw audio length:', rawAudioBase64.length, 
+      'clean audio length:', audioBase64.length,
+      'had prefix:', rawAudioBase64.length !== audioBase64.length)
 
     const zai = await getZAI()
 
@@ -68,10 +89,14 @@ export async function POST(req: NextRequest) {
       })
     } catch (asrError) {
       console.error('[Pronunciation API] ASR call failed:', asrError)
-      return NextResponse.json(
-        { error: 'ASR service unavailable', transcript: '', confidence: 0, is_correct: false },
-        { status: 502 }
-      )
+      
+      // Return a graceful fallback - don't crash the frontend
+      return NextResponse.json({
+        transcript: '',
+        confidence: 0,
+        is_correct: false,
+        error: 'ASR service temporairement indisponible',
+      }, { status: 200 }) // Return 200 so the frontend can handle gracefully
     }
 
     // Extract transcript from ASR result - handle various response formats
@@ -80,13 +105,29 @@ export async function POST(req: NextRequest) {
       transcript = asrResult
     } else if (asrResult && typeof asrResult === 'object') {
       const result = asrResult as Record<string, unknown>
-      transcript = (result.text ?? result.transcript ?? result.result ?? '').toString().trim()
+      // Try multiple possible field names
+      transcript = (
+        result.text ?? 
+        result.transcript ?? 
+        result.result ?? 
+        result.output ?? 
+        ''
+      ).toString().trim()
     }
 
     transcript = transcript.toLowerCase().trim()
     const target = targetWord.toLowerCase()
 
     console.log('[Pronunciation API] ASR result:', { transcript, target })
+
+    // If ASR returned empty, return a meaningful result
+    if (!transcript) {
+      return NextResponse.json({
+        transcript: '',
+        confidence: 0,
+        is_correct: false,
+      })
+    }
 
     // Calculate similarity using Levenshtein distance
     const confidence = calculateSimilarity(transcript, target)
@@ -106,7 +147,12 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error('[Pronunciation API] Unexpected error:', error)
     return NextResponse.json(
-      { error: 'Erreur lors de l\'analyse de prononciation', transcript: '', confidence: 0, is_correct: false },
+      { 
+        error: 'Erreur lors de l\'analyse de prononciation', 
+        transcript: '', 
+        confidence: 0, 
+        is_correct: false 
+      },
       { status: 500 }
     )
   }

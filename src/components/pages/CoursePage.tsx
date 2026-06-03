@@ -673,6 +673,7 @@ export default function CoursePage() {
                     onReveal={() => setVocabRevealed((prev) => new Set(prev).add(currentStep))}
                     isPlayingAudio={isPlayingAudio}
                     onPlayAudio={playVocabAudio}
+                    lessonTitle={selectedLessonData?.title ?? lesson?.title ?? 'Vocabulaire'}
                   />
                 )}
                 {currentStepData?.type === 'grammar' && GRAMMAR_RULE && (
@@ -685,6 +686,7 @@ export default function CoursePage() {
                 {currentStepData?.type === 'conversation' && DIALOGUE.length > 0 && (
                   <ConversationStep
                     dialogue={DIALOGUE}
+                    conversationTitle={lessonContent.conversationTitle}
                     revealedIndices={dialogueRevealed}
                     onReveal={(idx) => setDialogueRevealed((prev) => new Set(prev).add(idx))}
                     isPlayingAudio={isPlayingAudio}
@@ -698,6 +700,7 @@ export default function CoursePage() {
                     onPlayAudio={playPronunciationAudio}
                     isPlayingAudio={isPlayingAudio}
                     onComplete={goNext}
+                    lessonTitle={selectedLessonData?.title ?? lesson?.title ?? 'Prononciation'}
                   />
                 )}
                 {currentStepData?.type === 'quiz' && (
@@ -806,6 +809,7 @@ function VocabularyStep({
   onReveal,
   isPlayingAudio,
   onPlayAudio,
+  lessonTitle,
 }: {
   word: VocabWord
   index: number
@@ -814,6 +818,7 @@ function VocabularyStep({
   onReveal: () => void
   isPlayingAudio: boolean
   onPlayAudio: () => void
+  lessonTitle: string
 }) {
   return (
     <motion.div
@@ -827,7 +832,7 @@ function VocabularyStep({
         <Badge className="bg-yoel-red/15 text-yoel-red border-0 text-xs mb-2">
           Mot {index + 1}/{totalVocabCount}
         </Badge>
-        <h2 className="text-2xl font-bold">Apprenez un nouveau mot</h2>
+        <h2 className="text-2xl font-bold">{lessonTitle}</h2>
       </motion.div>
 
       {/* Word Card */}
@@ -879,13 +884,37 @@ function VocabularyStep({
                   <p className="text-xs text-muted-foreground mb-1">Traduction en anglais</p>
                   <p className="text-2xl font-bold gradient-text-blue">{word.english}</p>
                   <p className="text-sm font-mono text-muted-foreground mt-1">{word.phonetic}</p>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="rounded-full mt-2 text-yoel-blue hover:text-yoel-blue hover:bg-yoel-blue/10"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      onPlayAudio()
+                    }}
+                  >
+                    <Volume2 className="h-4 w-4 mr-1" />
+                    Réécouter
+                  </Button>
                 </motion.div>
               )}
             </div>
 
             <div className="rounded-xl bg-muted/40 p-4 space-y-2">
               <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Exemple</p>
-              <p className="text-sm font-medium italic">&ldquo;{word.example}&rdquo;</p>
+              <div className="flex items-start gap-2">
+                <p className="text-sm font-medium italic flex-1">&ldquo;{word.example}&rdquo;</p>
+                <button
+                  className="shrink-0 text-muted-foreground hover:text-yoel-red transition-colors p-1"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    speakWord(word.example, { rate: 0.8 })
+                  }}
+                  title="Écouter l'exemple"
+                >
+                  <Volume2 className="h-4 w-4" />
+                </button>
+              </div>
               {revealed && (
                 <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-xs text-muted-foreground">
                   {word.exampleTranslation}
@@ -1013,12 +1042,14 @@ function GrammarStep({
 
 function ConversationStep({
   dialogue,
+  conversationTitle,
   revealedIndices,
   onReveal,
   isPlayingAudio,
   onPlayAudio,
 }: {
   dialogue: DialogueLine[]
+  conversationTitle: string
   revealedIndices: Set<number>
   onReveal: (index: number) => void
   isPlayingAudio: boolean
@@ -1036,7 +1067,7 @@ function ConversationStep({
           <MessageSquare className="h-3 w-3 mr-1" />
           Conversation
         </Badge>
-        <h2 className="text-2xl font-bold">At the Café</h2>
+        <h2 className="text-2xl font-bold">{conversationTitle}</h2>
         <p className="text-sm text-muted-foreground mt-1">
           Appuyez sur chaque ligne pour voir la traduction
         </p>
@@ -1106,6 +1137,25 @@ function ConversationStep({
         })}
       </motion.div>
 
+      {/* Play all dialogue button */}
+      <motion.div variants={itemVariants} className="flex justify-center">
+        <Button
+          variant="outline"
+          size="sm"
+          className="rounded-full"
+          onClick={async () => {
+            for (const line of dialogue) {
+              await speakWord(line.text, { rate: 0.8 })
+              // Small pause between lines
+              await new Promise(r => setTimeout(r, 500))
+            }
+          }}
+        >
+          <Volume2 className="h-4 w-4 mr-1.5" />
+          Écouter toute la conversation
+        </Button>
+      </motion.div>
+
       <motion.div variants={itemVariants}>
         <Card className="border-0 bg-yoel-gold/5">
           <CardContent className="p-4 flex items-start gap-3">
@@ -1132,32 +1182,171 @@ function PronunciationStep({
   onPlayAudio,
   isPlayingAudio,
   onComplete,
+  lessonTitle,
 }: {
   item: PronunciationItem
   index: number
   onPlayAudio: () => void
   isPlayingAudio: boolean
   onComplete: () => void
+  lessonTitle: string
 }) {
   const [attemptCount, setAttemptCount] = useState(0)
+  const [lastResult, setLastResult] = useState<SpeechRecognitionResult | null>(null)
+  const [inputMode, setInputMode] = useState<'mic' | 'type'>('mic')
+  const [typedAnswer, setTypedAnswer] = useState('')
   const autoAdvanceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const onCompleteRef = useRef(onComplete)
   useEffect(() => {
     onCompleteRef.current = onComplete
   }, [onComplete])
 
-  const handleAttempt = () => {
-    setAttemptCount((prev) => {
-      const next = prev + 1
-      if (next >= 2) {
+  const {
+    isRecording,
+    isProcessing,
+    micLevel,
+    recordingSeconds,
+    result,
+    error: micError,
+    isSupported,
+    method,
+    startRecording,
+    stopRecording,
+    reset: resetRecording,
+  } = useSpeechRecognition({
+    targetWord: item.word,
+    autoStopMs: 5000,
+    similarityThreshold: 70,
+    language: 'en-US',
+  })
+
+  // Sync hook result to local state
+  useEffect(() => {
+    if (result) {
+      setLastResult(result)
+      setAttemptCount((prev) => prev + 1)
+      if (result.isCorrect) {
         if (autoAdvanceTimerRef.current) clearTimeout(autoAdvanceTimerRef.current)
         autoAdvanceTimerRef.current = setTimeout(() => {
           onCompleteRef.current()
-        }, 1500)
+        }, 2000)
       }
-      return next
-    })
+    }
+  }, [result])
+
+  const handleMicPress = useCallback(async () => {
+    if (isRecording || isProcessing) return
+    setLastResult(null)
+    resetRecording()
+    setTimeout(() => startRecording(), 50)
+  }, [isRecording, isProcessing, resetRecording, startRecording])
+
+  const handleStopRecording = useCallback(() => {
+    stopRecording()
+  }, [stopRecording])
+
+  // Typed answer submission — with multi-word phrase support
+  const handleTypedSubmit = useCallback(() => {
+    const answer = typedAnswer.trim().toLowerCase()
+    const target = item.word.toLowerCase()
+
+    // Levenshtein similarity for full phrase
+    const maxLen = Math.max(answer.length, target.length)
+    let similarity = 0
+    if (maxLen > 0) {
+      const matrix: number[][] = []
+      for (let i = 0; i <= target.length; i++) matrix[i] = [i]
+      for (let j = 0; j <= answer.length; j++) matrix[0][j] = j
+      for (let i = 1; i <= target.length; i++) {
+        for (let j = 1; j <= answer.length; j++) {
+          if (target.charAt(i - 1) === answer.charAt(j - 1)) {
+            matrix[i][j] = matrix[i - 1][j - 1]
+          } else {
+            matrix[i][j] = Math.min(matrix[i - 1][j - 1] + 1, matrix[i][j - 1] + 1, matrix[i - 1][j] + 1)
+          }
+        }
+      }
+      const dist = matrix[target.length][answer.length]
+      similarity = Math.round(((maxLen - dist) / maxLen) * 100)
+    }
+
+    // For multi-word targets, also check individual word matching
+    const targetWords = target.split(/\s+/)
+    const answerWords = answer.split(/\s+/)
+    if (targetWords.length > 1 || answerWords.length > 1) {
+      // Check each target word against each answer word
+      for (const tw of targetWords) {
+        if (tw.length < 2) continue
+        for (const aw of answerWords) {
+          if (aw.length < 2) continue
+          const wMaxLen = Math.max(aw.length, tw.length)
+          if (wMaxLen === 0) continue
+          const wMatrix: number[][] = []
+          for (let i = 0; i <= tw.length; i++) wMatrix[i] = [i]
+          for (let j = 0; j <= aw.length; j++) wMatrix[0][j] = j
+          for (let i = 1; i <= tw.length; i++) {
+            for (let j = 1; j <= aw.length; j++) {
+              if (tw.charAt(i - 1) === aw.charAt(j - 1)) {
+                wMatrix[i][j] = wMatrix[i - 1][j - 1]
+              } else {
+                wMatrix[i][j] = Math.min(wMatrix[i - 1][j - 1] + 1, wMatrix[i][j - 1] + 1, wMatrix[i - 1][j] + 1)
+              }
+            }
+          }
+          const wDist = wMatrix[tw.length][aw.length]
+          const wSim = Math.round(((wMaxLen - wDist) / wMaxLen) * 100)
+          if (wSim > similarity) similarity = wSim
+        }
+      }
+
+      // If all target words are present in answer (any order), boost similarity
+      const allPresent = targetWords.every(tw =>
+        answerWords.some(aw => {
+          if (aw.length < 2 || tw.length < 2) return aw === tw
+          const m = Math.max(aw.length, tw.length)
+          if (m === 0) return false
+          const wM: number[][] = []
+          for (let i = 0; i <= tw.length; i++) wM[i] = [i]
+          for (let j = 0; j <= aw.length; j++) wM[0][j] = j
+          for (let i = 1; i <= tw.length; i++) {
+            for (let j = 1; j <= aw.length; j++) {
+              if (tw.charAt(i - 1) === aw.charAt(j - 1)) { wM[i][j] = wM[i - 1][j - 1] }
+              else { wM[i][j] = Math.min(wM[i - 1][j - 1] + 1, wM[i][j - 1] + 1, wM[i - 1][j] + 1) }
+            }
+          }
+          return Math.round(((m - wM[tw.length][aw.length]) / m) * 100) >= 70
+        })
+      )
+      if (allPresent && targetWords.length > 1) similarity = Math.max(similarity, 85)
+    }
+
+    const isCorrect = similarity >= 70 || (answer.length > 0 && (answer.includes(target) || target.includes(answer)))
+    const typedResult: SpeechRecognitionResult = { transcript: answer, confidence: similarity, isCorrect }
+    setLastResult(typedResult)
+    setAttemptCount((prev) => prev + 1)
+    if (isCorrect) {
+      if (autoAdvanceTimerRef.current) clearTimeout(autoAdvanceTimerRef.current)
+      autoAdvanceTimerRef.current = setTimeout(() => { onCompleteRef.current() }, 2000)
+    }
+  }, [typedAnswer, item.word])
+
+  const handleRetry = () => {
+    setLastResult(null)
+    resetRecording()
+    setTypedAnswer('')
   }
+
+  const handleSkip = () => {
+    onCompleteRef.current()
+  }
+
+  const isBusy = isRecording || isProcessing
+
+  const getConfidenceColor = (c: number) => c >= 80 ? 'text-yoel-green' : c >= 50 ? 'text-yoel-gold' : 'text-yoel-red'
+  const getConfidenceBg = (c: number) => c >= 80 ? 'bg-yoel-green/10 border-yoel-green/30' : c >= 50 ? 'bg-yoel-gold/10 border-yoel-gold/30' : 'bg-yoel-red/10 border-yoel-red/30'
+  const getConfidenceLabel = (c: number) => c >= 80 ? 'Excellent !' : c >= 50 ? 'Presque !' : 'Réessayez'
+
+  // Mic level bars - use real-time micLevel from the hook
 
   return (
     <motion.div
@@ -1171,7 +1360,7 @@ function PronunciationStep({
           <Headphones className="h-3 w-3 mr-1" />
           Prononciation
         </Badge>
-        <h2 className="text-2xl font-bold">Pratiquez la prononciation</h2>
+        <h2 className="text-2xl font-bold">{lessonTitle}</h2>
       </motion.div>
 
       <motion.div variants={itemVariants}>
@@ -1185,19 +1374,30 @@ function PronunciationStep({
               <p className="text-sm text-muted-foreground">= {item.meaning}</p>
             </div>
 
-            {/* Play button */}
-            <div className="flex justify-center">
+            {/* Play buttons */}
+            <div className="flex justify-center gap-3">
               <Button
                 variant="outline"
                 size="lg"
-                className="rounded-full h-16 w-16"
+                className="rounded-full h-14 w-14"
                 onClick={onPlayAudio}
+                disabled={isPlayingAudio}
               >
                 {isPlayingAudio ? (
-                  <Volume2 className="h-8 w-8 animate-pulse text-yoel-gold" />
+                  <Volume2 className="h-7 w-7 animate-pulse text-yoel-gold" />
                 ) : (
-                  <Play className="h-8 w-8" />
+                  <Play className="h-7 w-7" />
                 )}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="rounded-full h-14 px-4"
+                onClick={() => speakWord(item.word, { rate: 0.5 })}
+                disabled={isPlayingAudio}
+              >
+                <Volume2 className="h-4 w-4 mr-1.5 text-yoel-gold" />
+                Lent
               </Button>
             </div>
 
@@ -1207,21 +1407,204 @@ function PronunciationStep({
               <p className="text-sm text-muted-foreground">{item.tip}</p>
             </div>
 
-            {/* Practice button */}
-            <div className="flex justify-center">
+            {/* Input mode toggle */}
+            <div className="flex justify-center gap-2">
               <Button
-                className="bg-yoel-gold hover:bg-yoel-gold/90 text-white rounded-xl"
-                onClick={handleAttempt}
+                variant={inputMode === 'mic' ? 'default' : 'outline'}
+                size="sm"
+                className={`rounded-full text-xs ${inputMode === 'mic' ? 'bg-yoel-gold hover:bg-yoel-gold/90 text-white' : ''}`}
+                onClick={() => setInputMode('mic')}
               >
-                <Mic className="h-4 w-4 mr-2" />
-                {attemptCount === 0 ? 'Pratiquer' : 'Réessayer'}
-                {attemptCount > 0 && (
-                  <span className="ml-2 text-xs opacity-80">({attemptCount} essai{attemptCount > 1 ? 's' : ''})</span>
-                )}
+                <Mic className="h-3 w-3 mr-1" />
+                Microphone
+              </Button>
+              <Button
+                variant={inputMode === 'type' ? 'default' : 'outline'}
+                size="sm"
+                className={`rounded-full text-xs ${inputMode === 'type' ? 'bg-yoel-gold hover:bg-yoel-gold/90 text-white' : ''}`}
+                onClick={() => setInputMode('type')}
+              >
+                <PenTool className="h-3 w-3 mr-1" />
+                Clavier
               </Button>
             </div>
 
-            {attemptCount >= 2 && (
+            {/* Microphone mode */}
+            {inputMode === 'mic' && (
+              <div className="space-y-4">
+                {!isSupported ? (
+                  <div className="text-center space-y-3 p-4 rounded-xl bg-muted/30">
+                    <AlertCircle className="h-8 w-8 text-muted-foreground mx-auto" />
+                    <p className="text-sm text-muted-foreground">
+                      La reconnaissance vocale n&apos;est pas supportée dans ce navigateur.
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Essayez Chrome ou Edge, ou passez en mode Clavier.
+                    </p>
+                    <Button size="sm" variant="outline" className="rounded-full" onClick={() => setInputMode('type')}>
+                      <PenTool className="h-3 w-3 mr-1" />
+                      Passer en mode clavier
+                    </Button>
+                  </div>
+                ) : (
+                  <>
+                    {/* Mic level visualization - animated waveform using real mic level */}
+                    {isRecording && (
+                      <div className="flex items-center gap-1 h-10">
+                        {Array.from({ length: 16 }).map((_, i) => (
+                          <motion.div
+                            key={i}
+                            className={`w-1.5 rounded-full ${isRecording ? 'bg-yoel-gold' : 'bg-muted-foreground/20'}`}
+                            animate={
+                              isRecording
+                                ? {
+                                    height: [8, Math.max(8, micLevel * 30 + Math.random() * 8), 8],
+                                  }
+                                : { height: 8 }
+                            }
+                            transition={
+                              isRecording
+                                ? { duration: 0.15, repeat: Infinity, repeatType: 'reverse', delay: i * 0.03 }
+                                : { duration: 0.3 }
+                            }
+                          />
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Recording timer */}
+                    {isRecording && (
+                      <p className="text-center text-xs text-muted-foreground">
+                        <Clock className="h-3 w-3 inline mr-1" />
+                        {recordingSeconds}s / 5s
+                      </p>
+                    )}
+
+                    {/* Mic / Stop button */}
+                    <div className="flex justify-center">
+                      {isBusy ? (
+                        <Button
+                          className="bg-yoel-red hover:bg-yoel-red-dark text-white rounded-full h-14 w-14"
+                          onClick={isRecording ? handleStopRecording : undefined}
+                          disabled={isProcessing}
+                        >
+                          {isProcessing ? (
+                            <Loader2 className="h-6 w-6 animate-spin" />
+                          ) : (
+                            <Square className="h-6 w-6" />
+                          )}
+                        </Button>
+                      ) : (
+                        <Button
+                          className="bg-yoel-gold hover:bg-yoel-gold/90 text-white rounded-full h-14 w-14"
+                          onClick={handleMicPress}
+                        >
+                          <Mic className="h-6 w-6" />
+                        </Button>
+                      )}
+                    </div>
+
+                    {isProcessing && (
+                      <p className="text-center text-xs text-muted-foreground">
+                        <Loader2 className="h-3 w-3 inline animate-spin mr-1" />
+                        Analyse en cours...
+                      </p>
+                    )}
+
+                    {/* Mic error */}
+                    {micError && (
+                      <div className="text-center p-3 rounded-xl bg-yoel-red/10 border border-yoel-red/20">
+                        <p className="text-xs text-yoel-red">{micError}</p>
+                        <Button size="sm" variant="outline" className="rounded-full mt-2 text-xs" onClick={() => setInputMode('type')}>
+                          <PenTool className="h-3 w-3 mr-1" />
+                          Passer en mode clavier
+                        </Button>
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            )}
+
+            {/* Keyboard mode */}
+            {inputMode === 'type' && (
+              <div className="space-y-3">
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={typedAnswer}
+                    onChange={(e) => setTypedAnswer(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && typedAnswer.trim() && handleTypedSubmit()}
+                    placeholder="Tapez le mot en anglais..."
+                    className="flex-1 rounded-xl border border-border bg-background px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-yoel-gold/50"
+                    autoFocus
+                  />
+                  <Button
+                    className="bg-yoel-gold hover:bg-yoel-gold/90 text-white rounded-xl"
+                    onClick={handleTypedSubmit}
+                    disabled={!typedAnswer.trim()}
+                  >
+                    Vérifier
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Result display */}
+            {lastResult && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className={`rounded-xl border p-4 ${getConfidenceBg(lastResult.confidence)}`}
+              >
+                <div className="text-center space-y-2">
+                  <p className={`text-sm font-semibold ${getConfidenceColor(lastResult.confidence)}`}>
+                    {getConfidenceLabel(lastResult.confidence)}
+                  </p>
+                  <div className="flex items-center justify-center gap-3 text-sm">
+                    <div>
+                      <p className="text-[10px] text-muted-foreground uppercase">Vous avez dit</p>
+                      <p className="font-medium">{lastResult.transcript || '—'}</p>
+                    </div>
+                    <div className="text-muted-foreground">→</div>
+                    <div>
+                      <p className="text-[10px] text-muted-foreground uppercase">Attendu</p>
+                      <p className="font-medium">{item.word.toLowerCase()}</p>
+                    </div>
+                  </div>
+                  <p className={`text-lg font-bold ${getConfidenceColor(lastResult.confidence)}`}>
+                    {lastResult.confidence}%
+                  </p>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Action buttons */}
+            <div className="flex justify-center gap-3">
+              {lastResult && !lastResult.isCorrect && (
+                <Button
+                  variant="outline"
+                  className="rounded-xl"
+                  onClick={handleRetry}
+                >
+                  <RotateCcw className="h-4 w-4 mr-2" />
+                  Réessayer
+                </Button>
+              )}
+              {attemptCount >= 3 && !lastResult?.isCorrect && (
+                <Button
+                  variant="ghost"
+                  className="rounded-xl text-muted-foreground"
+                  onClick={handleSkip}
+                >
+                  <SkipForward className="h-4 w-4 mr-2" />
+                  Passer
+                </Button>
+              )}
+            </div>
+
+            {/* Success auto-advance */}
+            {lastResult?.isCorrect && (
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -1232,6 +1615,13 @@ function PronunciationStep({
                   Bon travail ! Passage à la suite...
                 </Badge>
               </motion.div>
+            )}
+
+            {/* Attempt counter */}
+            {attemptCount > 0 && !lastResult?.isCorrect && (
+              <p className="text-center text-xs text-muted-foreground">
+                Essai{attemptCount > 1 ? 's' : ''} : {attemptCount}
+              </p>
             )}
           </CardContent>
         </Card>

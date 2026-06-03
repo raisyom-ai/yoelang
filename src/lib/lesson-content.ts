@@ -1,3 +1,9 @@
+import { A2_L1, A2_L2, A2_L3, A2_L4, A2_L5, A2_L6, A2_L7, A2_L8, A2_L9, A2_L10, A2_L11, A2_L12, A2_L13, A2_L14, A2_L15, A2_L16, A2_L17, A2_L18, A2_L19, A2_L20, A2_L21, A2_L22, A2_L23, A2_L24, A2_L25 } from './a2-lesson-content-units1-5'
+import { A2_L26, A2_L27, A2_L28, A2_L29, A2_L30, A2_L31, A2_L32, A2_L33, A2_L34, A2_L35, A2_L36, A2_L37, A2_L38, A2_L39, A2_L40, A2_L41, A2_L42, A2_L43, A2_L44, A2_L45, A2_L46, A2_L47, A2_L48, A2_L49, A2_L50 } from './a2-lesson-content-units6-10'
+import { B1_L1, B1_L2, B1_L3, B1_L4, B1_L5, B1_L6, B1_L7, B1_L8, B1_L9, B1_L10, B1_L11, B1_L12, B1_L13, B1_L14, B1_L15, B1_L16, B1_L17, B1_L18, B1_L19, B1_L20 } from './b1-lesson-content-units1-4'
+import { B1_L21, B1_L22, B1_L23, B1_L24, B1_L25, B1_L26, B1_L27, B1_L28, B1_L29, B1_L30, B1_L31, B1_L32, B1_L33, B1_L34, B1_L35, B1_L36, B1_L37, B1_L38, B1_L39, B1_L40 } from './b1-lesson-content-units5-8'
+import { B1_L41, B1_L42, B1_L43, B1_L44, B1_L45, B1_L46, B1_L47, B1_L48, B1_L49, B1_L50, B1_L51, B1_L52, B1_L53, B1_L54, B1_L55, B1_L56, B1_L57, B1_L58, B1_L59, B1_L60 } from './b1-lesson-content-units9-12'
+
 // ─── Lesson Content Data for YOELANG ─────────────────────────────────────────
 // Unique content for each lesson, mapped by LESSON ID (not unit ID)
 // Inspired by Harvard's practical English pedagogy — rigorous, practical, progressive
@@ -35,6 +41,7 @@ export interface LessonContent {
   vocab: VocabWord[]
   grammar: GrammarRule
   conversation: DialogueLine[]
+  conversationTitle: string
   pronunciation: PronunciationItem[]
 }
 
@@ -57,6 +64,7 @@ const FALLBACK_CONTENT: LessonContent = {
     { speaker: 'A', role: 'A', text: 'Hello!', translation: 'Bonjour !' },
     { speaker: 'B', role: 'B', text: 'Hi!', translation: 'Salut !' },
   ],
+  conversationTitle: 'Conversation',
   pronunciation: [
     { word: 'Hello', phonetic: '/həˈloʊ/', meaning: 'Bonjour', tip: 'Prononcez "hélo" avec le h expiré.' },
   ],
@@ -102,6 +110,7 @@ export const A1_L1: LessonContent = {
     { speaker: 'Claire', role: 'A', text: 'Nice to see you too! I have to go now. Goodbye!', translation: 'Sympa de vous voir aussi ! Je dois y aller. Au revoir !' },
     { speaker: 'Marc', role: 'B', text: 'Goodbye, Claire! See you later!', translation: 'Au revoir, Claire ! À plus tard !' },
   ],
+  conversationTitle: 'Saluer et dire au revoir',
   pronunciation: [
     { word: 'Hello', phonetic: '/həˈloʊ/', meaning: 'Bonjour', tip: 'Le "h" anglais est expiré : mettez la main devant la bouche, vous devez sentir l\'air. Ne le rendez pas muet comme en français.' },
     { word: 'Goodbye', phonetic: '/ɡʊdˈbaɪ/', meaning: 'Au revoir', tip: 'Prononcez "good" comme "guèd" et "bye" comme "baï". L\'accent est sur "bye".' },
@@ -141,6 +150,7 @@ export const A1_L2: LessonContent = {
     { speaker: 'Sophie', role: 'A', text: 'She is happy! She has a new job.', translation: 'Elle est heureuse ! Elle a un nouveau travail.' },
     { speaker: 'Pierre', role: 'B', text: 'That is great! I am happy for her.', translation: 'C\'est super ! Je suis content pour elle.' },
   ],
+  conversationTitle: 'Comment allez-vous ?',
   pronunciation: [
     { word: 'Fine', phonetic: '/faɪn/', meaning: 'Bien', tip: 'Le "i" est long : "faïn". Ne prononcez pas "fin" à la française, le son est beaucoup plus long.' },
     { word: 'Tired', phonetic: '/taɪərd/', meaning: 'Fatigué(e)', tip: 'Prononcez "taï-erd" — le "i" est long et il y a un léger son "er" avant le "d" final.' },
@@ -180,6 +190,7 @@ export const A1_L3: LessonContent = {
     { speaker: 'Julie', role: 'A', text: 'I am from France. I am 22 years old. I speak French and English.', translation: 'Je viens de France. J\'ai 22 ans. Je parle français et anglais.' },
     { speaker: 'Ahmed', role: 'B', text: 'I am 25. I speak Arabic, French, and a little English!', translation: 'J\'ai 25 ans. Je parle arabe, français et un peu anglais !' },
   ],
+  conversationTitle: 'Se présenter',
   pronunciation: [
     { word: 'Name', phonetic: '/neɪm/', meaning: 'Nom', tip: 'Le "a" est long : "néïm". Ne dites pas "nam". Le "e" final est silencieux.' },
     { word: 'Age', phonetic: '/eɪdʒ/', meaning: 'Âge', tip: 'Prononcez "éïdj" — le son "dj" comme dans "djinn" arabe. Le "g" doux devant "e".' },
@@ -219,6 +230,7 @@ export const A1_L4: LessonContent = {
     { speaker: 'Léa', role: 'A', text: 'Yes, we are! She is my best friend. She is a nurse.', translation: 'Oui ! Elle est ma meilleure amie. Elle est infirmière.' },
     { speaker: 'Tom', role: 'B', text: 'That is nice! I am not from here. I am from Manchester.', translation: 'C\'est sympa ! Je ne suis pas d\'ici. Je suis de Manchester.' },
   ],
+  conversationTitle: 'Parler de sa profession',
   pronunciation: [
     { word: 'Am', phonetic: '/æm/', meaning: 'Suis (I am)', tip: 'Le "a" est très ouvert comme dans "chat" : "aem". Contraction : "I\'m" = "aïm".' },
     { word: 'Is', phonetic: '/ɪz/', meaning: 'Est (he/she/it is)', tip: 'Prononcez "iz" avec le son "z" sonore. Contraction : "he\'s" = "hiz", "she\'s" = "shiz".' },
@@ -258,6 +270,7 @@ export const A1_L5: LessonContent = {
     { speaker: 'Emma', role: 'A', text: 'Yes, I\'m a new student. Bye for now, see you later!', translation: 'Oui, je suis un nouvel étudiant. À plus, à plus tard !' },
     { speaker: 'Luc', role: 'B', text: 'Cheers, Emma! See you soon!', translation: 'Salut, Emma ! À bientôt !' },
   ],
+  conversationTitle: 'Salutations informelles',
   pronunciation: [
     { word: 'Hi', phonetic: '/haɪ/', meaning: 'Salut', tip: 'Le "h" est expiré et le "i" est long : "haï". Plus court et décontracté que "hello". N\'oubliez pas d\'expirer le "h" !' },
     { word: 'Hey', phonetic: '/heɪ/', meaning: 'Hé / Salut', tip: 'Prononcez "héï" — le "h" est expiré et le "ey" sonne comme "éi". Plus familier que "hi".' },
@@ -301,6 +314,7 @@ export const A1_L6: LessonContent = {
     { speaker: 'Marie', role: 'A', text: 'I have twenty students in my class. Five are from France.', translation: 'J\'ai vingt étudiants dans ma classe. Cinq viennent de France.' },
     { speaker: 'James', role: 'B', text: 'Wow! I only have eight students in my English class.', translation: 'Waouh ! J\'ai seulement huit étudiants dans mon cours d\'anglais.' },
   ],
+  conversationTitle: 'Parler de sa famille et des nombres',
   pronunciation: [
     { word: 'One', phonetic: '/wʌn/', meaning: 'Un', tip: 'Prononcez "ouanne" — le "o" est ouvert. ATTENTION : ne dites pas "ouèn" ni "on". Le "w" initial est crucial.' },
     { word: 'Five', phonetic: '/faɪv/', meaning: 'Cinq', tip: 'Le "i" est long : "faïv". Le "v" final est doux mais audible, ne l\'oubliez pas.' },
@@ -340,6 +354,7 @@ export const A1_L7: LessonContent = {
     { speaker: 'Anna', role: 'A', text: 'That is a lot! How many floors does it have?', translation: 'C\'est beaucoup ! Combien d\'étages a-t-il ?' },
     { speaker: 'Paul', role: 'B', text: 'Thirty floors! But I live on the fifth floor.', translation: 'Trente étages ! Mais j\'habite au cinquième étage.' },
   ],
+  conversationTitle: 'Les grands nombres dans la vie',
   pronunciation: [
     { word: 'Thirty', phonetic: '/ˈθɜːrti/', meaning: 'Trente', tip: 'Le "th" est crucial : langue entre les dents, soufflez. Ne dites PAS "tirty". L\'accent est sur "THIR".' },
     { word: 'Fifty', phonetic: '/ˈfɪfti/', meaning: 'Cinquante', tip: 'Prononcez "fif-ti" — le son du milieu est "f" pas "v" : pas "fiv-ti". L\'accent est sur "FIF".' },
@@ -379,6 +394,7 @@ export const A1_L8: LessonContent = {
     { speaker: 'Lucie', role: 'A', text: 'Are you free in the evening?', translation: 'Êtes-vous libre le soir ?' },
     { speaker: 'David', role: 'B', text: 'Yes, I am free at noon and in the evening. Let\'s meet at 6 o\'clock!', translation: 'Oui, je suis libre à midi et le soir. Rencontrons-nous à 6 heures !' },
   ],
+  conversationTitle: 'Demander l\'heure',
   pronunciation: [
     { word: 'O\'clock', phonetic: '/əˈklɒk/', meaning: 'Heure pile', tip: 'Prononcez "e-klok" — le "o\'" est réduit, presque silencieux. Ne dites pas "o-clock" en séparant.' },
     { word: 'Half past', phonetic: '/hæf pæst/', meaning: 'Et demie', tip: 'Le "a" de "half" est très ouvert : "haf". En anglais britannique, le "l" peut être muet. "Past" se prononce "pèst".' },
@@ -418,6 +434,7 @@ export const A1_L9: LessonContent = {
     { speaker: 'Camille', role: 'A', text: 'Let\'s go to the museum! The new exhibition opens in March.', translation: 'Allons au musée ! La nouvelle exposition ouvre en mars.' },
     { speaker: 'Ryan', role: 'B', text: 'Great idea! In November, we can also visit the Christmas market.', translation: 'Bonne idée ! En novembre, nous pourrons aussi visiter le marché de Noël.' },
   ],
+  conversationTitle: 'Les jours et les mois',
   pronunciation: [
     { word: 'Monday', phonetic: '/ˈmʌndeɪ/', meaning: 'Lundi', tip: 'Le "o" est ouvert comme dans "come" : "man-deï". L\'accent est sur la première syllabe.' },
     { word: 'Wednesday', phonetic: '/ˈwenzdeɪ/', meaning: 'Mercredi', tip: 'ATTENTION : on prononce "OUENZ-di", le "d" du milieu disparaît ! Ne dites surtout pas "wed-nes-day".' },
@@ -457,6 +474,7 @@ export const A1_L10: LessonContent = {
     { speaker: 'Isabelle', role: 'A', text: 'Oh, I understand now! Is the room for sixty or sixteen?', translation: 'Oh, je comprends maintenant ! La salle est pour soixante ou seize ?' },
     { speaker: 'Mike', role: 'B', text: 'For sixty people. Six-zero, not six-teen! And eighty chairs.', translation: 'Pour soixante personnes. Six-zéro, pas seize ! Et quatre-vingts chaises.' },
   ],
+  conversationTitle: 'Distinguer les nombres',
   pronunciation: [
     { word: 'Thirteen vs Thirty', phonetic: '/θɜːrˈtiːn/ vs /ˈθɜːrti/', meaning: 'Treize vs Trente', tip: '"Thir-TEEN" (accent sur TEEN, plus long) vs "THIR-ti" (accent sur THIR, plus court). Le "th" est identique dans les deux.' },
     { word: 'Fourteen vs Forty', phonetic: '/fɔːrˈtiːn/ vs /ˈfɔːrti/', meaning: 'Quatorze vs Quarante', tip: '"Four-TEEN" (accent sur TEEN) vs "FOR-ty" (accent sur FOR). Notez que "forty" s\'écrit sans "u" (pas "fourty").' },
@@ -500,6 +518,7 @@ export const A1_L11: LessonContent = {
     { speaker: 'Nadia', role: 'A', text: 'Can I borrow a chair? I don\'t have one.', translation: 'Puis-je emprunter une chaise ? Je n\'en ai pas.' },
     { speaker: 'Olivier', role: 'B', text: 'Of course! And look at the board — the teacher is writing the homework.', translation: 'Bien sûr ! Et regarde le tableau — le professeur écrit les devoirs.' },
   ],
+  conversationTitle: 'Les objets de la classe',
   pronunciation: [
     { word: 'Pen', phonetic: '/pen/', meaning: 'Stylo', tip: 'Le "e" est bref et fermé : "pèn". Ne dites pas "pine" comme l\'arbre, ni "pan" comme la casserole.' },
     { word: 'Book', phonetic: '/bʊk/', meaning: 'Livre', tip: 'Le "oo" est un "ou" très court : "bouk". Pas le "ou" long du français. Plus court que dans "loup".' },
@@ -539,6 +558,7 @@ export const A1_L12: LessonContent = {
     { speaker: 'Sam', role: 'A', text: 'Oh, nice! Does your job need a uniform?', translation: 'Oh, sympa ! Ton travail nécessite un uniforme ?' },
     { speaker: 'Léa', role: 'B', text: 'Yes! And I always bring an onion for my lunch sandwich.', translation: 'Oui ! Et j\'apporte toujours un oignon pour mon sandwich du déjeuner.' },
   ],
+  conversationTitle: 'Choisir entre a et an',
   pronunciation: [
     { word: 'A (article)', phonetic: '/ə/', meaning: 'Un/Une (consonne)', tip: 'Devant une consonne, "a" se prononce "e" très réduit et rapide. Ne dites pas "éi" dans la conversation courante. C\'est un son neutre (schwa).' },
     { word: 'An (article)', phonetic: '/ən/', meaning: 'Un/Une (voyelle)', tip: 'Devant une voyelle, "an" se lie au mot suivant : "an apple" = "e-nap-pl". Le "n" relie les deux mots naturellement.' },
@@ -578,6 +598,7 @@ export const A1_L13: LessonContent = {
     { speaker: 'Élodie', role: 'A', text: 'Are those your keys too?', translation: 'Ce sont aussi tes clés ?' },
     { speaker: 'Ben', role: 'B', text: 'Yes, those are my keys. This one is for my car, and that one is for my house.', translation: 'Oui, ce sont mes clés. Celui-ci est pour ma voiture, et celui-là pour ma maison.' },
   ],
+  conversationTitle: 'Désigner les objets',
   pronunciation: [
     { word: 'This', phonetic: '/ðɪs/', meaning: 'Ceci/Cette', tip: 'Le "th" est SONORE : langue entre les dents, faites vibrer les cordes vocales. Approximativement "dzis". Ne dites pas "zis" ni "dis".' },
     { word: 'That', phonetic: '/ðæt/', meaning: 'Cela/Cette', tip: 'Même "th" sonore : "dzèt". Le "a" est ouvert comme dans "cat". Distinguez bien "that" (cela) de "cat" (chat) — seul le "th" change.' },
@@ -617,6 +638,7 @@ export const A1_L14: LessonContent = {
     { speaker: 'Chloé', role: 'A', text: 'Where is my keyboard?', translation: 'Où est mon clavier ?' },
     { speaker: 'Kevin', role: 'B', text: 'Your keyboard is behind the door, on the small desk!', translation: 'Votre clavier est derrière la porte, sur le petit bureau !' },
   ],
+  conversationTitle: 'Au bureau',
   pronunciation: [
     { word: 'Computer', phonetic: '/kəmˈpjuːtər/', meaning: 'Ordinateur', tip: 'L\'accent est sur "pu" : "kem-PYOU-ter". Les syllabes avant et après sont réduites (schwa).' },
     { word: 'Desk', phonetic: '/desk/', meaning: 'Bureau (meuble)', tip: 'Le "e" est bref et ouvert : "dèsk". Pas "disk" (disque). Le "s" est toujours sonore avant "k".' },
@@ -656,6 +678,7 @@ export const A1_L15: LessonContent = {
     { speaker: 'Tom', role: 'A', text: 'Sure. I can see my reflection in the mirror over there!', translation: 'Bien sûr. Je peux voir mon reflet dans le miroir là-bas !' },
     { speaker: 'Lisa', role: 'B', text: 'Let\'s go! The school clock is always five minutes fast.', translation: 'Allons-y ! L\'horloge de l\'école est toujours en avance de cinq minutes.' },
   ],
+  conversationTitle: 'Demander l\'heure et les objets',
   pronunciation: [
     { word: 'Watch', phonetic: '/wɒtʃ/', meaning: 'Montre', tip: 'Le "ch" = "tch" : "ouot-tch". Le "w" initial : arrondissez les lèvres. Ne dites pas "ouatch" avec le son "ou" français.' },
     { word: 'Switch', phonetic: '/swɪtʃ/', meaning: 'Interrupteur', tip: 'Même son "tch" final : "souit-tch". Le "sw" = "s" + "ou" arrondi. Le "i" est court.' },
@@ -699,6 +722,7 @@ export const A1_L16: LessonContent = {
     { speaker: 'Sophie', role: 'A', text: 'I prefer a piece of bread with some cheese. And some fish!', translation: 'Je préfère un morceau de pain avec du fromage. Et du poisson !' },
     { speaker: 'Mike', role: 'B', text: 'That sounds delicious! Let\'s have lunch together.', translation: 'Ça a l\'air délicieux ! Déjeunons ensemble.' },
   ],
+  conversationTitle: 'Parler de nourriture',
   pronunciation: [
     { word: 'Bread', phonetic: '/bred/', meaning: 'Pain', tip: 'Le "ea" se prononce "é" court : "brède". Ne dites pas "bri:d" ni "bré-ade". Comme dans "bed" (lit) avec un "r" devant.' },
     { word: 'Rice', phonetic: '/raɪs/', meaning: 'Riz', tip: 'Le "i" est long : "raïce". Ne dites pas "riss". Le son est comme dans "nice" (sympa).' },
@@ -738,6 +762,7 @@ export const A1_L17: LessonContent = {
     { speaker: 'Waiter', role: 'A', text: 'Great! And for your friend? A cup of tea?', translation: 'Très bien ! Et pour votre ami ? Une tasse de thé ?' },
     { speaker: 'Customer', role: 'B', text: 'Yes, and a glass of milk for me too, please.', translation: 'Oui, et un verre de lait pour moi aussi, s\'il vous plaît.' },
   ],
+  conversationTitle: 'Commander une boisson',
   pronunciation: [
     { word: 'Water', phonetic: '/ˈwɔːtər/', meaning: 'Eau', tip: 'Le "t" au milieu est souvent adouci en américain : "ouo-der". En anglais britannique, c\'est un vrai "t" : "ouo-ter".' },
     { word: 'Coffee', phonetic: '/ˈkɒfi/', meaning: 'Café', tip: 'Le "o" est ouvert comme dans "bon" : "ko-fi". L\'accent est sur la première syllabe. Ne dites pas "koufi".' },
@@ -777,6 +802,7 @@ export const A1_L18: LessonContent = {
     { speaker: 'Sophie', role: 'A', text: 'I like fish a lot! My sister loves sushi.', translation: 'J\'aime beaucoup le poisson ! Ma sœur adore les sushis.' },
     { speaker: 'Mike', role: 'B', text: 'She doesn\'t like French food? That\'s unusual! I dislike spicy food myself.', translation: 'Elle n\'aime pas la cuisine française ? C\'est inhabituel ! Moi, je n\'aime pas la nourriture épicée.' },
   ],
+  conversationTitle: 'Exprimer ses goûts',
   pronunciation: [
     { word: 'Like', phonetic: '/laɪk/', meaning: 'Aimer', tip: 'Le "i" est long : "laïk". Ne dites pas "lik" court. Le "k" final est net et sans aspiration excessive.' },
     { word: 'Love', phonetic: '/lʌv/', meaning: 'Adorer', tip: 'Le "u" est ouvert comme dans "come" : "leuv". Le "v" final est doux mais audible.' },
@@ -816,6 +842,7 @@ export const A1_L19: LessonContent = {
     { speaker: 'Waiter', role: 'A', text: 'Anything else?', translation: 'Autre chose ?' },
     { speaker: 'Customer', role: 'B', text: 'No, thank you. Could I have the bill when you are ready? I will leave a tip!', translation: 'Non, merci. Pourrais-je avoir l\'addition quand vous serez prêt ? Je laisserai un pourboire !' },
   ],
+  conversationTitle: 'Au café',
   pronunciation: [
     { word: 'Order', phonetic: '/ˈɔːrdər/', meaning: 'Commander', tip: 'L\'accent est sur "or" : "OR-der". Le "or" est long comme dans "door". Le "er" final est réduit.' },
     { word: 'Menu', phonetic: '/ˈmenjuː/', meaning: 'Menu', tip: 'Le "u" final est long : "mé-niou". L\'accent est sur la première syllabe. Ne dites pas "ménu".' },
@@ -855,6 +882,7 @@ export const A1_L20: LessonContent = {
     { speaker: 'Chef', role: 'A', text: 'Interesting! Today\'s recipe is for dessert. Chocolate cake!', translation: 'Intéressant ! La recette d\'aujourd\'hui est un dessert. Gâteau au chocolat !' },
     { speaker: 'Student', role: 'B', text: 'I love dessert! Dinner is always better with a sweet recipe.', translation: 'J\'adore le dessert ! Le dîner est toujours meilleur avec une recette sucrée.' },
   ],
+  conversationTitle: 'Au cours de cuisine',
   pronunciation: [
     { word: 'Breakfast', phonetic: '/ˈbrekfəst/', meaning: 'Petit-déjeuner', tip: 'Prononcez "brek-fust" — le "ea" = "e" court et le "a" de "fast" est réduit. L\'accent est sur "BREAK". Pas "bréé-kfest" !' },
     { word: 'Lunch', phonetic: '/lʌntʃ/', meaning: 'Déjeuner', tip: 'Le "u" est ouvert comme dans "come" : "leunt-ch". Le "ch" = "tch". L\'accent est sur "LUNCH".' },
@@ -901,6 +929,7 @@ export const A1_L21: LessonContent = {
     { speaker: 'Camille', role: 'A', text: 'That\'s nice. Do you have any sons or daughters?', translation: 'C\'est sympa. As-tu des fils ou des filles ?' },
     { speaker: 'Lucas', role: 'B', text: 'Not yet! But I want a son and a daughter one day.', translation: 'Pas encore ! Mais je voudrais un fils et une fille un jour.' },
   ],
+  conversationTitle: 'Parler de sa famille',
   pronunciation: [
     { word: 'Father', phonetic: '/ˈfɑːðər/', meaning: 'Père', tip: 'Le "th" est sonore : langue entre les dents, faites vibrer les cordes vocales. "Fa-der".' },
     { word: 'Sister', phonetic: '/ˈsɪstər/', meaning: 'Sœur', tip: 'Le "i" est court comme dans "lit" : "sis-ter". Pas "siister".' },
@@ -939,6 +968,7 @@ export const A1_L22: LessonContent = {
     { speaker: 'Nadia', role: 'A', text: 'I see. Our teacher is looking for her keys.', translation: 'Je vois. Notre professeur cherche ses clés.' },
     { speaker: 'Sophie', role: 'B', text: 'Their keys are on the table! Let\'s tell her.', translation: 'Ses clés sont sur la table ! Allons lui dire.' },
   ],
+  conversationTitle: 'À qui est-ce ?',
   pronunciation: [
     { word: 'My', phonetic: '/maɪ/', meaning: 'Mon/Ma', tip: 'Le "y" se prononce "aï" : "maï". Ne dites pas "mi".' },
     { word: 'His', phonetic: '/hɪz/', meaning: 'Son/Sa (à lui)', tip: 'Le "h" est expiré et le "s" est sonore : "hiz". Pas "is".' },
@@ -977,6 +1007,7 @@ export const A1_L23: LessonContent = {
     { speaker: 'Emma', role: 'A', text: 'Yes, they are. My aunt is single though. She lives with us.', translation: 'Oui. Mais ma tante est célibataire. Elle vit avec nous.' },
     { speaker: 'Youssef', role: 'B', text: 'All my relatives live in Morocco. I miss them!', translation: 'Tous mes proches habitent au Maroc. Ils me manquent !' },
   ],
+  conversationTitle: 'Frères et sœurs',
   pronunciation: [
     { word: 'Twins', phonetic: '/twɪnz/', meaning: 'Jumeaux', tip: 'Le "w" : arrondissez les lèvres. "Touinz". Le "s" final est sonore : "z".' },
     { word: 'Married', phonetic: '/ˈmærid/', meaning: 'Marié(e)', tip: 'Prononcez "ma-rid" — le "a" est ouvert et le "e" du milieu disparaît.' },
@@ -1014,6 +1045,7 @@ export const A1_L24: LessonContent = {
     { speaker: 'Chloé', role: 'A', text: 'I don\'t have any cousins. My parents are only children.', translation: 'Je n\'ai aucun cousin. Mes parents sont enfants uniques.' },
     { speaker: 'Karim', role: 'B', text: 'Oh, that\'s unusual! But you have us as friends!', translation: 'Oh, c\'est rare ! Mais tu nous as comme amis !' },
   ],
+  conversationTitle: 'Avoir des cousins',
   pronunciation: [
     { word: 'Have', phonetic: '/hæv/', meaning: 'Avoir', tip: 'Le "h" est expiré et le "a" est ouvert comme dans "cat" : "haev". Le "v" final est doux.' },
     { word: 'Has', phonetic: '/hæz/', meaning: 'A (3e pers.)', tip: 'Même "h" expiré. Le "s" final est sonore : "haez". Pas "ass".' },
@@ -1051,6 +1083,7 @@ export const A1_L25: LessonContent = {
     { speaker: 'Léa', role: 'A', text: 'He\'s cute! My daughter\'s name is Claire.', translation: 'Il est mignon ! Ma fille s\'appelle Claire.' },
     { speaker: 'Hugo', role: 'B', text: 'What a lovely name! My cousin\'s daughter is also named Claire!', translation: 'Quel joli nom ! La fille de mon cousin s\'appelle aussi Claire !' },
   ],
+  conversationTitle: 'La photo de famille',
   pronunciation: [
     { word: 'Daughter', phonetic: '/ˈdɔːtər/', meaning: 'Fille', tip: 'Le "au" = "o" long ouvert : "do-ter". Ne dites PAS "daug-ter".' },
     { word: 'Nephew', phonetic: '/ˈnefjuː/', meaning: 'Neveu', tip: 'Prononcez "ne-fiou" — le "ph" = "f" et le "ew" = "iou".' },
@@ -1093,6 +1126,7 @@ export const A1_L26: LessonContent = {
     { speaker: 'Marie', role: 'A', text: 'That\'s smart. I get dressed first, then I eat.', translation: 'C\'est malin. Je m\'habille d\'abord, puis je mange.' },
     { speaker: 'David', role: 'B', text: 'Everyone has their own routine!', translation: 'Chacun sa routine !' },
   ],
+  conversationTitle: 'La routine du matin',
   pronunciation: [
     { word: 'Wake up', phonetic: '/weɪk ʌp/', meaning: 'Se réveiller', tip: 'Le "w" : arrondissez les lèvres. "Ouék-ap". L\'accent est sur "wake".' },
     { word: 'Brush', phonetic: '/brʌʃ/', meaning: 'Brosser', tip: 'Le "u" est ouvert : "breuch". Le "sh" final est comme le "ch" français.' },
@@ -1130,6 +1164,7 @@ export const A1_L27: LessonContent = {
     { speaker: 'Julie', role: 'A', text: 'What time does she eat dinner?', translation: 'À quelle heure mange-t-elle le dîner ?' },
     { speaker: 'Marc', role: 'B', text: 'She eats dinner at seven. Then she sleeps early.', translation: 'Elle dîne à sept heures. Ensuite elle se couche tôt.' },
   ],
+  conversationTitle: 'Aller à l\'école',
   pronunciation: [
     { word: 'Goes', phonetic: '/ɡoʊz/', meaning: 'Va (3e pers.)', tip: 'Prononcez "gôz" — le "s" final est sonore : "z". Pas "goss".' },
     { word: 'Eats', phonetic: '/iːts/', meaning: 'Mange (3e pers.)', tip: 'Prononcez "iits" — le "ea" est un "i" long et le "s" est sourd.' },
@@ -1167,6 +1202,7 @@ export const A1_L28: LessonContent = {
     { speaker: 'Sarah', role: 'A', text: 'And in the evening? Do you do chores?', translation: 'Et le soir ? Fais-tu les tâches ménagères ?' },
     { speaker: 'Olivier', role: 'B', text: 'I do chores on Wednesday. But after my lunch break, I just relax!', translation: 'Je fais les tâches ménagères le mercredi. Mais après ma pause déjeuner, je me détends !' },
   ],
+  conversationTitle: 'Une journée type',
   pronunciation: [
     { word: 'Commute', phonetic: '/kəˈmjuːt/', meaning: 'Trajet', tip: 'L\'accent est sur "mute" : "ke-MIOUT". Les syllabes avant et après sont réduites.' },
     { word: 'Chores', phonetic: '/tʃɔːrz/', meaning: 'Tâches ménagères', tip: 'Le "ch" = "tch" et le "o" est long : "tchorz". Pas "chorz".' },
@@ -1204,6 +1240,7 @@ export const A1_L29: LessonContent = {
     { speaker: 'Émilie', role: 'A', text: 'Sometimes, yes. I usually walk home from work.', translation: 'Parfois, oui. Je rentre habituellement du travail à pied.' },
     { speaker: 'Thomas', role: 'B', text: 'That\'s good exercise! I never skip my morning run.', translation: 'C\'est un bon exercice ! Je ne saute jamais mon footing matinal.' },
   ],
+  conversationTitle: 'Toujours ou jamais ?',
   pronunciation: [
     { word: 'Always', phonetic: '/ˈɔːlweɪz/', meaning: 'Toujours', tip: 'Prononcez "ol-ouéz" — l\'accent est sur "al" et le "s" final est sonore : "z".' },
     { word: 'Usually', phonetic: '/ˈjuːʒuəli/', meaning: 'Habituellement', tip: 'Le "s" devient le son "j" français : "iou-jou-a-li". Pas "iou-zou-a-li".' },
@@ -1241,6 +1278,7 @@ export const A1_L30: LessonContent = {
     { speaker: 'Amina', role: 'A', text: 'Sometimes! He cleans on weekends. I walk the dog every morning.', translation: 'Parfois ! Il nettoie le week-end. Je promène le chien chaque matin.' },
     { speaker: 'Isabelle', role: 'B', text: 'We all have our tasks. I walk the dog too!', translation: 'On a tous nos tâches. Je promène le chien aussi !' },
   ],
+  conversationTitle: 'Qui fait quoi ?',
   pronunciation: [
     { word: 'Cooks', phonetic: '/kʊks/', meaning: 'Cuisine (3e pers.)', tip: 'Le "s" final est sourd : "kouks". Après un son sourd (k, p, t, f), -s se prononce "s".' },
     { word: 'Cleans', phonetic: '/kliːnz/', meaning: 'Nettoie (3e pers.)', tip: 'Le "s" final est sonore : "kliinz". Après un son sonore (n, b, d, g, v), -s se prononce "z".' },
@@ -1283,6 +1321,7 @@ export const A1_L31: LessonContent = {
     { speaker: 'Claire', role: 'A', text: 'Do you have a garden?', translation: 'As-tu un jardin ?' },
     { speaker: 'Antoine', role: 'B', text: 'Yes, the garden is behind the kitchen. It\'s beautiful in spring!', translation: 'Oui, le jardin est derrière la cuisine. Il est beau au printemps !' },
   ],
+  conversationTitle: 'Les pièces de la maison',
   pronunciation: [
     { word: 'Kitchen', phonetic: '/ˈkɪtʃɪn/', meaning: 'Cuisine', tip: 'Le "ch" = "tch" : "kit-chinn". Pas "kitchen" à la française.' },
     { word: 'Bedroom', phonetic: '/ˈbedruːm/', meaning: 'Chambre', tip: 'Prononcez "béd-roum" — le "d" et le "r" se lient naturellement.' },
@@ -1321,6 +1360,7 @@ export const A1_L32: LessonContent = {
     { speaker: 'Lucie', role: 'A', text: 'I need a small black television for my kitchen.', translation: 'J\'ai besoin d\'une petite télévision noire pour ma cuisine.' },
     { speaker: 'Benoît', role: 'B', text: 'My old television is small and black! You can have it.', translation: 'Ma vieille télé est petite et noire ! Tu peux la prendre.' },
   ],
+  conversationTitle: 'Le canapé et les meubles',
   pronunciation: [
     { word: 'Sofa', phonetic: '/ˈsoʊfə/', meaning: 'Canapé', tip: 'Le "o" est long : "so-fa". Le "a" final est très réduit. Pas "so-fà".' },
     { word: 'Fridge', phonetic: '/frɪdʒ/', meaning: 'Réfrigérateur', tip: 'Prononcez "fridj" — le "i" est court et le "dge" = "dj".' },
@@ -1358,6 +1398,7 @@ export const A1_L33: LessonContent = {
     { speaker: 'Nadia', role: 'A', text: 'Are there any bookshelves?', translation: 'Y a-t-il des étagères ?' },
     { speaker: 'Romain', role: 'B', text: 'Yes, there are many bookshelves! I have a lot of books.', translation: 'Oui, il y a beaucoup d\'étagères ! J\'ai beaucoup de livres.' },
   ],
+  conversationTitle: 'Y a-t-il un jardin ?',
   pronunciation: [
     { word: 'Some', phonetic: '/sʌm/', meaning: 'Du/De la/Des', tip: 'Le "o" est ouvert : "seum". Très différent du mot français "somme".' },
     { word: 'Any', phonetic: '/ˈeni/', meaning: 'Du/De la (nég./quest.)', tip: 'Prononcez "é-ni" — le "a" est comme "é" et non "a".' },
@@ -1395,6 +1436,7 @@ export const A1_L34: LessonContent = {
     { speaker: 'Alice', role: 'A', text: 'That\'s important! My apartment has a balcony too. I love it.', translation: 'C\'est important ! Mon appartement a aussi un balcon. Je l\'adore.' },
     { speaker: 'François', role: 'B', text: 'We\'re lucky! A balcony makes a small apartment feel bigger.', translation: 'On a de la chance ! Un balcon fait paraître un petit appartement plus grand.' },
   ],
+  conversationTitle: 'Maison ou appartement ?',
   pronunciation: [
     { word: 'Apartment', phonetic: '/əˈpɑːrtmənt/', meaning: 'Appartement', tip: 'L\'accent est sur "par" : "e-PAR-ment". Le "a" de "par" est long et ouvert.' },
     { word: 'Rent', phonetic: '/rent/', meaning: 'Loyer', tip: 'Prononcez "rent" — le "e" est bref et ouvert. Pas "rant".' },
@@ -1432,6 +1474,7 @@ export const A1_L35: LessonContent = {
     { speaker: 'Sophie', role: 'A', text: 'Wow! Can you open the drawer? I need a pen.', translation: 'Waouh ! Peux-tu ouvrir le tiroir ? J\'ai besoin d\'un stylo.' },
     { speaker: 'Marc', role: 'B', text: 'Sure, it\'s the top drawer of the coffee table.', translation: 'Bien sûr, c\'est le tiroir du haut de la table basse.' },
   ],
+  conversationTitle: 'Dans la cuisine',
   pronunciation: [
     { word: 'Cupboard', phonetic: '/ˈkʌbərd/', meaning: 'Placard', tip: 'On prononce "keu-berd" — le "p" et le "oa" disparaissent ! Pas "cup-board".' },
     { word: 'Cushion', phonetic: '/ˈkʊʃən/', meaning: 'Coussin', tip: 'Prononcez "kouch-enn" — le "sh" est comme le "ch" français.' },
@@ -1474,6 +1517,7 @@ export const A1_L36: LessonContent = {
     { speaker: 'Inès', role: 'A', text: 'These skirts are really nice. Where do they sell them?', translation: 'Ces jupes sont vraiment sympa. Où les vendent-ils ?' },
     { speaker: 'Léa', role: 'B', text: 'At the market next to the bakery. Everything is cheap there!', translation: 'Au marché à côté de la boulangerie. Tout y est bon marché !' },
   ],
+  conversationTitle: 'Les prix et les achats',
   pronunciation: [
     { word: 'Buy', phonetic: '/baɪ/', meaning: 'Acheter', tip: 'Le "u" = "aï" : "baï". Ne dites pas "bou-ill".' },
     { word: 'Sell', phonetic: '/sel/', meaning: 'Vendre', tip: 'Le "e" est ouvert et bref : "sèl". Pas "sil".' },
@@ -1511,6 +1555,7 @@ export const A1_L37: LessonContent = {
     { speaker: 'Julie', role: 'A', text: 'Just one, please. I\'ll pay cash. Can I have the receipt?', translation: 'Juste une, s\'il vous plaît. Je paie en espèces. Puis-je avoir le reçu ?' },
     { speaker: 'Clerk', role: 'B', text: 'Of course! Here is your receipt. Thank you for your purchase!', translation: 'Bien sûr ! Voici votre reçu. Merci pour votre achat !' },
   ],
+  conversationTitle: 'Combien ça coûte ?',
   pronunciation: [
     { word: 'Cost', phonetic: '/kɒst/', meaning: 'Coûter', tip: 'Le "o" est ouvert comme dans "bon" : "kost". Pas "koust".' },
     { word: 'Discount', phonetic: '/ˈdɪskaʊnt/', meaning: 'Réduction', tip: 'L\'accent sur "DIS" : "DIS-kaount". Le "ou" = "aou" comme dans "house".' },
@@ -1548,6 +1593,7 @@ export const A1_L38: LessonContent = {
     { speaker: 'Nadia', role: 'A', text: 'Could I have a medium, please?', translation: 'Pourrais-je avoir un M, s\'il vous plaît ?' },
     { speaker: 'Shop assistant', role: 'B', text: 'Here you go! I\'ll be right here if you need anything.', translation: 'Voilà ! Je serai juste là si vous avez besoin de quoi que ce soit.' },
   ],
+  conversationTitle: 'Au magasin de vêtements',
   pronunciation: [
     { word: 'Would', phonetic: '/wʊd/', meaning: 'Voudrais (auxiliaire)', tip: 'Prononcez "ououd" — le "l" est MUET ! Pas "oul-d".' },
     { word: 'Could', phonetic: '/kʊd/', meaning: 'Pourrais', tip: 'Prononcez "koud" — le "l" est MUET. Même voyelle que "book".' },
@@ -1586,6 +1632,7 @@ export const A1_L39: LessonContent = {
     { speaker: 'Paul', role: 'A', text: 'I\'ll take the small red one. How much is it?', translation: 'Je prends le petit rouge. Combien coûte-t-il ?' },
     { speaker: 'Shop assistant', role: 'B', text: 'It\'s thirty-five euros. That\'s a great price for a wool sweater!', translation: 'C\'est trente-cinq euros. C\'est un bon prix pour un pull en laine !' },
   ],
+  conversationTitle: 'Tailles et couleurs',
   pronunciation: [
     { word: 'Red', phonetic: '/red/', meaning: 'Rouge', tip: 'Le "e" est ouvert comme dans "bed" : "rèd". Pas "rid".' },
     { word: 'Blue', phonetic: '/bluː/', meaning: 'Bleu(e)', tip: 'Le "ue" = "ou" long : "blouuu". Ne dites pas "bliou".' },
@@ -1623,6 +1670,7 @@ export const A1_L40: LessonContent = {
     { speaker: 'Marie', role: 'A', text: 'Good idea! The customer next to us is buying three wallets!', translation: 'Bonne idée ! Le client à côté de nous achète trois portefeuilles !' },
     { speaker: 'Julien', role: 'B', text: 'Ha! Don\'t forget your change at the counter!', translation: 'Ha ! N\'oublie pas ta monnaie au comptoir !' },
   ],
+  conversationTitle: 'Moins cher ou plus joli ?',
   pronunciation: [
     { word: 'Bargain', phonetic: '/ˈbɑːrɡɪn/', meaning: 'Bonne affaire', tip: 'L\'accent sur "BAR" : "BAR-ginn". Le "ai" ne se prononce PAS "é" mais "i" court.' },
     { word: 'Wallet', phonetic: '/ˈwɒlɪt/', meaning: 'Portefeuille', tip: 'Le "w" : arrondissez les lèvres. "Ool-lit". Le "a" est ouvert comme dans "bon".' },
@@ -1682,6 +1730,136 @@ const LESSON_CONTENT_MAP: Record<string, LessonContent> = {
   'a1-l38': A1_L38,
   'a1-l39': A1_L39,
   'a1-l40': A1_L40,
+  // A2 Elementary — Units 1-5
+  'a2-l1': A2_L1,
+  'a2-l2': A2_L2,
+  'a2-l3': A2_L3,
+  'a2-l4': A2_L4,
+  'a2-l5': A2_L5,
+  'a2-l6': A2_L6,
+  'a2-l7': A2_L7,
+  'a2-l8': A2_L8,
+  'a2-l9': A2_L9,
+  'a2-l10': A2_L10,
+  'a2-l11': A2_L11,
+  'a2-l12': A2_L12,
+  'a2-l13': A2_L13,
+  'a2-l14': A2_L14,
+  'a2-l15': A2_L15,
+  'a2-l16': A2_L16,
+  'a2-l17': A2_L17,
+  'a2-l18': A2_L18,
+  'a2-l19': A2_L19,
+  'a2-l20': A2_L20,
+  'a2-l21': A2_L21,
+  'a2-l22': A2_L22,
+  'a2-l23': A2_L23,
+  'a2-l24': A2_L24,
+  'a2-l25': A2_L25,
+
+  // A2 Units 6-10
+  'a2-l26': A2_L26,
+  'a2-l27': A2_L27,
+  'a2-l28': A2_L28,
+  'a2-l29': A2_L29,
+  'a2-l30': A2_L30,
+  // A2 Elementary — Unit 7: Work & Professions
+  'a2-l31': A2_L31,
+  'a2-l32': A2_L32,
+  'a2-l33': A2_L33,
+  'a2-l34': A2_L34,
+  'a2-l35': A2_L35,
+  // A2 Elementary — Unit 8: Education & School
+  'a2-l36': A2_L36,
+  'a2-l37': A2_L37,
+  'a2-l38': A2_L38,
+  'a2-l39': A2_L39,
+  'a2-l40': A2_L40,
+  // A2 Elementary — Unit 9: Housing & Neighborhood
+  'a2-l41': A2_L41,
+  'a2-l42': A2_L42,
+  'a2-l43': A2_L43,
+  'a2-l44': A2_L44,
+  'a2-l45': A2_L45,
+  // A2 Elementary — Unit 10: Technology Basics
+  'a2-l46': A2_L46,
+  'a2-l47': A2_L47,
+  'a2-l48': A2_L48,
+  'a2-l49': A2_L49,
+  'a2-l50': A2_L50,
+
+  // B1 Intermediate — Unit 1: News & Media
+  'b1-l1': B1_L1,
+  'b1-l2': B1_L2,
+  'b1-l3': B1_L3,
+  'b1-l4': B1_L4,
+  'b1-l5': B1_L5,
+  // B1 Intermediate — Unit 2: Environment & Nature
+  'b1-l6': B1_L6,
+  'b1-l7': B1_L7,
+  'b1-l8': B1_L8,
+  'b1-l9': B1_L9,
+  'b1-l10': B1_L10,
+  // B1 Intermediate — Unit 3: Relationships & Emotions
+  'b1-l11': B1_L11,
+  'b1-l12': B1_L12,
+  'b1-l13': B1_L13,
+  'b1-l14': B1_L14,
+  'b1-l15': B1_L15,
+  // B1 Intermediate — Unit 4: Culture & Traditions
+  'b1-l16': B1_L16,
+  'b1-l17': B1_L17,
+  'b1-l18': B1_L18,
+  'b1-l19': B1_L19,
+  'b1-l20': B1_L20,
+  // B1 Intermediate — Unit 5: Business English Basics
+  'b1-l21': B1_L21,
+  'b1-l22': B1_L22,
+  'b1-l23': B1_L23,
+  'b1-l24': B1_L24,
+  'b1-l25': B1_L25,
+  // B1 Intermediate — Unit 6: Health & Wellness
+  'b1-l26': B1_L26,
+  'b1-l27': B1_L27,
+  'b1-l28': B1_L28,
+  'b1-l29': B1_L29,
+  'b1-l30': B1_L30,
+  // B1 Intermediate — Unit 7: Travel Experiences
+  'b1-l31': B1_L31,
+  'b1-l32': B1_L32,
+  'b1-l33': B1_L33,
+  'b1-l34': B1_L34,
+  'b1-l35': B1_L35,
+  // B1 Intermediate — Unit 8: Social Issues
+  'b1-l36': B1_L36,
+  'b1-l37': B1_L37,
+  'b1-l38': B1_L38,
+  'b1-l39': B1_L39,
+  'b1-l40': B1_L40,
+  // B1 Intermediate — Unit 9: Arts & Entertainment
+  'b1-l41': B1_L41,
+  'b1-l42': B1_L42,
+  'b1-l43': B1_L43,
+  'b1-l44': B1_L44,
+  'b1-l45': B1_L45,
+  // B1 Intermediate — Unit 10: Science & Technology
+  'b1-l46': B1_L46,
+  'b1-l47': B1_L47,
+  'b1-l48': B1_L48,
+  'b1-l49': B1_L49,
+  'b1-l50': B1_L50,
+  // B1 Intermediate — Unit 11: Finance & Money
+  'b1-l51': B1_L51,
+  'b1-l52': B1_L52,
+  'b1-l53': B1_L53,
+  'b1-l54': B1_L54,
+  'b1-l55': B1_L55,
+  // B1 Intermediate — Unit 12: Law & Rights
+  'b1-l56': B1_L56,
+  'b1-l57': B1_L57,
+  'b1-l58': B1_L58,
+  'b1-l59': B1_L59,
+  'b1-l60': B1_L60,
 }
 
 export function getLessonContent(lessonId: string): LessonContent {

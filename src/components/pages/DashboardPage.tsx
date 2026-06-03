@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  BookOpen, Dumbbell, MessageCircle, BarChart3,
+  ArrowLeft, BookOpen, Dumbbell, MessageCircle, BarChart3,
   Moon, Sun, Bell, Flame, Coins, Star, ChevronRight,
   Volume2, Trophy, Clock, Target, Home, User, Settings,
   Zap, Award, Crown
@@ -290,21 +290,22 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-background pb-24 lg:pb-8">
-      <motion.div
-        className="mx-auto max-w-4xl space-y-6 p-4 lg:p-6"
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-      >
-        {/* ─── 1. Top Bar ─────────────────────────────────────────────── */}
-        <motion.div
-          variants={itemVariants}
-          className="flex items-center justify-between gap-3"
-        >
-          <div className="flex items-center gap-3 min-w-0">
-            <Avatar className="h-11 w-11 ring-2 ring-yoel-red/30">
+      {/* ─── Sticky Top Bar ──────────────────────────────────────────── */}
+      <div className="sticky top-0 z-40 bg-background/80 backdrop-blur-lg border-b border-border/40">
+        <div className="mx-auto max-w-4xl flex items-center justify-between gap-3 px-4 py-2.5 lg:px-6">
+          <div className="flex items-center gap-2 min-w-0">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigate('home')}
+              className="shrink-0 rounded-full gap-1.5 border-yoel-red/20 hover:bg-yoel-red/5 hover:border-yoel-red/40 transition-all"
+            >
+              <ArrowLeft className="h-4 w-4 text-yoel-red" />
+              <span className="text-xs font-medium text-yoel-red">Retour</span>
+            </Button>
+            <Avatar className="h-9 w-9 ring-2 ring-yoel-red/30">
               <AvatarImage src={user?.avatar ?? undefined} alt={displayName} />
-              <AvatarFallback className="bg-yoel-red/10 text-yoel-red font-semibold text-sm">
+              <AvatarFallback className="bg-yoel-red/10 text-yoel-red font-semibold text-xs">
                 {displayName
                   .split(' ')
                   .map((n) => n[0])
@@ -314,10 +315,10 @@ export default function DashboardPage() {
               </AvatarFallback>
             </Avatar>
             <div className="min-w-0">
-              <p className="text-sm text-muted-foreground truncate">
+              <p className="text-xs text-muted-foreground truncate">
                 {greeting} 👋
               </p>
-              <p className="font-semibold truncate gradient-text-red text-lg">
+              <p className="font-semibold truncate gradient-text-red text-sm">
                 {displayName}
               </p>
             </div>
@@ -385,8 +386,15 @@ export default function DashboardPage() {
               </AnimatePresence>
             </Button>
           </div>
-        </motion.div>
+        </div>
+      </div>
 
+      <motion.div
+        className="mx-auto max-w-4xl space-y-6 p-4 lg:p-6"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
         {/* XP Progress Bar */}
         <motion.div variants={itemVariants} className="space-y-1.5">
           <div className="flex items-center justify-between text-xs">

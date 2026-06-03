@@ -131,76 +131,76 @@ const A1_LESSONS: LessonData[] = [
 // ─── A2 - Elementary ────────────────────────────────────────────────────────
 
 const A2_UNITS: UnitData[] = [
-  { id: 'a2-u1', title: 'Weather & Seasons', description: 'Talk about weather and seasons', icon: '🌤️', order: 1 },
-  { id: 'a2-u2', title: 'Travel & Transportation', description: 'Navigate airports, trains, and buses', icon: '✈️', order: 2 },
-  { id: 'a2-u3', title: 'At the Restaurant', description: 'Order meals and discuss food preferences', icon: '🍽️', order: 3 },
-  { id: 'a2-u4', title: 'Health & Body', description: 'Describe symptoms and visit the doctor', icon: '🏥', order: 4 },
-  { id: 'a2-u5', title: 'Shopping & Clothes', description: 'Buy clothing and discuss fashion', icon: '👗', order: 5 },
-  { id: 'a2-u6', title: 'Hobbies & Free Time', description: 'Discuss leisure activities and interests', icon: '🎨', order: 6 },
-  { id: 'a2-u7', title: 'Work & Professions', description: 'Talk about jobs and workplaces', icon: '💼', order: 7 },
-  { id: 'a2-u8', title: 'Education & School', description: 'Discuss studies and academic life', icon: '📚', order: 8 },
-  { id: 'a2-u9', title: 'Housing & Neighborhood', description: 'Find housing and meet neighbors', icon: '🏘️', order: 9 },
-  { id: 'a2-u10', title: 'Technology Basics', description: 'Use phones, computers, and the internet', icon: '💻', order: 10 },
+  { id: 'a2-u1', title: 'Daily Life & Routines', description: 'Extend your daily routine with present continuous', icon: '☀️', order: 1 },
+  { id: 'a2-u2', title: 'Hobbies & Free Time', description: 'Discuss leisure activities and preferences', icon: '🎨', order: 2 },
+  { id: 'a2-u3', title: 'Weather & Seasons', description: 'Talk about weather and make predictions', icon: '🌤️', order: 3 },
+  { id: 'a2-u4', title: 'At the Restaurant', description: 'Order meals and discuss food quantities', icon: '🍽️', order: 4 },
+  { id: 'a2-u5', title: 'Health & Body', description: 'Describe symptoms and give health advice', icon: '🏥', order: 5 },
+  { id: 'a2-u6', title: 'Past Experiences', description: 'Talk about past events and travel stories', icon: '✈️', order: 6 },
+  { id: 'a2-u7', title: 'Shopping & Clothes', description: 'Compare products and make polite requests', icon: '👗', order: 7 },
+  { id: 'a2-u8', title: 'Work & Professions', description: 'Talk about jobs and future career plans', icon: '💼', order: 8 },
+  { id: 'a2-u9', title: 'Housing & Neighborhood', description: 'Find housing and describe your area', icon: '🏘️', order: 9 },
+  { id: 'a2-u10', title: 'Technology & Communication', description: 'Use technology and give instructions', icon: '💻', order: 10 },
 ]
 
 const A2_LESSONS: LessonData[] = [
-  // Unit 1: Weather
-  { id: 'a2-l1', unitId: 'a2-u1', title: 'Weather Vocabulary', description: 'Sunny, rainy, cloudy, windy, snowy', type: 'vocabulary', order: 1, xpReward: 15, duration: 6 },
-  { id: 'a2-l2', unitId: 'a2-u1', title: 'It\'s Going to Rain', description: 'Future predictions with "going to"', type: 'grammar', order: 2, xpReward: 15, duration: 8 },
-  { id: 'a2-l3', unitId: 'a2-u1', title: 'Seasons & Activities', description: 'What people do in each season', type: 'conversation', order: 3, xpReward: 20, duration: 10 },
-  { id: 'a2-l4', unitId: 'a2-u1', title: 'Comparing Weather', description: 'Hotter than, colder than, as warm as', type: 'grammar', order: 4, xpReward: 15, duration: 8 },
-  { id: 'a2-l5', unitId: 'a2-u1', title: 'Weather Sounds', description: 'Pronounce weather vocabulary', type: 'pronunciation', order: 5, xpReward: 15, duration: 6 },
-  // Unit 2: Travel
-  { id: 'a2-l6', unitId: 'a2-u2', title: 'Travel Words', description: 'Journey, ticket, luggage, destination', type: 'vocabulary', order: 1, xpReward: 15, duration: 6 },
-  { id: 'a2-l7', unitId: 'a2-u2', title: 'At the Airport', description: 'Check-in, boarding, customs', type: 'conversation', order: 2, xpReward: 25, duration: 12 },
-  { id: 'a2-l8', unitId: 'a2-u2', title: 'Taking the Train', description: 'Buy tickets and find your platform', type: 'conversation', order: 3, xpReward: 20, duration: 10 },
-  { id: 'a2-l9', unitId: 'a2-u2', title: 'Past Simple: Regular', description: 'Talk about past travel experiences', type: 'grammar', order: 4, xpReward: 15, duration: 10 },
-  { id: 'a2-l10', unitId: 'a2-u2', title: 'Travel Sounds', description: 'Pronounce travel vocabulary', type: 'pronunciation', order: 5, xpReward: 15, duration: 6 },
-  // Unit 3: Restaurant
-  { id: 'a2-l11', unitId: 'a2-u3', title: 'Restaurant Vocabulary', description: 'Menu, appetizer, main course, dessert', type: 'vocabulary', order: 1, xpReward: 15, duration: 6 },
-  { id: 'a2-l12', unitId: 'a2-u3', title: 'Ordering a Meal', description: 'Place your order politely', type: 'conversation', order: 2, xpReward: 25, duration: 12 },
-  { id: 'a2-l13', unitId: 'a2-u3', title: 'Countable & Uncountable', description: 'Much, many, some, any with food', type: 'grammar', order: 3, xpReward: 15, duration: 10 },
-  { id: 'a2-l14', unitId: 'a2-u3', title: 'Complaining Politely', description: 'Express dissatisfaction respectfully', type: 'conversation', order: 4, xpReward: 20, duration: 10 },
-  { id: 'a2-l15', unitId: 'a2-u3', title: 'Restaurant Sounds', description: 'Pronounce restaurant terms', type: 'pronunciation', order: 5, xpReward: 15, duration: 6 },
-  // Unit 4: Health
-  { id: 'a2-l16', unitId: 'a2-u4', title: 'Body Parts', description: 'Head, shoulders, arm, leg, chest', type: 'vocabulary', order: 1, xpReward: 15, duration: 6 },
-  { id: 'a2-l17', unitId: 'a2-u4', title: 'Common Illnesses', description: 'Headache, fever, cold, cough', type: 'vocabulary', order: 2, xpReward: 15, duration: 6 },
-  { id: 'a2-l18', unitId: 'a2-u4', title: 'At the Doctor', description: 'Describe symptoms and get advice', type: 'conversation', order: 3, xpReward: 25, duration: 12 },
-  { id: 'a2-l19', unitId: 'a2-u4', title: 'Should / Must', description: 'Give health advice and obligations', type: 'grammar', order: 4, xpReward: 15, duration: 8 },
-  { id: 'a2-l20', unitId: 'a2-u4', title: 'Health Sounds', description: 'Pronounce health vocabulary', type: 'pronunciation', order: 5, xpReward: 15, duration: 6 },
-  // Unit 5: Shopping & Clothes
-  { id: 'a2-l21', unitId: 'a2-u5', title: 'Clothing Vocabulary', description: 'Shirt, dress, pants, jacket, shoes', type: 'vocabulary', order: 1, xpReward: 15, duration: 6 },
-  { id: 'a2-l22', unitId: 'a2-u5', title: 'Trying Things On', description: 'Ask for sizes and try on clothes', type: 'conversation', order: 2, xpReward: 20, duration: 10 },
-  { id: 'a2-l23', unitId: 'a2-u5', title: 'Comparatives', description: 'Cheaper, more expensive, better', type: 'grammar', order: 3, xpReward: 15, duration: 8 },
-  { id: 'a2-l24', unitId: 'a2-u5', title: 'Return & Exchange', description: 'Return or exchange items', type: 'conversation', order: 4, xpReward: 20, duration: 8 },
-  { id: 'a2-l25', unitId: 'a2-u5', title: 'Clothing Sounds', description: 'Pronounce clothing words', type: 'pronunciation', order: 5, xpReward: 15, duration: 6 },
-  // Unit 6: Hobbies
-  { id: 'a2-l26', unitId: 'a2-u6', title: 'Hobby Vocabulary', description: 'Swimming, painting, cooking, reading', type: 'vocabulary', order: 1, xpReward: 15, duration: 6 },
-  { id: 'a2-l27', unitId: 'a2-u6', title: 'Past Simple: Irregular', description: 'Went, saw, ate, drank, took', type: 'grammar', order: 2, xpReward: 20, duration: 10 },
-  { id: 'a2-l28', unitId: 'a2-u6', title: 'What Did You Do?', description: 'Talk about past weekend activities', type: 'conversation', order: 3, xpReward: 25, duration: 10 },
-  { id: 'a2-l29', unitId: 'a2-u6', title: 'Likes & Dislikes', description: 'Express preferences about activities', type: 'grammar', order: 4, xpReward: 15, duration: 8 },
-  { id: 'a2-l30', unitId: 'a2-u6', title: 'Hobby Sounds', description: 'Pronounce hobby vocabulary', type: 'pronunciation', order: 5, xpReward: 15, duration: 6 },
-  // Unit 7: Work
-  { id: 'a2-l31', unitId: 'a2-u7', title: 'Job Vocabulary', description: 'Teacher, doctor, engineer, mechanic', type: 'vocabulary', order: 1, xpReward: 15, duration: 6 },
-  { id: 'a2-l32', unitId: 'a2-u7', title: 'Present Continuous', description: 'What are you doing right now?', type: 'grammar', order: 2, xpReward: 15, duration: 8 },
-  { id: 'a2-l33', unitId: 'a2-u7', title: 'Job Interview Basics', description: 'Answer simple interview questions', type: 'conversation', order: 3, xpReward: 25, duration: 12 },
-  { id: 'a2-l34', unitId: 'a2-u7', title: 'Workplace English', description: 'Common phrases at the office', type: 'vocabulary', order: 4, xpReward: 15, duration: 8 },
-  { id: 'a2-l35', unitId: 'a2-u7', title: 'Work Sounds', description: 'Pronounce profession names', type: 'pronunciation', order: 5, xpReward: 15, duration: 6 },
-  // Unit 8: Education
-  { id: 'a2-l36', unitId: 'a2-u8', title: 'School Vocabulary', description: 'Student, homework, exam, library', type: 'vocabulary', order: 1, xpReward: 15, duration: 6 },
-  { id: 'a2-l37', unitId: 'a2-u8', title: 'Future with Will', description: 'Make predictions about the future', type: 'grammar', order: 2, xpReward: 15, duration: 8 },
-  { id: 'a2-l38', unitId: 'a2-u8', title: 'Study Plans', description: 'Discuss your education goals', type: 'conversation', order: 3, xpReward: 20, duration: 10 },
-  { id: 'a2-l39', unitId: 'a2-u8', title: 'Imperatives', description: 'Give instructions and directions', type: 'grammar', order: 4, xpReward: 15, duration: 8 },
-  { id: 'a2-l40', unitId: 'a2-u8', title: 'Education Sounds', description: 'Pronounce school vocabulary', type: 'pronunciation', order: 5, xpReward: 15, duration: 6 },
-  // Unit 9: Housing
+  // ═══ Unit 1: Daily Life & Routines — Present Continuous ═══
+  { id: 'a2-l1', unitId: 'a2-u1', title: 'Daily Activities Vocabulary', description: 'Extend your routine vocabulary with new actions', type: 'vocabulary', order: 1, xpReward: 15, duration: 6 },
+  { id: 'a2-l2', unitId: 'a2-u1', title: 'Present Continuous', description: 'I am working, she is studying right now', type: 'grammar', order: 2, xpReward: 15, duration: 8 },
+  { id: 'a2-l3', unitId: 'a2-u1', title: 'What Are You Doing?', description: 'Talk about what\'s happening right now', type: 'conversation', order: 3, xpReward: 20, duration: 10 },
+  { id: 'a2-l4', unitId: 'a2-u1', title: 'Simple vs Continuous', description: 'When to use present simple or present continuous', type: 'grammar', order: 4, xpReward: 15, duration: 8 },
+  { id: 'a2-l5', unitId: 'a2-u1', title: 'Routine Sounds', description: 'Pronounce daily activity words', type: 'pronunciation', order: 5, xpReward: 15, duration: 6 },
+  // ═══ Unit 2: Hobbies & Free Time — Likes / Dislikes + -ing ═══
+  { id: 'a2-l6', unitId: 'a2-u2', title: 'Hobby Vocabulary', description: 'Swimming, painting, cooking, reading', type: 'vocabulary', order: 1, xpReward: 15, duration: 6 },
+  { id: 'a2-l7', unitId: 'a2-u2', title: 'Likes & Dislikes', description: 'I enjoy, I prefer, I can\'t stand + -ing', type: 'grammar', order: 2, xpReward: 15, duration: 8 },
+  { id: 'a2-l8', unitId: 'a2-u2', title: 'Talking About Hobbies', description: 'Discuss what you do in your free time', type: 'conversation', order: 3, xpReward: 25, duration: 10 },
+  { id: 'a2-l9', unitId: 'a2-u2', title: 'How Often Do You...?', description: 'Express frequency of leisure activities', type: 'vocabulary', order: 4, xpReward: 15, duration: 8 },
+  { id: 'a2-l10', unitId: 'a2-u2', title: 'Hobby Sounds', description: 'Pronounce hobby and activity words', type: 'pronunciation', order: 5, xpReward: 15, duration: 6 },
+  // ═══ Unit 3: Weather & Seasons — Going to (future) ═══
+  { id: 'a2-l11', unitId: 'a2-u3', title: 'Weather Vocabulary', description: 'Sunny, rainy, cloudy, windy, snowy', type: 'vocabulary', order: 1, xpReward: 15, duration: 6 },
+  { id: 'a2-l12', unitId: 'a2-u3', title: 'It\'s Going to Rain', description: 'Future predictions with "going to"', type: 'grammar', order: 2, xpReward: 15, duration: 8 },
+  { id: 'a2-l13', unitId: 'a2-u3', title: 'Seasons & Activities', description: 'What people do in each season', type: 'conversation', order: 3, xpReward: 20, duration: 10 },
+  { id: 'a2-l14', unitId: 'a2-u3', title: 'Comparing Weather', description: 'Hotter than, colder than, as warm as', type: 'grammar', order: 4, xpReward: 15, duration: 8 },
+  { id: 'a2-l15', unitId: 'a2-u3', title: 'Weather Sounds', description: 'Pronounce weather vocabulary', type: 'pronunciation', order: 5, xpReward: 15, duration: 6 },
+  // ═══ Unit 4: At the Restaurant — Countable / Uncountable ═══
+  { id: 'a2-l16', unitId: 'a2-u4', title: 'Restaurant Vocabulary', description: 'Menu, appetizer, main course, dessert', type: 'vocabulary', order: 1, xpReward: 15, duration: 6 },
+  { id: 'a2-l17', unitId: 'a2-u4', title: 'Ordering a Meal', description: 'Place your order politely', type: 'conversation', order: 2, xpReward: 25, duration: 12 },
+  { id: 'a2-l18', unitId: 'a2-u4', title: 'Countable & Uncountable', description: 'Much, many, some, any with food', type: 'grammar', order: 3, xpReward: 15, duration: 10 },
+  { id: 'a2-l19', unitId: 'a2-u4', title: 'Complaining Politely', description: 'Express dissatisfaction respectfully', type: 'conversation', order: 4, xpReward: 20, duration: 10 },
+  { id: 'a2-l20', unitId: 'a2-u4', title: 'Restaurant Sounds', description: 'Pronounce restaurant terms', type: 'pronunciation', order: 5, xpReward: 15, duration: 6 },
+  // ═══ Unit 5: Health & Body — Should / Must ═══
+  { id: 'a2-l21', unitId: 'a2-u5', title: 'Body Parts', description: 'Head, shoulders, arm, leg, chest', type: 'vocabulary', order: 1, xpReward: 15, duration: 6 },
+  { id: 'a2-l22', unitId: 'a2-u5', title: 'Common Illnesses', description: 'Headache, fever, cold, cough, sore throat', type: 'vocabulary', order: 2, xpReward: 15, duration: 6 },
+  { id: 'a2-l23', unitId: 'a2-u5', title: 'At the Doctor', description: 'Describe symptoms and get advice', type: 'conversation', order: 3, xpReward: 25, duration: 12 },
+  { id: 'a2-l24', unitId: 'a2-u5', title: 'Should / Must', description: 'Give health advice and express obligations', type: 'grammar', order: 4, xpReward: 15, duration: 8 },
+  { id: 'a2-l25', unitId: 'a2-u5', title: 'Health Sounds', description: 'Pronounce health vocabulary', type: 'pronunciation', order: 5, xpReward: 15, duration: 6 },
+  // ═══ Unit 6: Past Experiences — Past Simple (regular + irregular) ═══
+  { id: 'a2-l26', unitId: 'a2-u6', title: 'Travel Words', description: 'Journey, ticket, luggage, destination', type: 'vocabulary', order: 1, xpReward: 15, duration: 6 },
+  { id: 'a2-l27', unitId: 'a2-u6', title: 'Past Simple: Regular', description: 'Talk about past experiences with -ed verbs', type: 'grammar', order: 2, xpReward: 20, duration: 10 },
+  { id: 'a2-l28', unitId: 'a2-u6', title: 'Past Simple: Irregular', description: 'Went, saw, ate, drank, took', type: 'grammar', order: 3, xpReward: 20, duration: 10 },
+  { id: 'a2-l29', unitId: 'a2-u6', title: 'What Did You Do?', description: 'Talk about past weekend and travel activities', type: 'conversation', order: 4, xpReward: 25, duration: 10 },
+  { id: 'a2-l30', unitId: 'a2-u6', title: 'Travel Sounds', description: 'Pronounce travel and past tense verbs', type: 'pronunciation', order: 5, xpReward: 15, duration: 6 },
+  // ═══ Unit 7: Shopping & Clothes — Comparatives & Can/Could ═══
+  { id: 'a2-l31', unitId: 'a2-u7', title: 'Clothing Vocabulary', description: 'Shirt, dress, pants, jacket, shoes', type: 'vocabulary', order: 1, xpReward: 15, duration: 6 },
+  { id: 'a2-l32', unitId: 'a2-u7', title: 'Comparatives', description: 'Cheaper, more expensive, better, worse', type: 'grammar', order: 2, xpReward: 15, duration: 8 },
+  { id: 'a2-l33', unitId: 'a2-u7', title: 'Trying Things On', description: 'Ask for sizes and try on clothes', type: 'conversation', order: 3, xpReward: 20, duration: 10 },
+  { id: 'a2-l34', unitId: 'a2-u7', title: 'Can / Could (Requests)', description: 'Polite requests: Can I...? Could you...?', type: 'grammar', order: 4, xpReward: 15, duration: 8 },
+  { id: 'a2-l35', unitId: 'a2-u7', title: 'Shopping Sounds', description: 'Pronounce clothing and shopping words', type: 'pronunciation', order: 5, xpReward: 15, duration: 6 },
+  // ═══ Unit 8: Work & Professions — Future with Will / Going to ═══
+  { id: 'a2-l36', unitId: 'a2-u8', title: 'Job Vocabulary', description: 'Teacher, doctor, engineer, mechanic', type: 'vocabulary', order: 1, xpReward: 15, duration: 6 },
+  { id: 'a2-l37', unitId: 'a2-u8', title: 'Future with Will & Going to', description: 'Predictions vs plans for the future', type: 'grammar', order: 2, xpReward: 15, duration: 8 },
+  { id: 'a2-l38', unitId: 'a2-u8', title: 'Job Interview Basics', description: 'Answer simple interview questions', type: 'conversation', order: 3, xpReward: 25, duration: 12 },
+  { id: 'a2-l39', unitId: 'a2-u8', title: 'Workplace English', description: 'Common phrases at the office', type: 'vocabulary', order: 4, xpReward: 15, duration: 8 },
+  { id: 'a2-l40', unitId: 'a2-u8', title: 'Work Sounds', description: 'Pronounce profession names', type: 'pronunciation', order: 5, xpReward: 15, duration: 6 },
+  // ═══ Unit 9: Housing & Neighborhood — Prepositions of Place ═══
   { id: 'a2-l41', unitId: 'a2-u9', title: 'Housing Vocabulary', description: 'Apartment, rent, neighbor, landlord', type: 'vocabulary', order: 1, xpReward: 15, duration: 6 },
-  { id: 'a2-l42', unitId: 'a2-u9', title: 'Prepositions of Place', description: 'Next to, across from, between', type: 'grammar', order: 2, xpReward: 15, duration: 8 },
+  { id: 'a2-l42', unitId: 'a2-u9', title: 'Prepositions of Place', description: 'Next to, across from, between, behind', type: 'grammar', order: 2, xpReward: 15, duration: 8 },
   { id: 'a2-l43', unitId: 'a2-u9', title: 'Finding an Apartment', description: 'Call about a rental listing', type: 'conversation', order: 3, xpReward: 25, duration: 12 },
   { id: 'a2-l44', unitId: 'a2-u9', title: 'Describing Your Neighborhood', description: 'Talk about where you live', type: 'conversation', order: 4, xpReward: 20, duration: 10 },
   { id: 'a2-l45', unitId: 'a2-u9', title: 'Housing Sounds', description: 'Pronounce housing vocabulary', type: 'pronunciation', order: 5, xpReward: 15, duration: 6 },
-  // Unit 10: Technology
+  // ═══ Unit 10: Technology & Communication — Imperatives ═══
   { id: 'a2-l46', unitId: 'a2-u10', title: 'Tech Vocabulary', description: 'Phone, computer, internet, email', type: 'vocabulary', order: 1, xpReward: 15, duration: 6 },
-  { id: 'a2-l47', unitId: 'a2-u10', title: 'Can / Could', description: 'Ability and permission with tech', type: 'grammar', order: 2, xpReward: 15, duration: 8 },
+  { id: 'a2-l47', unitId: 'a2-u10', title: 'Imperatives', description: 'Give instructions: Click here, press this button', type: 'grammar', order: 2, xpReward: 15, duration: 8 },
   { id: 'a2-l48', unitId: 'a2-u10', title: 'Tech Problems', description: 'Describe phone and computer issues', type: 'conversation', order: 3, xpReward: 20, duration: 10 },
   { id: 'a2-l49', unitId: 'a2-u10', title: 'Online Life', description: 'Discuss social media and apps', type: 'vocabulary', order: 4, xpReward: 15, duration: 8 },
   { id: 'a2-l50', unitId: 'a2-u10', title: 'Tech Sounds', description: 'Pronounce technology vocabulary', type: 'pronunciation', order: 5, xpReward: 15, duration: 6 },

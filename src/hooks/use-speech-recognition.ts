@@ -103,6 +103,8 @@ function blobToBase64(blob: Blob): Promise<string> {
     const reader = new FileReader()
     reader.onloadend = () => {
       const dataUrl = reader.result as string
+      // Strip the data URI prefix (e.g., "data:audio/webm;base64,")
+      // The ASR SDK expects raw base64 data only
       const base64 = dataUrl.split(',')[1] || dataUrl
       resolve(base64)
     }
@@ -117,6 +119,7 @@ function getSupportedMimeType(): string | null {
     'audio/webm',
     'audio/ogg;codecs=opus',
     'audio/mp4',
+    'audio/wav',
   ]
   for (const type of types) {
     if (MediaRecorder.isTypeSupported(type)) return type
@@ -157,6 +160,7 @@ export function useSpeechRecognition(
   const recordingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const chunksRef = useRef<Blob[]>([])
   const isStoppedRef = useRef(false)
+  const isStartingRef = useRef(false) // Prevent double-start
 
   // Refs for current option values
   const targetWordRef = useRef(targetWord)
@@ -339,14 +343,52 @@ export function useSpeechRecognition(
       const target = targetWordRef.current.toLowerCase().trim()
       const threshold = similarityThresholdRef.current
 
-      const similarity = calculateSimilarity(normalizedTranscript, target)
+      // Calculate full-phrase similarity
+      const fullSimilarity = calculateSimilarity(normalizedTranscript, target)
+
+      // For multi-word targets, also check individual word matching
+      // This handles cases like "Right now" where the user might say just one word,
+      // or the speech API might return slightly different phrasing
+      let bestSimilarity = fullSimilarity
+      const targetWords = target.split(/\s+/)
+      const transcriptWords = normalizedTranscript.split(/\s+/)
+
+      if (targetWords.length > 1 || transcriptWords.length > 1) {
+        // Check if any individual target word matches well
+        for (const tw of targetWords) {
+          if (tw.length < 2) continue // Skip very short words
+          for (const sw of transcriptWords) {
+            if (sw.length < 2) continue
+            const wordSim = calculateSimilarity(sw, tw)
+            if (wordSim > bestSimilarity) {
+              bestSimilarity = wordSim
+            }
+          }
+        }
+
+        // Also check if transcript contains all target words (in any order)
+        const allWordsPresent = targetWords.every(tw =>
+          transcriptWords.some(sw => calculateSimilarity(sw, tw) >= 70)
+        )
+        if (allWordsPresent && targetWords.length > 1) {
+          bestSimilarity = Math.max(bestSimilarity, 85) // High confidence if all words recognized
+        }
+
+        // Check if any substantial subset of target words are present
+        const matchedWords = targetWords.filter(tw =>
+          transcriptWords.some(sw => calculateSimilarity(sw, tw) >= 65)
+        )
+        if (matchedWords.length >= Math.ceil(targetWords.length * 0.6) && matchedWords.length > 0) {
+          bestSimilarity = Math.max(bestSimilarity, 72) // Decent confidence if most words match
+        }
+      }
 
       const isCorrect =
-        similarity >= threshold ||
+        bestSimilarity >= threshold ||
         (normalizedTranscript.length > 0 &&
           (normalizedTranscript.includes(target) || target.includes(normalizedTranscript)))
 
-      const finalConfidence = confidenceFromApi !== undefined ? confidenceFromApi : similarity
+      const finalConfidence = confidenceFromApi !== undefined ? confidenceFromApi : bestSimilarity
 
       setResult({
         transcript: normalizedTranscript,
@@ -396,7 +438,7 @@ export function useSpeechRecognition(
         }
 
         if (chunksRef.current.length === 0) {
-          setError('Aucune donnée audio n\'a été enregistrée.')
+          setError('Aucune donnée audio n\'a été enregistrée. Parlez plus fort et réessayez.')
           releaseResources()
           return
         }
@@ -406,12 +448,15 @@ export function useSpeechRecognition(
           const blob = new Blob(chunksRef.current, { type: mimeType })
           const base64 = await blobToBase64(blob)
 
+          console.log('[SpeechRecognition] Sending audio to ASR, base64 length:', base64.length, 'type:', mimeType)
+
           const response = await fetch('/api/pronunciation', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               audio_base64: base64,
               target_word: targetWordRef.current,
+              audio_mime_type: mimeType, // Send MIME type for the backend
             }),
           })
 
@@ -429,9 +474,12 @@ export function useSpeechRecognition(
             is_correct: boolean
           }
 
+          console.log('[SpeechRecognition] ASR result:', data)
+
           processTranscript(data.transcript, data.confidence)
         } catch (err: unknown) {
           const msg = err instanceof Error ? err.message : String(err)
+          console.error('[SpeechRecognition] Processing failed:', msg)
           setError(`Traitement échoué: ${msg}`)
         } finally {
           setIsProcessing(false)
@@ -439,7 +487,7 @@ export function useSpeechRecognition(
         }
       }
 
-      recorder.start(100)
+      recorder.start(250) // Collect data every 250ms for better quality
       setIsRecording(true)
       startMicLevelLoop()
       startRecordingTimer()
@@ -454,7 +502,7 @@ export function useSpeechRecognition(
   )
 
   // ── Web Speech API path ──
-  // KEY FIX: Web Speech API handles microphone access internally.
+  // Web Speech API handles microphone access internally.
   // We don't need getUserMedia for speech recognition itself.
   // We only try getUserMedia for the optional mic level visualization.
 
@@ -477,6 +525,7 @@ export function useSpeechRecognition(
     recognition.maxAlternatives = 3
 
     recognition.onstart = () => {
+      isStartingRef.current = false
       setIsRecording(true)
       if (analyserRef.current) {
         startMicLevelLoop()
@@ -512,6 +561,8 @@ export function useSpeechRecognition(
           }
         }
 
+        console.log('[SpeechRecognition] WebSpeech result:', { bestTranscript, bestSimilarity, apiConfidence })
+
         processTranscript(bestTranscript, apiConfidence)
       } catch {
         setError('Erreur lors du traitement de la reconnaissance vocale.')
@@ -521,6 +572,7 @@ export function useSpeechRecognition(
     recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
       const errName = event.error
       console.log('[SpeechRecognition] Error:', errName)
+      isStartingRef.current = false
 
       if (errName === 'no-speech') {
         setError('Aucune parole détectée. Parlez plus fort et réessayez.')
@@ -538,6 +590,7 @@ export function useSpeechRecognition(
         // Try fallback
         const canFallback = typeof MediaRecorder !== 'undefined' && !!navigator.mediaDevices?.getUserMedia
         if (canFallback) {
+          console.log('[SpeechRecognition] WebSpeech network error, falling back to MediaRecorder')
           setError(null)
           setMethod('mediaRecorder')
           // Start the fallback path
@@ -560,6 +613,7 @@ export function useSpeechRecognition(
       setIsRecording(false)
       stopMicLevelLoop()
       stopRecordingTimer()
+      isStartingRef.current = false
 
       if (autoStopTimerRef.current !== null) {
         clearTimeout(autoStopTimerRef.current)
@@ -573,9 +627,12 @@ export function useSpeechRecognition(
     }
 
     try {
+      isStartingRef.current = true
       recognition.start()
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err)
+      console.error('[SpeechRecognition] start() threw:', msg)
+      isStartingRef.current = false
       setError(`Impossible de démarrer la reconnaissance vocale: ${msg}`)
       releaseResources()
       return
@@ -604,6 +661,12 @@ export function useSpeechRecognition(
   // ── Public Actions ──
 
   const startRecording = useCallback(async () => {
+    // Prevent double-start
+    if (isStartingRef.current || isRecording || isProcessing) {
+      console.log('[SpeechRecognition] Already starting/recording/processing, skipping')
+      return
+    }
+
     // Reset previous state
     setError(null)
     setResult(null)
@@ -626,7 +689,7 @@ export function useSpeechRecognition(
     } else {
       setError('La reconnaissance vocale n\'est pas supportée dans ce navigateur.')
     }
-  }, [isSupported, method, startWebSpeechPath, acquireStreamForRecording, startMediaRecorderPath])
+  }, [isSupported, isRecording, isProcessing, method, startWebSpeechPath, acquireStreamForRecording, startMediaRecorderPath])
 
   const stopRecording = useCallback(() => {
     isStoppedRef.current = true
@@ -649,6 +712,7 @@ export function useSpeechRecognition(
 
   const reset = useCallback(() => {
     isStoppedRef.current = true
+    isStartingRef.current = false
     releaseResources()
     setIsRecording(false)
     setIsProcessing(false)
@@ -664,6 +728,7 @@ export function useSpeechRecognition(
   useEffect(() => {
     return () => {
       isStoppedRef.current = true
+      isStartingRef.current = false
       releaseResources()
     }
   }, [releaseResources])

@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  ArrowLeft, Home, CheckCircle2, XCircle, Star, Zap, Clock,
+  ArrowLeft, CheckCircle2, XCircle, Star, Zap, Clock,
   Brain, BookOpen, MessageSquareText, Mic, RotateCcw,
   ChevronRight, Trophy, Sparkles, Volume2, Eye, EyeOff,
   Hash, SkipForward, RefreshCw, AlertCircle, Loader2, Keyboard
@@ -12,8 +12,8 @@ import {
 import { useAppStore } from '@/lib/store'
 import { useSpeechRecognition, type SpeechRecognitionResult } from '@/hooks/use-speech-recognition'
 import { speakWord } from '@/lib/speech-utils'
-import { VOCAB_BY_LEVEL, QUIZ_BY_LEVEL, GRAMMAR_BY_LEVEL, PRONUNCIATION_BY_LEVEL, type VocabCard, type QuizQuestion, type GrammarExercise, type PronunciationWord } from '@/lib/course-data'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { EXERCISE_LEVELS, VOCAB_BY_LEVEL, QUIZ_BY_LEVEL, GRAMMAR_BY_LEVEL, PRONUNCIATION_BY_LEVEL, type VocabCard, type QuizQuestion, type GrammarExercise, type PronunciationWord, type ExerciseLevel } from '@/lib/exercises-data'
+import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
@@ -41,11 +41,6 @@ const itemVariants = {
   },
 }
 
-const cardFlipVariants = {
-  front: { rotateY: 0, transition: { duration: 0.4, ease: 'easeInOut' } },
-  back: { rotateY: 0, transition: { duration: 0.4, ease: 'easeInOut' } },
-}
-
 const feedbackVariants = {
   correct: {
     scale: [1, 1.2, 1],
@@ -57,18 +52,13 @@ const feedbackVariants = {
   },
 }
 
-// ─── Sample Data ────────────────────────────────────────────────────────────
-// Types and data are imported from course-data.ts
+const pageVariants = {
+  enter: { opacity: 0, x: 40 },
+  center: { opacity: 1, x: 0, transition: { type: 'spring', stiffness: 300, damping: 30 } },
+  exit: { opacity: 0, x: -40, transition: { duration: 0.2 } },
+}
 
-// Re-export types for local use
-type VocabCardLocal = VocabCard
-type QuizQuestionLocal = QuizQuestion
-type GrammarExerciseLocal = GrammarExercise
-type PronunciationWordLocal = PronunciationWord
-
-// Level-specific data is now loaded from course-data.ts via hooks
-// The QuizTab, GrammarTab, VocabularyTab, and PronunciationTab components
-// receive their data as props from the parent ExercisesPage component.
+// ─── Data Helpers ────────────────────────────────────────────────────────────
 
 function getQuizForLevel(level: string): QuizQuestion[] {
   return QUIZ_BY_LEVEL[level] || QUIZ_BY_LEVEL['A1']
@@ -100,8 +90,6 @@ const XP_REWARDS = {
   vocabulary: 8,
   pronunciation: 12,
 }
-
-
 
 // ─── Timer Component ────────────────────────────────────────────────────────
 
@@ -819,7 +807,7 @@ function VocabularyTab({ level, onAdvance }: { level: string; onAdvance?: () => 
         </div>
       </div>
 
-      {/* Flashcard - Crossfade style (no mirror effect) */}
+      {/* Flashcard */}
       <div className="flex justify-center">
         <motion.div
           className="w-full max-w-sm cursor-pointer"
@@ -905,6 +893,16 @@ function VocabularyTab({ level, onAdvance }: { level: string; onAdvance?: () => 
                     <p className="text-sm italic text-muted-foreground max-w-[250px]">
                       &ldquo;{currentCard.example}&rdquo;
                     </p>
+                    <button
+                      className="flex items-center gap-1.5 text-xs text-yoel-blue hover:text-yoel-blue-dark transition-colors"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        speakWord(currentCard.english)
+                      }}
+                    >
+                      <Volume2 className="h-3.5 w-3.5" />
+                      Réécouter
+                    </button>
                     <button
                       className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors mt-1"
                       onClick={(e) => {
@@ -999,7 +997,6 @@ function PronunciationTab({ level, onAdvance }: { level: string; onAdvance?: () 
     if (isRecording || isProcessing) return
     setCurrentAttempt(null)
     resetRecording()
-    // Small delay to let reset complete before starting
     setTimeout(() => startRecording(), 50)
   }, [isRecording, isProcessing, resetRecording, startRecording])
 
@@ -1013,12 +1010,10 @@ function PronunciationTab({ level, onAdvance }: { level: string; onAdvance?: () 
     setTypedAnswer('')
   }
 
-  // Handle typed answer submission
   const handleTypedSubmit = useCallback(() => {
     const answer = typedAnswer.trim().toLowerCase()
     const target = currentWord.word.toLowerCase()
 
-    // Calculate similarity
     const maxLen = Math.max(answer.length, target.length)
     let similarity = 0
     if (maxLen > 0) {
@@ -1064,7 +1059,6 @@ function PronunciationTab({ level, onAdvance }: { level: string; onAdvance?: () 
     }
   }, [typedAnswer, currentWord])
 
-  // Auto-advance after correct pronunciation
   const handleAdvance = useCallback(() => {
     setCurrentAttempt(null)
     resetRecording()
@@ -1145,7 +1139,6 @@ function PronunciationTab({ level, onAdvance }: { level: string; onAdvance?: () 
     return 'Réessayez'
   }
 
-  // Build character-by-character comparison
   const renderCharComparison = (said: string, expected: string) => {
     const saidLower = said.toLowerCase()
     const expectedLower = expected.toLowerCase()
@@ -1253,6 +1246,15 @@ function PronunciationTab({ level, onAdvance }: { level: string; onAdvance?: () 
                   <Volume2 className="h-4 w-4 mr-1.5" />
                   Écouter
                 </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => speakWord(currentWord.word, { rate: 0.5 })}
+                  className="rounded-full text-yoel-gold hover:text-yoel-gold hover:bg-yoel-gold/5"
+                >
+                  <Volume2 className="h-4 w-4 mr-1.5" />
+                  Lentement
+                </Button>
                 <div className="text-muted-foreground/40">→</div>
                 <div className="flex items-center gap-1 bg-muted/30 rounded-full p-0.5">
                   <button
@@ -1291,7 +1293,7 @@ function PronunciationTab({ level, onAdvance }: { level: string; onAdvance?: () 
               {/* Input section - Microphone or Typing */}
               {inputMode === 'mic' ? (
                 <div className="flex flex-col items-center gap-3 py-3">
-                  {/* Waveform — real mic level from Web Audio API */}
+                  {/* Waveform */}
                   <div className="flex items-center gap-1 h-10">
                     {Array.from({ length: 16 }).map((_, i) => (
                       <motion.div
@@ -1484,7 +1486,7 @@ function PronunciationTab({ level, onAdvance }: { level: string; onAdvance?: () 
                       />
                     </div>
 
-                    {/* Visual comparison: said vs expected */}
+                    {/* Visual comparison */}
                     {currentAttempt.transcript && (
                       <div className="rounded-xl border bg-muted/20 p-4 space-y-3">
                         <div className="flex flex-col sm:flex-row gap-3">
@@ -1513,7 +1515,7 @@ function PronunciationTab({ level, onAdvance }: { level: string; onAdvance?: () 
                       </div>
                     )}
 
-                    {/* No transcript available (ASR couldn't understand) */}
+                    {/* No transcript available */}
                     {!currentAttempt.transcript && (
                       <div className="rounded-xl border bg-yoel-gold/5 border-yoel-gold/20 p-4">
                         <p className="text-sm text-muted-foreground text-center">
@@ -1522,7 +1524,7 @@ function PronunciationTab({ level, onAdvance }: { level: string; onAdvance?: () 
                       </div>
                     )}
 
-                    {/* Retry button — always shown when incorrect. Skip only after 3+ attempts or if correct */}
+                    {/* Retry / Skip buttons */}
                     <div className="flex gap-3">
                       <Button
                         onClick={handleRetry}
@@ -1542,7 +1544,7 @@ function PronunciationTab({ level, onAdvance }: { level: string; onAdvance?: () 
                         </Button>
                       )}
                     </div>
-                    {/* Encouraging message when stuck */}
+                    {/* Encouraging messages */}
                     {!currentAttempt.isCorrect && wordAttempts.length >= 2 && wordAttempts.length < 3 && (
                       <p className="text-xs text-center text-yoel-gold font-medium">
                         Continuez à essayer ! Vous y êtes presque ! 💪
@@ -1613,10 +1615,10 @@ function PronunciationTab({ level, onAdvance }: { level: string; onAdvance?: () 
 // ─── Main Component ─────────────────────────────────────────────────────────
 
 export default function ExercisesPage() {
-  const { goBack, navigate, currentLevel, user } = useAppStore()
+  const navigate = useAppStore((s) => s.navigate)
+  const user = useAppStore((s) => s.user)
+  const [selectedLevel, setSelectedLevel] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState('quiz')
-
-  const level = user?.level ?? currentLevel
 
   const TAB_ORDER = ['quiz', 'grammar', 'vocabulary', 'pronunciation']
 
@@ -1627,90 +1629,203 @@ export default function ExercisesPage() {
     }
   }, [activeTab])
 
+  const handleSelectLevel = (code: string) => {
+    setSelectedLevel(code)
+    setActiveTab('quiz')
+  }
+
+  const handleBackToLevels = () => {
+    setSelectedLevel(null)
+    setActiveTab('quiz')
+  }
+
+  // Get level info for the currently selected level
+  const currentLevelInfo = selectedLevel
+    ? EXERCISE_LEVELS.find((l) => l.code === selectedLevel)
+    : undefined
+
   const tabConfig = [
-    { id: 'quiz', label: 'Quiz', icon: Brain, color: 'text-yoel-red' },
-    { id: 'grammar', label: 'Grammaire', icon: BookOpen, color: 'text-yoel-blue' },
-    { id: 'vocabulary', label: 'Vocabulaire', icon: MessageSquareText, color: 'text-yoel-green' },
-    { id: 'pronunciation', label: 'Prononciation', icon: Mic, color: 'text-yoel-gold' },
+    { id: 'quiz', label: 'Quiz', emoji: '🧠', color: 'text-yoel-red' },
+    { id: 'grammar', label: 'Grammaire', emoji: '📖', color: 'text-yoel-blue' },
+    { id: 'vocabulary', label: 'Vocabulaire', emoji: '💬', color: 'text-yoel-green' },
+    { id: 'pronunciation', label: 'Prononciation', emoji: '🎤', color: 'text-yoel-gold' },
   ]
 
   return (
     <div className="min-h-screen bg-background">
-      <motion.div
-        className="mx-auto max-w-2xl space-y-4 p-4 lg:p-6"
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-      >
-        {/* ─── Top Bar ─────────────────────────────────────────────────── */}
-        <motion.div variants={itemVariants} className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={goBack}
-              className="h-9 w-9 rounded-full"
+      <div className="mx-auto max-w-2xl p-4 lg:p-6">
+        <AnimatePresence mode="wait">
+          {/* ─── View 1: Level Selection ────────────────────────────────── */}
+          {!selectedLevel && (
+            <motion.div
+              key="level-selection"
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              exit={{ opacity: 0, x: -40, transition: { duration: 0.2 } }}
+              className="space-y-6"
             >
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => navigate('dashboard')}
-              className="h-9 w-9 rounded-full text-muted-foreground hover:text-yoel-red"
+              {/* Sticky Header */}
+              <motion.div variants={itemVariants} className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm pb-3 -mx-4 px-4 lg:-mx-6 lg:px-6">
+                <div className="flex items-center gap-3">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => navigate('home')}
+                    className="h-9 w-9 rounded-full"
+                  >
+                    <ArrowLeft className="h-5 w-5" />
+                  </Button>
+                  <div>
+                    <h1 className="text-lg font-bold gradient-text-red">Exercices</h1>
+                    <p className="text-xs text-muted-foreground">Choisissez votre niveau</p>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Level Grid */}
+              <motion.div
+                variants={containerVariants}
+                className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4"
+              >
+                {EXERCISE_LEVELS.map((level) => (
+                  <motion.div key={level.code} variants={itemVariants}>
+                    <Card
+                      className={`glass overflow-hidden border-2 ${level.borderColor} hover:shadow-lg transition-all duration-200 cursor-pointer group`}
+                      onClick={() => handleSelectLevel(level.code)}
+                    >
+                      <CardContent className="p-4 space-y-3">
+                        {/* Level Icon & Code */}
+                        <div className="flex items-center justify-between">
+                          <span className="text-2xl">{level.icon}</span>
+                          <Badge
+                            className={`bg-gradient-to-r ${level.gradient} text-white text-xs font-bold border-0 px-2 py-0.5`}
+                          >
+                            {level.code}
+                          </Badge>
+                        </div>
+
+                        {/* Level Name */}
+                        <div>
+                          <h3 className={`font-bold text-sm sm:text-base ${level.color}`}>
+                            {level.name}
+                          </h3>
+                          <p className="text-xs text-muted-foreground leading-relaxed mt-0.5 line-clamp-2">
+                            {level.description}
+                          </p>
+                        </div>
+
+                        {/* Exercise Count */}
+                        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                          <Zap className="h-3 w-3" />
+                          <span>{level.exerciseCount} exercices</span>
+                        </div>
+
+                        {/* Start Button */}
+                        <Button
+                          className={`w-full bg-gradient-to-r ${level.gradient} text-white text-xs font-semibold rounded-xl h-8 group-hover:shadow-md transition-shadow`}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleSelectLevel(level.code)
+                          }}
+                        >
+                          Commencer
+                          <ChevronRight className="h-3.5 w-3.5 ml-1" />
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                ))}
+              </motion.div>
+            </motion.div>
+          )}
+
+          {/* ─── View 2: Exercise Tabs ──────────────────────────────────── */}
+          {selectedLevel && currentLevelInfo && (
+            <motion.div
+              key={`exercises-${selectedLevel}`}
+              variants={pageVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              className="space-y-4"
             >
-              <Home className="h-4 w-4" />
-            </Button>
-            <div>
-              <h1 className="text-lg font-bold">Exercices</h1>
-              <p className="text-xs text-muted-foreground">Pratiquez votre anglais</p>
-            </div>
-          </div>
+              {/* Sticky Header */}
+              <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm pb-3 -mx-4 px-4 lg:-mx-6 lg:px-6">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={handleBackToLevels}
+                      className="h-9 w-9 rounded-full"
+                    >
+                      <ArrowLeft className="h-5 w-5" />
+                    </Button>
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg">{currentLevelInfo.icon}</span>
+                      <div>
+                        <h1 className="text-lg font-bold">{currentLevelInfo.name}</h1>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Badge
+                      className={`bg-gradient-to-r ${currentLevelInfo.gradient} text-white text-xs font-bold border-0 px-2.5 py-1`}
+                    >
+                      {currentLevelInfo.code}
+                    </Badge>
+                    <div className="flex items-center gap-1 rounded-full bg-yoel-gold/10 px-2.5 py-1.5">
+                      <Zap className="h-4 w-4 text-yoel-gold" />
+                      <span className="text-sm font-semibold text-yoel-gold">
+                        {user?.xp ?? 0}
+                      </span>
+                    </div>
+                  </div>
+                </div>
 
-          <div className="flex items-center gap-2">
-            <Badge variant="secondary" className="text-xs font-semibold">
-              {level}
-            </Badge>
-            <div className="flex items-center gap-1 rounded-full bg-yoel-gold/10 px-2.5 py-1.5">
-              <Zap className="h-4 w-4 text-yoel-gold" />
-              <span className="text-sm font-semibold text-yoel-gold">
-                {user?.xp ?? 0}
-              </span>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* ─── Tab Navigation ───────────────────────────────────────────── */}
-        <motion.div variants={itemVariants}>
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-            <TabsList className="w-full grid grid-cols-4 h-auto p-1 rounded-xl">
-              {tabConfig.map((tab) => (
-                <TabsTrigger
-                  key={tab.id}
-                  value={tab.id}
-                  className="flex items-center gap-1.5 py-2.5 text-xs sm:text-sm rounded-lg data-[state=active]:shadow-sm"
+                {/* Back label */}
+                <button
+                  onClick={handleBackToLevels}
+                  className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors mt-1 ml-12"
                 >
-                  <tab.icon className={`h-4 w-4 ${activeTab === tab.id ? tab.color : ''}`} />
-                  <span className="hidden sm:inline">{tab.label}</span>
-                </TabsTrigger>
-              ))}
-            </TabsList>
+                  <ArrowLeft className="h-3 w-3" />
+                  Niveaux
+                </button>
+              </div>
 
-            <TabsContent value="quiz" className="mt-0">
-              <QuizTab level={level} onAdvance={handleAdvanceToNextTab} />
-            </TabsContent>
-            <TabsContent value="grammar" className="mt-0">
-              <GrammarTab level={level} onAdvance={handleAdvanceToNextTab} />
-            </TabsContent>
-            <TabsContent value="vocabulary" className="mt-0">
-              <VocabularyTab level={level} onAdvance={handleAdvanceToNextTab} />
-            </TabsContent>
-            <TabsContent value="pronunciation" className="mt-0">
-              <PronunciationTab level={level} />
-            </TabsContent>
-          </Tabs>
-        </motion.div>
-      </motion.div>
+              {/* Tab Navigation */}
+              <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+                <TabsList className="w-full grid grid-cols-4 h-auto p-1 rounded-xl">
+                  {tabConfig.map((tab) => (
+                    <TabsTrigger
+                      key={tab.id}
+                      value={tab.id}
+                      className="flex items-center gap-1.5 py-2.5 text-xs sm:text-sm rounded-lg data-[state=active]:shadow-sm"
+                    >
+                      <span className="text-sm">{tab.emoji}</span>
+                      <span className="hidden sm:inline">{tab.label}</span>
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+
+                <TabsContent value="quiz" className="mt-0">
+                  <QuizTab level={selectedLevel} onAdvance={handleAdvanceToNextTab} />
+                </TabsContent>
+                <TabsContent value="grammar" className="mt-0">
+                  <GrammarTab level={selectedLevel} onAdvance={handleAdvanceToNextTab} />
+                </TabsContent>
+                <TabsContent value="vocabulary" className="mt-0">
+                  <VocabularyTab level={selectedLevel} onAdvance={handleAdvanceToNextTab} />
+                </TabsContent>
+                <TabsContent value="pronunciation" className="mt-0">
+                  <PronunciationTab level={selectedLevel} onAdvance={handleAdvanceToNextTab} />
+                </TabsContent>
+              </Tabs>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   )
 }
