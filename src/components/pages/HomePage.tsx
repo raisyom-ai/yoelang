@@ -1,8 +1,16 @@
 'use client'
 
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useAppStore } from '@/lib/store'
 import { Button } from '@/components/ui/button'
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from '@/components/ui/sheet'
 import {
   Bot,
   BookOpen,
@@ -16,6 +24,9 @@ import {
   ArrowRight,
   CheckCircle2,
   Quote,
+  Menu,
+  LogIn,
+  UserPlus,
 } from 'lucide-react'
 
 /* ---------- data ---------- */
@@ -124,6 +135,7 @@ const stagger = {
 
 export default function HomePage() {
   const { navigate } = useAppStore()
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -135,7 +147,8 @@ export default function HomePage() {
             <span className="text-xl font-black gradient-text-red">YOELANG</span>
           </div>
 
-          <div className="flex items-center gap-3">
+          {/* Desktop buttons (visible on sm+) */}
+          <div className="hidden sm:flex items-center gap-3">
             <Button
               variant="ghost"
               size="sm"
@@ -152,8 +165,86 @@ export default function HomePage() {
               Commencer
             </Button>
           </div>
+
+          {/* Mobile hamburger (visible below sm) */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="sm:hidden h-10 w-10 shrink-0"
+            onClick={() => setMobileMenuOpen(true)}
+            aria-label="Ouvrir le menu"
+          >
+            <Menu className="h-6 w-6" />
+          </Button>
         </div>
       </nav>
+
+      {/* ===== MOBILE MENU SHEET ===== */}
+      <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+        <SheetContent side="right" className="w-[280px] sm:w-[320px]">
+          <SheetHeader className="text-left">
+            <div className="flex items-center gap-2">
+              <img src="/yoelang-logo.png" alt="YOELANG" className="h-8 w-8" />
+              <SheetTitle className="text-lg font-black gradient-text-red">YOELANG</SheetTitle>
+            </div>
+            <SheetDescription className="text-sm text-muted-foreground">
+              Apprenez l&apos;anglais avec YOELANG
+            </SheetDescription>
+          </SheetHeader>
+
+          <div className="flex flex-col gap-3 px-4 mt-6">
+            <Button
+              size="lg"
+              onClick={() => {
+                setMobileMenuOpen(false)
+                navigate('register')
+              }}
+              className="w-full bg-yoel-red hover:bg-yoel-red-dark text-white text-base h-12"
+            >
+              <UserPlus className="mr-2 h-5 w-5" />
+              Commencer gratuitement
+            </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              onClick={() => {
+                setMobileMenuOpen(false)
+                navigate('login')
+              }}
+              className="w-full text-base h-12"
+            >
+              <LogIn className="mr-2 h-5 w-5" />
+              Se connecter
+            </Button>
+          </div>
+
+          <div className="mt-8 px-4 space-y-1">
+            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">Navigation rapide</p>
+            {[
+              { label: 'Leçons', icon: BookOpen, action: () => { setMobileMenuOpen(false); navigate('levels') } },
+              { label: 'Exercices', icon: BarChart3, action: () => { setMobileMenuOpen(false); navigate('exercises') } },
+              { label: 'Chat IA', icon: Bot, action: () => { setMobileMenuOpen(false); navigate('chat') } },
+              { label: 'Premium', icon: Trophy, action: () => { setMobileMenuOpen(false); navigate('premium') } },
+            ].map((item) => (
+              <button
+                key={item.label}
+                onClick={item.action}
+                className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+              >
+                <item.icon className="h-5 w-5 text-muted-foreground" />
+                {item.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="absolute bottom-6 left-4 right-4">
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <CheckCircle2 className="h-4 w-4 text-yoel-green shrink-0" />
+              <span>Gratuit pour commencer — sans carte bancaire</span>
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
 
       {/* ===== HERO ===== */}
       <header className="relative overflow-hidden">
@@ -513,7 +604,7 @@ export default function HomePage() {
               <span className="text-xs text-muted-foreground">— YOEL ANGLAIS</span>
             </div>
 
-            <div className="flex gap-6 text-sm text-muted-foreground">
+            <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
               <button
                 onClick={() => navigate('login')}
                 className="hover:text-foreground transition-colors"
