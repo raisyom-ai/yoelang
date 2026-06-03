@@ -3,6 +3,20 @@ import { A2_L26, A2_L27, A2_L28, A2_L29, A2_L30, A2_L31, A2_L32, A2_L33, A2_L34,
 import { B1_L1, B1_L2, B1_L3, B1_L4, B1_L5, B1_L6, B1_L7, B1_L8, B1_L9, B1_L10, B1_L11, B1_L12, B1_L13, B1_L14, B1_L15, B1_L16, B1_L17, B1_L18, B1_L19, B1_L20 } from './b1-lesson-content-units1-4'
 import { B1_L21, B1_L22, B1_L23, B1_L24, B1_L25, B1_L26, B1_L27, B1_L28, B1_L29, B1_L30, B1_L31, B1_L32, B1_L33, B1_L34, B1_L35, B1_L36, B1_L37, B1_L38, B1_L39, B1_L40 } from './b1-lesson-content-units5-8'
 import { B1_L41, B1_L42, B1_L43, B1_L44, B1_L45, B1_L46, B1_L47, B1_L48, B1_L49, B1_L50, B1_L51, B1_L52, B1_L53, B1_L54, B1_L55, B1_L56, B1_L57, B1_L58, B1_L59, B1_L60 } from './b1-lesson-content-units9-12'
+import { C2_L1, C2_L2, C2_L3, C2_L4, C2_L5 } from './c2-unit1-content'
+import { C2_L6, C2_L7, C2_L8, C2_L9, C2_L10 } from './c2-unit2-content'
+import { C2_L11, C2_L12, C2_L13, C2_L14, C2_L15 } from './c2-unit3-content'
+import { C2_L16, C2_L17, C2_L18, C2_L19, C2_L20 } from './c2-unit4-content'
+import { C2_L21, C2_L22, C2_L23, C2_L24, C2_L25 } from './c2-unit5-content'
+import { C2_L26, C2_L27, C2_L28, C2_L29, C2_L30 } from './c2-unit6-content'
+import { C2_L31, C2_L32, C2_L33, C2_L34, C2_L35 } from './c2-unit7-content'
+import { C2_L36, C2_L37, C2_L38, C2_L39, C2_L40 } from './c2-unit8-content'
+import { C2_L41, C2_L42, C2_L43, C2_L44, C2_L45 } from './c2-unit9-content'
+import { C2_L46, C2_L47, C2_L48, C2_L49, C2_L50 } from './c2-unit10-content'
+import { C2_L51, C2_L52, C2_L53, C2_L54, C2_L55 } from './c2-unit11-content'
+import { C2_L56, C2_L57, C2_L58, C2_L59, C2_L60 } from './c2-unit12-content'
+import { C2_L61, C2_L62, C2_L63, C2_L64, C2_L65 } from './c2-unit13-content'
+import { C2_L66, C2_L67, C2_L68, C2_L69, C2_L70 } from './c2-unit14-content'
 
 // ─── Lesson Content Data for YOELANG ─────────────────────────────────────────
 // Unique content for each lesson, mapped by LESSON ID (not unit ID)
@@ -1860,6 +1874,92 @@ const LESSON_CONTENT_MAP: Record<string, LessonContent> = {
   'b1-l58': B1_L58,
   'b1-l59': B1_L59,
   'b1-l60': B1_L60,
+
+  // ─── C2 Mastery ────────────────────────────────────────────────────────
+  // C2 Unit 1: Native-level Expressions
+  'c2-l1': C2_L1,
+  'c2-l2': C2_L2,
+  'c2-l3': C2_L3,
+  'c2-l4': C2_L4,
+  'c2-l5': C2_L5,
+  // C2 Unit 2: Literary Analysis
+  'c2-l6': C2_L6,
+  'c2-l7': C2_L7,
+  'c2-l8': C2_L8,
+  'c2-l9': C2_L9,
+  'c2-l10': C2_L10,
+  // C2 Unit 3: Philosophical Discourse
+  'c2-l11': C2_L11,
+  'c2-l12': C2_L12,
+  'c2-l13': C2_L13,
+  'c2-l14': C2_L14,
+  'c2-l15': C2_L15,
+  // C2 Unit 4: Advanced Rhetoric
+  'c2-l16': C2_L16,
+  'c2-l17': C2_L17,
+  'c2-l18': C2_L18,
+  'c2-l19': C2_L19,
+  'c2-l20': C2_L20,
+  // C2 Unit 5: Cultural Fluency
+  'c2-l21': C2_L21,
+  'c2-l22': C2_L22,
+  'c2-l23': C2_L23,
+  'c2-l24': C2_L24,
+  'c2-l25': C2_L25,
+  // C2 Unit 6: Specialized Terminology
+  'c2-l26': C2_L26,
+  'c2-l27': C2_L27,
+  'c2-l28': C2_L28,
+  'c2-l29': C2_L29,
+  'c2-l30': C2_L30,
+  // C2 Unit 7: Humor & Wit
+  'c2-l31': C2_L31,
+  'c2-l32': C2_L32,
+  'c2-l33': C2_L33,
+  'c2-l34': C2_L34,
+  'c2-l35': C2_L35,
+  // C2 Unit 8: Poetic Language
+  'c2-l36': C2_L36,
+  'c2-l37': C2_L37,
+  'c2-l38': C2_L38,
+  'c2-l39': C2_L39,
+  'c2-l40': C2_L40,
+  // C2 Unit 9: Academic Publishing
+  'c2-l41': C2_L41,
+  'c2-l42': C2_L42,
+  'c2-l43': C2_L43,
+  'c2-l44': C2_L44,
+  'c2-l45': C2_L45,
+  // C2 Unit 10: Political Commentary
+  'c2-l46': C2_L46,
+  'c2-l47': C2_L47,
+  'c2-l48': C2_L48,
+  'c2-l49': C2_L49,
+  'c2-l50': C2_L50,
+  // C2 Unit 11: Ethical Discourse
+  'c2-l51': C2_L51,
+  'c2-l52': C2_L52,
+  'c2-l53': C2_L53,
+  'c2-l54': C2_L54,
+  'c2-l55': C2_L55,
+  // C2 Unit 12: Art Criticism
+  'c2-l56': C2_L56,
+  'c2-l57': C2_L57,
+  'c2-l58': C2_L58,
+  'c2-l59': C2_L59,
+  'c2-l60': C2_L60,
+  // C2 Unit 13: Scientific Innovation
+  'c2-l61': C2_L61,
+  'c2-l62': C2_L62,
+  'c2-l63': C2_L63,
+  'c2-l64': C2_L64,
+  'c2-l65': C2_L65,
+  // C2 Unit 14: Near-native Perfection
+  'c2-l66': C2_L66,
+  'c2-l67': C2_L67,
+  'c2-l68': C2_L68,
+  'c2-l69': C2_L69,
+  'c2-l70': C2_L70,
 }
 
 export function getLessonContent(lessonId: string): LessonContent {
