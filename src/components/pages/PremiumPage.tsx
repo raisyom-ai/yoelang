@@ -191,7 +191,7 @@ export default function PremiumPage() {
         {isPremium ? (
           /* ─── Already Premium View ────────────────────────────────────── */
           <motion.div variants={itemVariants}>
-            <Card className="glass border-0 overflow-hidden">
+            <Card className="glass-card overflow-hidden">
               <CardContent className="flex flex-col items-center gap-4 p-8 text-center">
                 <motion.div
                   animate={{ rotate: [0, 10, -10, 0] }}
@@ -222,7 +222,7 @@ export default function PremiumPage() {
           <>
             {/* ─── Hero Section ───────────────────────────────────────────── */}
             <motion.div variants={itemVariants}>
-              <Card className="glass border-0 overflow-hidden relative">
+              <Card className="glass-card overflow-hidden relative">
                 {/* Sparkle effects */}
                 <Sparkle style={{ top: '10%', left: '5%' }} />
                 <Sparkle style={{ top: '20%', right: '8%' }} />
@@ -262,7 +262,7 @@ export default function PremiumPage() {
 
             {/* ─── Feature Comparison Table ──────────────────────────────── */}
             <motion.div variants={itemVariants}>
-              <Card className="glass border-0">
+              <Card className="glass-card">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base flex items-center gap-2">
                     <Zap className="h-5 w-5 text-yoel-gold" />
@@ -330,12 +330,12 @@ export default function PremiumPage() {
                     transition={{ delay: 0.15 * idx, type: 'spring' }}
                   >
                     <Card
-                      className={`relative overflow-hidden border-0 h-full flex flex-col cursor-pointer transition-all ${
+                      className={`relative overflow-hidden h-full flex flex-col cursor-pointer transition-all ${
                         plan.recommended
-                          ? 'glass ring-2 ring-yoel-gold/50 shadow-lg'
+                          ? 'glass-card ring-2 ring-yoel-gold/50 shadow-lg'
                           : selectedPlan === plan.id
-                          ? 'glass ring-2 ring-yoel-primary/50'
-                          : 'glass'
+                          ? 'glass-card ring-2 ring-yoel-primary/50'
+                          : 'glass-card'
                       }`}
                       onClick={() => setSelectedPlan(plan.id)}
                     >
@@ -391,7 +391,7 @@ export default function PremiumPage() {
 
             {/* ─── Money-back Guarantee ──────────────────────────────────── */}
             <motion.div variants={itemVariants}>
-              <Card className="glass border-0 bg-yoel-green/5 border-yoel-green/10">
+              <Card className="glass-card bg-yoel-green/5 border-yoel-green/10">
                 <CardContent className="flex items-center gap-4 p-5">
                   <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-yoel-green/15">
                     <Shield className="h-6 w-6 text-yoel-green" />
@@ -408,7 +408,7 @@ export default function PremiumPage() {
 
             {/* ─── FAQ ───────────────────────────────────────────────────── */}
             <motion.div variants={itemVariants}>
-              <Card className="glass border-0">
+              <Card className="glass-card">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base flex items-center gap-2">
                     <MessageCircle className="h-5 w-5 text-yoel-blue" />
@@ -425,7 +425,7 @@ export default function PremiumPage() {
 
             {/* ─── Testimonial ───────────────────────────────────────────── */}
             <motion.div variants={itemVariants}>
-              <Card className="glass border-0">
+              <Card className="glass-card">
                 <CardContent className="p-6">
                   <div className="flex flex-col sm:flex-row gap-4">
                     <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-yoel-blue/20 to-yoel-primary/20 text-3xl">

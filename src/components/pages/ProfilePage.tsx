@@ -102,7 +102,7 @@ export default function ProfilePage() {
 
         {/* ─── Profile Header ──────────────────────────────────────────── */}
         <motion.div variants={itemVariants}>
-          <Card className="glass border-0 overflow-hidden">
+          <Card className="glass-card overflow-hidden">
             <div className="relative">
               {/* Banner */}
               <div className="h-24 bg-gradient-to-r from-yoel-primary/30 via-yoel-gold/20 to-yoel-blue/30" />
@@ -153,7 +153,7 @@ export default function ProfilePage() {
         {/* ─── Stats Row ───────────────────────────────────────────────── */}
         <motion.div variants={itemVariants}>
           <div className="grid grid-cols-4 gap-3">
-            <Card className="glass border-0">
+            <Card className="glass-card">
               <CardContent className="p-3 text-center">
                 <div className="mx-auto mb-1 flex h-8 w-8 items-center justify-center rounded-lg bg-yoel-primary/10">
                   <Zap className="h-4 w-4 text-yoel-primary" />
@@ -163,7 +163,7 @@ export default function ProfilePage() {
               </CardContent>
             </Card>
 
-            <Card className="glass border-0">
+            <Card className="glass-card">
               <CardContent className="p-3 text-center">
                 <div className="mx-auto mb-1 flex h-8 w-8 items-center justify-center rounded-lg bg-orange-500/10">
                   <Flame className="h-4 w-4 text-orange-500" />
@@ -173,7 +173,7 @@ export default function ProfilePage() {
               </CardContent>
             </Card>
 
-            <Card className="glass border-0">
+            <Card className="glass-card">
               <CardContent className="p-3 text-center">
                 <div className="mx-auto mb-1 flex h-8 w-8 items-center justify-center rounded-lg bg-yoel-gold/10">
                   <Coins className="h-4 w-4 text-yoel-gold" />
@@ -183,7 +183,7 @@ export default function ProfilePage() {
               </CardContent>
             </Card>
 
-            <Card className="glass border-0">
+            <Card className="glass-card">
               <CardContent className="p-3 text-center">
                 <div className="mx-auto mb-1 flex h-8 w-8 items-center justify-center rounded-lg bg-yoel-blue/10">
                   <Award className="h-4 w-4 text-yoel-blue" />
@@ -197,7 +197,7 @@ export default function ProfilePage() {
 
         {/* ─── Current Level Card ──────────────────────────────────────── */}
         <motion.div variants={itemVariants}>
-          <Card className="glass border-0 overflow-hidden">
+          <Card className="glass-card overflow-hidden">
             <div className="relative">
               <div className={`absolute inset-y-0 left-0 w-1.5 bg-gradient-to-b ${currentLevelInfo.color} rounded-l-xl`} />
               <CardContent className="p-5 pl-6">
@@ -227,7 +227,7 @@ export default function ProfilePage() {
 
         {/* ─── Achievement Showcase ────────────────────────────────────── */}
         <motion.div variants={itemVariants}>
-          <Card className="glass border-0">
+          <Card className="glass-card">
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-base flex items-center gap-2">
@@ -265,7 +265,7 @@ export default function ProfilePage() {
 
         {/* ─── Learning History ────────────────────────────────────────── */}
         <motion.div variants={itemVariants}>
-          <Card className="glass border-0">
+          <Card className="glass-card">
             <CardHeader className="pb-2">
               <CardTitle className="text-base flex items-center gap-2">
                 <BookOpen className="h-5 w-5 text-yoel-blue" />

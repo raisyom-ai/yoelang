@@ -209,16 +209,32 @@
   animation: fade-in 0.3s ease-out;
 }
 
-/* Glass effect */
+/* Glass effect — for overlays (navbar, bottom nav, floating elements) */
 .glass {
-  background: oklch(1 0 0 / 0.1);
+  background: oklch(1 0 0 / 0.65);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid oklch(1 0 0 / 0.15);
+  border: 1px solid oklch(1 0 0 / 0.2);
+  box-shadow: 0 1px 3px oklch(0 0 0 / 0.04);
 }
 .dark .glass {
-  background: oklch(0 0 0 / 0.2);
+  background: oklch(0 0 0 / 0.55);
   border: 1px solid oklch(1 0 0 / 0.1);
+  box-shadow: 0 1px 3px oklch(0 0 0 / 0.3);
+}
+
+/* Glass card — for content cards (dashboard, stats, etc.) */
+.glass-card {
+  background: oklch(1 0 0 / 0.72);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid oklch(0.92 0.008 200);
+  box-shadow: 0 1px 3px oklch(0 0 0 / 0.06), 0 1px 2px oklch(0 0 0 / 0.04);
+}
+.dark .glass-card {
+  background: oklch(0 0 0 / 0.25);
+  border: 1px solid oklch(1 0 0 / 0.08);
+  box-shadow: 0 1px 3px oklch(0 0 0 / 0.4);
 }
 
 /* Gradient text - Updated to calming palette */

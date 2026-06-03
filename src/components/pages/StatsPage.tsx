@@ -137,7 +137,7 @@ export default function StatsPage() {
         {/* ─── Overview Cards ──────────────────────────────────────────── */}
         <motion.div variants={itemVariants}>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-            <Card className="glass border-0">
+            <Card className="glass-card">
               <CardContent className="p-4 text-center">
                 <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-xl bg-yoel-primary/10">
                   <Zap className="h-5 w-5 text-yoel-primary" />
@@ -147,7 +147,7 @@ export default function StatsPage() {
               </CardContent>
             </Card>
 
-            <Card className="glass border-0">
+            <Card className="glass-card">
               <CardContent className="p-4 text-center">
                 <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-xl bg-orange-500/10">
                   <Flame className="h-5 w-5 text-orange-500" />
@@ -157,7 +157,7 @@ export default function StatsPage() {
               </CardContent>
             </Card>
 
-            <Card className="glass border-0">
+            <Card className="glass-card">
               <CardContent className="p-4 text-center">
                 <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-xl bg-yoel-blue/10">
                   <BookOpen className="h-5 w-5 text-yoel-blue" />
@@ -167,7 +167,7 @@ export default function StatsPage() {
               </CardContent>
             </Card>
 
-            <Card className="glass border-0">
+            <Card className="glass-card">
               <CardContent className="p-4 text-center">
                 <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-xl bg-yoel-green/10">
                   <Target className="h-5 w-5 text-yoel-green" />
@@ -188,7 +188,7 @@ export default function StatsPage() {
             </TabsList>
 
             <TabsContent value="weekly">
-              <Card className="glass border-0">
+              <Card className="glass-card">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base flex items-center gap-2">
                     <BarChart3 className="h-5 w-5 text-yoel-primary" />
@@ -226,7 +226,7 @@ export default function StatsPage() {
             </TabsContent>
 
             <TabsContent value="monthly">
-              <Card className="glass border-0">
+              <Card className="glass-card">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base flex items-center gap-2">
                     <TrendingUp className="h-5 w-5 text-yoel-blue" />
@@ -274,7 +274,7 @@ export default function StatsPage() {
 
         {/* ─── Level Progress Overview ─────────────────────────────────── */}
         <motion.div variants={itemVariants}>
-          <Card className="glass border-0">
+          <Card className="glass-card">
             <CardHeader className="pb-2">
               <CardTitle className="text-base flex items-center gap-2">
                 <TrendingUp className="h-5 w-5 text-yoel-green" />
@@ -316,7 +316,7 @@ export default function StatsPage() {
 
         {/* ─── Skills Bars ─────────────────────────────────────────────── */}
         <motion.div variants={itemVariants}>
-          <Card className="glass border-0">
+          <Card className="glass-card">
             <CardHeader className="pb-2">
               <CardTitle className="text-base flex items-center gap-2">
                 <Target className="h-5 w-5 text-yoel-gold" />
@@ -354,7 +354,7 @@ export default function StatsPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Streak Calendar */}
           <motion.div variants={itemVariants}>
-            <Card className="glass border-0 h-full">
+            <Card className="glass-card h-full">
               <CardHeader className="pb-2">
                 <CardTitle className="text-base flex items-center gap-2">
                   <Flame className="h-5 w-5 text-orange-500" />
@@ -401,7 +401,7 @@ export default function StatsPage() {
 
           {/* Time Spent */}
           <motion.div variants={itemVariants}>
-            <Card className="glass border-0 h-full">
+            <Card className="glass-card h-full">
               <CardHeader className="pb-2">
                 <CardTitle className="text-base flex items-center gap-2">
                   <Clock className="h-5 w-5 text-yoel-blue" />
@@ -453,7 +453,7 @@ export default function StatsPage() {
 
         {/* ─── Badge Showcase ──────────────────────────────────────────── */}
         <motion.div variants={itemVariants}>
-          <Card className="glass border-0">
+          <Card className="glass-card">
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-base flex items-center gap-2">

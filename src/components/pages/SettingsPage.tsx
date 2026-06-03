@@ -85,7 +85,7 @@ export default function SettingsPage() {
 
         {/* ─── Compte ──────────────────────────────────────────────────── */}
         <motion.div variants={itemVariants}>
-          <Card className="glass border-0">
+          <Card className="glass-card">
             <CardHeader className="pb-2">
               <CardTitle className="text-base flex items-center gap-2">
                 <User className="h-5 w-5 text-yoel-primary" />
@@ -131,7 +131,7 @@ export default function SettingsPage() {
 
         {/* ─── Apprentissage ───────────────────────────────────────────── */}
         <motion.div variants={itemVariants}>
-          <Card className="glass border-0">
+          <Card className="glass-card">
             <CardHeader className="pb-2">
               <CardTitle className="text-base flex items-center gap-2">
                 <GraduationCap className="h-5 w-5 text-yoel-blue" />
@@ -182,7 +182,7 @@ export default function SettingsPage() {
 
         {/* ─── Notifications ───────────────────────────────────────────── */}
         <motion.div variants={itemVariants}>
-          <Card className="glass border-0">
+          <Card className="glass-card">
             <CardHeader className="pb-2">
               <CardTitle className="text-base flex items-center gap-2">
                 <Bell className="h-5 w-5 text-yoel-gold" />
@@ -219,7 +219,7 @@ export default function SettingsPage() {
 
         {/* ─── Apparence ───────────────────────────────────────────────── */}
         <motion.div variants={itemVariants}>
-          <Card className="glass border-0">
+          <Card className="glass-card">
             <CardHeader className="pb-2">
               <CardTitle className="text-base flex items-center gap-2">
                 <Palette className="h-5 w-5 text-purple-500" />
@@ -268,7 +268,7 @@ export default function SettingsPage() {
 
         {/* ─── Abonnement ──────────────────────────────────────────────── */}
         <motion.div variants={itemVariants}>
-          <Card className="glass border-0">
+          <Card className="glass-card">
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-base flex items-center gap-2">
@@ -315,7 +315,7 @@ export default function SettingsPage() {
 
         {/* ─── Aide ────────────────────────────────────────────────────── */}
         <motion.div variants={itemVariants}>
-          <Card className="glass border-0">
+          <Card className="glass-card">
             <CardHeader className="pb-2">
               <CardTitle className="text-base flex items-center gap-2">
                 <HelpCircle className="h-5 w-5 text-yoel-green" />

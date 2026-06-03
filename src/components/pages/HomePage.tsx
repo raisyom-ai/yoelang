@@ -359,7 +359,7 @@ export default function HomePage() {
                 variants={fadeInUp}
                 custom={i}
                 whileHover={{ y: -6, transition: { duration: 0.2 } }}
-                className="glass group rounded-2xl p-6 transition-shadow hover:shadow-xl"
+                className="glass-card group rounded-2xl p-6 transition-shadow hover:shadow-xl"
               >
                 <div
                   className={`mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${feature.color} text-white shadow-lg`}
@@ -391,7 +391,7 @@ export default function HomePage() {
                 key={stat.label}
                 variants={fadeInUp}
                 custom={i}
-                className="flex flex-col items-center gap-2 rounded-2xl border bg-card p-6 text-center shadow-sm"
+                className="flex flex-col items-center gap-2 rounded-2xl glass-card p-6 text-center"
               >
                 <stat.icon className="size-6 text-yoel-primary" />
                 <span className="text-3xl font-black gradient-text-primary sm:text-4xl">
@@ -514,7 +514,7 @@ export default function HomePage() {
                 key={t.name}
                 variants={fadeInUp}
                 custom={i}
-                className="glass rounded-2xl p-6"
+                className="glass-card rounded-2xl p-6"
               >
                 <Quote className="mb-3 size-8 text-yoel-primary/40" />
                 <p className="mb-4 text-sm leading-relaxed text-foreground/90">

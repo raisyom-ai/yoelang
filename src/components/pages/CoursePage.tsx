@@ -539,7 +539,7 @@ export default function CoursePage() {
 
               return (
                 <motion.div key={unit.id} variants={itemVariants}>
-                  <Card className="overflow-hidden border-0 glass">
+                  <Card className="glass-card overflow-hidden">
                     {/* Unit Header */}
                     <div className="p-4 pb-3">
                       <div className="flex items-center gap-3 mb-2">
@@ -637,7 +637,7 @@ export default function CoursePage() {
             {/* Quick Stats */}
             <motion.div variants={itemVariants}>
               <div className="grid grid-cols-3 gap-3">
-                <Card className="glass border-0 overflow-hidden">
+                <Card className="glass-card overflow-hidden">
                   <CardContent className="flex flex-col items-center justify-center p-4">
                     <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-yoel-green/15 mb-2">
                       <CheckCircle2 className="h-5 w-5 text-yoel-green" />
@@ -646,7 +646,7 @@ export default function CoursePage() {
                     <span className="text-[10px] text-muted-foreground font-medium">Terminées</span>
                   </CardContent>
                 </Card>
-                <Card className="glass border-0 overflow-hidden">
+                <Card className="glass-card overflow-hidden">
                   <CardContent className="flex flex-col items-center justify-center p-4">
                     <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-yoel-primary/15 mb-2">
                       <BookOpen className="h-5 w-5 text-yoel-primary" />
@@ -655,7 +655,7 @@ export default function CoursePage() {
                     <span className="text-[10px] text-muted-foreground font-medium">Restantes</span>
                   </CardContent>
                 </Card>
-                <Card className="glass border-0 overflow-hidden">
+                <Card className="glass-card overflow-hidden">
                   <CardContent className="flex flex-col items-center justify-center p-4">
                     <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-yoel-gold/15 mb-2">
                       <Zap className="h-5 w-5 text-yoel-gold" />

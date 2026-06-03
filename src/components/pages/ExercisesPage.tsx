@@ -393,7 +393,7 @@ function QuizTab({ level, onAdvance }: { level: string; onAdvance?: () => void }
           exit={{ opacity: 0, x: -50 }}
           transition={{ type: 'spring', stiffness: 300, damping: 30 }}
         >
-          <Card className="glass overflow-hidden border-0">
+          <Card className="glass-card overflow-hidden">
             <div className="relative w-full h-[100px] overflow-hidden rounded-t-xl">
               <Image
                 src="/images/exercises/quiz.png"
@@ -606,7 +606,7 @@ function GrammarTab({ level, onAdvance }: { level: string; onAdvance?: () => voi
           exit={{ opacity: 0, x: -50 }}
           transition={{ type: 'spring', stiffness: 300, damping: 30 }}
         >
-          <Card className="glass overflow-hidden border-0">
+          <Card className="glass-card overflow-hidden">
             <div className="relative w-full h-[100px] overflow-hidden rounded-t-xl">
               <Image
                 src="/images/exercises/grammar.png"
@@ -814,7 +814,7 @@ function VocabularyTab({ level, onAdvance }: { level: string; onAdvance?: () => 
           onClick={() => setIsFlipped(!isFlipped)}
           whileTap={{ scale: 0.98 }}
         >
-          <Card className="glass overflow-hidden border-0 min-h-[320px]">
+          <Card className="glass-card overflow-hidden min-h-[320px]">
             <div className="relative w-full h-[80px] overflow-hidden rounded-t-xl">
               <Image
                 src="/images/exercises/vocabulary.png"
@@ -1198,7 +1198,7 @@ function PronunciationTab({ level, onAdvance }: { level: string; onAdvance?: () 
           exit={{ opacity: 0, x: -50 }}
           transition={{ type: 'spring', stiffness: 300, damping: 30 }}
         >
-          <Card className="glass overflow-hidden border-0">
+          <Card className="glass-card overflow-hidden">
             <div className="relative w-full h-[80px] overflow-hidden rounded-t-xl">
               <Image
                 src="/images/exercises/pronunciation.png"
@@ -1691,7 +1691,7 @@ export default function ExercisesPage() {
                 {EXERCISE_LEVELS.map((level) => (
                   <motion.div key={level.code} variants={itemVariants}>
                     <Card
-                      className={`glass overflow-hidden border-2 ${level.borderColor} hover:shadow-lg transition-all duration-200 cursor-pointer group`}
+                      className={`glass-card overflow-hidden border-2 ${level.borderColor} hover:shadow-lg transition-all duration-200 cursor-pointer group`}
                       onClick={() => handleSelectLevel(level.code)}
                     >
                       <CardContent className="p-4 space-y-3">

@@ -160,7 +160,7 @@ export default function LevelsPage() {
           {/* ─── Summary Stats ────────────────────────────────────────── */}
           <motion.div variants={itemVariants}>
             <div className="grid grid-cols-3 gap-3">
-              <Card className="glass border-0 overflow-hidden">
+              <Card className="glass-card overflow-hidden">
                 <CardContent className="flex flex-col items-center justify-center p-4">
                   <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-yoel-gold/15 mb-2">
                     <Zap className="h-5 w-5 text-yoel-gold" />
@@ -169,7 +169,7 @@ export default function LevelsPage() {
                   <span className="text-[10px] text-muted-foreground font-medium">Total XP</span>
                 </CardContent>
               </Card>
-              <Card className="glass border-0 overflow-hidden">
+              <Card className="glass-card overflow-hidden">
                 <CardContent className="flex flex-col items-center justify-center p-4">
                   <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-yoel-blue/15 mb-2">
                     <Trophy className="h-5 w-5 text-yoel-blue" />
@@ -178,7 +178,7 @@ export default function LevelsPage() {
                   <span className="text-[10px] text-muted-foreground font-medium">Niveau actuel</span>
                 </CardContent>
               </Card>
-              <Card className="glass border-0 overflow-hidden">
+              <Card className="glass-card overflow-hidden">
                 <CardContent className="flex flex-col items-center justify-center p-4">
                   <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-yoel-green/15 mb-2">
                     <BookOpen className="h-5 w-5 text-yoel-green" />
@@ -329,7 +329,7 @@ export default function LevelsPage() {
                       className={`overflow-hidden border-0 cursor-pointer transition-all hover:shadow-lg ${
                         status === 'locked'
                           ? 'opacity-60 cursor-not-allowed'
-                          : 'glass'
+                          : 'glass-card'
                       } ${isActive ? 'ring-2 ring-yoel-primary/40' : ''}`}
                       onClick={() => handleLevelClick(lvl, originalIndex)}
                     >
@@ -496,7 +496,7 @@ function LevelCard({
             ? 'bg-muted/30 opacity-60'
             : isActive
             ? 'bg-gradient-to-br from-card to-card shadow-lg'
-            : 'glass hover:shadow-md'
+            : 'glass-card hover:shadow-md'
         } ${isActive ? 'ring-2 ring-yoel-primary/50' : ''}`}
         onClick={status !== 'locked' ? onClick : undefined}
       >

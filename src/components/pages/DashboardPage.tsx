@@ -177,7 +177,7 @@ function QuickAction({
       whileHover={{ scale: 1.04, y: -2 }}
       whileTap={{ scale: 0.96 }}
       onClick={onClick}
-      className="flex flex-col items-center justify-center gap-2 rounded-2xl p-4 glass transition-colors hover:bg-yoel-primary/5 dark:hover:bg-yoel-primary/10 cursor-pointer min-h-[100px]"
+      className="flex flex-col items-center justify-center gap-2 rounded-2xl p-4 glass-card transition-colors hover:bg-yoel-primary/5 dark:hover:bg-yoel-primary/10 cursor-pointer min-h-[100px]"
     >
       <div
         className={`flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${color} shadow-md`}
@@ -415,7 +415,7 @@ export default function DashboardPage() {
 
         {/* ─── 2. Daily Goal Card ─────────────────────────────────────── */}
         <motion.div variants={itemVariants}>
-          <Card className="glass overflow-hidden border-0">
+          <Card className="glass-card overflow-hidden">
             <CardContent className="flex flex-col sm:flex-row items-center gap-6 p-6">
               <CircularProgress
                 value={DAILY_XP_EARNED}
@@ -447,7 +447,7 @@ export default function DashboardPage() {
         {/* ─── 3. Continue Learning Card ──────────────────────────────── */}
         <motion.div variants={itemVariants}>
           <Card
-            className="overflow-hidden cursor-pointer group border-0 glass"
+            className="glass-card overflow-hidden cursor-pointer group"
             onClick={() => navigate('course')}
           >
             <div className="relative">
@@ -529,7 +529,7 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Daily Challenge */}
           <motion.div variants={itemVariants}>
-            <Card className="glass overflow-hidden border-0 h-full">
+            <Card className="glass-card overflow-hidden h-full">
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-base flex items-center gap-2">
@@ -612,7 +612,7 @@ export default function DashboardPage() {
 
           {/* Streak Calendar */}
           <motion.div variants={itemVariants}>
-            <Card className="glass overflow-hidden border-0 h-full">
+            <Card className="glass-card overflow-hidden h-full">
               <CardHeader className="pb-2">
                 <CardTitle className="text-base flex items-center gap-2">
                   <Flame className="h-5 w-5 text-orange-500" />
@@ -671,7 +671,7 @@ export default function DashboardPage() {
 
         {/* ─── 7. Recent Badges ───────────────────────────────────────── */}
         <motion.div variants={itemVariants}>
-          <Card className="glass overflow-hidden border-0">
+          <Card className="glass-card overflow-hidden">
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-base flex items-center gap-2">
@@ -716,7 +716,7 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Leaderboard */}
           <motion.div variants={itemVariants}>
-            <Card className="glass overflow-hidden border-0 h-full">
+            <Card className="glass-card overflow-hidden h-full">
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-base flex items-center gap-2">
@@ -806,7 +806,7 @@ export default function DashboardPage() {
 
           {/* Word of the Day */}
           <motion.div variants={itemVariants}>
-            <Card className="glass overflow-hidden border-0 h-full">
+            <Card className="glass-card overflow-hidden h-full">
               <CardHeader className="pb-2">
                 <CardTitle className="text-base flex items-center gap-2">
                   <Star className="h-5 w-5 text-yoel-gold" />
@@ -885,7 +885,7 @@ export default function DashboardPage() {
 
         {/* Level Progress Overview */}
         <motion.div variants={itemVariants}>
-          <Card className="glass overflow-hidden border-0">
+          <Card className="glass-card overflow-hidden">
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-base flex items-center gap-2">
