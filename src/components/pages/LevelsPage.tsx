@@ -81,7 +81,7 @@ function getLevelStatus(level: LevelInfo, index: number): 'completed' | 'active'
 // ─── Main Component ─────────────────────────────────────────────────────────
 
 export default function LevelsPage() {
-  const { navigate, goBack, user, currentLevel, setCurrentLevel, completedLessons } = useAppStore()
+  const { navigate, goBack, user, currentLevel, setCurrentLevel, completedLessons, setExamLevel } = useAppStore()
   const [filterLevel, setFilterLevel] = useState<string>('all')
 
   // Compute dynamic level progress from actual completed lessons
@@ -392,9 +392,17 @@ export default function LevelsPage() {
                           {/* Action button */}
                           <div className="shrink-0 hidden sm:block">
                             {status === 'completed' ? (
-                              <Badge className="bg-yoel-green/15 text-yoel-green border-0 text-xs">
-                                Terminé
-                              </Badge>
+                              <Button
+                                size="sm"
+                                className="rounded-full text-xs bg-yoel-gold hover:bg-amber-500 text-white"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  setExamLevel(lvl.code)
+                                  navigate('exam')
+                                }}
+                              >
+                                🎓 Examen
+                              </Button>
                             ) : status === 'locked' ? (
                               <Lock className="h-5 w-5 text-muted-foreground/40" />
                             ) : (
@@ -418,7 +426,18 @@ export default function LevelsPage() {
                           {/* Mobile: compact chevron only */}
                           <div className="shrink-0 sm:hidden">
                             {status === 'completed' ? (
-                              <CheckCircle2 className="h-5 w-5 text-yoel-green" />
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="rounded-full text-[10px] text-yoel-gold hover:text-amber-500 px-2"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  setExamLevel(lvl.code)
+                                  navigate('exam')
+                                }}
+                              >
+                                🎓
+                              </Button>
                             ) : status === 'locked' ? (
                               <Lock className="h-4 w-4 text-muted-foreground/40" />
                             ) : (
@@ -671,9 +690,17 @@ function LevelCard({
 
           {/* Action button */}
           {status === 'completed' ? (
-            <Badge className="bg-yoel-green/15 text-yoel-green border-0 text-[10px] w-full justify-center py-1">
-              ✓ Terminé
-            </Badge>
+            <Button
+              size="sm"
+              className="w-full rounded-full text-[10px] h-8 bg-yoel-gold hover:bg-amber-500 text-white"
+              onClick={(e) => {
+                e.stopPropagation()
+                setExamLevel(level.code)
+                navigate('exam')
+              }}
+            >
+              🎓 Examen
+            </Button>
           ) : status === 'locked' ? (
             <div className="flex items-center justify-center gap-1 text-[10px] text-muted-foreground">
               <Lock className="h-3 w-3" />

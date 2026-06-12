@@ -22,6 +22,7 @@ const PremiumPage = dynamic(() => import('@/components/pages/PremiumPage'))
 const CertificatePage = dynamic(() => import('@/components/pages/CertificatePage'))
 const AdminLoginPage = dynamic(() => import('@/components/pages/AdminLoginPage'))
 const AdminDashboardPage = dynamic(() => import('@/components/pages/AdminDashboardPage'))
+const ExamPage = dynamic(() => import('@/components/pages/ExamPage'))
 
 const pageComponents: Record<PageId, React.ComponentType> = {
   splash: SplashScreen,
@@ -40,6 +41,7 @@ const pageComponents: Record<PageId, React.ComponentType> = {
   certificate: CertificatePage,
   'admin-login': AdminLoginPage,
   'admin-dashboard': AdminDashboardPage,
+  'exam': ExamPage,
 }
 
 export default function YOELANGApp() {

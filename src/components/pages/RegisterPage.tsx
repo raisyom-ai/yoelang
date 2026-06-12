@@ -9,13 +9,6 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Separator } from '@/components/ui/separator'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import { toast } from 'sonner'
 import OAuthDialog from '@/components/OAuthDialog'
 
@@ -24,7 +17,6 @@ interface FormErrors {
   email?: string
   password?: string
   confirmPassword?: string
-  level?: string
   terms?: string
 }
 
@@ -36,15 +28,6 @@ const fadeInUp = {
     transition: { delay: i * 0.08, duration: 0.5, ease: 'easeOut' },
   }),
 }
-
-const LEVELS = [
-  { value: 'A1', label: 'A1 – Débutant', description: 'Je débute en anglais' },
-  { value: 'A2', label: 'A2 – Élémentaire', description: 'Je connais les bases' },
-  { value: 'B1', label: 'B1 – Intermédiaire', description: 'Je peux converser' },
-  { value: 'B2', label: 'B2 – Intermédiaire supérieur', description: 'Je suis à l\'aise' },
-  { value: 'C1', label: 'C1 – Avancé', description: 'Je parle couramment' },
-  { value: 'C2', label: 'C2 – Maîtrise', description: 'Niveau quasi natif' },
-]
 
 function getPasswordStrength(password: string): {
   score: number
@@ -73,7 +56,7 @@ export default function RegisterPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
-  const [level, setLevel] = useState('')
+  // All new users start at A1 level
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [acceptTerms, setAcceptTerms] = useState(false)
@@ -110,10 +93,6 @@ export default function RegisterPage() {
       newErrors.confirmPassword = 'Les mots de passe ne correspondent pas'
     }
 
-    if (!level) {
-      newErrors.level = 'Veuillez sélectionner votre niveau'
-    }
-
     if (!acceptTerms) {
       newErrors.terms = "Vous devez accepter les conditions d'utilisation"
     }
@@ -131,7 +110,7 @@ export default function RegisterPage() {
       const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password, level }),
+        body: JSON.stringify({ name, email, password, level: 'A1' }),
       })
 
       if (res.ok) {
@@ -142,7 +121,7 @@ export default function RegisterPage() {
           name: data.user.name || data.user.email.split('@')[0],
           avatar: data.user.avatar,
           role: data.user.role || 'user',
-          level: data.user.level || level || 'A1',
+          level: data.user.level || 'A1',
           xp: data.user.xp || 0,
           streak: data.user.streak || 0,
           coins: data.user.coins || 0,
@@ -422,40 +401,6 @@ export default function RegisterPage() {
               </div>
               {errors.email && (
                 <p className="text-sm text-destructive">{errors.email}</p>
-              )}
-            </motion.div>
-
-            {/* Level selection */}
-            <motion.div custom={4} variants={fadeInUp} className="space-y-2">
-              <Label>Votre niveau d&apos;anglais</Label>
-              <Select
-                value={level}
-                onValueChange={(value) => {
-                  setLevel(value)
-                  clearError('level')
-                }}
-                disabled={isLoading}
-              >
-                <SelectTrigger className={`w-full h-11 ${errors.level ? 'border-destructive' : ''}`}>
-                  <SelectValue placeholder="Sélectionnez votre niveau" />
-                </SelectTrigger>
-                <SelectContent>
-                  {LEVELS.map((lvl) => (
-                    <SelectItem key={lvl.value} value={lvl.value}>
-                      <span className="flex flex-col">
-                        <span className="font-medium">{lvl.label}</span>
-                      </span>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {errors.level && (
-                <p className="text-sm text-destructive">{errors.level}</p>
-              )}
-              {level && (
-                <p className="text-xs text-muted-foreground">
-                  {LEVELS.find((l) => l.value === level)?.description}
-                </p>
               )}
             </motion.div>
 

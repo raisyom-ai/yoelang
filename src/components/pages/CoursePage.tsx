@@ -244,7 +244,7 @@ function getTypeConfig(type: string) {
 // ─── Main Component ─────────────────────────────────────────────────────────
 
 export default function CoursePage() {
-  const { goBack, currentLevel, currentLesson, navigate, setCurrentLesson, setLastVisitedLesson, completedLessons, addCompletedLesson, addXP, addLessonHistoryEntry, earnedCertificates, earnCertificate, lessonHistory, user } = useAppStore()
+  const { goBack, currentLevel, currentLesson, navigate, setCurrentLesson, setLastVisitedLesson, completedLessons, addCompletedLesson, addXP, addLessonHistoryEntry, earnedCertificates, earnCertificate, lessonHistory, user, setExamLevel } = useAppStore()
 
   // Premium feature access checks
   const voiceRecognitionAvailable = isFeatureAvailable(user?.isPremium ?? false, user?.premiumPlan ?? null, FEATURE_TIERS.voiceRecognition)
@@ -727,6 +727,40 @@ export default function CoursePage() {
                 <ChevronRight className="h-5 w-5 ml-1" />
               </Button>
             </motion.div>
+
+            {/* Exam button — shown when all lessons in the level are completed */}
+            {completedCount >= totalLessons && totalLessons > 0 && (
+              <motion.div variants={itemVariants}>
+                <Card className="overflow-hidden border-0 bg-gradient-to-r from-yoel-gold/10 via-yoel-gold/5 to-yoel-primary/10">
+                  <CardContent className="p-4 sm:p-6">
+                    <div className="flex items-center gap-3 sm:gap-4 mb-3">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-yoel-gold/20 text-2xl shrink-0">
+                        🎓
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-bold text-sm sm:text-base gradient-text-primary">
+                          Examen de fin de niveau
+                        </h3>
+                        <p className="text-xs text-muted-foreground">
+                          Toutes les leçons sont terminées ! Passez l&apos;examen pour valider votre niveau {currentLevel}.
+                        </p>
+                      </div>
+                    </div>
+                    <Button
+                      className="w-full bg-gradient-to-r from-yoel-gold to-amber-500 hover:from-amber-500 hover:to-yoel-gold text-white rounded-xl h-12 font-semibold"
+                      onClick={() => {
+                        setExamLevel(currentLevel)
+                        navigate('exam')
+                      }}
+                    >
+                      <Award className="h-5 w-5 mr-2" />
+                      Passer l&apos;examen {currentLevel}
+                      <ChevronRight className="h-5 w-5 ml-1" />
+                    </Button>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            )}
           </motion.div>
         </ScrollArea>
       </div>

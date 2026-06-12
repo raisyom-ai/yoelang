@@ -5,7 +5,7 @@ export type PageId =
   | 'splash' | 'home' | 'login' | 'register' 
   | 'dashboard' | 'levels' | 'course' | 'exercises' 
   | 'chat' | 'stats' | 'profile' | 'settings' | 'premium' | 'certificate'
-  | 'admin-login' | 'admin-dashboard' | 'oauth-callback'
+  | 'admin-login' | 'admin-dashboard' | 'oauth-callback' | 'exam'
 
 // ─── Premium Plan Types ──────────────────────────────────────────────────
 
@@ -420,6 +420,7 @@ interface AppState {
   isAuthenticated: boolean
   user: UserState | null
   setUser: (user: UserState) => void
+  updateUserLevel: (level: string) => void
   logout: () => void
 
   // Theme
@@ -429,6 +430,8 @@ interface AppState {
   // Current learning context
   currentLevel: string
   setCurrentLevel: (level: string) => void
+  examLevel: string | null  // Level to take exam for
+  setExamLevel: (level: string | null) => void
   currentLesson: LessonInfo | null
   setCurrentLesson: (lesson: LessonInfo | null) => void
   lastVisitedLesson: LessonInfo | null
@@ -595,6 +598,10 @@ export const useAppStore = create<AppState>((set, get) => ({
     // New users start with no certificates — earned through real progress
     earnedCertificates: state.earnedCertificates.length > 0 ? state.earnedCertificates : [],
   })),
+  updateUserLevel: (level) => set((state) => ({
+    user: state.user ? { ...state.user, level } : state.user,
+    currentLevel: level,
+  })),
   logout: () => set({ 
     user: null, 
     isAuthenticated: false, 
@@ -621,6 +628,8 @@ export const useAppStore = create<AppState>((set, get) => ({
   // Current learning context
   currentLevel: 'A1',
   setCurrentLevel: (level) => set({ currentLevel: level }),
+  examLevel: null,
+  setExamLevel: (level) => set({ examLevel: level }),
   currentLesson: null,
   setCurrentLesson: (lesson) => set({ currentLesson: lesson }),
   lastVisitedLesson: null,
