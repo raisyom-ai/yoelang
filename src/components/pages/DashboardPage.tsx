@@ -6,7 +6,7 @@ import {
   ArrowLeft, BookOpen, Dumbbell, MessageCircle, BarChart3,
   Moon, Sun, Bell, Flame, Coins, Star, ChevronRight,
   Volume2, Trophy, Clock, Target, Home, User, Settings,
-  Zap, Award, Crown, ChevronDown
+  Zap, Award, Crown, ChevronDown, CheckCircle
 } from 'lucide-react'
 import { useAppStore, LEVELS, BADGES, DEMO_LESSONS, getRecommendedDailyGoal, calculateStreak, getWeekActivity, type PageId } from '@/lib/store'
 import { speakWord } from '@/lib/speech-utils'
@@ -545,7 +545,7 @@ function BottomNavItem({
 // ─── Main Component ─────────────────────────────────────────────────────────
 
 export default function DashboardPage() {
-  const { user, isDarkMode, toggleDarkMode, navigate, currentLesson, dailyChallengeCompleted, completeDailyChallenge, addXP, dailyXpEarned, dailyXpHistory } = useAppStore()
+  const { user, isDarkMode, toggleDarkMode, navigate, currentLesson, lastVisitedLesson, dailyChallengeCompleted, completeDailyChallenge, addXP, dailyXpEarned, dailyXpHistory } = useAppStore()
 
   // Derive data with fallbacks
   const displayName = user?.name ?? 'Apprenant'
@@ -571,8 +571,8 @@ export default function DashboardPage() {
   // Word of the day — different every day, adapted to level
   const wordOfTheDay = getWordOfTheDay(level)
 
-  // Next lesson to continue
-  const nextLesson = currentLesson ?? DEMO_LESSONS.find((l) => !l.completed) ?? DEMO_LESSONS[3]
+  // Recent lesson — the last lesson the learner visited, or the first uncompleted lesson as fallback
+  const recentLesson = lastVisitedLesson ?? DEMO_LESSONS.find((l) => !l.completed) ?? DEMO_LESSONS[0]
 
   // Daily challenges — 3 per day, level-adapted
   const todayChallenges = getDailyChallenges(level)
@@ -817,7 +817,7 @@ export default function DashboardPage() {
           </Card>
         </motion.div>
 
-        {/* ─── 3. Continue Learning Card ──────────────────────────────── */}
+        {/* ─── 3. Recent Lesson Card ──────────────────────────────────── */}
         <motion.div variants={itemVariants}>
           <Card
             className="glass-card overflow-hidden cursor-pointer group"
@@ -828,24 +828,30 @@ export default function DashboardPage() {
               <div className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-yoel-primary to-yoel-gold rounded-l-xl" />
               <CardContent className="flex items-center gap-2.5 sm:gap-4 p-3 sm:p-5 pl-4 sm:pl-6">
                 <div className="flex h-11 w-11 sm:h-14 sm:w-14 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-yoel-primary/20 to-yoel-gold/20 overflow-hidden">
-                  <img src="/practice-english.png" alt="Practice" className="h-11 w-11 sm:h-14 sm:w-14 object-cover rounded-xl" />
+                  <BookOpen className="h-5 w-5 sm:h-6 sm:w-6 text-yoel-primary" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-[9px] sm:text-xs text-muted-foreground font-medium uppercase tracking-wider">
-                    Continuer
+                    Leçon récente
                   </p>
                   <h3 className="font-semibold truncate mt-0.5 text-sm sm:text-base">
-                    {nextLesson.title}
+                    {recentLesson.title}
                   </h3>
                   <div className="flex items-center gap-2 sm:gap-3 mt-0.5">
                     <span className="flex items-center gap-0.5 text-[11px] sm:text-xs text-muted-foreground whitespace-nowrap">
                       <Zap className="h-3 w-3 text-yoel-gold" />
-                      {nextLesson.xpReward} XP
+                      {recentLesson.xpReward} XP
                     </span>
                     <span className="flex items-center gap-0.5 text-[11px] sm:text-xs text-muted-foreground whitespace-nowrap">
                       <Clock className="h-3 w-3" />
-                      {nextLesson.duration} min
+                      {recentLesson.duration} min
                     </span>
+                    {recentLesson.completed && (
+                      <span className="flex items-center gap-0.5 text-[11px] sm:text-xs text-yoel-green whitespace-nowrap">
+                        <CheckCircle className="h-3 w-3" />
+                        Terminée
+                      </span>
+                    )}
                   </div>
                 </div>
                 <Button

@@ -351,6 +351,8 @@ interface AppState {
   setCurrentLevel: (level: string) => void
   currentLesson: LessonInfo | null
   setCurrentLesson: (lesson: LessonInfo | null) => void
+  lastVisitedLesson: LessonInfo | null
+  setLastVisitedLesson: (lesson: LessonInfo) => void
 
   // Chat
   chatMessages: ChatMsg[]
@@ -541,6 +543,8 @@ export const useAppStore = create<AppState>((set, get) => ({
   setCurrentLevel: (level) => set({ currentLevel: level }),
   currentLesson: null,
   setCurrentLesson: (lesson) => set({ currentLesson: lesson }),
+  lastVisitedLesson: null,
+  setLastVisitedLesson: (lesson) => set({ lastVisitedLesson: lesson }),
 
   // Chat
   chatMessages: [],

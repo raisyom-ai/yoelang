@@ -243,7 +243,7 @@ function getTypeConfig(type: string) {
 // ─── Main Component ─────────────────────────────────────────────────────────
 
 export default function CoursePage() {
-  const { goBack, currentLevel, currentLesson, navigate, setCurrentLesson, completedLessons, addCompletedLesson, addXP, addLessonHistoryEntry, earnedCertificates, earnCertificate, lessonHistory } = useAppStore()
+  const { goBack, currentLevel, currentLesson, navigate, setCurrentLesson, setLastVisitedLesson, completedLessons, addCompletedLesson, addXP, addLessonHistoryEntry, earnedCertificates, earnCertificate, lessonHistory } = useAppStore()
 
   // View mode: 'list' shows all lessons, 'study' shows the lesson steps
   const [viewMode, setViewMode] = useState<'list' | 'study'>('list')
@@ -301,7 +301,7 @@ export default function CoursePage() {
   // ─── Handle lesson selection ────────────────────────────────────────────
   const handleSelectLesson = (lesson: LessonData & { completed: boolean }) => {
     setSelectedLessonData(lesson)
-    setCurrentLesson({
+    const lessonInfo: LessonInfo = {
       id: lesson.id,
       title: lesson.title,
       description: lesson.description,
@@ -310,7 +310,10 @@ export default function CoursePage() {
       duration: lesson.duration,
       completed: lesson.completed,
       score: 0,
-    })
+    }
+    setCurrentLesson(lessonInfo)
+    // Track as last visited lesson for the dashboard "Leçon récente"
+    setLastVisitedLesson(lessonInfo)
     setCurrentStep(0)
     setVocabRevealed(new Set())
     setDialogueRevealed(new Set())
