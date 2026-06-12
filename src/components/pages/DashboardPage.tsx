@@ -8,7 +8,7 @@ import {
   Volume2, Trophy, Clock, Target, Home, User, Settings,
   Zap, Award, Crown, ChevronDown
 } from 'lucide-react'
-import { useAppStore, LEVELS, BADGES, DEMO_LESSONS, getRecommendedDailyGoal, type PageId } from '@/lib/store'
+import { useAppStore, LEVELS, BADGES, DEMO_LESSONS, getRecommendedDailyGoal, calculateStreak, getWeekActivity, type PageId } from '@/lib/store'
 import { speakWord } from '@/lib/speech-utils'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
@@ -183,16 +183,6 @@ const WORD_OF_THE_DAY = {
   example: 'Finding that café was pure serendipity.',
 }
 
-const WEEK_DAYS = [
-  { day: 'Lun', completed: true, date: 10 },
-  { day: 'Mar', completed: true, date: 11 },
-  { day: 'Mer', completed: true, date: 12 },
-  { day: 'Jeu', completed: true, date: 13 },
-  { day: 'Ven', completed: true, date: 14 },
-  { day: 'Sam', completed: false, date: 15 },
-  { day: 'Dim', completed: false, date: 16 },
-]
-
 // ─── Circular Progress Ring ─────────────────────────────────────────────────
 
 function CircularProgress({
@@ -335,7 +325,6 @@ export default function DashboardPage() {
 
   // Derive data with fallbacks
   const displayName = user?.name ?? 'Apprenant'
-  const streak = user?.streak ?? 7
   const coins = user?.coins ?? 350
   const xp = user?.xp ?? 1250
   const level = user?.level ?? 'A1'
@@ -348,6 +337,12 @@ export default function DashboardPage() {
   // If dailyGoal is 0 (auto), compute from XP history, level & progress; otherwise use manual value
   const recommendedGoal = getRecommendedDailyGoal(level, currentLevelInfo.progress, dailyXpHistory)
   const effectiveDailyGoal = user?.dailyGoal && user.dailyGoal > 0 ? user.dailyGoal : recommendedGoal
+
+  // Dynamic streak — calculated from actual XP history, NOT the static DB value
+  const streak = calculateStreak(dailyXpHistory, dailyXpEarned)
+
+  // Dynamic week calendar — based on actual activity data
+  const weekDays = getWeekActivity(dailyXpHistory, dailyXpEarned, effectiveDailyGoal)
 
   // Next lesson to continue
   const nextLesson = currentLesson ?? DEMO_LESSONS.find((l) => !l.completed) ?? DEMO_LESSONS[3]
@@ -840,42 +835,55 @@ export default function DashboardPage() {
               <CardHeader className="pb-2 p-3 sm:p-6">
                 <CardTitle className="text-sm sm:text-base flex items-center gap-1.5 sm:gap-2">
                   <Flame className="h-4 w-4 sm:h-5 sm:w-5 text-orange-500 shrink-0" />
-                  Série de {streak} jours
+                  {streak > 0 ? `Série de ${streak} jour${streak > 1 ? 's' : ''}` : 'Commencez votre série !'}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2.5 p-3 sm:p-6 pt-0 sm:pt-0">
                 <div className="grid grid-cols-7 gap-1 sm:gap-2">
-                  {WEEK_DAYS.map((d, idx) => (
+                  {weekDays.map((d, idx) => (
                     <motion.div
-                      key={d.day}
+                      key={d.day + d.date}
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
                       transition={{ delay: 0.3 + idx * 0.06, type: 'spring' }}
                       className={`flex flex-col items-center gap-0.5 rounded-lg sm:rounded-xl py-1 sm:py-2 px-0.5 transition-colors ${
-                        d.completed
+                        d.isFuture
+                          ? 'bg-muted/20 border border-transparent opacity-40'
+                          : d.completed
                           ? 'bg-gradient-to-b from-orange-500/20 to-orange-600/10 border border-orange-500/20'
+                          : d.isToday
+                          ? 'bg-yoel-primary/5 border border-yoel-primary/20'
                           : 'bg-muted/40 border border-transparent'
                       }`}
                     >
-                      <span className="text-[9px] sm:text-[10px] text-muted-foreground font-medium">
+                      <span className={`text-[9px] sm:text-[10px] font-medium ${
+                        d.isToday ? 'text-yoel-primary' : 'text-muted-foreground'
+                      }`}>
                         {d.day}
                       </span>
-                      <span className="text-xs sm:text-sm font-semibold">
-                        {d.completed ? '🔥' : d.date}
+                      <span className={`text-xs sm:text-sm font-semibold ${
+                        d.isToday && !d.completed ? 'text-yoel-primary' : ''
+                      }`}>
+                        {d.completed ? '🔥' : d.isFuture ? '·' : d.date}
                       </span>
+                      {d.xpEarned > 0 && !d.completed && (
+                        <span className="text-[7px] sm:text-[8px] text-muted-foreground leading-none">
+                          {d.xpEarned}XP
+                        </span>
+                      )}
                     </motion.div>
                   ))}
                 </div>
 
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] sm:text-xs text-muted-foreground">
-                    Continuez votre série !
+                    {streak > 0 ? 'Continuez votre série !' : 'Gagnez des XP aujourd\'hui pour démarrer !'}
                   </span>
                   <Badge
                     variant="outline"
-                    className="text-orange-500 border-orange-500/30 text-[10px]"
+                    className={`text-[10px] ${streak > 0 ? 'text-orange-500 border-orange-500/30' : 'text-muted-foreground border-muted-foreground/30'}`}
                   >
-                    🔥 {streak} jours
+                    🔥 {streak} jour{streak > 1 ? 's' : ''}
                   </Badge>
                 </div>
 

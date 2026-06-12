@@ -69,6 +69,141 @@ export interface DailyXpRecord {
   goal: number       // the goal that was set that day
 }
 
+// ─── Week Day Activity ──────────────────────────────────────────────────────
+export interface WeekDayActivity {
+  day: string        // Short day name (Lun, Mar, etc.)
+  date: number       // Day of month
+  completed: boolean // Whether the goal was met that day
+  xpEarned: number  // XP earned that day
+  isToday: boolean   // Whether this is today
+  isFuture: boolean  // Whether this date is in the future
+}
+
+/**
+ * Calculate current streak from XP history.
+ * A streak day = a day where xpEarned > 0.
+ * Counts consecutive active days ending with today or yesterday.
+ * If today is still in progress (not yet in history), we also count it.
+ */
+export const calculateStreak = (
+  xpHistory: DailyXpRecord[],
+  dailyXpEarned: number,
+): number => {
+  const today = getTodayStr()
+  const todayDate = new Date(today)
+
+  // If user has earned XP today, today counts as a streak day
+  const todayActive = dailyXpEarned > 0
+
+  // Sort history by date descending (newest first)
+  const sorted = [...xpHistory]
+    .filter((d) => d.date < today) // exclude today (we handle it separately)
+    .sort((a, b) => b.date.localeCompare(a.date))
+
+  let streak = 0
+
+  // If today is active, start counting from today
+  if (todayActive) {
+    streak = 1
+  }
+
+  // Continue counting backwards from yesterday
+  for (let i = 0; i < sorted.length; i++) {
+    const expectedDate = new Date(todayDate)
+    expectedDate.setDate(expectedDate.getDate() - (streak + i))
+
+    const expectedStr = expectedDate.toISOString().split('T')[0]
+
+    if (sorted[i].date === expectedStr && sorted[i].xpEarned > 0) {
+      streak++
+    } else {
+      break
+    }
+  }
+
+  // If today is not active, check if yesterday started a streak
+  if (!todayActive && sorted.length > 0 && sorted[0].xpEarned > 0) {
+    streak = 1
+    for (let i = 1; i < sorted.length; i++) {
+      const yesterdayDate = new Date(sorted[0].date)
+      const expectedDate = new Date(yesterdayDate)
+      expectedDate.setDate(expectedDate.getDate() - i)
+
+      const expectedStr = expectedDate.toISOString().split('T')[0]
+
+      if (sorted[i].date === expectedStr && sorted[i].xpEarned > 0) {
+        streak++
+      } else {
+        break
+      }
+    }
+  }
+
+  return streak
+}
+
+const FRENCH_DAY_NAMES = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam']
+
+/**
+ * Build the current week's activity data from XP history.
+ * Returns 7 days: starting from Monday of the current week.
+ */
+export const getWeekActivity = (
+  xpHistory: DailyXpRecord[],
+  dailyXpEarned: number,
+  effectiveGoal: number,
+): WeekDayActivity[] => {
+  const today = new Date()
+  const todayStr = getTodayStr()
+
+  // Find Monday of the current week
+  const dayOfWeek = today.getDay() // 0=Sun, 1=Mon, ...
+  const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek
+  const monday = new Date(today)
+  monday.setDate(today.getDate() + mondayOffset)
+
+  const weekDays: WeekDayActivity[] = []
+
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(monday)
+    d.setDate(monday.getDate() + i)
+    const dateStr = d.toISOString().split('T')[0]
+    const dayName = FRENCH_DAY_NAMES[d.getDay()]
+
+    // Look up XP for this day
+    let xpForDay = 0
+    let goalForDay = effectiveGoal
+
+    if (dateStr === todayStr) {
+      // Today: use current session XP
+      xpForDay = dailyXpEarned
+      goalForDay = effectiveGoal
+    } else {
+      // Past day: look up in history
+      const record = xpHistory.find((r) => r.date === dateStr)
+      if (record) {
+        xpForDay = record.xpEarned
+        goalForDay = record.goal || effectiveGoal
+      }
+    }
+
+    const isFuture = d > today && dateStr !== todayStr
+    const isToday = dateStr === todayStr
+    const completed = xpForDay >= goalForDay && xpForDay > 0
+
+    weekDays.push({
+      day: dayName,
+      date: d.getDate(),
+      completed,
+      xpEarned: xpForDay,
+      isToday,
+      isFuture,
+    })
+  }
+
+  return weekDays
+}
+
 // Minimum goals by level (floor — goal never goes below this)
 const LEVEL_MIN_GOALS: Record<string, number> = {
   A1: 10, A2: 10, B1: 15, B2: 15, C1: 20, C2: 30,
