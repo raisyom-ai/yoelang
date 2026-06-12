@@ -53,24 +53,122 @@ const pulseVariants = {
 
 // Daily XP goal and earned are now dynamic — derived from the store
 
-// Défis journaliers rotatifs basés sur le jour de l'année
-const DAILY_CHALLENGES = [
-  { question: 'Traduisez : "She ___ to the store yesterday."', options: ['go', 'goes', 'went', 'going'], correctIndex: 2, xpReward: 25 },
-  { question: 'Quel est le pluriel de "child" ?', options: ['Childs', 'Children', 'Childrens', 'Childes'], correctIndex: 1, xpReward: 25 },
-  { question: 'Complétez : "I have been living here ___ 2010."', options: ['for', 'since', 'from', 'during'], correctIndex: 1, xpReward: 25 },
-  { question: 'Quelle est la forme correcte ? "He ___ to music every night."', options: ['listen', 'listens', 'listening', 'listened'], correctIndex: 1, xpReward: 25 },
-  { question: 'Traduisez : "Je voudrais une tasse de thé."', options: ['I would like a cup of tea', 'I want a glass of tea', 'I like a tea cup', 'I will have tea'], correctIndex: 0, xpReward: 25 },
-  { question: 'Quel mot est un adjectif ?', options: ['Quickly', 'Beautiful', 'Running', 'Happiness'], correctIndex: 1, xpReward: 25 },
-  { question: 'Complétez : "If I ___ rich, I would travel the world."', options: ['am', 'was', 'were', 'be'], correctIndex: 2, xpReward: 30 },
-]
-
-// Sélectionner le défi du jour basé sur la date
-const getDailyChallenge = () => {
-  const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000)
-  return DAILY_CHALLENGES[dayOfYear % DAILY_CHALLENGES.length]
+// ─── Daily Challenges — 3 per day, adapted to level ──────────────────────────
+interface Challenge {
+  question: string
+  options: string[]
+  correctIndex: number
+  xpReward: number
+  type: 'grammar' | 'vocabulary' | 'translation' | 'conjugaison'
 }
 
-const DAILY_CHALLENGE = { ...getDailyChallenge(), timeLimit: 60 }
+const CHALLENGE_POOL: Record<string, Challenge[]> = {
+  A1: [
+    { question: 'Traduisez : "Elle ___ une pomme."', options: ['have', 'has', 'haves', 'having'], correctIndex: 1, xpReward: 15, type: 'grammar' },
+    { question: 'Quel mot signifie "chat" en anglais ?', options: ['Dog', 'Cat', 'Bird', 'Fish'], correctIndex: 1, xpReward: 10, type: 'vocabulary' },
+    { question: 'Traduisez : "Bonjour, comment allez-vous ?"', options: ['Hello, how are you?', 'Goodbye, see you!', 'Please, thank you', 'Yes, I am fine'], correctIndex: 0, xpReward: 15, type: 'translation' },
+    { question: 'Complétez : "I ___ a student."', options: ['am', 'is', 'are', 'be'], correctIndex: 0, xpReward: 15, type: 'grammar' },
+    { question: 'Quel est le contraire de "big" ?', options: ['Tall', 'Small', 'Long', 'Wide'], correctIndex: 1, xpReward: 10, type: 'vocabulary' },
+    { question: "Traduisez : \"Je m'appelle Marie.\"", options: ['My name is Marie', 'I call Marie', 'Me is Marie', 'I am call Marie'], correctIndex: 0, xpReward: 15, type: 'translation' },
+    { question: 'Complétez : "She ___ to school every day."', options: ['go', 'goes', 'going', 'gone'], correctIndex: 1, xpReward: 15, type: 'conjugaison' },
+    { question: 'Que signifie "water" en français ?', options: ['Feu', 'Air', 'Eau', 'Terre'], correctIndex: 2, xpReward: 10, type: 'vocabulary' },
+    { question: 'Traduisez : "Où est la gare ?"', options: ['Where is the station?', 'When is the train?', 'How is the bus?', 'What is the road?'], correctIndex: 0, xpReward: 15, type: 'translation' },
+    { question: 'Complétez : "They ___ playing football."', options: ['am', 'is', 'are', 'be'], correctIndex: 2, xpReward: 15, type: 'conjugaison' },
+    { question: 'Quel mot signifie "livre" en anglais ?', options: ['Book', 'Look', 'Cook', 'Hook'], correctIndex: 0, xpReward: 10, type: 'vocabulary' },
+    { question: "Traduisez : \"Il fait beau aujourd'hui.\"", options: ['It is nice today', 'It is bad today', 'It is cold today', 'It is hot today'], correctIndex: 0, xpReward: 15, type: 'translation' },
+  ],
+  A2: [
+    { question: 'Traduisez : "She ___ to the store yesterday."', options: ['go', 'goes', 'went', 'going'], correctIndex: 2, xpReward: 20, type: 'conjugaison' },
+    { question: 'Quel est le pluriel de "child" ?', options: ['Childs', 'Children', 'Childrens', 'Childes'], correctIndex: 1, xpReward: 15, type: 'grammar' },
+    { question: 'Traduisez : "Je voudrais une tasse de thé."', options: ['I would like a cup of tea', 'I want a glass of tea', 'I like a tea cup', 'I will have tea'], correctIndex: 0, xpReward: 20, type: 'translation' },
+    { question: 'Complétez : "I have been living here ___ 2010."', options: ['for', 'since', 'from', 'during'], correctIndex: 1, xpReward: 20, type: 'grammar' },
+    { question: 'Que signifie "schedule" en français ?', options: ['Horloge', 'Emploi du temps', 'Calendrier', 'Montre'], correctIndex: 1, xpReward: 15, type: 'vocabulary' },
+    { question: "Traduisez : \"Nous avons visité Paris l'année dernière.\"", options: ['We visited Paris last year', 'We visit Paris next year', 'We are visiting Paris now', 'We will visit Paris'], correctIndex: 0, xpReward: 20, type: 'translation' },
+    { question: 'Quelle est la forme correcte ? "He ___ to music every night."', options: ['listen', 'listens', 'listening', 'listened'], correctIndex: 1, xpReward: 20, type: 'conjugaison' },
+    { question: 'Quel mot est un adjectif ?', options: ['Quickly', 'Beautiful', 'Running', 'Happiness'], correctIndex: 1, xpReward: 15, type: 'grammar' },
+    { question: "Traduisez : \"Pourriez-vous m'aider, s'il vous plaît ?\"", options: ['Could you help me, please?', 'Can you help I please?', 'Would you helping me?', 'Do you help me please?'], correctIndex: 0, xpReward: 20, type: 'translation' },
+  ],
+  B1: [
+    { question: 'Complétez : "If I ___ rich, I would travel the world."', options: ['am', 'was', 'were', 'be'], correctIndex: 2, xpReward: 25, type: 'grammar' },
+    { question: 'Que signifie "to achieve" en français ?', options: ['Échouer', 'Accomplir', 'Abandonner', 'Accepter'], correctIndex: 1, xpReward: 20, type: 'vocabulary' },
+    { question: "Traduisez : \"Bien qu'il soit fatigué, il a continué à travailler.\"", options: ['Although he was tired, he kept working', 'Even he was tired, he continued work', 'Despite he is tired, he works', 'Though he tired, he working still'], correctIndex: 0, xpReward: 25, type: 'translation' },
+    { question: 'Complétez : "By the time we arrived, the movie ___."', options: ['started', 'has started', 'had started', 'starts'], correctIndex: 2, xpReward: 25, type: 'conjugaison' },
+    { question: 'Quel est le synonyme de "significant" ?', options: ['Trivial', 'Meaningful', 'Vague', 'Ordinary'], correctIndex: 1, xpReward: 20, type: 'vocabulary' },
+    { question: "Traduisez : \"Il m'a dit qu'il viendrait demain.\"", options: ['He told me he would come tomorrow', 'He said me he will come tomorrow', 'He told me he comes tomorrow', 'He say to me he coming tomorrow'], correctIndex: 0, xpReward: 25, type: 'translation' },
+    { question: 'Complétez : "She suggested that he ___ harder."', options: ['studies', 'study', 'studied', 'studying'], correctIndex: 1, xpReward: 25, type: 'grammar' },
+    { question: 'Que signifie "overwhelmed" en français ?', options: ['Enthousiaste', 'Débordé', 'Indifférent', 'Soulagé'], correctIndex: 1, xpReward: 20, type: 'vocabulary' },
+    { question: 'Traduisez : "Je souhaiterais avoir plus de temps."', options: ['I wish I had more time', 'I wish I have more time', 'I hope having more time', 'I want more time would'], correctIndex: 0, xpReward: 25, type: 'translation' },
+  ],
+  B2: [
+    { question: 'Complétez : "Had I known, I ___ differently."', options: ['would act', 'would have acted', 'will act', 'acted'], correctIndex: 1, xpReward: 30, type: 'grammar' },
+    { question: 'Que signifie "to undermine" en français ?', options: ['Renforcer', 'Saper', 'Comprendre', 'Nier'], correctIndex: 1, xpReward: 25, type: 'vocabulary' },
+    { question: "Traduisez : \"Quoi qu'il arrive, nous devons persévérer.\"", options: ['Whatever happens, we must persevere', 'What happens, we should persevere', 'Whatever will happen, we must persisted', 'No matter what, we persevering'], correctIndex: 0, xpReward: 30, type: 'translation' },
+    { question: 'Complétez : "Not only ___ intelligent, but she is also kind."', options: ['she is', 'is she', 'does she', 'she does'], correctIndex: 1, xpReward: 30, type: 'grammar' },
+    { question: 'Quel mot complète : "The results were ___ with previous findings."', options: ['consistent', 'considerate', 'consecutive', 'conspicuous'], correctIndex: 0, xpReward: 25, type: 'vocabulary' },
+    { question: "Traduisez : \"Il est peu probable qu'elle accepte cette proposition.\"", options: ['It is unlikely that she will accept this proposal', 'She is unlikely accepting this proposal', 'It is improbable she accepts that', 'She unlikely will accept the proposition'], correctIndex: 0, xpReward: 30, type: 'translation' },
+    { question: 'Complétez : "The report ___ the need for further research."', options: ['underscores', 'undercharges', 'underachieves', 'underestimates'], correctIndex: 0, xpReward: 30, type: 'vocabulary' },
+    { question: 'Traduisez : "En dépit des difficultés, le projet a abouti."', options: ['Despite the difficulties, the project succeeded', 'In spite difficulties, the project succeed', 'Despite difficulties, project was success', 'Although the difficulties, project succeeded'], correctIndex: 0, xpReward: 30, type: 'translation' },
+    { question: 'Complétez : "She insisted on ___ the report herself."', options: ['writing', 'to write', 'write', 'wrote'], correctIndex: 0, xpReward: 30, type: 'grammar' },
+  ],
+  C1: [
+    { question: 'Complétez : "The implications of this policy are ___ understood."', options: ['scarcely', 'scarce', 'scarceness', 'scarsed'], correctIndex: 0, xpReward: 35, type: 'grammar' },
+    { question: 'Que signifie "to corroborate" en français ?', options: ['Contredire', 'Confirmer', 'Corrompre', 'Corriger'], correctIndex: 1, xpReward: 30, type: 'vocabulary' },
+    { question: "Traduisez : \"Il a été convenu que les parties s'engageraient dans un dialogue constructif.\"", options: ['It was agreed that the parties would engage in constructive dialogue', 'It was agreed the parties will engage in constructive dialog', 'They agreed that parties shall engage constructively', 'It has agreed parties would engaged in constructive dialogue'], correctIndex: 0, xpReward: 35, type: 'translation' },
+    { question: 'Complétez : "So ___ the impact that policymakers were forced to reconsider."', options: ['profound was', 'profound', 'was profound', 'did profound'], correctIndex: 0, xpReward: 35, type: 'grammar' },
+    { question: 'Quel mot décrit un "raisonnement trompeur mais apparemment logique" ?', options: ['Sophistry', 'Serendipity', 'Sophistication', 'Sovereignty'], correctIndex: 0, xpReward: 30, type: 'vocabulary' },
+    { question: 'Traduisez : "Nonobstant les objections soulevées, la motion a été adoptée."', options: ['Notwithstanding the objections raised, the motion was passed', 'Despite objections raising, the motion passed', 'Notwithstanding objections, motion has been passing', 'In spite of raised objections, motion was passing'], correctIndex: 0, xpReward: 35, type: 'translation' },
+    { question: 'Complétez : "Little ___ the challenges that lay ahead."', options: ['did they anticipate', 'they anticipated', 'they did anticipate', 'anticipated they'], correctIndex: 0, xpReward: 35, type: 'grammar' },
+    { question: 'Que signifie "prescient" en français ?', options: ['Prévoyant', 'Présent', 'Précieux', 'Précaire'], correctIndex: 0, xpReward: 30, type: 'vocabulary' },
+    { question: "Traduisez : \"Force est de constater que cette approche s'avère contre-productive.\"", options: ['It must be acknowledged that this approach proves counterproductive', 'We must acknowledge this approach is counter-product', 'It has to be admitted that approach proves against productive', 'One must note this approach being counterproductive'], correctIndex: 0, xpReward: 35, type: 'translation' },
+  ],
+  C2: [
+    { question: 'Complétez : "Were the hypothesis ___ , the ramifications would be far-reaching."', options: ['to be validated', 'validating', 'validated', 'to validate'], correctIndex: 0, xpReward: 40, type: 'grammar' },
+    { question: 'Que signifie "to obfuscate" en français ?', options: ['Rendre confus', 'Obscurcir', 'Rendre obsolète', 'Omettre'], correctIndex: 1, xpReward: 35, type: 'vocabulary' },
+    { question: 'Traduisez : "Il incombe aux instances dirigeantes de veiller à la conformité réglementaire."', options: ['It is incumbent upon the governing bodies to ensure regulatory compliance', 'It is incumbent to governing bodies ensuring regulatory compliance', 'It falls upon governing bodies to ensure regulation compliance', 'It is obliging the governing bodies to ensure regulation conformity'], correctIndex: 0, xpReward: 40, type: 'translation' },
+    { question: 'Complétez : "At no time ___ the authority to unilaterally amend the provisions."', options: ['did the committee have', 'the committee had', 'had the committee', 'the committee did have'], correctIndex: 0, xpReward: 40, type: 'grammar' },
+    { question: "Quel terme désigne \"l'art de persuader par le discours\" ?", options: ['Rhetoric', 'Hermeneutics', 'Dialectics', 'Exegesis'], correctIndex: 0, xpReward: 35, type: 'vocabulary' },
+    { question: "Traduisez : \"Quoi que l'on puisse avancer, la prépondérance des preuves atteste de cette conclusion.\"", options: ['Whatever one may argue, the preponderance of evidence attests to this conclusion', 'Whatever you advance, the preponderance of evidences attests this', 'No matter what is advanced, evidence preponderance attests the conclusion', 'Whichever one argues, the preponderating evidence attests to that'], correctIndex: 0, xpReward: 40, type: 'translation' },
+    { question: 'Complétez : "Not until the findings ___ public did the institution acknowledge its oversight."', options: ['became', 'become', 'had become', 'becoming'], correctIndex: 0, xpReward: 40, type: 'grammar' },
+    { question: 'Que signifie "to renege" en français ?', options: ['Renoncer', 'Renégocier', 'Rénover', 'Rendre'], correctIndex: 0, xpReward: 35, type: 'vocabulary' },
+    { question: "Traduisez : \"L'exégèse de ce passage requiert une appréciation nuancée du contexte socio-historique.\"", options: ['The exegesis of this passage requires a nuanced appreciation of the socio-historical context', 'Exegesis of this passage demands a nuanced appreciation for socio-historic context', 'The exegesis for this passage require nuanced appreciation of socio-historical contexts', 'This passage exegesis requires nuanced appreciating of the socio-historical context'], correctIndex: 0, xpReward: 40, type: 'translation' },
+  ],
+}
+
+// Sélectionner 3 défis du jour basés sur la date et le niveau
+const getDailyChallenges = (level: string): Challenge[] => {
+  const pool = CHALLENGE_POOL[level] || CHALLENGE_POOL.A1
+  const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000)
+  // Pick 3 challenges that rotate daily, ensuring one of each type
+  const types: Challenge['type'][] = ['grammar', 'vocabulary', 'translation']
+  const result: Challenge[] = []
+  for (const type of types) {
+    const typed = pool.filter((c) => c.type === type)
+    if (typed.length > 0) {
+      const idx = (dayOfYear + result.length * 3) % typed.length
+      result.push(typed[idx])
+    }
+  }
+  // If we don't have enough, fill with remaining
+  while (result.length < 3) {
+    const idx = (dayOfYear + result.length) % pool.length
+    result.push(pool[idx])
+  }
+  return result
+}
+
+const TYPE_LABELS: Record<Challenge['type'], string> = {
+  grammar: 'Grammaire',
+  vocabulary: 'Vocabulaire',
+  translation: 'Traduction',
+  conjugaison: 'Conjugaison',
+}
+
+const TYPE_COLORS: Record<Challenge['type'], string> = {
+  grammar: 'bg-yoel-primary/10 text-yoel-primary',
+  vocabulary: 'bg-yoel-green/10 text-yoel-green',
+  translation: 'bg-yoel-blue/10 text-yoel-blue',
+  conjugaison: 'bg-yoel-gold/10 text-yoel-gold',
+}
 
 const LEADERBOARD = [
   { rank: 1, name: 'Marie L.', xp: 4820, avatar: 'ML', isPremium: true },
@@ -254,35 +352,70 @@ export default function DashboardPage() {
   // Next lesson to continue
   const nextLesson = currentLesson ?? DEMO_LESSONS.find((l) => !l.completed) ?? DEMO_LESSONS[3]
 
-  // Daily challenge state
+  // Daily challenges — 3 per day, level-adapted
+  const todayChallenges = getDailyChallenges(level)
+  const [currentChallengeIdx, setCurrentChallengeIdx] = useState(0)
   const [selectedOption, setSelectedOption] = useState<number | null>(null)
-  const [challengeTime, setChallengeTime] = useState(DAILY_CHALLENGE.timeLimit)
-  const [challengeAnswered, setChallengeAnswered] = useState(dailyChallengeCompleted)
+  const [challengeResults, setChallengeResults] = useState<(boolean | null)[]>([null, null, null])
+  const [challengeTime, setChallengeTime] = useState(60)
+  const [challengeAnswered, setChallengeAnswered] = useState(false)
+  const allChallengesDone = challengeResults.every((r) => r !== null)
 
   // Collapsible "more content" section (collapsed by default on mobile)
   const [moreOpen, setMoreOpen] = useState(false)
 
+  const currentChallenge = todayChallenges[currentChallengeIdx]
+
+  // Track previous challenge index to detect changes
+  const [prevChallengeIdx, setPrevChallengeIdx] = useState(0)
+  if (currentChallengeIdx !== prevChallengeIdx) {
+    setPrevChallengeIdx(currentChallengeIdx)
+    setChallengeTime(60)
+    setChallengeAnswered(false)
+    setSelectedOption(null)
+  }
+
   useEffect(() => {
-    if (challengeAnswered) return
+    if (challengeAnswered || allChallengesDone) return
     const timer = setInterval(() => {
       setChallengeTime((prev) => {
         if (prev <= 1) {
           clearInterval(timer)
+          // Time's up — mark as wrong
           setChallengeAnswered(true)
+          setChallengeResults((prev) => {
+            const next = [...prev]
+            next[currentChallengeIdx] = false
+            return next
+          })
           return 0
         }
         return prev - 1
       })
     }, 1000)
     return () => clearInterval(timer)
-  }, [challengeAnswered])
+  }, [challengeAnswered, currentChallengeIdx, allChallengesDone])
 
   const handleChallengeAnswer = (index: number) => {
     if (challengeAnswered) return
     setSelectedOption(index)
     setChallengeAnswered(true)
-    if (index === DAILY_CHALLENGE.correctIndex) {
-      addXP(DAILY_CHALLENGE.xpReward)
+    const isCorrect = index === currentChallenge.correctIndex
+    setChallengeResults((prev) => {
+      const next = [...prev]
+      next[currentChallengeIdx] = isCorrect
+      return next
+    })
+    if (isCorrect) {
+      addXP(currentChallenge.xpReward)
+    }
+  }
+
+  const handleNextChallenge = () => {
+    if (currentChallengeIdx < todayChallenges.length - 1) {
+      setCurrentChallengeIdx((prev) => prev + 1)
+    }
+    if (allChallengesDone) {
       completeDailyChallenge()
     }
   }
@@ -536,85 +669,167 @@ export default function DashboardPage() {
 
         {/* ─── 5 & 6. Daily Challenge + Streak Calendar ───────────────── */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          {/* Daily Challenge */}
+          {/* Daily Challenges — 3 per day */}
           <motion.div variants={itemVariants}>
             <Card className="glass-card overflow-hidden h-full">
               <CardHeader className="pb-2 p-3 sm:p-6">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-sm sm:text-base flex items-center gap-1.5 sm:gap-2">
                     <Zap className="h-4 w-4 sm:h-5 sm:w-5 text-yoel-gold shrink-0" />
-                    Défi du jour
+                    Défis du jour
                   </CardTitle>
-                  <Badge className="bg-yoel-gold/15 text-yoel-gold border-0 text-[10px] sm:text-xs shrink-0">
-                    +{DAILY_CHALLENGE.xpReward} XP
-                  </Badge>
+                  <div className="flex items-center gap-1.5">
+                    {!allChallengesDone && (
+                      <Badge className="bg-yoel-gold/15 text-yoel-gold border-0 text-[10px] sm:text-xs shrink-0">
+                        +{currentChallenge.xpReward} XP
+                      </Badge>
+                    )}
+                    {/* Progress dots */}
+                    <div className="flex items-center gap-1">
+                      {todayChallenges.map((_, idx) => (
+                        <div
+                          key={idx}
+                          className={`h-2 w-2 rounded-full transition-colors ${
+                            challengeResults[idx] === true
+                              ? 'bg-yoel-green'
+                              : challengeResults[idx] === false
+                              ? 'bg-destructive'
+                              : idx === currentChallengeIdx && !allChallengesDone
+                              ? 'bg-yoel-gold'
+                              : 'bg-muted-foreground/20'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </CardHeader>
               <CardContent className="space-y-2.5 p-3 sm:p-6 pt-0 sm:pt-0">
-                <p className="font-medium text-xs sm:text-sm leading-relaxed">
-                  {DAILY_CHALLENGE.question}
-                </p>
+                {allChallengesDone ? (
+                  /* ── Results summary ── */
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-center gap-2 py-3">
+                      <span className="text-2xl">
+                        {challengeResults.filter(Boolean).length === 3 ? '🏆' : challengeResults.filter(Boolean).length >= 2 ? '👏' : '💪'}
+                      </span>
+                      <div>
+                        <p className="font-semibold text-sm">
+                          {challengeResults.filter(Boolean).length}/3 correct
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {challengeResults.filter(Boolean).length === 3
+                            ? 'Parfait ! Tous les défis réussis !'
+                            : challengeResults.filter(Boolean).length >= 2
+                            ? 'Bravo ! Continuez comme ça !'
+                            : 'Continuez à vous entraîner !'}
+                        </p>
+                      </div>
+                    </div>
+                    {/* Show each challenge result */}
+                    <div className="space-y-1.5">
+                      {todayChallenges.map((ch, idx) => (
+                        <div
+                          key={idx}
+                          className={`flex items-center gap-2 rounded-lg p-2 text-xs ${
+                            challengeResults[idx]
+                              ? 'bg-yoel-green/10 text-yoel-green'
+                              : 'bg-destructive/10 text-destructive'
+                          }`}
+                        >
+                          <span className="shrink-0">{challengeResults[idx] ? '✓' : '✗'}</span>
+                          <Badge className={`text-[9px] px-1 py-0 border-0 shrink-0 ${TYPE_COLORS[ch.type]}`}>
+                            {TYPE_LABELS[ch.type]}
+                          </Badge>
+                          <span className="truncate font-medium">{ch.question}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  /* ── Active challenge ── */
+                  <>
+                    {/* Challenge type badge */}
+                    <div className="flex items-center gap-2">
+                      <Badge className={`text-[9px] px-1.5 py-0 border-0 ${TYPE_COLORS[currentChallenge.type]}`}>
+                        {TYPE_LABELS[currentChallenge.type]}
+                      </Badge>
+                      <span className="text-[10px] text-muted-foreground">
+                        Défi {currentChallengeIdx + 1}/{todayChallenges.length}
+                      </span>
+                    </div>
+                    <p className="font-medium text-xs sm:text-sm leading-relaxed">
+                      {currentChallenge.question}
+                    </p>
 
-                <div className="grid grid-cols-2 gap-1.5 sm:gap-2">
-                  {DAILY_CHALLENGE.options.map((option, idx) => {
-                    const isSelected = selectedOption === idx
-                    const isCorrect = idx === DAILY_CHALLENGE.correctIndex
-                    let btnClass =
-                      'text-xs sm:text-sm py-1.5 sm:py-2 rounded-xl border transition-all font-medium'
+                    <div className="grid grid-cols-2 gap-1.5 sm:gap-2">
+                      {currentChallenge.options.map((option, idx) => {
+                        const isSelected = selectedOption === idx
+                        const isCorrect = idx === currentChallenge.correctIndex
+                        let btnClass =
+                          'text-xs sm:text-sm py-1.5 sm:py-2 rounded-xl border transition-all font-medium'
 
-                    if (challengeAnswered) {
-                      if (isCorrect) {
-                        btnClass +=
-                          ' bg-yoel-green/20 border-yoel-green/40 text-yoel-green'
-                      } else if (isSelected && !isCorrect) {
-                        btnClass +=
-                          ' bg-destructive/15 border-destructive/40 text-destructive'
-                      } else {
-                        btnClass +=
-                          ' bg-muted/50 border-muted text-muted-foreground'
-                      }
-                    } else {
-                      btnClass +=
-                        ' bg-background border-border hover:border-yoel-primary/50 hover:bg-yoel-primary/5 cursor-pointer'
-                    }
+                        if (challengeAnswered) {
+                          if (isCorrect) {
+                            btnClass +=
+                              ' bg-yoel-green/20 border-yoel-green/40 text-yoel-green'
+                          } else if (isSelected && !isCorrect) {
+                            btnClass +=
+                              ' bg-destructive/15 border-destructive/40 text-destructive'
+                          } else {
+                            btnClass +=
+                              ' bg-muted/50 border-muted text-muted-foreground'
+                          }
+                        } else {
+                          btnClass +=
+                            ' bg-background border-border hover:border-yoel-primary/50 hover:bg-yoel-primary/5 cursor-pointer'
+                        }
 
-                    return (
-                      <motion.button
-                        key={idx}
-                        whileTap={!challengeAnswered ? { scale: 0.95 } : undefined}
-                        onClick={() => handleChallengeAnswer(idx)}
-                        disabled={challengeAnswered}
-                        className={btnClass}
-                      >
-                        {option}
-                      </motion.button>
-                    )
-                  })}
-                </div>
+                        return (
+                          <motion.button
+                            key={idx}
+                            whileTap={!challengeAnswered ? { scale: 0.95 } : undefined}
+                            onClick={() => handleChallengeAnswer(idx)}
+                            disabled={challengeAnswered}
+                            className={btnClass}
+                          >
+                            {option}
+                          </motion.button>
+                        )
+                      })}
+                    </div>
 
-                <div className="flex items-center justify-between text-xs text-muted-foreground">
-                  <span className="flex items-center gap-1">
-                    <Clock className="h-3 w-3" />
-                    {challengeTime > 0
-                      ? `${Math.floor(challengeTime / 60)}:${(challengeTime % 60)
-                          .toString()
-                          .padStart(2, '0')}`
-                      : 'Temps écoulé'}
-                  </span>
-                  {challengeAnswered && (
-                    <span
-                      className={
-                        selectedOption === DAILY_CHALLENGE.correctIndex
-                          ? 'text-yoel-green font-medium'
-                          : 'text-destructive font-medium'
-                      }
-                    >
-                      {selectedOption === DAILY_CHALLENGE.correctIndex
-                        ? '✓ Correct !'
-                        : '✗ Incorrect'}
-                    </span>
-                  )}
-                </div>
+                    <div className="flex items-center justify-between text-xs text-muted-foreground">
+                      <span className="flex items-center gap-1">
+                        <Clock className="h-3 w-3" />
+                        {challengeTime > 0
+                          ? `${Math.floor(challengeTime / 60)}:${(challengeTime % 60)
+                              .toString()
+                              .padStart(2, '0')}`
+                          : 'Temps écoulé'}
+                      </span>
+                      {challengeAnswered && (
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={
+                              challengeResults[currentChallengeIdx]
+                                ? 'text-yoel-green font-medium'
+                                : 'text-destructive font-medium'
+                            }
+                          >
+                            {challengeResults[currentChallengeIdx] ? '✓ Correct !' : '✗ Incorrect'}
+                          </span>
+                          <Button
+                            size="sm"
+                            className="h-7 rounded-full bg-yoel-primary hover:bg-yoel-primary-dark text-white text-xs px-3"
+                            onClick={handleNextChallenge}
+                          >
+                            {currentChallengeIdx < todayChallenges.length - 1 ? 'Suivant →' : 'Voir résultats'}
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
               </CardContent>
             </Card>
           </motion.div>
