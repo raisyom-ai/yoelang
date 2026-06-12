@@ -8,7 +8,8 @@ import {
   Volume2, Trophy, Clock, Target, Home, User, Settings,
   Zap, Award, Crown, ChevronDown, CheckCircle
 } from 'lucide-react'
-import { useAppStore, LEVELS, BADGES, DEMO_LESSONS, getRecommendedDailyGoal, calculateStreak, getWeekActivity, type PageId } from '@/lib/store'
+import { useAppStore, LEVELS, BADGES, DEMO_LESSONS, getRecommendedDailyGoal, calculateStreak, getWeekActivity, type PageId, type LessonHistoryEntry } from '@/lib/store'
+import { getLessonContent, type VocabWord, type GrammarRule } from '@/lib/lesson-content'
 import { speakWord } from '@/lib/speech-utils'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
@@ -545,7 +546,7 @@ function BottomNavItem({
 // ─── Main Component ─────────────────────────────────────────────────────────
 
 export default function DashboardPage() {
-  const { user, isDarkMode, toggleDarkMode, navigate, currentLesson, lastVisitedLesson, dailyChallengeCompleted, completeDailyChallenge, addXP, dailyXpEarned, dailyXpHistory } = useAppStore()
+  const { user, isDarkMode, toggleDarkMode, navigate, currentLesson, lastVisitedLesson, dailyChallengeCompleted, completeDailyChallenge, addXP, dailyXpEarned, dailyXpHistory, lessonHistory } = useAppStore()
 
   // Derive data with fallbacks
   const displayName = user?.name ?? 'Apprenant'
@@ -573,6 +574,14 @@ export default function DashboardPage() {
 
   // Recent lesson — the last lesson the learner visited, or the first uncompleted lesson as fallback
   const recentLesson = lastVisitedLesson ?? DEMO_LESSONS.find((l) => !l.completed) ?? DEMO_LESSONS[0]
+
+  // Last learning session — what the learner studied before leaving
+  const lastSession = lessonHistory.length > 0 ? lessonHistory[0] : null
+  const lastSessionContent = lastSession ? getLessonContent(lastSession.lessonId) : null
+  // Show up to 4 vocabulary words learned
+  const learnedVocab: VocabWord[] = lastSessionContent?.vocab?.slice(0, 4) ?? []
+  // Grammar title learned
+  const learnedGrammar: GrammarRule | null = lastSessionContent?.grammar ?? null
 
   // Daily challenges — 3 per day, level-adapted
   const todayChallenges = getDailyChallenges(level)
@@ -817,49 +826,105 @@ export default function DashboardPage() {
           </Card>
         </motion.div>
 
-        {/* ─── 3. Recent Lesson Card ──────────────────────────────────── */}
+        {/* ─── 3. Ce que vous avez appris — Learning Recap ──────────── */}
         <motion.div variants={itemVariants}>
-          <Card
-            className="glass-card overflow-hidden cursor-pointer group"
-            onClick={() => navigate('course')}
-          >
+          <Card className="glass-card overflow-hidden">
             <div className="relative">
               {/* Accent bar */}
               <div className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-yoel-primary to-yoel-gold rounded-l-xl" />
-              <CardContent className="flex items-center gap-2.5 sm:gap-4 p-3 sm:p-5 pl-4 sm:pl-6">
-                <div className="flex h-11 w-11 sm:h-14 sm:w-14 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-yoel-primary/20 to-yoel-gold/20 overflow-hidden">
-                  <BookOpen className="h-5 w-5 sm:h-6 sm:w-6 text-yoel-primary" />
+              <CardContent className="p-3 sm:p-5 pl-4 sm:pl-6">
+                {/* Header */}
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <div className="flex h-8 w-8 sm:h-9 sm:w-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-yoel-primary/20 to-yoel-gold/20">
+                      <BookOpen className="h-4 w-4 sm:h-5 sm:w-5 text-yoel-primary" />
+                    </div>
+                    <div>
+                      <p className="text-[10px] sm:text-xs text-muted-foreground font-medium uppercase tracking-wider">
+                        Ce que vous avez appris
+                      </p>
+                      {lastSession && (
+                        <div className="flex items-center gap-1.5 mt-0.5">
+                          <Badge variant="secondary" className="text-[9px] sm:text-[10px] px-1.5 py-0 h-4 sm:h-5 bg-yoel-primary/10 text-yoel-primary">
+                            {lastSession.type === 'vocabulaire' ? 'Vocabulaire' : lastSession.type === 'grammaire' ? 'Grammaire' : lastSession.type === 'conversation' ? 'Conversation' : lastSession.type === 'conjugaison' ? 'Conjugaison' : lastSession.type === 'pronunciation' ? 'Prononciation' : lastSession.type}
+                          </Badge>
+                          <span className="flex items-center gap-0.5 text-[10px] sm:text-xs text-muted-foreground">
+                            <Zap className="h-2.5 w-2.5 text-yoel-gold" />
+                            +{lastSession.xpEarned} XP
+                          </span>
+                          {lastSession.score > 0 && (
+                            <span className="text-[10px] sm:text-xs text-yoel-green font-medium">
+                              {lastSession.score}%
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <Button
+                    size="sm"
+                    className="bg-yoel-primary hover:bg-yoel-primary-dark text-white rounded-full shrink-0 h-7 sm:h-8 text-[10px] sm:text-xs px-3 gap-1"
+                    onClick={() => navigate('course')}
+                  >
+                    Continuer
+                    <ChevronRight className="h-3 w-3" />
+                  </Button>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-[9px] sm:text-xs text-muted-foreground font-medium uppercase tracking-wider">
-                    Leçon récente
-                  </p>
-                  <h3 className="font-semibold truncate mt-0.5 text-sm sm:text-base">
-                    {recentLesson.title}
-                  </h3>
-                  <div className="flex items-center gap-2 sm:gap-3 mt-0.5">
-                    <span className="flex items-center gap-0.5 text-[11px] sm:text-xs text-muted-foreground whitespace-nowrap">
-                      <Zap className="h-3 w-3 text-yoel-gold" />
-                      {recentLesson.xpReward} XP
-                    </span>
-                    <span className="flex items-center gap-0.5 text-[11px] sm:text-xs text-muted-foreground whitespace-nowrap">
-                      <Clock className="h-3 w-3" />
-                      {recentLesson.duration} min
-                    </span>
-                    {recentLesson.completed && (
-                      <span className="flex items-center gap-0.5 text-[11px] sm:text-xs text-yoel-green whitespace-nowrap">
-                        <CheckCircle className="h-3 w-3" />
-                        Terminée
-                      </span>
+
+                {/* Learning Content Recap */}
+                {lastSession && learnedVocab.length > 0 ? (
+                  <div className="space-y-2.5">
+                    {/* Vocabulary learned */}
+                    <div>
+                      <p className="text-[10px] sm:text-xs font-medium text-muted-foreground mb-1.5 flex items-center gap-1">
+                        <span className="inline-block w-1.5 h-1.5 rounded-full bg-yoel-primary" />
+                        Vocabulaire
+                      </p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {learnedVocab.map((v, i) => (
+                          <div
+                            key={i}
+                            className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-muted/60 text-[11px] sm:text-xs"
+                          >
+                            <span className="font-medium text-foreground">{v.english}</span>
+                            <span className="text-muted-foreground">→</span>
+                            <span className="text-yoel-primary">{v.french}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Grammar point learned */}
+                    {learnedGrammar && learnedGrammar.title && (
+                      <div>
+                        <p className="text-[10px] sm:text-xs font-medium text-muted-foreground mb-1 flex items-center gap-1">
+                          <span className="inline-block w-1.5 h-1.5 rounded-full bg-yoel-gold" />
+                          Grammaire
+                        </p>
+                        <p className="text-[11px] sm:text-xs text-foreground/80 leading-relaxed">
+                          {learnedGrammar.title}
+                        </p>
+                      </div>
                     )}
                   </div>
-                </div>
-                <Button
-                  size="sm"
-                  className="bg-yoel-primary hover:bg-yoel-primary-dark text-white rounded-full shrink-0 h-8 w-8 sm:h-9 sm:w-9 p-0"
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
+                ) : (
+                  /* No history — show a prompt to start learning */
+                  <div className="flex items-center gap-3 py-1">
+                    <div className="flex-1">
+                      <p className="text-xs sm:text-sm text-muted-foreground">
+                        Commencez votre première leçon pour voir votre progression ici.
+                      </p>
+                    </div>
+                    <Button
+                      size="sm"
+                      className="bg-yoel-primary hover:bg-yoel-primary-dark text-white rounded-full shrink-0 h-7 sm:h-8 text-[10px] sm:text-xs px-3 gap-1"
+                      onClick={() => navigate('levels')}
+                    >
+                      Commencer
+                      <ChevronRight className="h-3 w-3" />
+                    </Button>
+                  </div>
+                )}
               </CardContent>
             </div>
           </Card>
