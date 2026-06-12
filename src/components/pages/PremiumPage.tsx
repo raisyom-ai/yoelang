@@ -97,6 +97,22 @@ const PREMIUM_BADGES = [
 
 // ─── Plans ──────────────────────────────────────────────────────────────────
 
+// ─── Included features (same for all Premium plans) ─────────────────────────
+
+const INCLUDED_FEATURES = [
+  { icon: Dumbbell, text: 'Exercices illimités' },
+  { icon: MessageCircle, text: 'Chat IA avancé' },
+  { icon: Volume2, text: 'Reconnaissance vocale' },
+  { icon: Zap, text: 'XP doublé' },
+  { icon: Award, text: 'Certificats officiels' },
+  { icon: Gem, text: 'Badges exclusifs' },
+  { icon: TrendingUp, text: 'Statistiques avancées' },
+  { icon: Ban, text: 'Zéro publicité' },
+  { icon: Download, text: 'Cours hors ligne' },
+  { icon: Headphones, text: 'Support prioritaire' },
+  { icon: Palette, text: 'Thèmes personnalisés' },
+]
+
 interface Plan {
   id: string
   name: string
@@ -106,6 +122,7 @@ interface Plan {
   savings: string | null
   recommended: boolean
   badge: string | null
+  perks: string[]
 }
 
 const PLANS: Plan[] = [
@@ -118,6 +135,7 @@ const PLANS: Plan[] = [
     savings: null,
     recommended: false,
     badge: null,
+    perks: ['Sans engagement', 'Annulation facile', '7 jours d\'essai gratuit'],
   },
   {
     id: 'yearly',
@@ -128,6 +146,7 @@ const PLANS: Plan[] = [
     savings: '33%',
     recommended: true,
     badge: 'POPULAIRE',
+    perks: ['2 mois offerts', '7 jours d\'essai gratuit', 'Économisez 39,89€/an'],
   },
   {
     id: 'lifetime',
@@ -138,6 +157,7 @@ const PLANS: Plan[] = [
     savings: null,
     recommended: false,
     badge: 'MEILLEURE VALEUR',
+    perks: ['Paiement unique', 'Accès pour toujours', 'Toutes les futures mises à jour'],
   },
 ]
 
@@ -385,29 +405,30 @@ function PricingCard({
             )}
           </div>
 
-          {/* Plan highlights */}
-          <div className="flex-1 space-y-2 mb-4">
-            {plan.id === 'monthly' && (
-              <>
-                <div className="flex items-center gap-2 text-xs"><Check className="h-3.5 w-3.5 text-yoel-green" /> Sans engagement</div>
-                <div className="flex items-center gap-2 text-xs"><Check className="h-3.5 w-3.5 text-yoel-green" /> Annulation facile</div>
-                <div className="flex items-center gap-2 text-xs"><Check className="h-3.5 w-3.5 text-yoel-green" /> 7 jours d'essai gratuit</div>
-              </>
-            )}
-            {plan.id === 'yearly' && (
-              <>
-                <div className="flex items-center gap-2 text-xs"><Check className="h-3.5 w-3.5 text-yoel-green" /> 2 mois offerts</div>
-                <div className="flex items-center gap-2 text-xs"><Check className="h-3.5 w-3.5 text-yoel-green" /> 7 jours d'essai gratuit</div>
-                <div className="flex items-center gap-2 text-xs"><Check className="h-3.5 w-3.5 text-yoel-green" /> Économisez 39,89€/an</div>
-              </>
-            )}
-            {plan.id === 'lifetime' && (
-              <>
-                <div className="flex items-center gap-2 text-xs"><Check className="h-3.5 w-3.5 text-yoel-green" /> Paiement unique</div>
-                <div className="flex items-center gap-2 text-xs"><Check className="h-3.5 w-3.5 text-yoel-green" /> Accès pour toujours</div>
-                <div className="flex items-center gap-2 text-xs"><Check className="h-3.5 w-3.5 text-yoel-green" /> Toutes les futures mises à jour</div>
-              </>
-            )}
+          {/* Plan billing perks */}
+          <div className="space-y-1.5 mb-3">
+            {plan.perks.map((perk) => (
+              <div key={perk} className="flex items-center gap-2 text-xs">
+                <Check className="h-3.5 w-3.5 text-yoel-green shrink-0" />
+                <span className="text-muted-foreground">{perk}</span>
+              </div>
+            ))}
+          </div>
+
+          <Separator className="my-3" />
+
+          {/* Included features */}
+          <div className="flex-1 space-y-1.5 mb-4">
+            <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">Tout Premium inclus</p>
+            {INCLUDED_FEATURES.map((feat) => {
+              const Icon = feat.icon
+              return (
+                <div key={feat.text} className="flex items-center gap-2 text-xs">
+                  <Icon className="h-3.5 w-3.5 text-yoel-gold shrink-0" />
+                  <span>{feat.text}</span>
+                </div>
+              )
+            })}
           </div>
 
           <Button
