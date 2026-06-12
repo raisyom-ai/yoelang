@@ -29,7 +29,7 @@ const fadeInUp = {
 }
 
 export default function LoginPage() {
-  const { navigate, goBack, setUser, setCurrentLevel } = useAppStore()
+  const { navigate, goBack, setUser, setCurrentLevel, loadUserProgress } = useAppStore()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -75,6 +75,26 @@ export default function LoginPage() {
     soundEnabled: (data.soundEnabled as boolean) ?? true,
   })
 
+  const fetchUserProgress = async (userId: string) => {
+    try {
+      const res = await fetch(`/api/user/progress?userId=${userId}`)
+      if (res.ok) {
+        const data = await res.json()
+        if (data.success) {
+          loadUserProgress({
+            completedLessons: data.completedLessons || [],
+            completions: data.completions || [],
+            certificates: data.certificates || [],
+            examAttempts: data.examAttempts || [],
+            earnedBadges: data.earnedBadges || [],
+          })
+        }
+      }
+    } catch {
+      // Progress loading failed, continue with empty state
+    }
+  }
+
   const handleOAuthSuccess = (data: Record<string, unknown>) => {
     if (data.isAdmin) {
       const adminUser = buildUserState({ ...data.user, role: 'admin' } as Record<string, unknown>)
@@ -87,6 +107,10 @@ export default function LoginPage() {
     const user = buildUserState(data.user as Record<string, unknown>)
     setUser(user)
     setCurrentLevel(user.level)
+
+    // Load user progress from database
+    fetchUserProgress(user.id)
+
     navigate('dashboard')
 
     if (data.isNewUser) {
@@ -123,6 +147,10 @@ export default function LoginPage() {
         const loggedInUser = buildUserState(data.user)
         setUser(loggedInUser)
         setCurrentLevel(loggedInUser.level)
+
+        // Load user progress from database
+        fetchUserProgress(loggedInUser.id)
+
         navigate('dashboard')
         toast.success('Bienvenue !', { description: 'Connexion réussie' })
       } else {

@@ -177,20 +177,36 @@ function CertificateDetail({ cert, onBack }: { cert: CertificateEntry; onBack: (
             </div>
 
             {/* Stats row */}
-            <div className="flex justify-center gap-6 sm:gap-10">
+            <div className="flex justify-center gap-4 sm:gap-6">
               <div className="text-center">
                 <p className="text-lg font-bold text-yoel-gold">{cert.xpAtCompletion}</p>
                 <p className="text-xs text-muted-foreground">XP Total</p>
               </div>
               <div className="text-center">
-                <p className="text-lg font-bold text-yoel-primary">{cert.avgScore}%</p>
-                <p className="text-xs text-muted-foreground">Score moyen</p>
+                <p className="text-lg font-bold text-yoel-primary">{cert.examScore ?? cert.avgScore}%</p>
+                <p className="text-xs text-muted-foreground">{cert.examScore ? 'Score examen' : 'Score moyen'}</p>
               </div>
               <div className="text-center">
                 <p className="text-lg font-bold text-yoel-green">{cert.completedLessons}/{cert.totalLessons}</p>
                 <p className="text-xs text-muted-foreground">Leçons</p>
               </div>
             </div>
+
+            {/* Exam details (if available) */}
+            {cert.examScore !== undefined && cert.totalQuestions !== undefined && (
+              <div className="bg-muted/30 rounded-xl p-3 text-center">
+                <p className="text-xs text-muted-foreground mb-1">Résultat de l&apos;examen</p>
+                <div className="flex items-center justify-center gap-3">
+                  <span className="text-sm font-semibold">
+                    {cert.correctAnswers ?? 0}/{cert.totalQuestions} réponses correctes
+                  </span>
+                  <span className="text-yoel-green font-bold">•</span>
+                  <span className="text-sm font-semibold text-yoel-green">
+                    {cert.examScore}% — {cert.examScore >= 70 ? 'Réussi' : 'Non réussi'}
+                  </span>
+                </div>
+              </div>
+            )}
 
             {/* Divider */}
             <div className="flex items-center gap-3">
@@ -328,7 +344,7 @@ export default function CertificatePage() {
                 </div>
                 <div className="flex items-start gap-2">
                   <CheckCircle className="h-4 w-4 shrink-0 mt-0.5 text-yoel-primary" />
-                  <span>Obtenez un score moyen d&apos;au moins <strong className="text-foreground">60%</strong> dans les quiz</span>
+                  <span>Passez l&apos;<strong className="text-foreground">examen de niveau</strong> et obtenez au moins <strong className="text-foreground">70%</strong></span>
                 </div>
                 <div className="flex items-start gap-2">
                   <Award className="h-4 w-4 shrink-0 mt-0.5 text-yoel-gold" />
@@ -395,14 +411,14 @@ export default function CertificatePage() {
                           <div className="flex items-center gap-2 mt-1">
                             <CheckCircle className="h-3.5 w-3.5 text-yoel-green" />
                             <span className="text-xs text-muted-foreground">
-                              Obtenu le {earnedDate} — Score moyen : {cert.avgScore}%
+                              Obtenu le {earnedDate} — {cert.examScore ? `Examen : ${cert.examScore}%` : `Score moyen : ${cert.avgScore}%`}
                             </span>
                           </div>
                         ) : (
                           <div className="flex items-center gap-2 mt-1">
                             <Lock className="h-3.5 w-3.5 text-muted-foreground/50" />
                             <span className="text-xs text-muted-foreground/70">
-                              Complétez toutes les leçons pour débloquer
+                              Complétez les leçons et passez l&apos;examen
                             </span>
                           </div>
                         )}

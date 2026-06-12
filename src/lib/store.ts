@@ -180,6 +180,9 @@ export interface CertificateEntry {
   avgScore: number         // Average score across all lessons in the level
   xpAtCompletion: number   // Total XP at the time of certificate earning
   userName: string         // Name as it appeared when certificate was earned
+  examScore?: number       // Score obtained in the level exam (0-100)
+  totalQuestions?: number  // Total questions in the exam
+  correctAnswers?: number  // Correct answers in the exam
 }
 
 const LEVEL_NAMES_FR: Record<string, string> = {
@@ -475,6 +478,13 @@ interface AppState {
   completeDailyChallenge: () => void
   earnedCertificates: CertificateEntry[]
   earnCertificate: (level: string, totalLessons: number, completedLessons: number, avgScore: number) => void
+  loadUserProgress: (data: {
+    completedLessons: string[]
+    completions: { lessonId: string; score: number; xpEarned: number; completedAt: string }[]
+    certificates: CertificateEntry[]
+    examAttempts: { level: string; score: number; totalQuestions: number; correctAnswers: number; passed: boolean; xpEarned: number; completedAt: string }[]
+    earnedBadges: string[]
+  }) => void
 }
 
 // Generate demo XP history for the past 7 days (so the adaptive algorithm has data to work with)
@@ -785,6 +795,24 @@ export const useAppStore = create<AppState>((set, get) => ({
     }
     return { earnedCertificates: [...state.earnedCertificates, cert] }
   }),
+  loadUserProgress: (data) => set((state) => ({
+    // Load completed lesson IDs from database
+    completedLessons: data.completedLessons || [],
+    // Load lesson history from database completions
+    lessonHistory: data.completions ? data.completions.map((c, i) => ({
+      id: `db-lh-${i}`,
+      lessonId: c.lessonId,
+      title: c.lessonId, // Will be resolved by course data
+      type: 'vocabulaire', // Default, will be resolved
+      score: c.score,
+      xpEarned: c.xpEarned,
+      completedAt: c.completedAt,
+    })) : state.lessonHistory,
+    // Load certificates from database
+    earnedCertificates: data.certificates || [],
+    // Load earned badges from database
+    earnedBadges: data.earnedBadges || [],
+  })),
 }))
 
 /**

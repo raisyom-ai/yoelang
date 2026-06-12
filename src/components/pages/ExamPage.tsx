@@ -153,7 +153,7 @@ interface CategoryResult {
 }
 
 export default function ExamPage() {
-  const { user, examLevel, currentLevel, completedLessons, navigate, addXP, updateUserLevel, setExamLevel } = useAppStore()
+  const { user, examLevel, currentLevel, completedLessons, navigate, addXP, updateUserLevel, setExamLevel, earnCertificate, earnedCertificates } = useAppStore()
   const level = examLevel || currentLevel || 'A1'
 
   // ─── State ─────────────────────────────────────────────────────────────
@@ -275,6 +275,30 @@ export default function ExamPage() {
         if (data.newLevel) {
           updateUserLevel(data.newLevel)
         }
+
+        // Award certificate in the store (the DB already has it from the API)
+        const totalLessonsForLevel = getTotalLessonsForLevel(level)
+        const levelPrefix = level.toLowerCase() + '-l'
+        const completedCount = completedLessons.filter((id) => id.startsWith(levelPrefix)).length
+        earnCertificate(level, totalLessonsForLevel, completedCount, score)
+
+        // If API returned a certificate ID, update the latest certificate entry
+        if (data.certificateId && earnedCertificates.length > 0) {
+          // The certificate was already added by earnCertificate, update with real ID
+          const certs = [...earnedCertificates]
+          const lastCert = certs[certs.length - 1]
+          if (lastCert && lastCert.level === level) {
+            certs[certs.length - 1] = {
+              ...lastCert,
+              id: data.certificateId,
+              examScore: score,
+              totalQuestions,
+              correctAnswers,
+            }
+            // Use loadUserProgress to set the certificates properly
+          }
+        }
+
         setShowConfetti(true)
         setTimeout(() => setShowConfetti(false), 4000)
         setExamState('complete')
@@ -284,6 +308,13 @@ export default function ExamPage() {
       addXP(xpReward)
       const nextLvl = getNextLevel(level)
       if (nextLvl) updateUserLevel(nextLvl)
+
+      // Award certificate locally
+      const totalLessonsForLevel = getTotalLessonsForLevel(level)
+      const levelPrefix = level.toLowerCase() + '-l'
+      const completedCount = completedLessons.filter((id) => id.startsWith(levelPrefix)).length
+      earnCertificate(level, totalLessonsForLevel, completedCount, score)
+
       setShowConfetti(true)
       setTimeout(() => setShowConfetti(false), 4000)
       setExamState('complete')
@@ -870,6 +901,7 @@ export default function ExamPage() {
   // ─── Render: Complete State (Celebration) ──────────────────────────────
   if (examState === 'complete') {
     const nextLevel = getNextLevel(level)
+    const earnedCert = earnedCertificates.find((c) => c.level === level)
 
     return (
       <div className="min-h-screen flex items-center justify-center p-4 relative">
@@ -916,14 +948,46 @@ export default function ExamPage() {
                     <p className="text-2xl font-bold text-yoel-green">+{xpReward}</p>
                     <p className="text-xs text-muted-foreground">XP gagnés</p>
                   </div>
-                  {nextLevel && (
+                  {nextLevel ? (
                     <div className="bg-yoel-primary/5 border border-yoel-primary/20 rounded-xl p-4 text-center">
                       <Award className="w-6 h-6 mx-auto text-yoel-primary mb-1" />
                       <p className="text-2xl font-bold text-yoel-primary">{nextLevel}</p>
                       <p className="text-xs text-muted-foreground">Nouveau niveau</p>
                     </div>
+                  ) : (
+                    <div className="bg-yoel-gold/5 border border-yoel-gold/20 rounded-xl p-4 text-center">
+                      <Trophy className="w-6 h-6 mx-auto text-yoel-gold mb-1" />
+                      <p className="text-lg font-bold text-yoel-gold">Maîtrise</p>
+                      <p className="text-xs text-muted-foreground">Niveau max atteint</p>
+                    </div>
                   )}
                 </div>
+
+                {/* Certificate delivery */}
+                {earnedCert && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.6, type: 'spring' }}
+                    className="bg-gradient-to-r from-yoel-gold/10 via-yoel-primary/5 to-yoel-gold/10 border-2 border-yoel-gold/30 rounded-xl p-4"
+                  >
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="w-10 h-10 rounded-full bg-yoel-gold/20 flex items-center justify-center shrink-0">
+                        <Award className="w-5 h-5 text-yoel-gold" />
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-sm">Certificat délivré !</h3>
+                        <p className="text-xs text-muted-foreground">
+                          Certificat officiel de niveau {level}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground bg-background/50 rounded-lg p-2">
+                      <Sparkles className="w-3.5 h-3.5 text-yoel-gold shrink-0" />
+                      <span className="font-mono text-[10px]">{earnedCert.id}</span>
+                    </div>
+                  </motion.div>
+                )}
 
                 {/* Score summary */}
                 <div className="text-center space-y-1">
@@ -942,6 +1006,20 @@ export default function ExamPage() {
                 <Separator />
 
                 <div className="space-y-3">
+                  {earnedCert && (
+                    <Button
+                      onClick={() => {
+                        setExamLevel(null)
+                        navigate('certificate')
+                      }}
+                      className="w-full h-12 text-base font-semibold bg-yoel-gold hover:bg-yoel-gold/90 text-white"
+                      size="lg"
+                    >
+                      <Award className="w-5 h-5 mr-2" />
+                      Voir mon certificat
+                    </Button>
+                  )}
+
                   <Button
                     onClick={handleGoToDashboard}
                     className="w-full h-12 text-base font-semibold"

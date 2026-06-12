@@ -7,7 +7,7 @@ import {
   BookOpen, MessageSquare, PenTool, Headphones, Star, Trophy,
   Zap, Clock, CheckCircle2, XCircle, Award, Sparkles, RotateCcw,
   Play, RefreshCw, SkipForward, AlertCircle, Loader2, Square,
-  List, Lock, ChevronDown, ChevronUp, Crown
+  List, Lock, ChevronDown, ChevronUp, Crown, GraduationCap
 } from 'lucide-react'
 import { useAppStore, getLevelsForUser, type LessonInfo, isFeatureAvailable, FEATURE_TIERS, type PremiumPlan } from '@/lib/store'
 import { COURSE_DATA, getLessonsForLevel, getUnitsForLevel, getTotalLessonsForLevel as getTotalLessonsFromCourseData, type LessonData, type UnitData } from '@/lib/course-data'
@@ -260,6 +260,7 @@ export default function CoursePage() {
   const [showCompletionModal, setShowCompletionModal] = useState(false)
   const [showCertificateEarned, setShowCertificateEarned] = useState(false)
   const [showCertificateUpsell, setShowCertificateUpsell] = useState(false)
+  const [showExamPrompt, setShowExamPrompt] = useState(false)
   const [vocabRevealed, setVocabRevealed] = useState<Set<number>>(new Set())
   const [dialogueRevealed, setDialogueRevealed] = useState<Set<number>>(new Set())
   const [grammarAnswers, setGrammarAnswers] = useState<Set<number>>(new Set())
@@ -396,25 +397,28 @@ export default function CoursePage() {
         completedAt: new Date().toISOString(),
       })
 
-      // Check if this was the last lesson in the level → award certificate
+      // Save lesson completion to database
+      if (user?.id) {
+        fetch('/api/lesson/complete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId: user.id,
+            lessonId: selectedLessonData.id,
+            score,
+            xpEarned: selectedLessonData.xpReward,
+          }),
+        }).catch(() => {
+          // DB save failed, continue with local state
+        })
+      }
+
+      // Check if this was the last lesson in the level → prompt for exam
       const totalLessonsInLevel = getTotalLessonsFromCourseData(currentLevel)
       const newCompletedCount = allLessons.filter(l => l.completed || l.id === selectedLessonData.id).length
       if (newCompletedCount >= totalLessonsInLevel && !earnedCertificates.some(c => c.level === currentLevel)) {
-        // Calculate average score from lesson history for this level
-        const levelLessonIds = allLessons.map(l => l.id)
-        const levelHistoryEntries = lessonHistory.filter(e => levelLessonIds.includes(e.lessonId))
-        const avgScore = levelHistoryEntries.length > 0
-          ? levelHistoryEntries.reduce((sum, e) => sum + e.score, 0) / levelHistoryEntries.length
-          : score
-
-        if (certificatesAvailable) {
-          // User has Complet+ plan → award the certificate
-          earnCertificate(currentLevel, totalLessonsInLevel, newCompletedCount, avgScore)
-          setShowCertificateEarned(true)
-        } else {
-          // User doesn't have certificate access → show upsell modal
-          setShowCertificateUpsell(true)
-        }
+        // All lessons completed → show exam prompt instead of certificate
+        setShowExamPrompt(true)
       }
     }
     setShowCompletionModal(true)
@@ -1016,7 +1020,7 @@ export default function CoursePage() {
 
       {/* Completion Modal */}
       <AnimatePresence>
-        {showCompletionModal && quizScore !== null && !showCertificateEarned && !showCertificateUpsell && (
+        {showCompletionModal && quizScore !== null && !showCertificateEarned && !showCertificateUpsell && !showExamPrompt && (
           <LessonCompletionModal
             score={quizScore}
             passingScore={PASSING_SCORE}
@@ -1028,6 +1032,85 @@ export default function CoursePage() {
             onAdvance={handleAdvanceToNextLesson}
             onBackToList={handleCompletionBackToList}
           />
+        )}
+      </AnimatePresence>
+
+      {/* Exam Prompt Modal - shown when all lessons in a level are completed */}
+      <AnimatePresence>
+        {showExamPrompt && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.5, opacity: 0, y: 40 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.8, opacity: 0, y: 20 }}
+              transition={{ type: 'spring', stiffness: 260, damping: 20 }}
+              className="w-full max-w-sm"
+            >
+              <Card className="overflow-hidden border-0 shadow-2xl">
+                <div className="h-2 bg-gradient-to-r from-yoel-gold via-yoel-primary to-yoel-gold" />
+                <CardContent className="p-8 text-center space-y-5">
+                  {/* Icon */}
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: 'spring', delay: 0.2 }}
+                  >
+                    <div className="w-20 h-20 rounded-full bg-yoel-gold/10 flex items-center justify-center mx-auto">
+                      <Award className="w-10 h-10 text-yoel-gold" />
+                    </div>
+                  </motion.div>
+
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                  >
+                    <h3 className="text-xl font-bold mb-2">Toutes les leçons terminées !</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      Vous avez complété toutes les leçons du niveau {currentLevel}.
+                      Passez l&apos;examen pour obtenir votre certificat officiel !
+                    </p>
+                  </motion.div>
+
+                  <div className="bg-yoel-gold/5 border border-yoel-gold/20 rounded-xl p-3">
+                    <p className="text-xs text-muted-foreground">
+                      Score requis : <span className="font-bold text-yoel-gold">70%</span> —
+                      Récompense : <span className="font-bold text-yoel-green">+{currentLevel === 'A1' ? 100 : currentLevel === 'A2' ? 150 : 200} XP</span>
+                    </p>
+                  </div>
+
+                  <div className="space-y-2 pt-2">
+                    <Button
+                      onClick={() => {
+                        setShowExamPrompt(false)
+                        setExamLevel(currentLevel)
+                        navigate('exam')
+                      }}
+                      className="w-full bg-yoel-gold hover:bg-yoel-gold/90 text-white font-semibold"
+                    >
+                      <GraduationCap className="w-5 h-5 mr-2" />
+                      Passer l&apos;examen
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setShowExamPrompt(false)
+                        handleCompletionBackToList()
+                      }}
+                      className="w-full"
+                    >
+                      Plus tard
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
 

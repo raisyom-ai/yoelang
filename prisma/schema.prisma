@@ -33,6 +33,7 @@ model User {
   chatMessages ChatMessage[]
   payments     Payment[]
   examAttempts ExamAttempt[]
+  certificates Certificate[]
 }
 
 model Level {
@@ -182,4 +183,25 @@ model ExamAttempt {
   user User @relation(fields: [userId], references: [id])
 
   @@index([userId, level])
+}
+
+model Certificate {
+  id               String   @id @default(cuid())
+  userId           String
+  certificateId    String   @unique   // Unique public ID (e.g. YOELANG-A1-2025-001234)
+  level            String   // CEFR level: A1, A2, B1, B2, C1, C2
+  examScore        Int      // Score obtained in the exam (0-100)
+  totalQuestions   Int      // Total questions in the exam
+  correctAnswers   Int      // Correct answers in the exam
+  totalLessons     Int      // Total lessons in the level at time of completion
+  completedLessons Int      // Lessons completed at time of certification
+  avgLessonScore   Int      @default(0) // Average lesson score
+  xpAtCompletion   Int      @default(0) // XP at the time of certification
+  userName         String   @default("Apprenant") // Name as it appeared when certificate was earned
+  issuedAt         DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, level])
+  @@index([certificateId])
 }
