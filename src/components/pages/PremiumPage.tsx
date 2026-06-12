@@ -1092,7 +1092,7 @@ export default function PremiumPage() {
                     <Shield className="h-6 w-6 text-yoel-green" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-yoel-green text-sm">Garantie 3 jours</h3>
+                    <h3 className="font-semibold text-yoel-green text-sm">Garantie 30 jours</h3>
                     <p className="text-xs text-muted-foreground mt-0.5">
                       Remboursement complet sans questions si vous n&apos;êtes pas satisfait.
                       Essai gratuit, aucun risque.
