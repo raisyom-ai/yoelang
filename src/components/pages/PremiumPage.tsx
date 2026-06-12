@@ -128,13 +128,13 @@ const PLANS: Plan[] = [
     id: 'monthly',
     name: 'Essentiel',
     subtitle: 'Mensuel',
-    price: '9,99',
-    period: '/mois',
+    price: '1 000',
+    period: 'F/mois',
     monthlyEquivalent: null,
     savings: null,
     recommended: false,
     badge: null,
-    perks: ['Sans engagement', 'Annulation facile', '7 jours d\'essai gratuit'],
+    perks: ['Sans engagement', 'Annulation facile', '3 jours d\'essai gratuit'],
     features: [
       { icon: Dumbbell, text: 'Exercices illimités', available: true },
       { icon: MessageCircle, text: 'Chat IA', available: '50 msg/mois' },
@@ -154,14 +154,14 @@ const PLANS: Plan[] = [
   {
     id: 'yearly',
     name: 'Complet',
-    subtitle: 'Annuel',
-    price: '79,99',
-    period: '/an',
-    monthlyEquivalent: '6,67€/mois',
+    subtitle: 'Trimestriel',
+    price: '2 000',
+    period: 'F/trimestre',
+    monthlyEquivalent: '~667 F/mois',
     savings: '33%',
     recommended: true,
     badge: 'POPULAIRE',
-    perks: ['2 mois offerts', '7 jours d\'essai gratuit', 'Économisez 39,89€/an'],
+    perks: ['1 mois offert', '3 jours d\'essai gratuit', 'Économisez 1 000 F/trimestre'],
     features: [
       { icon: Dumbbell, text: 'Exercices illimités', available: true },
       { icon: MessageCircle, text: 'Chat IA', available: 'Illimité' },
@@ -182,8 +182,8 @@ const PLANS: Plan[] = [
     id: 'lifetime',
     name: 'Intégral',
     subtitle: 'À vie',
-    price: '199,99',
-    period: '',
+    price: '3 000',
+    period: 'F',
     monthlyEquivalent: null,
     savings: null,
     recommended: false,
@@ -242,7 +242,7 @@ const FAQ_ITEMS = [
   },
   {
     question: 'Quelle est la garantie de remboursement ?',
-    answer: 'Nous offrons une garantie de remboursement de 7 jours. Si vous n\'êtes pas satisfait, contactez-nous pour un remboursement complet, sans questions.',
+    answer: 'Nous offrons une garantie de remboursement de 3 jours. Si vous n\'êtes pas satisfait, contactez-nous pour un remboursement complet, sans questions.',
   },
   {
     question: 'Les cours hors ligne fonctionnent-ils ?',
@@ -441,7 +441,7 @@ function PricingCard({
           <div className="mb-4">
             <div className="flex items-baseline gap-1">
               <span className="text-3xl font-bold gradient-text-premium">
-                {plan.price}€
+                {plan.price}
               </span>
               <span className="text-sm text-muted-foreground">{plan.period}</span>
             </div>
@@ -504,7 +504,7 @@ function PricingCard({
               onActivate()
             }}
           >
-            {plan.recommended ? '✨ Essai gratuit 7 jours' : 'Choisir'}
+            {plan.recommended ? '✨ Essai gratuit 3 jours' : 'Choisir'}
           </Button>
         </CardContent>
       </Card>
@@ -620,7 +620,7 @@ function ActivationOverlay({ onClose }: { onClose: () => void }) {
             Bienvenue Premium ! 🎉
           </h2>
           <p className="text-sm text-muted-foreground mb-6">
-            Votre essai gratuit de 7 jours commence maintenant.
+            Votre essai gratuit de 3 jours commence maintenant.
             Profitez de toutes les fonctionnalités Premium !
           </p>
 
@@ -1069,7 +1069,7 @@ export default function PremiumPage() {
             <motion.div variants={itemVariants}>
               <div className="text-center mb-4">
                 <h3 className="text-lg font-bold">Choisissez votre plan</h3>
-                <p className="text-xs text-muted-foreground mt-1">7 jours d&apos;essai gratuit · Annulation à tout moment</p>
+                <p className="text-xs text-muted-foreground mt-1">3 jours d&apos;essai gratuit · Annulation à tout moment</p>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {PLANS.map((plan) => (
@@ -1092,7 +1092,7 @@ export default function PremiumPage() {
                     <Shield className="h-6 w-6 text-yoel-green" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-yoel-green text-sm">Garantie 7 jours</h3>
+                    <h3 className="font-semibold text-yoel-green text-sm">Garantie 3 jours</h3>
                     <p className="text-xs text-muted-foreground mt-0.5">
                       Remboursement complet sans questions si vous n&apos;êtes pas satisfait.
                       Essai gratuit, aucun risque.
@@ -1171,7 +1171,7 @@ export default function PremiumPage() {
                     onClick={handleActivate}
                   >
                     <Crown className="h-4 w-4 mr-2" />
-                    Essai gratuit 7 jours
+                    Essai gratuit 3 jours
                   </Button>
                 </CardContent>
               </Card>
