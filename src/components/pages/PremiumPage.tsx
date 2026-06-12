@@ -241,10 +241,6 @@ const FAQ_ITEMS = [
     answer: 'Oui ! Vous pouvez annuler votre abonnement à tout moment. Vous continuerez à avoir accès aux fonctionnalités Premium jusqu\'à la fin de votre période de facturation.',
   },
   {
-    question: 'Quelle est la garantie de remboursement ?',
-    answer: 'Nous offrons une garantie de remboursement de 3 jours. Si vous n\'êtes pas satisfait, contactez-nous pour un remboursement complet, sans questions.',
-  },
-  {
     question: 'Les cours hors ligne fonctionnent-ils ?',
     answer: 'Oui ! Téléchargez vos leçons préférées quand vous avez une connexion et apprenez partout, même sans internet.',
   },
@@ -1082,24 +1078,6 @@ export default function PremiumPage() {
                   />
                 ))}
               </div>
-            </motion.div>
-
-            {/* ─── Money-back Guarantee ──────────────────────────────────── */}
-            <motion.div variants={itemVariants}>
-              <Card className="glass-card bg-yoel-green/5 border-yoel-green/15">
-                <CardContent className="flex items-center gap-4 p-5">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-yoel-green/15">
-                    <Shield className="h-6 w-6 text-yoel-green" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-yoel-green text-sm">Garantie 30 jours</h3>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      Remboursement complet sans questions si vous n&apos;êtes pas satisfait.
-                      Essai gratuit, aucun risque.
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
             </motion.div>
 
             {/* ─── Testimonials ──────────────────────────────────────────── */}
