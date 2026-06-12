@@ -233,7 +233,7 @@ function BottomNavItem({
 // ─── Main Component ─────────────────────────────────────────────────────────
 
 export default function DashboardPage() {
-  const { user, isDarkMode, toggleDarkMode, navigate, currentLesson, dailyChallengeCompleted, completeDailyChallenge, addXP, dailyXpEarned } = useAppStore()
+  const { user, isDarkMode, toggleDarkMode, navigate, currentLesson, dailyChallengeCompleted, completeDailyChallenge, addXP, dailyXpEarned, dailyXpHistory } = useAppStore()
 
   // Derive data with fallbacks
   const displayName = user?.name ?? 'Apprenant'
@@ -246,8 +246,9 @@ export default function DashboardPage() {
   // Current level info
   const currentLevelInfo = LEVELS.find((l) => l.code === level) ?? LEVELS[0]
 
-  // Dynamic daily goal: if dailyGoal is 0 (auto), compute from level & progress; otherwise use manual value
-  const recommendedGoal = getRecommendedDailyGoal(level, currentLevelInfo.progress)
+  // Dynamic daily goal based on learner PERFORMANCE
+  // If dailyGoal is 0 (auto), compute from XP history, level & progress; otherwise use manual value
+  const recommendedGoal = getRecommendedDailyGoal(level, currentLevelInfo.progress, dailyXpHistory)
   const effectiveDailyGoal = user?.dailyGoal && user.dailyGoal > 0 ? user.dailyGoal : recommendedGoal
 
   // Next lesson to continue
@@ -451,6 +452,11 @@ export default function DashboardPage() {
                     {effectiveDailyGoal > 0 ? Math.round((dailyXpEarned / effectiveDailyGoal) * 100) : 0}% complété
                   </span>
                 </div>
+                {(!user?.dailyGoal || user.dailyGoal === 0) && dailyXpHistory.length > 0 && (
+                  <p className="text-[10px] sm:text-xs text-muted-foreground/70 italic">
+                    Adapté à vos performances récentes
+                  </p>
+                )}
               </div>
             </CardContent>
           </Card>

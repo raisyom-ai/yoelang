@@ -62,21 +62,92 @@ export interface ChatMsg {
 // Helper: get today's date as YYYY-MM-DD string
 const getTodayStr = () => new Date().toISOString().split('T')[0]
 
-// Helper: compute recommended daily goal based on level and progress
-export const getRecommendedDailyGoal = (level: string, progress: number): number => {
-  // Base goal by level (higher levels = more ambitious goals)
-  const levelGoals: Record<string, number> = {
-    A1: 10,
-    A2: 15,
-    B1: 20,
-    B2: 25,
-    C1: 35,
-    C2: 50,
+// ─── Daily XP History Entry ──────────────────────────────────────────────────
+export interface DailyXpRecord {
+  date: string       // YYYY-MM-DD
+  xpEarned: number   // total XP earned that day
+  goal: number       // the goal that was set that day
+}
+
+// Minimum goals by level (floor — goal never goes below this)
+const LEVEL_MIN_GOALS: Record<string, number> = {
+  A1: 10, A2: 10, B1: 15, B2: 15, C1: 20, C2: 30,
+}
+
+// Starting goals by level (for new users with no history)
+const LEVEL_START_GOALS: Record<string, number> = {
+  A1: 10, A2: 15, B1: 20, B2: 25, C1: 30, C2: 40,
+}
+
+/**
+ * Compute recommended daily goal based on LEARNER PERFORMANCE.
+ *
+ * Algorithm:
+ * 1. If no history (new learner) → use level-based starting goal
+ * 2. Calculate average XP earned per active day (last 7 days)
+ * 3. Calculate goal completion rate (days goal was met / active days)
+ * 4. Adjust:
+ *    - Completion rate ≥ 80% & avg > goal → INCREASE (learner is comfortable)
+ *    - Completion rate ≥ 60% & avg ≈ goal → STABLE (learner is on track)
+ *    - Completion rate < 60% → DECREASE (goal is too ambitious, keep motivating)
+ *    - Very low activity (< 3 active days) → reduce gently
+ * 5. Always respect level minimum (goal never goes below LEVEL_MIN_GOALS)
+ * 6. Round to nearest 5 for clean numbers
+ */
+export const getRecommendedDailyGoal = (
+  level: string,
+  progress: number,
+  xpHistory: DailyXpRecord[] = [],
+): number => {
+  const minGoal = LEVEL_MIN_GOALS[level] ?? 10
+
+  // No history yet → give starting goal + small progress bonus
+  if (xpHistory.length === 0) {
+    const startGoal = LEVEL_START_GOALS[level] ?? 15
+    const progressBonus = Math.floor(progress / 60) * 5
+    return Math.max(minGoal, startGoal + progressBonus)
   }
-  const base = levelGoals[level] ?? 20
-  // Increase goal slightly as progress within level increases
-  const progressBonus = Math.floor(progress / 50) * 5
-  return base + progressBonus
+
+  // --- Analyze last 7 days of performance ---
+  const activeDays = xpHistory.filter((d) => d.xpEarned > 0)
+  const avgXpPerDay = activeDays.length > 0
+    ? activeDays.reduce((sum, d) => sum + d.xpEarned, 0) / activeDays.length
+    : 0
+
+  // Completion rate: how often the learner met their goal
+  const daysWithGoal = xpHistory.filter((d) => d.goal > 0)
+  const daysGoalMet = daysWithGoal.filter((d) => d.xpEarned >= d.goal).length
+  const completionRate = daysWithGoal.length > 0 ? daysGoalMet / daysWithGoal.length : 0
+
+  // Current goal (last known goal from history)
+  const currentGoal = xpHistory[xpHistory.length - 1]?.goal ?? LEVEL_START_GOALS[level] ?? 15
+
+  let newGoal = currentGoal
+
+  if (activeDays.length < 3) {
+    // Very low activity → reduce gently to keep motivation
+    newGoal = Math.max(minGoal, Math.floor(avgXpPerDay * 0.8 / 5) * 5 || minGoal)
+  } else if (completionRate >= 0.8 && avgXpPerDay > currentGoal * 1.1) {
+    // Learner consistently EXCEEDS goal by 10%+ → increase ambitiously
+    newGoal = Math.floor(avgXpPerDay * 1.1 / 5) * 5
+  } else if (completionRate >= 0.8) {
+    // Learner meets goal regularly → increase slightly (stretch goal)
+    newGoal = currentGoal + 5
+  } else if (completionRate >= 0.6) {
+    // Learner meets goal most of the time → keep stable
+    newGoal = currentGoal
+  } else if (completionRate >= 0.3) {
+    // Learner struggles to meet goal → reduce slightly
+    newGoal = Math.max(minGoal, currentGoal - 5)
+  } else {
+    // Learner rarely meets goal → set goal closer to their actual performance
+    newGoal = Math.max(minGoal, Math.floor(avgXpPerDay * 1.2 / 5) * 5 || minGoal)
+  }
+
+  // Ensure goal stays within reasonable bounds
+  newGoal = Math.max(minGoal, Math.min(newGoal, 100))
+
+  return newGoal
 }
 
 interface AppState {
@@ -117,6 +188,7 @@ interface AppState {
   addXP: (amount: number) => void
   dailyXpEarned: number
   lastXpDate: string
+  dailyXpHistory: DailyXpRecord[]
   setDailyGoal: (goal: number) => void
   completedLessons: string[]
   addCompletedLesson: (lessonId: string) => void
@@ -124,6 +196,26 @@ interface AppState {
   earnBadge: (badgeId: string) => void
   dailyChallengeCompleted: boolean
   completeDailyChallenge: () => void
+}
+
+// Generate demo XP history for the past 7 days (so the adaptive algorithm has data to work with)
+const generateDemoXpHistory = (level: string): DailyXpRecord[] => {
+  const today = new Date()
+  const baseGoal = LEVEL_START_GOALS[level] ?? 15
+  const history: DailyXpRecord[] = []
+  for (let i = 7; i >= 1; i--) {
+    const d = new Date(today)
+    d.setDate(d.getDate() - i)
+    const dateStr = d.toISOString().split('T')[0]
+    // Simulate varying daily XP: some days over goal, some under
+    const performance = [0.6, 1.2, 0.8, 1.5, 0.4, 0.9, 1.1][7 - i]
+    history.push({
+      date: dateStr,
+      xpEarned: Math.round(baseGoal * performance),
+      goal: baseGoal,
+    })
+  }
+  return history
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -142,13 +234,21 @@ export const useAppStore = create<AppState>((set, get) => ({
   // Auth
   isAuthenticated: false,
   user: null,
-  setUser: (user) => set({ user, isAuthenticated: true }),
+  setUser: (user) => set((state) => ({
+    user,
+    isAuthenticated: true,
+    // Initialize XP history with demo data if empty
+    dailyXpHistory: state.dailyXpHistory.length > 0 ? state.dailyXpHistory : generateDemoXpHistory(user.level),
+  })),
   logout: () => set({ 
     user: null, 
     isAuthenticated: false, 
     currentPage: 'home',
     chatMessages: [],
     currentLesson: null,
+    dailyXpEarned: 0,
+    lastXpDate: '',
+    dailyXpHistory: [],
   }),
 
   // Theme
@@ -183,14 +283,32 @@ export const useAppStore = create<AppState>((set, get) => ({
   // XP tracking
   dailyXpEarned: 0,
   lastXpDate: '',
+  dailyXpHistory: [],
   addXP: (amount) => set((state) => {
     const today = getTodayStr()
     const isNewDay = state.lastXpDate !== today
+
+    // When a new day starts, save yesterday's record to history
+    let updatedHistory = [...state.dailyXpHistory]
+    if (isNewDay && state.lastXpDate) {
+      // Save the previous day's record
+      updatedHistory.push({
+        date: state.lastXpDate,
+        xpEarned: state.dailyXpEarned,
+        goal: state.user?.dailyGoal && state.user.dailyGoal > 0
+          ? state.user.dailyGoal
+          : getRecommendedDailyGoal(state.user?.level ?? 'A1', 0, updatedHistory),
+      })
+      // Keep only last 7 days
+      updatedHistory = updatedHistory.slice(-7)
+    }
+
     const newDailyXp = isNewDay ? amount : state.dailyXpEarned + amount
     return {
       user: state.user ? { ...state.user, xp: (state.user.xp || 0) + amount, coins: (state.user.coins || 0) + Math.floor(amount / 2) } : state.user,
       dailyXpEarned: newDailyXp,
       lastXpDate: today,
+      dailyXpHistory: updatedHistory,
     }
   }),
   setDailyGoal: (goal) => set((state) => ({
