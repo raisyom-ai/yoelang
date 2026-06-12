@@ -153,9 +153,9 @@ model Payment {
   currency        String   @default("XOF") // FCFA ISO code
   paymentMethod   String   // 'orange_money' | 'mtn_momo' | 'wave' | 'card'
   phoneNumber     String?  // For mobile money
-  status          String   @default("pending") // 'pending' | 'processing' | 'success' | 'failed' | 'expired'
+  status          String   @default("pending") // 'pending' | 'pending_validation' | 'processing' | 'success' | 'failed' | 'expired'
   providerRef     String?  // Reference from FedaPay/CinetPay
-  providerName    String?  // 'fedapay' | 'cinetpay' | 'demo'
+  providerName    String?  // 'fedapay' | 'cinetpay' | 'demo' | 'direct'
   trialStart      DateTime? // When the 3-day trial begins
   trialEnd        DateTime? // When the 3-day trial ends
   paidAt          DateTime? // When the payment was confirmed

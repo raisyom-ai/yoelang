@@ -16,6 +16,7 @@ import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { Progress } from '@/components/ui/progress'
 import CheckoutModal from '@/components/checkout/CheckoutModal'
+import AdminPaymentPanel from '@/components/checkout/AdminPaymentPanel'
 
 // ─── Animation Variants ─────────────────────────────────────────────────────
 
@@ -660,6 +661,8 @@ export default function PremiumPage() {
   const [selectedPlan, setSelectedPlan] = useState<string | null>('yearly')
   const [showCheckout, setShowCheckout] = useState(false)
   const [showComparison, setShowComparison] = useState(false)
+  const [showAdminPanel, setShowAdminPanel] = useState(false)
+  const [adminTapCount, setAdminTapCount] = useState(0)
 
   // Open checkout modal when user clicks "Choisir"
   const handleActivate = () => {
@@ -732,6 +735,22 @@ export default function PremiumPage() {
               ACTIF
             </Badge>
           )}
+          {/* Admin access: tap 5 times on the Crown icon */}
+          <button
+            onClick={() => {
+              const next = adminTapCount + 1
+              setAdminTapCount(next)
+              if (next >= 5) {
+                setShowAdminPanel(true)
+                setAdminTapCount(0)
+              }
+              setTimeout(() => setAdminTapCount(0), 2000)
+            }}
+            className="p-1.5 rounded-full text-muted-foreground/20 hover:text-muted-foreground/40 transition-colors"
+            title="Admin"
+          >
+            <Shield className="h-3.5 w-3.5" />
+          </button>
         </motion.div>
 
         {isPremium ? (
@@ -1194,6 +1213,11 @@ export default function PremiumPage() {
           />
         )}
       </AnimatePresence>
+
+      {/* Admin Payment Panel */}
+      {showAdminPanel && (
+        <AdminPaymentPanel onClose={() => setShowAdminPanel(false)} />
+      )}
     </div>
   )
 }

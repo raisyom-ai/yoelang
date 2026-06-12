@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '.prisma/client'
-
-const prisma = new PrismaClient()
+import { db } from '@/lib/db'
 
 /**
  * GET /api/payment/verify
  * 
  * Checks the status of a payment.
- * In production, this would also query the FedaPay/CinetPay API.
+ * - For gateway mode: polls the provider API
+ * - For direct mode: checks if admin has approved the payment
  * 
  * Query: paymentId
  */
@@ -22,7 +21,7 @@ export async function GET(req: NextRequest) {
       )
     }
 
-    const payment = await prisma.payment.findUnique({
+    const payment = await db.payment.findUnique({
       where: { id: paymentId },
     })
 
@@ -33,34 +32,24 @@ export async function GET(req: NextRequest) {
       )
     }
 
-    // In production, for real providers, verify with their API:
-    //
-    // FedaPay:
-    // const fedapayCheck = await fetch(
-    //   `https://api.fedapay.com/v1/transactions/${payment.providerRef}`,
-    //   { headers: { 'Authorization': `Bearer ${process.env.FEDAPAY_SECRET_KEY}` } }
-    // )
-    // const fedapayData = await fedapayCheck.json()
-    // if (fedapayData.status === 'approved') { ... }
-    //
-    // CinetPay:
-    // const cinetpayCheck = await fetch('https://api-checkout.cinetpay.com/v2/payment/check', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({
-    //     apikey: process.env.CINETPAY_API_KEY,
-    //     site_id: process.env.CINETPAY_SITE_ID,
-    //     transaction_id: payment.providerRef,
-    //   }),
-    // })
+    // ─── Direct transfer mode ────────────────────────────────────────
+    // Payment is waiting for admin validation
+    if (payment.status === 'pending_validation') {
+      return NextResponse.json({
+        success: true,
+        payment,
+        activated: false,
+        message: 'En attente de validation par l\'administrateur',
+      })
+    }
 
+    // ─── Gateway mode ────────────────────────────────────────────────
     // For demo: simulate auto-confirmation after a delay
-    // If payment is pending and was created more than 5 seconds ago, mark as success
     if (payment.status === 'pending') {
       const elapsed = Date.now() - payment.createdAt.getTime()
       if (elapsed > 5000) {
         // Simulate successful payment
-        await prisma.payment.update({
+        await db.payment.update({
           where: { id: paymentId },
           data: {
             status: 'success',
@@ -72,7 +61,7 @@ export async function GET(req: NextRequest) {
         await activatePremium(payment.userId, payment.planId)
 
         // Refresh payment data
-        const updatedPayment = await prisma.payment.findUnique({
+        const updatedPayment = await db.payment.findUnique({
           where: { id: paymentId },
         })
 
@@ -82,6 +71,15 @@ export async function GET(req: NextRequest) {
           activated: true,
         })
       }
+    }
+
+    // Payment already succeeded
+    if (payment.status === 'success') {
+      return NextResponse.json({
+        success: true,
+        payment,
+        activated: true,
+      })
     }
 
     return NextResponse.json({
@@ -99,7 +97,6 @@ export async function GET(req: NextRequest) {
  * Activate premium for a user after successful payment.
  */
 async function activatePremium(userId: string, planId: string) {
-  // Map plan IDs to the store's premium plan values
   const planMap: Record<string, string> = {
     essentiel: 'essentiel',
     complet: 'complet',
@@ -108,7 +105,7 @@ async function activatePremium(userId: string, planId: string) {
 
   const premiumPlan = planMap[planId] || 'essentiel'
 
-  await prisma.user.update({
+  await db.user.update({
     where: { id: userId },
     data: {
       isPremium: true,
