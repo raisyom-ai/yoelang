@@ -588,23 +588,12 @@ export const useAppStore = create<AppState>((set, get) => ({
   setUser: (user) => set((state) => ({
     user,
     isAuthenticated: true,
-    // Initialize XP history with demo data if empty
-    dailyXpHistory: state.dailyXpHistory.length > 0 ? state.dailyXpHistory : generateDemoXpHistory(user.level),
-    // Initialize lesson history with demo data if empty
-    lessonHistory: state.lessonHistory.length > 0 ? state.lessonHistory : generateDemoLessonHistory(user.level),
-    // Initialize with a demo A1 certificate so users can see the feature
-    earnedCertificates: state.earnedCertificates.length > 0 ? state.earnedCertificates : [
-      {
-        id: generateCertificateId('A1'),
-        level: 'A1',
-        earnedAt: new Date(Date.now() - 3 * 86400000).toISOString(), // 3 days ago
-        totalLessons: 20,
-        completedLessons: 20,
-        avgScore: 85,
-        xpAtCompletion: 300,
-        userName: user.name,
-      }
-    ],
+    // New users start with empty XP history — no demo data
+    dailyXpHistory: state.dailyXpHistory.length > 0 ? state.dailyXpHistory : [],
+    // New users start with empty lesson history — no demo data
+    lessonHistory: state.lessonHistory.length > 0 ? state.lessonHistory : [],
+    // New users start with no certificates — earned through real progress
+    earnedCertificates: state.earnedCertificates.length > 0 ? state.earnedCertificates : [],
   })),
   logout: () => set({ 
     user: null, 
@@ -763,7 +752,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     const updated = [{ ...entry, id }, ...state.lessonHistory].slice(0, 50)
     return { lessonHistory: updated }
   }),
-  earnedBadges: ['streak-1', 'streak-3', 'streak-7', 'first-lesson', 'lessons-5', 'lessons-10', 'perfect-quiz', 'chat-first', 'vocab-50'],
+  earnedBadges: [],
   earnBadge: (badgeId) => set((state) => ({
     earnedBadges: state.earnedBadges.includes(badgeId) ? state.earnedBadges : [...state.earnedBadges, badgeId],
   })),
@@ -789,14 +778,45 @@ export const useAppStore = create<AppState>((set, get) => ({
   }),
 }))
 
-// Demo data - built from course-data.ts
+/**
+ * Compute level progress from actual completed lesson IDs.
+ * Each level's progress = (completed lessons in that level / total lessons in that level) * 100.
+ * Units are counted as completed if ALL their lessons are completed.
+ */
+export const getLevelsForUser = (completedLessonIds: string[]): LevelInfo[] => {
+  return Object.values(COURSE_DATA).map((level) => {
+    const levelPrefix = level.code.toLowerCase() + '-l'
+    const totalLessons = level.lessons.length
+    const completedCount = level.lessons.filter((l) => completedLessonIds.includes(l.id)).length
+    const progress = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0
+
+    // Count completed units (a unit is completed if ALL its lessons are completed)
+    const completedUnits = level.units.filter((unit) => {
+      const unitLessons = level.lessons.filter((l) => l.unitId === unit.id)
+      return unitLessons.length > 0 && unitLessons.every((l) => completedLessonIds.includes(l.id))
+    }).length
+
+    return {
+      code: level.code,
+      name: level.name,
+      description: level.description,
+      progress,
+      units: level.units.length,
+      completedUnits,
+      icon: level.icon,
+      color: level.color,
+    }
+  })
+}
+
+// Default LEVELS with zero progress (for backward compatibility)
 export const LEVELS: LevelInfo[] = Object.values(COURSE_DATA).map((level) => ({
   code: level.code,
   name: level.name,
   description: level.description,
-  progress: level.code === 'A1' ? 75 : level.code === 'A2' ? 40 : level.code === 'B1' ? 15 : 0,
+  progress: 0,
   units: level.units.length,
-  completedUnits: level.code === 'A1' ? 6 : level.code === 'A2' ? 4 : level.code === 'B1' ? 2 : 0,
+  completedUnits: 0,
   icon: level.icon,
   color: level.color,
 }))
@@ -937,14 +957,33 @@ export const checkAndAwardBadges = (
   return newlyEarned
 }
 
-export const DEMO_LESSONS: LessonInfo[] = COURSE_DATA.A1.lessons.map((l, i) => ({
+/**
+ * Get lesson info for a level, with completion status based on actual completed lesson IDs.
+ */
+export const getLessonsForUser = (levelCode: string, completedLessonIds: string[]): LessonInfo[] => {
+  const levelData = COURSE_DATA[levelCode as keyof typeof COURSE_DATA]
+  if (!levelData) return []
+  return levelData.lessons.map((l) => ({
+    id: l.id,
+    title: l.title,
+    description: l.description,
+    type: l.type,
+    xpReward: l.xpReward,
+    duration: l.duration,
+    completed: completedLessonIds.includes(l.id),
+    score: 0,
+  }))
+}
+
+// Default DEMO_LESSONS with no completed lessons (for backward compatibility)
+export const DEMO_LESSONS: LessonInfo[] = COURSE_DATA.A1.lessons.map((l) => ({
   id: l.id,
   title: l.title,
   description: l.description,
   type: l.type,
   xpReward: l.xpReward,
   duration: l.duration,
-  completed: i < 15, // first 15 lessons completed for demo
-  score: i < 15 ? Math.floor(Math.random() * 20 + 80) : 0,
+  completed: false,
+  score: 0,
 }))
 

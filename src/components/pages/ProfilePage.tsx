@@ -1,11 +1,12 @@
 'use client'
 
+import { useMemo } from 'react'
 import { motion } from 'framer-motion'
 import {
   ArrowLeft, Home, Zap, Flame, Coins, Award, Crown,
   BookOpen, CheckCircle2, Star, Edit3, LogOut, ChevronRight, Calendar
 } from 'lucide-react'
-import { useAppStore, LEVELS, BADGES, calculateStreak, type LessonHistoryEntry } from '@/lib/store'
+import { useAppStore, getLevelsForUser, BADGES, calculateStreak, type LessonHistoryEntry } from '@/lib/store'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
@@ -54,17 +55,20 @@ const TYPE_LABELS_FR: Record<string, string> = {
 // ─── Main Component ─────────────────────────────────────────────────────────
 
 export default function ProfilePage() {
-  const { user, goBack, navigate, logout, dailyXpHistory, dailyXpEarned, lessonHistory, earnedCertificates, earnedBadges: earnedBadgeIds } = useAppStore()
+  const { user, goBack, navigate, logout, dailyXpHistory, dailyXpEarned, lessonHistory, earnedCertificates, earnedBadges: earnedBadgeIds, completedLessons } = useAppStore()
 
   const displayName = user?.name ?? 'Apprenant'
   const email = user?.email ?? 'apprenant@yoelang.com'
   const avatar = user?.avatar
-  const xp = user?.xp ?? 1250
+  const xp = user?.xp ?? 0
   // Dynamic streak calculated from XP history
   const streak = calculateStreak(dailyXpHistory, dailyXpEarned)
-  const coins = user?.coins ?? 350
+  const coins = user?.coins ?? 0
   const level = user?.level ?? 'A1'
   const isPremium = user?.isPremium ?? false
+
+  // Compute dynamic level progress from actual completed lessons
+  const LEVELS = useMemo(() => getLevelsForUser(completedLessons), [completedLessons])
 
   const earnedBadges = BADGES.filter((b) => earnedBadgeIds.includes(b.id))
   const currentLevelInfo = LEVELS.find((l) => l.code === level) ?? LEVELS[0]

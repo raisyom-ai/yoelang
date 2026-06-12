@@ -9,7 +9,7 @@ import {
   Play, RefreshCw, SkipForward, AlertCircle, Loader2, Square,
   List, Lock, ChevronDown, ChevronUp, Crown
 } from 'lucide-react'
-import { useAppStore, DEMO_LESSONS, LEVELS, type LessonInfo, isFeatureAvailable, FEATURE_TIERS, type PremiumPlan } from '@/lib/store'
+import { useAppStore, getLevelsForUser, type LessonInfo, isFeatureAvailable, FEATURE_TIERS, type PremiumPlan } from '@/lib/store'
 import { COURSE_DATA, getLessonsForLevel, getUnitsForLevel, getTotalLessonsForLevel as getTotalLessonsFromCourseData, type LessonData, type UnitData } from '@/lib/course-data'
 import { speakWord } from '@/lib/speech-utils'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
@@ -274,6 +274,9 @@ export default function CoursePage() {
       }
     }
   }, [])
+
+  // Compute dynamic level progress from actual completed lessons
+  const LEVELS = useMemo(() => getLevelsForUser(completedLessons), [completedLessons])
 
   // Current level info
   const levelInfo = LEVELS.find((l) => l.code === currentLevel) ?? LEVELS[0]

@@ -11,7 +11,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   AreaChart, Area, ResponsiveContainer, PieChart, Pie, Cell
 } from 'recharts'
-import { useAppStore, LEVELS, BADGES, BADGE_CATEGORY_LABELS, BADGE_CATEGORY_COLORS, BADGE_CATEGORY_BG, calculateStreak, getWeekActivity, getRecommendedDailyGoal, getBadgeProgress, checkAndAwardBadges, isFeatureAvailable, FEATURE_TIERS, type DailyXpRecord, type LessonHistoryEntry, type BadgeCategory, type PremiumPlan } from '@/lib/store'
+import { useAppStore, getLevelsForUser, BADGES, BADGE_CATEGORY_LABELS, BADGE_CATEGORY_COLORS, BADGE_CATEGORY_BG, calculateStreak, getWeekActivity, getRecommendedDailyGoal, getBadgeProgress, checkAndAwardBadges, isFeatureAvailable, FEATURE_TIERS, type DailyXpRecord, type LessonHistoryEntry, type BadgeCategory, type PremiumPlan } from '@/lib/store'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -290,6 +290,9 @@ export default function StatsPage() {
   const premiumPlan = (user?.premiumPlan as PremiumPlan | null) ?? null
   const hasAdvancedStats = isFeatureAvailable(isPremium, premiumPlan, FEATURE_TIERS.advancedStats)
   const level = user?.level ?? 'A1'
+
+  // Compute dynamic level progress from actual completed lessons
+  const LEVELS = useMemo(() => getLevelsForUser(completedLessons), [completedLessons])
 
   // Dynamic effective goal
   const currentLevelInfo = LEVELS.find((l) => l.code === level) ?? LEVELS[0]

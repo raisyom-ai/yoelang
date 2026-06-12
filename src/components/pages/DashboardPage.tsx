@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   ArrowLeft, BookOpen, Dumbbell, MessageCircle, BarChart3,
@@ -8,7 +8,7 @@ import {
   Volume2, Trophy, Clock, Target, Home, User, Settings,
   Zap, Award, Crown, ChevronDown, CheckCircle
 } from 'lucide-react'
-import { useAppStore, LEVELS, BADGES, getRecommendedDailyGoal, calculateStreak, getWeekActivity, type PageId } from '@/lib/store'
+import { useAppStore, getLevelsForUser, BADGES, getRecommendedDailyGoal, calculateStreak, getWeekActivity, type PageId } from '@/lib/store'
 import { getLessonContent, type VocabWord, type GrammarRule } from '@/lib/lesson-content'
 import { speakWord } from '@/lib/speech-utils'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
@@ -546,14 +546,17 @@ function BottomNavItem({
 // ─── Main Component ─────────────────────────────────────────────────────────
 
 export default function DashboardPage() {
-  const { user, isDarkMode, toggleDarkMode, navigate, currentLesson, lastVisitedLesson, dailyChallengeCompleted, completeDailyChallenge, addXP, dailyXpEarned, dailyXpHistory, earnedBadges: earnedBadgeIds } = useAppStore()
+  const { user, isDarkMode, toggleDarkMode, navigate, currentLesson, lastVisitedLesson, dailyChallengeCompleted, completeDailyChallenge, addXP, dailyXpEarned, dailyXpHistory, earnedBadges: earnedBadgeIds, completedLessons } = useAppStore()
 
   // Derive data with fallbacks
   const displayName = user?.name ?? 'Apprenant'
-  const coins = user?.coins ?? 350
-  const xp = user?.xp ?? 1250
+  const coins = user?.coins ?? 0
+  const xp = user?.xp ?? 0
   const level = user?.level ?? 'A1'
   const isPremium = user?.isPremium ?? false
+
+  // Compute dynamic level progress from actual completed lessons
+  const LEVELS = useMemo(() => getLevelsForUser(completedLessons), [completedLessons])
 
   // Current level info
   const currentLevelInfo = LEVELS.find((l) => l.code === level) ?? LEVELS[0]

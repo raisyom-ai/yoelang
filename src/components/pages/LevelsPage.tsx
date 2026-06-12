@@ -6,7 +6,7 @@ import {
   ArrowLeft, Home, Map, Zap, BookOpen, Lock,
   CheckCircle2, ChevronRight, Trophy, Star, Filter
 } from 'lucide-react'
-import { useAppStore, LEVELS, type LevelInfo } from '@/lib/store'
+import { useAppStore, getLevelsForUser, type LevelInfo } from '@/lib/store'
 import { Card, CardContent } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Button } from '@/components/ui/button'
@@ -81,11 +81,14 @@ function getLevelStatus(level: LevelInfo, index: number): 'completed' | 'active'
 // ─── Main Component ─────────────────────────────────────────────────────────
 
 export default function LevelsPage() {
-  const { navigate, goBack, user, currentLevel, setCurrentLevel } = useAppStore()
+  const { navigate, goBack, user, currentLevel, setCurrentLevel, completedLessons } = useAppStore()
   const [filterLevel, setFilterLevel] = useState<string>('all')
 
+  // Compute dynamic level progress from actual completed lessons
+  const LEVELS = useMemo(() => getLevelsForUser(completedLessons), [completedLessons])
+
   // Derived data
-  const xp = user?.xp ?? 1250
+  const xp = user?.xp ?? 0
   const level = user?.level ?? currentLevel
   const totalCompletedUnits = LEVELS.reduce((acc, l) => acc + l.completedUnits, 0)
   const totalUnits = LEVELS.reduce((acc, l) => acc + l.units, 0)
@@ -97,7 +100,7 @@ export default function LevelsPage() {
     if (filterLevel === 'in-progress') return LEVELS.filter((l) => l.progress > 0 && l.progress < 100)
     if (filterLevel === 'completed') return LEVELS.filter((l) => l.progress >= 100)
     return LEVELS
-  }, [filterLevel])
+  }, [filterLevel, LEVELS])
 
   const handleLevelClick = (lvl: LevelInfo, index: number) => {
     const status = getLevelStatus(lvl, index)

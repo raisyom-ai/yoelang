@@ -17,6 +17,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { toast } from 'sonner'
+import OAuthDialog from '@/components/OAuthDialog'
 
 interface FormErrors {
   name?: string
@@ -64,6 +65,8 @@ function getPasswordStrength(password: string): {
   return { score, label: 'Très fort', color: 'bg-yoel-green' }
 }
 
+type OAuthProvider = 'google' | 'apple'
+
 export default function RegisterPage() {
   const { navigate, goBack, setUser, setCurrentLevel } = useAppStore()
   const [name, setName] = useState('')
@@ -76,6 +79,7 @@ export default function RegisterPage() {
   const [acceptTerms, setAcceptTerms] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [errors, setErrors] = useState<FormErrors>({})
+  const [oauthDialog, setOauthDialog] = useState<OAuthProvider | null>(null)
 
   const passwordStrength = useMemo(() => getPasswordStrength(password), [password])
 
@@ -174,8 +178,58 @@ export default function RegisterPage() {
     }
   }
 
+  const buildUserState = (data: Record<string, unknown>): UserState => ({
+    id: data.id as string,
+    email: data.email as string,
+    name: (data.name as string) || (data.email as string).split('@')[0],
+    avatar: (data.avatar as string | null) || null,
+    role: ((data.role as string) || 'user') as 'user' | 'admin',
+    level: (data.level as string) || 'A1',
+    xp: (data.xp as number) || 0,
+    streak: (data.streak as number) || 0,
+    coins: (data.coins as number) || 0,
+    isPremium: (data.isPremium as boolean) || false,
+    premiumPlan: (data.premiumPlan as string | null) || null,
+    dailyGoal: (data.dailyGoal as number) ?? 20,
+    notifications: (data.notifications as boolean) ?? true,
+    darkMode: (data.darkMode as boolean) ?? false,
+    soundEnabled: (data.soundEnabled as boolean) ?? true,
+  })
+
+  const handleOAuthSuccess = (data: Record<string, unknown>) => {
+    if (data.isAdmin) {
+      const adminUser = buildUserState({ ...data.user, role: 'admin' } as Record<string, unknown>)
+      setUser(adminUser)
+      navigate('admin-dashboard')
+      toast.success('Bienvenue Admin !', { description: 'Connexion au panneau d\'administration' })
+      return
+    }
+
+    const user = buildUserState(data.user as Record<string, unknown>)
+    setUser(user)
+    setCurrentLevel(user.level)
+    navigate('dashboard')
+
+    if (data.isNewUser) {
+      toast.success('Bienvenue !', { description: 'Votre compte a été créé avec succès' })
+    } else {
+      toast.success('Bon retour !', { description: 'Connexion réussie' })
+    }
+  }
+
   return (
     <div className="min-h-screen flex flex-col lg:flex-row">
+      {/* OAuth Dialog */}
+      {oauthDialog && (
+        <OAuthDialog
+          provider={oauthDialog}
+          onClose={() => setOauthDialog(null)}
+          onSuccess={(data) => {
+            setOauthDialog(null)
+            handleOAuthSuccess(data)
+          }}
+        />
+      )}
       {/* Left branding panel */}
       <motion.div
         initial={{ opacity: 0, x: -40 }}
@@ -578,94 +632,19 @@ export default function RegisterPage() {
             <Button
               type="button"
               variant="outline"
-              className="w-full h-11 text-sm font-medium"
+              className="w-full h-11 text-sm font-medium hover:border-red-300 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors"
               disabled={isLoading}
-              onClick={async () => {
-                setIsLoading(true)
-                try {
-                  const res = await fetch('/api/auth/register', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name: 'Utilisateur Google', email: 'google@yoelang.com', password: 'GoogleDemo123!', level: 'A1' }),
-                  })
-                  if (res.ok) {
-                    const data = await res.json()
-                    setUser(data.user)
-                    navigate('dashboard')
-                    toast.success('Bienvenue !', { description: 'Compte Google créé avec succès' })
-                  } else {
-                    // Si le compte existe déjà, on se connecte
-                    const loginRes = await fetch('/api/auth/login', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ email: 'google@yoelang.com', password: 'GoogleDemo123!' }),
-                    })
-                    if (loginRes.ok) {
-                      const data = await loginRes.json()
-                      setUser(data.user)
-                    } else {
-                      const googleUser = { id: 'google-demo', email: 'google@yoelang.com', name: 'Utilisateur Google', avatar: null, level: 'A1', xp: 0, streak: 0, coins: 0, isPremium: false, premiumPlan: null, dailyGoal: 0, notifications: true, darkMode: false, soundEnabled: true }
-                      setUser(googleUser)
-                    }
-                    navigate('dashboard')
-                    toast.success('Bienvenue !', { description: 'Connecté avec Google' })
-                  }
-                } catch {
-                  const googleUser = { id: 'google-demo', email: 'google@yoelang.com', name: 'Utilisateur Google', avatar: null, level: 'A1', xp: 0, streak: 0, coins: 0, isPremium: false, premiumPlan: null, dailyGoal: 0, notifications: true, darkMode: false, soundEnabled: true }
-                  setUser(googleUser)
-                  navigate('dashboard')
-                  toast.success('Bienvenue !', { description: 'Connecté avec Google (mode démo)' })
-                } finally {
-                  setIsLoading(false)
-                }
-              }}
+              onClick={() => setOauthDialog('google')}
             >
-              <Chrome className="w-5 h-5 mr-2" />
+              <Chrome className="w-5 h-5 mr-2 text-red-500" />
               Continuer avec Google
             </Button>
             <Button
               type="button"
               variant="outline"
-              className="w-full h-11 text-sm font-medium"
+              className="w-full h-11 text-sm font-medium hover:border-gray-400 hover:bg-gray-50 dark:hover:bg-gray-900/30 transition-colors"
               disabled={isLoading}
-              onClick={async () => {
-                setIsLoading(true)
-                try {
-                  const res = await fetch('/api/auth/register', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name: 'Utilisateur Apple', email: 'apple@yoelang.com', password: 'AppleDemo123!', level: 'A1' }),
-                  })
-                  if (res.ok) {
-                    const data = await res.json()
-                    setUser(data.user)
-                    navigate('dashboard')
-                    toast.success('Bienvenue !', { description: 'Compte Apple créé avec succès' })
-                  } else {
-                    const loginRes = await fetch('/api/auth/login', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ email: 'apple@yoelang.com', password: 'AppleDemo123!' }),
-                    })
-                    if (loginRes.ok) {
-                      const data = await loginRes.json()
-                      setUser(data.user)
-                    } else {
-                      const appleUser = { id: 'apple-demo', email: 'apple@yoelang.com', name: 'Utilisateur Apple', avatar: null, level: 'A1', xp: 0, streak: 0, coins: 0, isPremium: false, premiumPlan: null, dailyGoal: 0, notifications: true, darkMode: false, soundEnabled: true }
-                      setUser(appleUser)
-                    }
-                    navigate('dashboard')
-                    toast.success('Bienvenue !', { description: 'Connecté avec Apple' })
-                  }
-                } catch {
-                  const appleUser = { id: 'apple-demo', email: 'apple@yoelang.com', name: 'Utilisateur Apple', avatar: null, level: 'A1', xp: 0, streak: 0, coins: 0, isPremium: false, premiumPlan: null, dailyGoal: 0, notifications: true, darkMode: false, soundEnabled: true }
-                  setUser(appleUser)
-                  navigate('dashboard')
-                  toast.success('Bienvenue !', { description: 'Connecté avec Apple (mode démo)' })
-                } finally {
-                  setIsLoading(false)
-                }
-              }}
+              onClick={() => setOauthDialog('apple')}
             >
               <Apple className="w-5 h-5 mr-2" />
               Continuer avec Apple
