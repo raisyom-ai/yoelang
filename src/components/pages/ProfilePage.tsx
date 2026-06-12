@@ -5,7 +5,7 @@ import {
   ArrowLeft, Home, Zap, Flame, Coins, Award, Crown,
   BookOpen, CheckCircle2, Star, Edit3, LogOut, ChevronRight, Calendar
 } from 'lucide-react'
-import { useAppStore, LEVELS, BADGES } from '@/lib/store'
+import { useAppStore, LEVELS, BADGES, calculateStreak, type LessonHistoryEntry } from '@/lib/store'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
@@ -33,26 +33,35 @@ const itemVariants = {
   },
 }
 
-// ─── Demo Data ──────────────────────────────────────────────────────────────
+// ─── Type badge colors ─────────────────────────────────────────────────────
 
-const LEARNING_HISTORY = [
-  { date: '4 mars 2025', lesson: 'Greetings & Introductions', score: 95, type: 'vocabulaire' },
-  { date: '3 mars 2025', lesson: 'Numbers & Counting', score: 88, type: 'vocabulaire' },
-  { date: '2 mars 2025', lesson: 'Present Simple Tense', score: 92, type: 'grammaire' },
-  { date: '1 mars 2025', lesson: 'At the Restaurant', score: 78, type: 'conversation' },
-  { date: '28 fév 2025', lesson: 'Family & Relationships', score: 85, type: 'vocabulaire' },
-]
+const TYPE_STYLES: Record<string, { bg: string; text: string }> = {
+  vocabulaire: { bg: 'bg-yoel-green/15', text: 'text-yoel-green' },
+  grammaire: { bg: 'bg-yoel-primary/15', text: 'text-yoel-primary' },
+  conversation: { bg: 'bg-yoel-blue/15', text: 'text-yoel-blue' },
+  conjugaison: { bg: 'bg-yoel-gold/15', text: 'text-yoel-gold' },
+  pronunciation: { bg: 'bg-purple-500/15', text: 'text-purple-500' },
+}
+
+const TYPE_LABELS_FR: Record<string, string> = {
+  vocabulaire: 'Vocabulaire',
+  grammaire: 'Grammaire',
+  conversation: 'Conversation',
+  conjugaison: 'Conjugaison',
+  pronunciation: 'Prononciation',
+}
 
 // ─── Main Component ─────────────────────────────────────────────────────────
 
 export default function ProfilePage() {
-  const { user, goBack, navigate, logout } = useAppStore()
+  const { user, goBack, navigate, logout, dailyXpHistory, dailyXpEarned, lessonHistory } = useAppStore()
 
   const displayName = user?.name ?? 'Apprenant'
   const email = user?.email ?? 'apprenant@yoelang.com'
   const avatar = user?.avatar
   const xp = user?.xp ?? 1250
-  const streak = user?.streak ?? 7
+  // Dynamic streak calculated from XP history
+  const streak = calculateStreak(dailyXpHistory, dailyXpEarned)
   const coins = user?.coins ?? 350
   const level = user?.level ?? 'A1'
   const isPremium = user?.isPremium ?? false
@@ -267,46 +276,76 @@ export default function ProfilePage() {
         <motion.div variants={itemVariants}>
           <Card className="glass-card">
             <CardHeader className="pb-2">
-              <CardTitle className="text-base flex items-center gap-2">
-                <BookOpen className="h-5 w-5 text-yoel-blue" />
-                Historique d&apos;apprentissage
-              </CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-base flex items-center gap-2">
+                  <BookOpen className="h-5 w-5 text-yoel-blue" />
+                  Historique d&apos;apprentissage
+                </CardTitle>
+                <Badge variant="secondary" className="text-xs">
+                  {lessonHistory.length} leçon{lessonHistory.length > 1 ? 's' : ''}
+                </Badge>
+              </div>
             </CardHeader>
             <CardContent className="space-y-1">
-              {LEARNING_HISTORY.map((item, idx) => (
-                <motion.div
-                  key={idx}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.15 * idx }}
-                  className="flex items-center gap-3 rounded-xl p-3 transition-colors hover:bg-muted/30"
-                >
-                  <div className={`flex h-9 w-9 items-center justify-center rounded-lg ${
-                    item.score >= 90
-                      ? 'bg-yoel-green/15 text-yoel-green'
-                      : item.score >= 80
-                      ? 'bg-yoel-blue/15 text-yoel-blue'
-                      : 'bg-yoel-gold/15 text-yoel-gold'
-                  }`}>
-                    <CheckCircle2 className="h-4 w-4" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">{item.lesson}</p>
-                    <p className="text-xs text-muted-foreground">{item.date} · {item.type}</p>
-                  </div>
-                  <div className="text-right shrink-0">
-                    <p className={`text-sm font-bold ${
-                      item.score >= 90
-                        ? 'text-yoel-green'
-                        : item.score >= 80
-                        ? 'text-yoel-blue'
-                        : 'text-yoel-gold'
-                    }`}>
-                      {item.score}%
-                    </p>
-                  </div>
-                </motion.div>
-              ))}
+              {lessonHistory.length === 0 ? (
+                <div className="text-center py-8">
+                  <BookOpen className="h-10 w-10 text-muted-foreground/30 mx-auto mb-2" />
+                  <p className="text-sm text-muted-foreground">Aucune leçon complétée pour le moment</p>
+                  <p className="text-xs text-muted-foreground/70 mt-1">Commencez une leçon pour voir votre historique ici</p>
+                </div>
+              ) : (
+                <div className="max-h-96 overflow-y-auto space-y-1 pr-1 scrollbar-thin">
+                  {lessonHistory.map((item, idx) => {
+                    const typeStyle = TYPE_STYLES[item.type] || TYPE_STYLES.vocabulaire
+                    const dateStr = new Date(item.completedAt).toLocaleDateString('fr-FR', {
+                      day: 'numeric', month: 'short', year: 'numeric',
+                    })
+                    return (
+                      <motion.div
+                        key={item.id}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: Math.min(0.15 * idx, 0.6) }}
+                        className="flex items-center gap-3 rounded-xl p-3 transition-colors hover:bg-muted/30"
+                      >
+                        <div className={`flex h-9 w-9 items-center justify-center rounded-lg shrink-0 ${
+                          item.score >= 90
+                            ? 'bg-yoel-green/15 text-yoel-green'
+                            : item.score >= 80
+                            ? 'bg-yoel-blue/15 text-yoel-blue'
+                            : 'bg-yoel-gold/15 text-yoel-gold'
+                        }`}>
+                          <CheckCircle2 className="h-4 w-4" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium truncate">{item.title}</p>
+                          <div className="flex items-center gap-1.5 mt-0.5">
+                            <span className="text-xs text-muted-foreground">{dateStr}</span>
+                            <span className="text-muted-foreground/40">·</span>
+                            <Badge className={`text-[9px] px-1.5 py-0 border-0 shrink-0 ${typeStyle.bg} ${typeStyle.text}`}>
+                              {TYPE_LABELS_FR[item.type] || item.type}
+                            </Badge>
+                          </div>
+                        </div>
+                        <div className="text-right shrink-0">
+                          <p className={`text-sm font-bold ${
+                            item.score >= 90
+                              ? 'text-yoel-green'
+                              : item.score >= 80
+                              ? 'text-yoel-blue'
+                              : 'text-yoel-gold'
+                          }`}>
+                            {item.score}%
+                          </p>
+                          <p className="text-[10px] text-muted-foreground">
+                            +{item.xpEarned} XP
+                          </p>
+                        </div>
+                      </motion.div>
+                    )
+                  })}
+                </div>
+              )}
             </CardContent>
           </Card>
         </motion.div>

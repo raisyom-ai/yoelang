@@ -9,7 +9,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   AreaChart, Area, ResponsiveContainer
 } from 'recharts'
-import { useAppStore, LEVELS, BADGES } from '@/lib/store'
+import { useAppStore, LEVELS, BADGES, calculateStreak, getWeekActivity, type DailyXpRecord } from '@/lib/store'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
@@ -39,15 +39,7 @@ const itemVariants = {
 
 // ─── Demo Data ──────────────────────────────────────────────────────────────
 
-const WEEKLY_XP_DATA = [
-  { day: 'Lun', xp: 45 },
-  { day: 'Mar', xp: 30 },
-  { day: 'Mer', xp: 60 },
-  { day: 'Jeu', xp: 25 },
-  { day: 'Ven', xp: 55 },
-  { day: 'Sam', xp: 40 },
-  { day: 'Dim', xp: 35 },
-]
+const FRENCH_DAY_SHORT = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']
 
 const MONTHLY_PROGRESS_DATA = [
   { week: 'Sem 1', xp: 180 },
@@ -65,10 +57,39 @@ const SKILLS = [
   { name: 'Vocabulaire', key: 'vocabulary', value: 80, color: 'from-pink-500 to-pink-700' },
 ]
 
-const STREAK_CALENDAR = Array.from({ length: 30 }, (_, i) => ({
-  day: i + 1,
-  active: [1,2,3,5,6,7,8,10,11,12,13,14,15,17,18,19,20,21,22,24,25,26,27].includes(i + 1),
-}))
+// Build 30-day streak calendar from XP history
+const buildStreakCalendar = (xpHistory: DailyXpRecord[], dailyXpEarned: number, effectiveGoal: number) => {
+  const today = new Date()
+  const todayStr = today.toISOString().split('T')[0]
+  const days: { day: number; active: boolean }[] = []
+
+  for (let i = 29; i >= 0; i--) {
+    const d = new Date(today)
+    d.setDate(d.getDate() - i)
+    const dateStr = d.toISOString().split('T')[0]
+    const dayOfMonth = d.getDate()
+
+    let xpForDay = 0
+    let goalForDay = effectiveGoal
+
+    if (dateStr === todayStr) {
+      xpForDay = dailyXpEarned
+      goalForDay = effectiveGoal
+    } else {
+      const record = xpHistory.find((r) => r.date === dateStr)
+      if (record) {
+        xpForDay = record.xpEarned
+        goalForDay = record.goal || effectiveGoal
+      }
+    }
+
+    days.push({
+      day: dayOfMonth,
+      active: xpForDay > 0 && xpForDay >= goalForDay * 0.5, // active if at least 50% of goal
+    })
+  }
+  return days
+}
 
 const TIME_SPENT = {
   thisWeek: 245,
@@ -93,11 +114,28 @@ function CustomTooltip({ active, payload, label }: { active?: boolean; payload?:
 // ─── Main Component ─────────────────────────────────────────────────────────
 
 export default function StatsPage() {
-  const { user, goBack, navigate } = useAppStore()
+  const { user, goBack, navigate, dailyXpHistory, dailyXpEarned } = useAppStore()
 
   const xp = user?.xp ?? 1250
-  const streak = user?.streak ?? 7
+  // Dynamic streak calculated from XP history
+  const streak = calculateStreak(dailyXpHistory, dailyXpEarned)
   const isPremium = user?.isPremium ?? false
+  const level = user?.level ?? 'A1'
+
+  // Dynamic effective goal
+  const currentLevelInfo = LEVELS.find((l) => l.code === level) ?? LEVELS[0]
+  const effectiveGoal = user?.dailyGoal && user.dailyGoal > 0 ? user.dailyGoal : Math.max(10, currentLevelInfo.progress > 0 ? 15 : 10)
+
+  // Build weekly XP data from actual XP history
+  const weekActivity = getWeekActivity(dailyXpHistory, dailyXpEarned, effectiveGoal)
+  const WEEKLY_XP_DATA = weekActivity.map((d) => ({
+    day: d.day,
+    xp: d.xpEarned,
+  }))
+
+  // Build 30-day streak calendar from XP history
+  const STREAK_CALENDAR = buildStreakCalendar(dailyXpHistory, dailyXpEarned, effectiveGoal)
+  const activeDays = STREAK_CALENDAR.filter((d) => d.active).length
 
   const earnedBadges = BADGES.filter((b) => b.earnedAt)
   const lockedBadges = BADGES.filter((b) => !b.earnedAt)
@@ -105,7 +143,8 @@ export default function StatsPage() {
   const lessonsCompleted = LEVELS.reduce((acc, l) => acc + l.completedUnits, 0)
   const totalLessons = LEVELS.reduce((acc, l) => acc + l.units, 0)
   const quizAccuracy = 87
-  const bestStreak = 14
+  // Best streak = current streak (we don't track historical best yet)
+  const bestStreak = Math.max(streak, 14) // at least 14 for demo
 
   return (
     <div className="min-h-screen bg-background">
@@ -152,7 +191,7 @@ export default function StatsPage() {
                 <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-xl bg-orange-500/10">
                   <Flame className="h-5 w-5 text-orange-500" />
                 </div>
-                <p className="text-2xl font-bold text-orange-500">{bestStreak}</p>
+                <p className="text-2xl font-bold text-orange-500">{streak}</p>
                 <p className="text-xs text-muted-foreground">Record série</p>
               </CardContent>
             </Card>
@@ -368,13 +407,9 @@ export default function StatsPage() {
                       {d}
                     </div>
                   ))}
-                  {/* Empty cells for offset (assuming month starts on Wednesday) */}
-                  {Array.from({ length: 2 }).map((_, i) => (
-                    <div key={`empty-${i}`} />
-                  ))}
-                  {STREAK_CALENDAR.map((day) => (
+                  {STREAK_CALENDAR.map((day, idx) => (
                     <motion.div
-                      key={day.day}
+                      key={idx}
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
                       transition={{ delay: 0.05 * day.day, type: 'spring', stiffness: 300 }}
@@ -392,7 +427,7 @@ export default function StatsPage() {
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-muted-foreground">Jours actifs ce mois</span>
                   <Badge variant="outline" className="text-orange-500 border-orange-500/30 text-[10px]">
-                    {STREAK_CALENDAR.filter(d => d.active).length}/30
+                    {activeDays}/30
                   </Badge>
                 </div>
               </CardContent>
@@ -443,7 +478,7 @@ export default function StatsPage() {
                       <Flame className="h-4 w-4" />
                       Série actuelle
                     </span>
-                    <span className="text-sm font-semibold text-orange-500">{streak} jours</span>
+                    <span className="text-sm font-semibold text-orange-500">{streak} jour{streak > 1 ? 's' : ''}</span>
                   </div>
                 </div>
               </CardContent>

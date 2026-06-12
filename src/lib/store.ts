@@ -59,6 +59,17 @@ export interface ChatMsg {
   timestamp: Date
 }
 
+// ─── Lesson History Entry ────────────────────────────────────────────────────
+export interface LessonHistoryEntry {
+  id: string
+  lessonId: string
+  title: string
+  type: string          // 'vocabulaire' | 'grammaire' | 'conversation' | 'conjugaison' | 'pronunciation'
+  score: number         // 0-100
+  xpEarned: number
+  completedAt: string   // ISO date string
+}
+
 // Helper: get today's date as YYYY-MM-DD string
 const getTodayStr = () => new Date().toISOString().split('T')[0]
 
@@ -327,6 +338,8 @@ interface AppState {
   setDailyGoal: (goal: number) => void
   completedLessons: string[]
   addCompletedLesson: (lessonId: string) => void
+  lessonHistory: LessonHistoryEntry[]
+  addLessonHistoryEntry: (entry: Omit<LessonHistoryEntry, 'id'>) => void
   earnedBadges: string[]
   earnBadge: (badgeId: string) => void
   dailyChallengeCompleted: boolean
@@ -353,6 +366,81 @@ const generateDemoXpHistory = (level: string): DailyXpRecord[] => {
   return history
 }
 
+// Generate demo lesson history for the past days
+const generateDemoLessonHistory = (level: string): LessonHistoryEntry[] => {
+  const today = new Date()
+  const lessonTitlesByLevel: Record<string, { title: string; type: string }[]> = {
+    A1: [
+      { title: 'Greetings & Introductions', type: 'vocabulaire' },
+      { title: 'Numbers & Counting', type: 'vocabulaire' },
+      { title: 'Present Simple Tense', type: 'grammaire' },
+      { title: 'At the Restaurant', type: 'conversation' },
+      { title: 'Family & Relationships', type: 'vocabulaire' },
+      { title: 'Daily Routines', type: 'conjugaison' },
+      { title: 'Colors & Shapes', type: 'vocabulaire' },
+      { title: 'To Be / To Have', type: 'grammaire' },
+      { title: 'Asking for Directions', type: 'conversation' },
+      { title: 'Food & Drinks', type: 'vocabulaire' },
+    ],
+    A2: [
+      { title: 'Past Simple Tense', type: 'grammaire' },
+      { title: 'Travel Vocabulary', type: 'vocabulaire' },
+      { title: 'At the Hotel', type: 'conversation' },
+      { title: 'Comparatives & Superlatives', type: 'grammaire' },
+      { title: 'Health & Body', type: 'vocabulaire' },
+      { title: 'Future with Will', type: 'conjugaison' },
+      { title: 'Shopping for Clothes', type: 'conversation' },
+      { title: 'Weather Expressions', type: 'vocabulaire' },
+    ],
+    B1: [
+      { title: 'Present Perfect', type: 'grammaire' },
+      { title: 'Conditional Sentences', type: 'grammaire' },
+      { title: 'Job Interview Skills', type: 'conversation' },
+      { title: 'Phrasal Verbs', type: 'vocabulaire' },
+      { title: 'Reported Speech', type: 'grammaire' },
+      { title: 'Environmental Issues', type: 'vocabulaire' },
+    ],
+    B2: [
+      { title: 'Passive Voice Mastery', type: 'grammaire' },
+      { title: 'Advanced Conditionals', type: 'grammaire' },
+      { title: 'Debating Techniques', type: 'conversation' },
+      { title: 'Academic Vocabulary', type: 'vocabulaire' },
+    ],
+    C1: [
+      { title: 'Inversion & Fronting', type: 'grammaire' },
+      { title: 'Discourse Markers', type: 'vocabulaire' },
+      { title: 'Formal Presentations', type: 'conversation' },
+    ],
+    C2: [
+      { title: 'Stylistic Variation', type: 'grammaire' },
+      { title: 'Idiomatic Mastery', type: 'vocabulaire' },
+    ],
+  }
+
+  const lessons = lessonTitlesByLevel[level] || lessonTitlesByLevel.A1
+  const history: LessonHistoryEntry[] = []
+
+  for (let i = 0; i < Math.min(lessons.length, 10); i++) {
+    const d = new Date(today)
+    d.setDate(d.getDate() - i)
+    const completedAt = d.toISOString()
+    const lesson = lessons[i]
+    const score = Math.floor(Math.random() * 25) + 75 // 75-99
+
+    history.push({
+      id: `demo-lh-${i}`,
+      lessonId: `lesson-${level.toLowerCase()}-${i + 1}`,
+      title: lesson.title,
+      type: lesson.type,
+      score,
+      xpEarned: Math.round(score / 100 * (level === 'A1' ? 15 : level === 'A2' ? 20 : 25)),
+      completedAt,
+    })
+  }
+
+  return history
+}
+
 export const useAppStore = create<AppState>((set, get) => ({
   // Navigation
   currentPage: 'splash',
@@ -374,6 +462,8 @@ export const useAppStore = create<AppState>((set, get) => ({
     isAuthenticated: true,
     // Initialize XP history with demo data if empty
     dailyXpHistory: state.dailyXpHistory.length > 0 ? state.dailyXpHistory : generateDemoXpHistory(user.level),
+    // Initialize lesson history with demo data if empty
+    lessonHistory: state.lessonHistory.length > 0 ? state.lessonHistory : generateDemoLessonHistory(user.level),
   })),
   logout: () => set({ 
     user: null, 
@@ -384,6 +474,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     dailyXpEarned: 0,
     lastXpDate: '',
     dailyXpHistory: [],
+    lessonHistory: [],
   }),
 
   // Theme
@@ -453,6 +544,13 @@ export const useAppStore = create<AppState>((set, get) => ({
   addCompletedLesson: (lessonId) => set((state) => ({
     completedLessons: state.completedLessons.includes(lessonId) ? state.completedLessons : [...state.completedLessons, lessonId],
   })),
+  lessonHistory: [],
+  addLessonHistoryEntry: (entry) => set((state) => {
+    const id = `lh-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
+    // Add to beginning (newest first), keep max 50 entries
+    const updated = [{ ...entry, id }, ...state.lessonHistory].slice(0, 50)
+    return { lessonHistory: updated }
+  }),
   earnedBadges: ['first-lesson', 'streak-3', 'streak-7', 'quiz-master', 'vocabulary-100'],
   earnBadge: (badgeId) => set((state) => ({
     earnedBadges: state.earnedBadges.includes(badgeId) ? state.earnedBadges : [...state.earnedBadges, badgeId],

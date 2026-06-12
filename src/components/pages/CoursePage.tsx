@@ -243,7 +243,7 @@ function getTypeConfig(type: string) {
 // ─── Main Component ─────────────────────────────────────────────────────────
 
 export default function CoursePage() {
-  const { goBack, currentLevel, currentLesson, navigate, setCurrentLesson, completedLessons, addCompletedLesson, addXP } = useAppStore()
+  const { goBack, currentLevel, currentLesson, navigate, setCurrentLesson, completedLessons, addCompletedLesson, addXP, addLessonHistoryEntry } = useAppStore()
 
   // View mode: 'list' shows all lessons, 'study' shows the lesson steps
   const [viewMode, setViewMode] = useState<'list' | 'study'>('list')
@@ -369,6 +369,19 @@ export default function CoursePage() {
     if (passed && selectedLessonData) {
       addCompletedLesson(selectedLessonData.id)
       addXP(selectedLessonData.xpReward)
+      // Record in lesson history
+      addLessonHistoryEntry({
+        lessonId: selectedLessonData.id,
+        title: selectedLessonData.title,
+        type: selectedLessonData.type === 'vocabulary' ? 'vocabulaire'
+          : selectedLessonData.type === 'grammar' ? 'grammaire'
+          : selectedLessonData.type === 'dialogue' ? 'conversation'
+          : selectedLessonData.type === 'pronunciation' ? 'pronunciation'
+          : 'vocabulaire',
+        score,
+        xpEarned: selectedLessonData.xpReward,
+        completedAt: new Date().toISOString(),
+      })
     }
     setShowCompletionModal(true)
   }
