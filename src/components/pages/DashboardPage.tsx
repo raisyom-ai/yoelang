@@ -176,11 +176,105 @@ const LEADERBOARD = [
   { rank: 3, name: 'Sophie M.', xp: 2990, avatar: 'SM', isPremium: true },
 ]
 
-const WORD_OF_THE_DAY = {
-  english: 'Serendipity',
-  french: 'Sérendipité',
-  phonetic: '/ˌser.ənˈdɪp.ə.ti/',
-  example: 'Finding that café was pure serendipity.',
+// ─── Word of the Day — Different word every day, level-adapted ──────────────
+
+interface WordEntry {
+  english: string
+  french: string
+  phonetic: string
+  example: string
+  level: string   // minimum CEFR level for this word
+}
+
+const WORD_POOL: WordEntry[] = [
+  // A1 words
+  { english: 'Hello', french: 'Bonjour', phonetic: '/həˈloʊ/', example: 'Hello, how are you today?', level: 'A1' },
+  { english: 'Friend', french: 'Ami(e)', phonetic: '/frɛnd/', example: 'She is my best friend.', level: 'A1' },
+  { english: 'Water', french: 'Eau', phonetic: '/ˈwɔːtər/', example: 'Can I have a glass of water?', level: 'A1' },
+  { english: 'Book', french: 'Livre', phonetic: '/bʊk/', example: 'I am reading a good book.', level: 'A1' },
+  { english: 'Happy', french: 'Heureux/Heureuse', phonetic: '/ˈhæpi/', example: 'I feel very happy today.', level: 'A1' },
+  { english: 'Family', french: 'Famille', phonetic: '/ˈfæməli/', example: 'My family lives in Paris.', level: 'A1' },
+  { english: 'Morning', french: 'Matin', phonetic: '/ˈmɔːrnɪŋ/', example: 'Good morning, everyone!', level: 'A1' },
+  { english: 'Beautiful', french: 'Beau/Belle', phonetic: '/ˈbjuːtɪfəl/', example: 'What a beautiful day!', level: 'A1' },
+  { english: 'Journey', french: 'Voyage', phonetic: '/ˈdʒɜːrni/', example: 'It was a long journey.', level: 'A1' },
+  { english: 'Together', french: 'Ensemble', phonetic: '/təˈɡɛðər/', example: 'Let us work together.', level: 'A1' },
+  // A2 words
+  { english: 'Schedule', french: 'Emploi du temps', phonetic: '/ˈskɛdjuːl/', example: 'My schedule is very busy this week.', level: 'A2' },
+  { english: 'Weather', french: 'Météo', phonetic: '/ˈwɛðər/', example: 'The weather is lovely today.', level: 'A2' },
+  { english: 'Advice', french: 'Conseil', phonetic: '/ədˈvaɪs/', example: 'Can you give me some advice?', level: 'A2' },
+  { english: 'Comfortable', french: 'Confortable', phonetic: '/ˈkʌmfərtəbəl/', example: 'This sofa is very comfortable.', level: 'A2' },
+  { english: 'Celebrate', french: 'Célébrer', phonetic: '/ˈsɛləbreɪt/', example: 'We celebrate his birthday tomorrow.', level: 'A2' },
+  { english: 'Improve', french: 'Améliorer', phonetic: '/ɪmˈpruːv/', example: 'I want to improve my English.', level: 'A2' },
+  { english: 'Neighbour', french: 'Voisin(e)', phonetic: '/ˈneɪbər/', example: 'Our neighbour is very friendly.', level: 'A2' },
+  { english: 'Prepare', french: 'Préparer', phonetic: '/prɪˈpɛər/', example: 'I need to prepare dinner.', level: 'A2' },
+  { english: 'Discover', french: 'Découvrir', phonetic: '/dɪsˈkʌvər/', example: 'She discovered a hidden talent.', level: 'A2' },
+  { english: 'Explain', french: 'Expliquer', phonetic: '/ɪkˈspleɪn/', example: 'Can you explain this to me?', level: 'A2' },
+  // B1 words
+  { english: 'Achieve', french: 'Accomplir', phonetic: '/əˈtʃiːv/', example: 'She achieved her goals through hard work.', level: 'B1' },
+  { english: 'Significant', french: 'Significatif', phonetic: '/sɪɡˈnɪfɪkənt/', example: 'This is a significant improvement.', level: 'B1' },
+  { english: 'Persuade', french: 'Persuader', phonetic: '/pərˈsweɪd/', example: 'He persuaded me to change my mind.', level: 'B1' },
+  { english: 'Resilient', french: 'Résilient', phonetic: '/rɪˈzɪliənt/', example: 'Children are often very resilient.', level: 'B1' },
+  { english: 'Exhausted', french: 'Épuisé', phonetic: '/ɪɡˈzɔːstɪd/', example: 'I am completely exhausted after the marathon.', level: 'B1' },
+  { english: 'Compromise', french: 'Compromis', phonetic: '/ˈkɒmprəmaɪz/', example: 'We need to find a compromise.', level: 'B1' },
+  { english: 'Enthusiasm', french: 'Enthousiasme', phonetic: '/ɪnˈθjuːziæzəm/', example: 'She showed great enthusiasm for the project.', level: 'B1' },
+  { english: 'Investigate', french: 'Enquêter', phonetic: '/ɪnˈvɛstɪɡeɪt/', example: 'The police are investigating the crime.', level: 'B1' },
+  { english: 'Overwhelming', french: 'Accablant', phonetic: '/ˌoʊvərˈwɛlmɪŋ/', example: 'The response was overwhelming.', level: 'B1' },
+  { english: 'Grateful', french: 'Reconnaissant', phonetic: '/ˈɡreɪtfəl/', example: 'I am grateful for your help.', level: 'B1' },
+  // B2 words
+  { english: 'Serendipity', french: 'Sérendipité', phonetic: '/ˌser.ənˈdɪp.ə.ti/', example: 'Finding that café was pure serendipity.', level: 'B2' },
+  { english: 'Undermine', french: 'Saper', phonetic: '/ˌʌndərˈmaɪn/', example: 'His comments undermined her confidence.', level: 'B2' },
+  { english: 'Pragmatic', french: 'Pragmatique', phonetic: '/præɡˈmætɪk/', example: 'We need a pragmatic approach to this problem.', level: 'B2' },
+  { english: 'Resilient', french: 'Résilient', phonetic: '/rɪˈzɪliənt/', example: 'The economy proved resilient after the crisis.', level: 'B2' },
+  { english: 'Nuance', french: 'Nuance', phonetic: '/ˈnjuːɑːns/', example: 'There are many nuances in this translation.', level: 'B2' },
+  { english: 'Unprecedented', french: 'Sans précédent', phonetic: '/ʌnˈprɛsɪdɛntɪd/', example: 'The situation is unprecedented in modern history.', level: 'B2' },
+  { english: 'Ambiguous', french: 'Ambigu', phonetic: '/æmˈbɪɡjuəs/', example: 'The statement was deliberately ambiguous.', level: 'B2' },
+  { english: 'Scrutinize', french: 'Examiner minutieusement', phonetic: '/ˈskruːtənaɪz/', example: 'The committee will scrutinize every detail.', level: 'B2' },
+  { english: 'Inevitable', french: 'Inévitable', phonetic: '/ɪnˈɛvɪtəbəl/', example: 'Change is inevitable in any organization.', level: 'B2' },
+  { english: 'Comprehensive', french: 'Exhaustif', phonetic: '/ˌkɒmprɪˈhɛnsɪv/', example: 'We need a comprehensive review of the policy.', level: 'B2' },
+  // C1 words
+  { english: 'Corroborate', french: 'Confirmer', phonetic: '/kəˈrɒbəreɪt/', example: 'The witness corroborated his testimony.', level: 'C1' },
+  { english: 'Sophistry', french: 'Sophisme', phonetic: '/ˈsɒfɪstri/', example: 'His argument was mere sophistry.', level: 'C1' },
+  { english: 'Prescient', french: 'Prévoyant', phonetic: '/ˈprɛsiənt/', example: 'Her prescient analysis predicted the crisis.', level: 'C1' },
+  { english: 'Obfuscate', french: 'Obscurcir', phonetic: '/ˈɒbfʌskeɪt/', example: 'The jargon obfuscated the real issue.', level: 'C1' },
+  { english: 'Juxtapose', french: 'Juxtaposer', phonetic: '/ˌdʒʌkstəˈpoʊz/', example: 'The artist juxtaposes light and darkness.', level: 'C1' },
+  { english: 'Vindicate', french: 'Justifier', phonetic: '/ˈvɪndɪkeɪt/', example: 'The evidence vindicated her claims.', level: 'C1' },
+  { english: 'Paradigm', french: 'Paradigme', phonetic: '/ˈpærədaɪm/', example: 'This represents a paradigm shift in our thinking.', level: 'C1' },
+  { english: 'Ephemeral', french: 'Éphémère', phonetic: '/ɪˈfɛmərəl/', example: 'Beauty is ephemeral but art endures.', level: 'C1' },
+  // C2 words
+  { english: 'Exegesis', french: 'Exégèse', phonetic: '/ˌɛksɪˈdʒiːsɪs/', example: 'The exegesis of this text requires deep knowledge.', level: 'C2' },
+  { english: 'Obfuscate', french: 'Obscurcir', phonetic: '/ˈɒbfʌskeɪt/', example: 'Politicians often obfuscate the truth.', level: 'C2' },
+  { english: 'Renege', french: 'Renoncer', phonetic: '/rɪˈniːɡ/', example: 'He reneged on his promise.', level: 'C2' },
+  { english: 'Preponderance', french: 'Prépondérance', phonetic: '/prɪˈpɒndərəns/', example: 'The preponderance of evidence supports this view.', level: 'C2' },
+  { english: 'Incumbent', french: 'Incombant', phonetic: '/ɪnˈkʌmbənt/', example: 'It is incumbent upon us to act responsibly.', level: 'C2' },
+  { english: 'Recalcitrant', french: 'Rétif', phonetic: '/rɪˈkælsɪtrənt/', example: 'The recalcitrant student refused to cooperate.', level: 'C2' },
+]
+
+const LEVEL_ORDER = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']
+
+/**
+ * Get a different word every day, adapted to the learner's level.
+ * Uses day-of-year as seed so the word changes daily but stays consistent within a day.
+ * Only picks words at or below the learner's level.
+ */
+const getWordOfTheDay = (level: string): WordEntry => {
+  const levelIdx = LEVEL_ORDER.indexOf(level)
+  // Filter words appropriate for this level (same level or below)
+  const availableWords = WORD_POOL.filter(
+    (w) => LEVEL_ORDER.indexOf(w.level) <= levelIdx
+  )
+
+  if (availableWords.length === 0) return WORD_POOL[0]
+
+  // Use day-of-year as seed for daily rotation
+  const now = new Date()
+  const startOfYear = new Date(now.getFullYear(), 0, 0)
+  const dayOfYear = Math.floor(
+    (now.getTime() - startOfYear.getTime()) / 86400000
+  )
+
+  // Deterministic selection based on the day
+  const idx = dayOfYear % availableWords.length
+  return availableWords[idx]
 }
 
 // ─── Circular Progress Ring ─────────────────────────────────────────────────
@@ -343,6 +437,9 @@ export default function DashboardPage() {
 
   // Dynamic week calendar — based on actual activity data
   const weekDays = getWeekActivity(dailyXpHistory, dailyXpEarned, effectiveDailyGoal)
+
+  // Word of the day — different every day, adapted to level
+  const wordOfTheDay = getWordOfTheDay(level)
 
   // Next lesson to continue
   const nextLesson = currentLesson ?? DEMO_LESSONS.find((l) => !l.completed) ?? DEMO_LESSONS[3]
@@ -1072,20 +1169,25 @@ export default function DashboardPage() {
                       </CardHeader>
                       <CardContent className="space-y-3 p-4 sm:p-6 pt-0 sm:pt-0">
                         <div className="space-y-1">
-                          <h3 className="text-xl sm:text-2xl font-bold gradient-text-blue">
-                            {WORD_OF_THE_DAY.english}
-                          </h3>
+                          <div className="flex items-center gap-2">
+                            <h3 className="text-xl sm:text-2xl font-bold gradient-text-blue">
+                              {wordOfTheDay.english}
+                            </h3>
+                            <Badge variant="secondary" className="text-[9px] px-1.5 py-0 shrink-0">
+                              {wordOfTheDay.level}
+                            </Badge>
+                          </div>
                           <p className="text-muted-foreground text-xs sm:text-sm">
-                            {WORD_OF_THE_DAY.french}
+                            {wordOfTheDay.french}
                           </p>
                           <p className="text-[10px] sm:text-xs text-muted-foreground font-mono">
-                            {WORD_OF_THE_DAY.phonetic}
+                            {wordOfTheDay.phonetic}
                           </p>
                         </div>
 
                         <div className="rounded-xl bg-muted/40 p-2.5 sm:p-3">
                           <p className="text-xs sm:text-sm italic text-muted-foreground">
-                            &ldquo;{WORD_OF_THE_DAY.example}&rdquo;
+                            &ldquo;{wordOfTheDay.example}&rdquo;
                           </p>
                         </div>
 
@@ -1095,7 +1197,7 @@ export default function DashboardPage() {
                             size="sm"
                             className="rounded-full text-xs"
                             onClick={() => {
-                              speakWord(WORD_OF_THE_DAY.english)
+                              speakWord(wordOfTheDay.english)
                             }}
                           >
                             <Volume2 className="h-3.5 w-3.5 mr-1" />
