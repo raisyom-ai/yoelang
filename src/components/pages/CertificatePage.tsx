@@ -110,12 +110,13 @@ function CertificateDetail({ cert, onBack }: { cert: CertificateEntry; onBack: (
       {/* Back button */}
       <motion.div variants={itemVariants} className="flex items-center gap-3">
         <Button
-          variant="ghost"
-          size="icon"
+          variant="outline"
+          size="sm"
           onClick={onBack}
-          className="h-9 w-9 rounded-full"
+          className="shrink-0 rounded-full gap-1.5 border-yoel-primary/20 hover:bg-yoel-primary/5 hover:border-yoel-primary/40 transition-all"
         >
-          <ArrowLeft className="h-5 w-5" />
+          <ArrowLeft className="h-4 w-4 text-yoel-primary" />
+          <span className="text-xs font-medium text-yoel-primary">Retour</span>
         </Button>
         <div>
           <h2 className="text-lg font-bold">Certificat {cert.level}</h2>
@@ -293,12 +294,13 @@ export default function CertificatePage() {
         <motion.div variants={itemVariants} className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <Button
-              variant="ghost"
-              size="icon"
+              variant="outline"
+              size="sm"
               onClick={goBack}
-              className="h-9 w-9 rounded-full"
+              className="shrink-0 rounded-full gap-1.5 border-yoel-primary/20 hover:bg-yoel-primary/5 hover:border-yoel-primary/40 transition-all"
             >
-              <ArrowLeft className="h-5 w-5" />
+              <ArrowLeft className="h-4 w-4 text-yoel-primary" />
+              <span className="text-xs font-medium text-yoel-primary">Retour</span>
             </Button>
             <div>
               <h1 className="text-lg font-bold">Mes Certificats</h1>

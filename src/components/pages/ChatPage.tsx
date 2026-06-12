@@ -1171,12 +1171,13 @@ export default function ChatPage() {
         >
           <div className="flex items-center gap-2">
             <Button
-              variant="ghost"
-              size="icon"
+              variant="outline"
+              size="sm"
               onClick={goBack}
-              className="h-9 w-9 rounded-full"
+              className="shrink-0 rounded-full gap-1.5 border-yoel-primary/20 hover:bg-yoel-primary/5 hover:border-yoel-primary/40 transition-all"
             >
-              <ArrowLeft className="h-5 w-5" />
+              <ArrowLeft className="h-4 w-4 text-yoel-primary" />
+              <span className="text-xs font-medium text-yoel-primary">Retour</span>
             </Button>
             <Button
               variant="ghost"

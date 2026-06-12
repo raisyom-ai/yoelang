@@ -1669,12 +1669,13 @@ export default function ExercisesPage() {
               <motion.div variants={itemVariants} className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm pb-3 -mx-4 px-4 lg:-mx-6 lg:px-6">
                 <div className="flex items-center gap-3">
                   <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => navigate('home')}
-                    className="h-9 w-9 rounded-full"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => navigate('dashboard')}
+                    className="shrink-0 rounded-full gap-1.5 border-yoel-primary/20 hover:bg-yoel-primary/5 hover:border-yoel-primary/40 transition-all"
                   >
-                    <ArrowLeft className="h-5 w-5" />
+                    <ArrowLeft className="h-4 w-4 text-yoel-primary" />
+                    <span className="text-xs font-medium text-yoel-primary">Retour</span>
                   </Button>
                   <div>
                     <h1 className="text-lg font-bold gradient-text-primary">Exercices</h1>

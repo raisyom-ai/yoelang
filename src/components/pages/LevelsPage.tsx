@@ -119,12 +119,13 @@ export default function LevelsPage() {
           <motion.div variants={itemVariants} className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2 min-w-0">
               <Button
-                variant="ghost"
-                size="icon"
-                className="h-9 w-9 rounded-xl shrink-0"
+                variant="outline"
+                size="sm"
+                className="shrink-0 rounded-full gap-1.5 border-yoel-primary/20 hover:bg-yoel-primary/5 hover:border-yoel-primary/40 transition-all"
                 onClick={goBack}
               >
-                <ArrowLeft className="h-5 w-5" />
+                <ArrowLeft className="h-4 w-4 text-yoel-primary" />
+                <span className="text-xs font-medium text-yoel-primary">Retour</span>
               </Button>
               <Button
                 variant="ghost"
