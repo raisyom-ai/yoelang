@@ -435,12 +435,12 @@ function generateLessonsForUnit(
 // ─── Course Data Export ─────────────────────────────────────────────────────
 
 export const COURSE_DATA: Record<string, LevelCourseData> = {
-  A1: { code: 'A1', name: 'Beginner', description: 'Start your English journey with basic words and phrases', icon: '🌱', color: 'from-green-400 to-emerald-600', units: A1_UNITS, lessons: A1_LESSONS },
-  A2: { code: 'A2', name: 'Elementary', description: 'Build on basics with simple conversations', icon: '🌿', color: 'from-emerald-400 to-teal-600', units: A2_UNITS, lessons: A2_LESSONS },
-  B1: { code: 'B1', name: 'Intermediate', description: 'Handle most travel and work situations', icon: '🌳', color: 'from-teal-400 to-cyan-600', units: B1_UNITS, lessons: B1_LESSONS },
-  B2: { code: 'B2', name: 'Upper Intermediate', description: 'Communicate fluently on complex topics', icon: '🏔️', color: 'from-cyan-400 to-sky-600', units: B2_UNITS, lessons: B2_LESSONS },
-  C1: { code: 'C1', name: 'Advanced', description: 'Express ideas with nuance and precision', icon: '⭐', color: 'from-sky-400 to-blue-600', units: C1_UNITS, lessons: C1_LESSONS },
-  C2: { code: 'C2', name: 'Mastery', description: 'Near-native proficiency and cultural fluency', icon: '👑', color: 'from-violet-400 to-purple-600', units: C2_UNITS, lessons: C2_LESSONS },
+  A1: { code: 'A1', name: 'Beginner', description: 'Premiers pas en anglais : mots et phrases de base', icon: '🌱', color: 'from-green-400 to-emerald-600', units: A1_UNITS, lessons: A1_LESSONS },
+  A2: { code: 'A2', name: 'Elementary', description: 'Conversations simples et vocabulaire courant', icon: '🌿', color: 'from-emerald-400 to-teal-600', units: A2_UNITS, lessons: A2_LESSONS },
+  B1: { code: 'B1', name: 'Intermediate', description: 'Gérez la plupart des situations de voyage et de travail', icon: '🌳', color: 'from-teal-400 to-cyan-600', units: B1_UNITS, lessons: B1_LESSONS },
+  B2: { code: 'B2', name: 'Upper Intermediate', description: 'Communiquez avec fluidité sur des sujets complexes', icon: '🏔️', color: 'from-cyan-400 to-sky-600', units: B2_UNITS, lessons: B2_LESSONS },
+  C1: { code: 'C1', name: 'Advanced', description: 'Exprimez vos idées avec nuance et précision', icon: '⭐', color: 'from-sky-400 to-blue-600', units: C1_UNITS, lessons: C1_LESSONS },
+  C2: { code: 'C2', name: 'Mastery', description: 'Maîtrise quasi-native et aisance culturelle', icon: '👑', color: 'from-violet-400 to-purple-600', units: C2_UNITS, lessons: C2_LESSONS },
 }
 
 // ─── Vocabulary Data by Level ───────────────────────────────────────────────
