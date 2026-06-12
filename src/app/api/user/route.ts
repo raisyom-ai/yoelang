@@ -49,7 +49,7 @@ export async function PUT(req: NextRequest) {
 
     // Only allow safe fields to be updated
     const allowedFields = [
-      'name', 'level', 'xp', 'streak', 'coins', 'isPremium',
+      'name', 'level', 'xp', 'streak', 'coins', 'isPremium', 'premiumPlan',
       'dailyGoal', 'notifications', 'darkMode', 'soundEnabled',
     ]
     

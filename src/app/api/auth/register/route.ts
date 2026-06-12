@@ -29,15 +29,6 @@ export async function POST(req: NextRequest) {
         email,
         password: hashedPassword,
         level: level || 'A1',
-        xp: 0,
-        streak: 0,
-        coins: 0,
-        isPremium: false,
-        premiumPlan: null,
-        dailyGoal: 0,
-        notifications: true,
-        darkMode: false,
-        soundEnabled: true,
       },
     })
 

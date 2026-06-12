@@ -30,6 +30,7 @@ model User {
   badges       UserBadge[]
   completions  LessonCompletion[]
   chatMessages ChatMessage[]
+  payments     Payment[]
 }
 
 model Level {
@@ -142,4 +143,25 @@ model Leaderboard {
   rank   Int
 
   @@unique([userId, period])
+}
+
+model Payment {
+  id              String   @id @default(cuid())
+  userId          String
+  planId          String   // 'essentiel' | 'complet' | 'integral'
+  amount          Int      // Amount in FCFA
+  currency        String   @default("XOF") // FCFA ISO code
+  paymentMethod   String   // 'orange_money' | 'mtn_momo' | 'wave' | 'card'
+  phoneNumber     String?  // For mobile money
+  status          String   @default("pending") // 'pending' | 'processing' | 'success' | 'failed' | 'expired'
+  providerRef     String?  // Reference from FedaPay/CinetPay
+  providerName    String?  // 'fedapay' | 'cinetpay' | 'demo'
+  trialStart      DateTime? // When the 3-day trial begins
+  trialEnd        DateTime? // When the 3-day trial ends
+  paidAt          DateTime? // When the payment was confirmed
+  expiresAt       DateTime? // Payment link expiration
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
 }

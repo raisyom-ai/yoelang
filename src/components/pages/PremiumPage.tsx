@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { Progress } from '@/components/ui/progress'
+import CheckoutModal from '@/components/checkout/CheckoutModal'
 
 // ─── Animation Variants ─────────────────────────────────────────────────────
 
@@ -657,23 +658,18 @@ export default function PremiumPage() {
   const isPremium = user?.isPremium ?? false
 
   const [selectedPlan, setSelectedPlan] = useState<string | null>('yearly')
-  const [showActivation, setShowActivation] = useState(false)
+  const [showCheckout, setShowCheckout] = useState(false)
   const [showComparison, setShowComparison] = useState(false)
 
+  // Open checkout modal when user clicks "Choisir"
   const handleActivate = () => {
-    setShowActivation(true)
+    setShowCheckout(true)
   }
 
-  const handleConfirmActivation = () => {
-    // In a real app this would call a payment API
-    // For demo, we just update the store with the selected plan
+  // Called when payment is confirmed successful
+  const handlePaymentSuccess = (premiumPlanId: string) => {
     if (user) {
-      const planMap: Record<string, PremiumPlan> = {
-        monthly: 'essentiel',
-        yearly: 'complet',
-        lifetime: 'integral',
-      }
-      const selectedPremiumPlan = selectedPlan ? planMap[selectedPlan] || 'essentiel' : 'essentiel'
+      const plan = premiumPlanId as PremiumPlan
       
       // Award premium badges based on plan tier
       const badgeMap: Record<string, string[]> = {
@@ -681,16 +677,28 @@ export default function PremiumPage() {
         complet: ['premium-star', 'premium-diamond', 'premium-crown'],
         integral: ['premium-star', 'premium-diamond', 'premium-crown', 'premium-rocket'],
       }
-      const newBadges = badgeMap[selectedPremiumPlan] || ['premium-star']
+      const newBadges = badgeMap[plan] || ['premium-star']
       const currentBadges = useAppStore.getState().earnedBadges
       const badgesToAdd = newBadges.filter(b => !currentBadges.includes(b))
       
       useAppStore.setState({
-        user: { ...user, isPremium: true, premiumPlan: selectedPremiumPlan },
+        user: { ...user, isPremium: true, premiumPlan: plan },
         earnedBadges: [...currentBadges, ...badgesToAdd],
       })
+
+      // Also update the backend
+      fetch('/api/user', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user.id,
+          isPremium: true,
+          premiumPlan: plan,
+        }),
+      }).catch(() => {
+        // Non-critical: store is already updated locally
+      })
     }
-    setShowActivation(false)
   }
 
   return (
@@ -1176,10 +1184,14 @@ export default function PremiumPage() {
         )}
       </motion.div>
 
-      {/* Activation Success Overlay */}
+      {/* Checkout Modal */}
       <AnimatePresence>
-        {showActivation && (
-          <ActivationOverlay onClose={handleConfirmActivation} />
+        {showCheckout && (
+          <CheckoutModal
+            selectedPlanId={selectedPlan}
+            onClose={() => setShowCheckout(false)}
+            onSuccess={handlePaymentSuccess}
+          />
         )}
       </AnimatePresence>
     </div>
