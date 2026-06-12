@@ -598,15 +598,18 @@ export const useAppStore = create<AppState>((set, get) => ({
   // Auth
   isAuthenticated: false,
   user: null,
-  setUser: (user) => set((state) => ({
+  setUser: (user) => set(() => ({
     user,
     isAuthenticated: true,
-    // New users start with empty XP history — no demo data
-    dailyXpHistory: state.dailyXpHistory.length > 0 ? state.dailyXpHistory : [],
-    // New users start with empty lesson history — no demo data
-    lessonHistory: state.lessonHistory.length > 0 ? state.lessonHistory : [],
-    // New users start with no certificates — earned through real progress
-    earnedCertificates: state.earnedCertificates.length > 0 ? state.earnedCertificates : [],
+    // Reset ALL progress when switching users — loadUserProgress() will load correct data
+    completedLessons: [],
+    dailyXpHistory: [],
+    lessonHistory: [],
+    earnedCertificates: [],
+    earnedBadges: [],
+    dailyXpEarned: 0,
+    lastXpDate: '',
+    dailyChallengeCompleted: false,
   })),
   updateUserLevel: (level) => set((state) => ({
     user: state.user ? { ...state.user, level } : state.user,

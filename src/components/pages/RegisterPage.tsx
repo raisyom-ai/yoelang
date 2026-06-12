@@ -51,7 +51,7 @@ function getPasswordStrength(password: string): {
 type OAuthProvider = 'google' | 'apple'
 
 export default function RegisterPage() {
-  const { navigate, goBack, setUser, setCurrentLevel } = useAppStore()
+  const { navigate, goBack, setUser, setCurrentLevel, loadUserProgress } = useAppStore()
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -134,6 +134,26 @@ export default function RegisterPage() {
         }
         setUser(registeredUser)
         setCurrentLevel(registeredUser.level)
+
+        // Load user progress from database (even if empty for new users)
+        try {
+          const progressRes = await fetch(`/api/user/progress?userId=${registeredUser.id}`)
+          if (progressRes.ok) {
+            const progressData = await progressRes.json()
+            if (progressData.success) {
+              loadUserProgress({
+                completedLessons: progressData.completedLessons || [],
+                completions: progressData.completions || [],
+                certificates: progressData.certificates || [],
+                examAttempts: progressData.examAttempts || [],
+                earnedBadges: progressData.earnedBadges || [],
+              })
+            }
+          }
+        } catch {
+          // Progress loading failed, continue with empty state
+        }
+
         navigate('dashboard')
         toast.success('Bienvenue !', { description: 'Votre compte a été créé avec succès' })
       } else {

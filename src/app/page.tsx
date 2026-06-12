@@ -46,7 +46,7 @@ const pageComponents: Record<PageId, React.ComponentType> = {
 
 export default function YOELANGApp() {
   const currentPage = useAppStore((s) => s.currentPage)
-  const { setUser, setCurrentLevel, navigate } = useAppStore()
+  const { setUser, setCurrentLevel, navigate, loadUserProgress } = useAppStore()
   const PageComponent = pageComponents[currentPage]
 
   // Handle OAuth callback — when user returns from Google/Apple OAuth
@@ -106,6 +106,25 @@ export default function YOELANGApp() {
             }
             setUser(oauthUser)
             setCurrentLevel(oauthUser.level)
+
+            // Load user progress from database
+            fetch(`/api/user/progress?userId=${oauthUser.id}`)
+              .then((res) => res.json())
+              .then((data) => {
+                if (data.success) {
+                  loadUserProgress({
+                    completedLessons: data.completedLessons || [],
+                    completions: data.completions || [],
+                    certificates: data.certificates || [],
+                    examAttempts: data.examAttempts || [],
+                    earnedBadges: data.earnedBadges || [],
+                  })
+                }
+              })
+              .catch(() => {
+                // Progress loading failed, continue with empty state
+              })
+
             navigate('dashboard')
           } else {
             navigate('login')
@@ -115,7 +134,7 @@ export default function YOELANGApp() {
           navigate('login')
         })
     }
-  }, [setUser, setCurrentLevel, navigate])
+  }, [setUser, setCurrentLevel, navigate, loadUserProgress])
 
   return (
     <main className="min-h-screen bg-background text-foreground overflow-x-hidden">
