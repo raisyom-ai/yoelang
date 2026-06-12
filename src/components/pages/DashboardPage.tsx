@@ -6,7 +6,7 @@ import {
   ArrowLeft, BookOpen, Dumbbell, MessageCircle, BarChart3,
   Moon, Sun, Bell, Flame, Coins, Star, ChevronRight,
   Volume2, Trophy, Clock, Target, Home, User, Settings,
-  Zap, Award, Crown
+  Zap, Award, Crown, ChevronDown
 } from 'lucide-react'
 import { useAppStore, LEVELS, BADGES, DEMO_LESSONS, type PageId } from '@/lib/store'
 import { speakWord } from '@/lib/speech-utils'
@@ -16,6 +16,11 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Separator } from '@/components/ui/separator'
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible'
 
 // ─── Animation Variants ─────────────────────────────────────────────────────
 
@@ -146,14 +151,14 @@ function CircularProgress({
       </svg>
       <div className="absolute flex flex-col items-center justify-center">
         <motion.span
-          className="text-2xl font-bold gradient-text-primary"
+          className="text-lg sm:text-2xl font-bold gradient-text-primary"
           initial={{ opacity: 0, scale: 0.5 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.8, type: 'spring' }}
         >
           {value}
         </motion.span>
-        <span className="text-xs text-muted-foreground">/ {max} XP</span>
+        <span className="text-[10px] sm:text-xs text-muted-foreground">/ {max} XP</span>
       </div>
     </div>
   )
@@ -177,14 +182,14 @@ function QuickAction({
       whileHover={{ scale: 1.04, y: -2 }}
       whileTap={{ scale: 0.96 }}
       onClick={onClick}
-      className="flex flex-col items-center justify-center gap-2 rounded-2xl p-4 glass-card transition-colors hover:bg-yoel-primary/5 dark:hover:bg-yoel-primary/10 cursor-pointer min-h-[100px]"
+      className="flex flex-col items-center justify-center gap-1.5 sm:gap-2 rounded-2xl p-3 sm:p-4 glass-card transition-colors hover:bg-yoel-primary/5 dark:hover:bg-yoel-primary/10 cursor-pointer min-h-[80px] sm:min-h-[100px]"
     >
       <div
-        className={`flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${color} shadow-md`}
+        className={`flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-gradient-to-br ${color} shadow-md`}
       >
-        <Icon className="h-6 w-6 text-white" />
+        <Icon className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
       </div>
-      <span className="text-sm font-medium">{label}</span>
+      <span className="text-xs sm:text-sm font-medium">{label}</span>
     </motion.button>
   )
 }
@@ -248,6 +253,9 @@ export default function DashboardPage() {
   const [challengeTime, setChallengeTime] = useState(DAILY_CHALLENGE.timeLimit)
   const [challengeAnswered, setChallengeAnswered] = useState(dailyChallengeCompleted)
 
+  // Collapsible "more content" section (collapsed by default on mobile)
+  const [moreOpen, setMoreOpen] = useState(false)
+
   useEffect(() => {
     if (challengeAnswered) return
     const timer = setInterval(() => {
@@ -292,17 +300,8 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-background pb-24 lg:pb-8">
       {/* ─── Sticky Top Bar ──────────────────────────────────────────── */}
       <div className="sticky top-0 z-40 bg-background/80 backdrop-blur-lg border-b border-border/40">
-        <div className="mx-auto max-w-4xl flex items-center justify-between gap-3 px-4 py-2.5 lg:px-6">
+        <div className="mx-auto max-w-4xl flex items-center justify-between gap-2 sm:gap-3 px-4 py-2 sm:py-2.5 lg:px-6">
           <div className="flex items-center gap-2 min-w-0">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => navigate('home')}
-              className="shrink-0 rounded-full gap-1.5 border-yoel-primary/20 hover:bg-yoel-primary/5 hover:border-yoel-primary/40 transition-all"
-            >
-              <ArrowLeft className="h-4 w-4 text-yoel-primary" />
-              <span className="text-xs font-medium text-yoel-primary">Retour</span>
-            </Button>
             <Avatar className="h-9 w-9 ring-2 ring-yoel-primary/30">
               <AvatarImage src={user?.avatar ?? undefined} alt={displayName} />
               <AvatarFallback className="bg-yoel-primary/10 text-yoel-primary font-semibold text-xs">
@@ -324,41 +323,30 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             {/* Streak */}
             <motion.div
               variants={pulseVariants}
               animate="pulse"
-              className="flex items-center gap-1 rounded-full bg-orange-500/10 px-2.5 py-1.5"
+              className="flex items-center gap-1 rounded-full bg-orange-500/10 px-2 py-1 sm:px-2.5 sm:py-1.5"
             >
-              <Flame className="h-4 w-4 text-orange-500" />
-              <span className="text-sm font-semibold text-orange-600 dark:text-orange-400">
+              <Flame className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-orange-500" />
+              <span className="text-xs sm:text-sm font-semibold text-orange-600 dark:text-orange-400">
                 {streak}
               </span>
             </motion.div>
 
             {/* Coins */}
-            <div className="flex items-center gap-1 rounded-full bg-yoel-gold/10 px-2.5 py-1.5">
-              <Coins className="h-4 w-4 text-yoel-gold" />
-              <span className="text-sm font-semibold text-yoel-gold">{coins}</span>
+            <div className="flex items-center gap-1 rounded-full bg-yoel-gold/10 px-2 py-1 sm:px-2.5 sm:py-1.5">
+              <Coins className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-yoel-gold" />
+              <span className="text-xs sm:text-sm font-semibold text-yoel-gold">{coins}</span>
             </div>
-
-            {/* Notifications */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="relative h-9 w-9"
-              onClick={() => navigate('settings')}
-            >
-              <Bell className="h-4 w-4" />
-              <span className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-yoel-primary ring-2 ring-background" />
-            </Button>
 
             {/* Dark Mode Toggle */}
             <Button
               variant="ghost"
               size="icon"
-              className="h-9 w-9"
+              className="h-8 w-8 sm:h-9 sm:w-9 hidden sm:flex"
               onClick={toggleDarkMode}
             >
               <AnimatePresence mode="wait">
@@ -390,7 +378,7 @@ export default function DashboardPage() {
       </div>
 
       <motion.div
-        className="mx-auto max-w-4xl space-y-6 p-4 lg:p-6"
+        className="mx-auto max-w-4xl space-y-4 sm:space-y-6 p-4 lg:p-6"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
@@ -413,28 +401,36 @@ export default function DashboardPage() {
           <Progress value={(xpForCurrentLevel / xpForNextLevel) * 100} className="h-2" />
         </motion.div>
 
-        {/* ─── 2. Daily Goal Card ─────────────────────────────────────── */}
+        {/* ─── 2. Daily Goal Card (compact on mobile) ────────────────── */}
         <motion.div variants={itemVariants}>
           <Card className="glass-card overflow-hidden">
-            <CardContent className="flex flex-col sm:flex-row items-center gap-6 p-6">
+            <CardContent className="flex flex-row items-center gap-4 p-4 sm:p-6 sm:gap-6">
+              <CircularProgress
+                value={DAILY_XP_EARNED}
+                max={DAILY_XP_GOAL}
+                size={90}
+                strokeWidth={8}
+                className="shrink-0 sm:hidden"
+              />
               <CircularProgress
                 value={DAILY_XP_EARNED}
                 max={DAILY_XP_GOAL}
                 size={130}
                 strokeWidth={10}
+                className="shrink-0 hidden sm:block"
               />
-              <div className="flex-1 text-center sm:text-left space-y-2">
-                <h3 className="text-lg font-semibold">
+              <div className="flex-1 min-w-0 space-y-1 sm:space-y-2">
+                <h3 className="text-base sm:text-lg font-semibold">
                   Objectif du jour
                 </h3>
-                <p className="text-muted-foreground text-sm">
+                <p className="text-muted-foreground text-xs sm:text-sm">
                   {DAILY_XP_EARNED >= DAILY_XP_GOAL
-                    ? '🎉 Bravo ! Objectif atteint !'
-                    : `Encore ${DAILY_XP_GOAL - DAILY_XP_EARNED} XP pour atteindre votre objectif !`}
+                    ? '🎉 Objectif atteint !'
+                    : `Encore ${DAILY_XP_GOAL - DAILY_XP_EARNED} XP !`}
                 </p>
-                <div className="flex items-center gap-2 justify-center sm:justify-start">
-                  <Target className="h-4 w-4 text-yoel-primary" />
-                  <span className="text-sm font-medium text-yoel-primary">
+                <div className="flex items-center gap-2">
+                  <Target className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-yoel-primary" />
+                  <span className="text-xs sm:text-sm font-medium text-yoel-primary">
                     {Math.round((DAILY_XP_EARNED / DAILY_XP_GOAL) * 100)}%
                     compl\u00e9t\u00e9
                   </span>
@@ -453,21 +449,18 @@ export default function DashboardPage() {
             <div className="relative">
               {/* Accent bar */}
               <div className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-yoel-primary to-yoel-gold rounded-l-xl" />
-              <CardContent className="flex items-center gap-4 p-5 pl-6">
-                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-yoel-primary/20 to-yoel-gold/20 overflow-hidden">
-                  <img src="/practice-english.png" alt="Practice" className="h-14 w-14 object-cover rounded-xl" />
+              <CardContent className="flex items-center gap-3 sm:gap-4 p-4 sm:p-5 pl-5 sm:pl-6">
+                <div className="flex h-12 w-12 sm:h-14 sm:w-14 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-yoel-primary/20 to-yoel-gold/20 overflow-hidden">
+                  <img src="/practice-english.png" alt="Practice" className="h-12 w-12 sm:h-14 sm:w-14 object-cover rounded-xl" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">
-                    Continuer l&apos;apprentissage
+                  <p className="text-[10px] sm:text-xs text-muted-foreground font-medium uppercase tracking-wider">
+                    Continuer
                   </p>
-                  <h3 className="font-semibold truncate mt-0.5">
+                  <h3 className="font-semibold truncate mt-0.5 text-sm sm:text-base">
                     {nextLesson.title}
                   </h3>
-                  <p className="text-sm text-muted-foreground truncate">
-                    {nextLesson.description}
-                  </p>
-                  <div className="flex items-center gap-3 mt-1.5">
+                  <div className="flex items-center gap-3 mt-1">
                     <span className="flex items-center gap-1 text-xs text-muted-foreground">
                       <Zap className="h-3 w-3 text-yoel-gold" />
                       {nextLesson.xpReward} XP
@@ -478,18 +471,12 @@ export default function DashboardPage() {
                     </span>
                   </div>
                 </div>
-                <motion.div
-                  whileHover={{ x: 4 }}
-                  className="shrink-0"
+                <Button
+                  size="sm"
+                  className="bg-yoel-primary hover:bg-yoel-primary-dark text-white rounded-full shrink-0"
                 >
-                  <Button
-                    size="sm"
-                    className="bg-yoel-primary hover:bg-yoel-primary-dark text-white rounded-full"
-                  >
-                    Continuer
-                    <ChevronRight className="h-4 w-4 ml-0.5" />
-                  </Button>
-                </motion.div>
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
               </CardContent>
             </div>
           </Card>
@@ -497,7 +484,7 @@ export default function DashboardPage() {
 
         {/* ─── 4. Quick Actions Grid ──────────────────────────────────── */}
         <motion.div variants={itemVariants}>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-4 gap-2 sm:gap-3">
             <QuickAction
               icon={BookOpen}
               label="Leçons"
@@ -518,7 +505,7 @@ export default function DashboardPage() {
             />
             <QuickAction
               icon={BarChart3}
-              label="Statistiques"
+              label="Stats"
               color="from-yoel-gold to-amber-700"
               onClick={() => navigate('stats')}
             />
@@ -530,19 +517,19 @@ export default function DashboardPage() {
           {/* Daily Challenge */}
           <motion.div variants={itemVariants}>
             <Card className="glass-card overflow-hidden h-full">
-              <CardHeader className="pb-2">
+              <CardHeader className="pb-2 p-4 sm:p-6">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <Zap className="h-5 w-5 text-yoel-gold" />
+                  <CardTitle className="text-sm sm:text-base flex items-center gap-2">
+                    <Zap className="h-4 w-4 sm:h-5 sm:w-5 text-yoel-gold" />
                     D\u00e9fi du jour
                   </CardTitle>
-                  <Badge className="bg-yoel-gold/15 text-yoel-gold border-0">
+                  <Badge className="bg-yoel-gold/15 text-yoel-gold border-0 text-[10px] sm:text-xs">
                     +{DAILY_CHALLENGE.xpReward} XP
                   </Badge>
                 </div>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <p className="font-medium text-sm">
+              <CardContent className="space-y-3 p-4 sm:p-6 pt-0 sm:pt-0">
+                <p className="font-medium text-xs sm:text-sm">
                   {DAILY_CHALLENGE.question}
                 </p>
 
@@ -551,7 +538,7 @@ export default function DashboardPage() {
                     const isSelected = selectedOption === idx
                     const isCorrect = idx === DAILY_CHALLENGE.correctIndex
                     let btnClass =
-                      'text-sm py-2 rounded-xl border transition-all font-medium'
+                      'text-xs sm:text-sm py-1.5 sm:py-2 rounded-xl border transition-all font-medium'
 
                     if (challengeAnswered) {
                       if (isCorrect) {
@@ -613,40 +600,38 @@ export default function DashboardPage() {
           {/* Streak Calendar */}
           <motion.div variants={itemVariants}>
             <Card className="glass-card overflow-hidden h-full">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-base flex items-center gap-2">
-                  <Flame className="h-5 w-5 text-orange-500" />
+              <CardHeader className="pb-2 p-4 sm:p-6">
+                <CardTitle className="text-sm sm:text-base flex items-center gap-2">
+                  <Flame className="h-4 w-4 sm:h-5 sm:w-5 text-orange-500" />
                   S\u00e9rie de {streak} jours
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="grid grid-cols-7 gap-2">
+              <CardContent className="space-y-3 p-4 sm:p-6 pt-0 sm:pt-0">
+                <div className="grid grid-cols-7 gap-1.5 sm:gap-2">
                   {WEEK_DAYS.map((d, idx) => (
                     <motion.div
                       key={d.day}
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
                       transition={{ delay: 0.3 + idx * 0.06, type: 'spring' }}
-                      className={`flex flex-col items-center gap-1 rounded-xl py-2 px-1 transition-colors ${
+                      className={`flex flex-col items-center gap-0.5 sm:gap-1 rounded-lg sm:rounded-xl py-1.5 sm:py-2 px-0.5 sm:px-1 transition-colors ${
                         d.completed
                           ? 'bg-gradient-to-b from-orange-500/20 to-orange-600/10 border border-orange-500/20'
                           : 'bg-muted/40 border border-transparent'
                       }`}
                     >
-                      <span className="text-[10px] text-muted-foreground font-medium">
+                      <span className="text-[9px] sm:text-[10px] text-muted-foreground font-medium">
                         {d.day}
                       </span>
-                      <span className="text-sm font-semibold">
+                      <span className="text-xs sm:text-sm font-semibold">
                         {d.completed ? '🔥' : d.date}
                       </span>
                     </motion.div>
                   ))}
                 </div>
 
-                <Separator />
-
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-[10px] sm:text-xs text-muted-foreground">
                     Continuez votre s\u00e9rie !
                   </span>
                   <Badge
@@ -658,8 +643,8 @@ export default function DashboardPage() {
                 </div>
 
                 {isPremium && (
-                  <div className="mt-2 rounded-lg bg-yoel-gold/10 p-2 text-center">
-                    <span className="text-xs gradient-text-premium font-semibold">
+                  <div className="rounded-lg bg-yoel-gold/10 p-2 text-center">
+                    <span className="text-[10px] sm:text-xs gradient-text-premium font-semibold">
                       👑 R\u00e9compense x2 avec Premium
                     </span>
                   </div>
@@ -669,260 +654,289 @@ export default function DashboardPage() {
           </motion.div>
         </div>
 
-        {/* ─── 7. Recent Badges ───────────────────────────────────────── */}
-        <motion.div variants={itemVariants}>
-          <Card className="glass-card overflow-hidden">
-            <CardHeader className="pb-2">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-base flex items-center gap-2">
-                  <Award className="h-5 w-5 text-yoel-primary" />
-                  Badges r\u00e9cents
-                </CardTitle>
+        {/* ─── Collapsible "More" Section (Badges, Leaderboard, Word, Premium, Levels) ─── */}
+        {/* On desktop: always visible. On mobile: behind "Voir plus" toggle. */}
+        <div className="lg:contents">
+          <Collapsible open={moreOpen} onOpenChange={setMoreOpen}>
+            {/* Toggle button — only visible on mobile */}
+            <div className="flex justify-center lg:hidden">
+              <CollapsibleTrigger asChild>
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-xs text-muted-foreground"
-                  onClick={() => navigate('profile')}
+                  className="gap-1.5 text-muted-foreground hover:text-foreground"
                 >
-                  Voir tout
-                  <ChevronRight className="h-3 w-3" />
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-thin">
-                {earnedBadges.map((badge, idx) => (
-                  <motion.div
-                    key={badge.id}
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.4 + idx * 0.1 }}
-                    className="flex flex-col items-center gap-1.5 min-w-[72px] shrink-0"
-                  >
-                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-yoel-primary/10 to-yoel-gold/10 border border-yoel-primary/10 text-2xl">
-                      {badge.icon}
-                    </div>
-                    <span className="text-[10px] text-muted-foreground text-center leading-tight font-medium">
-                      {badge.name}
-                    </span>
-                  </motion.div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        {/* ─── 8 & 9. Leaderboard + Word of the Day ──────────────────── */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          {/* Leaderboard */}
-          <motion.div variants={itemVariants}>
-            <Card className="glass-card overflow-hidden h-full">
-              <CardHeader className="pb-2">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <Trophy className="h-5 w-5 text-yoel-gold" />
-                    Classement
-                  </CardTitle>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-xs text-muted-foreground"
-                    onClick={() => navigate('stats')}
-                  >
-                    D\u00e9tails
-                    <ChevronRight className="h-3 w-3" />
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {LEADERBOARD.map((player, idx) => (
-                  <motion.div
-                    key={player.rank}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.5 + idx * 0.1 }}
-                    className="flex items-center gap-3 rounded-xl bg-muted/30 p-3 transition-colors hover:bg-muted/50"
-                  >
-                    <div
-                      className={`flex h-8 w-8 items-center justify-center rounded-full font-bold text-sm ${
-                        player.rank === 1
-                          ? 'bg-yoel-gold/20 text-yoel-gold'
-                          : player.rank === 2
-                          ? 'bg-gray-400/20 text-gray-500'
-                          : 'bg-amber-700/20 text-amber-700'
-                      }`}
-                    >
-                      {player.rank === 1 ? (
-                        <Crown className="h-4 w-4" />
-                      ) : (
-                        player.rank
-                      )}
-                    </div>
-                    <Avatar className="h-8 w-8">
-                      <AvatarFallback className="text-xs font-semibold bg-yoel-blue/10 text-yoel-blue">
-                        {player.avatar}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate flex items-center gap-1">
-                        {player.name}
-                        {player.isPremium && (
-                          <Star className="h-3 w-3 text-yoel-gold fill-yoel-gold" />
-                        )}
-                      </p>
-                    </div>
-                    <span className="text-sm font-semibold text-muted-foreground">
-                      {player.xp.toLocaleString()} XP
-                    </span>
-                  </motion.div>
-                ))}
-
-                {/* Current user rank hint */}
-                <Separator />
-                <div className="flex items-center gap-3 rounded-xl bg-yoel-primary/5 p-3">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-yoel-primary/10 font-bold text-sm text-yoel-primary">
-                    12
-                  </div>
-                  <Avatar className="h-8 w-8">
-                    <AvatarFallback className="text-xs font-semibold bg-yoel-primary/10 text-yoel-primary">
-                      {displayName
-                        .split(' ')
-                        .map((n) => n[0])
-                        .join('')
-                        .toUpperCase()
-                        .slice(0, 2)}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">{displayName} (vous)</p>
-                  </div>
-                  <span className="text-sm font-semibold text-yoel-primary">
-                    {xp.toLocaleString()} XP
+                  <span className="text-sm font-medium">
+                    {moreOpen ? 'Voir moins' : 'Voir plus'}
                   </span>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          {/* Word of the Day */}
-          <motion.div variants={itemVariants}>
-            <Card className="glass-card overflow-hidden h-full">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-base flex items-center gap-2">
-                  <Star className="h-5 w-5 text-yoel-gold" />
-                  Mot du jour
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-1">
-                  <h3 className="text-2xl font-bold gradient-text-blue">
-                    {WORD_OF_THE_DAY.english}
-                  </h3>
-                  <p className="text-muted-foreground text-sm">
-                    {WORD_OF_THE_DAY.french}
-                  </p>
-                  <p className="text-xs text-muted-foreground font-mono">
-                    {WORD_OF_THE_DAY.phonetic}
-                  </p>
-                </div>
-
-                <Separator />
-
-                <div className="rounded-xl bg-muted/40 p-3">
-                  <p className="text-sm italic text-muted-foreground">
-                    &ldquo;{WORD_OF_THE_DAY.example}&rdquo;
-                  </p>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="rounded-full"
-                    onClick={() => {
-                      speakWord(WORD_OF_THE_DAY.english)
-                    }}
+                  <motion.div
+                    animate={{ rotate: moreOpen ? 180 : 0 }}
+                    transition={{ duration: 0.2 }}
                   >
-                    <Volume2 className="h-4 w-4 mr-1" />
-                    \u00c9couter
-                  </Button>
-                  <Badge
-                    variant="outline"
-                    className="text-yoel-green border-yoel-green/30"
-                  >
-                    +5 XP
-                  </Badge>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        </div>
-
-        {/* Premium Upsell Banner (only if not premium) */}
-        {!isPremium && (
-          <motion.div variants={itemVariants}>
-            <Card
-              className="overflow-hidden border-0 cursor-pointer bg-gradient-to-r from-yoel-primary/10 via-yoel-gold/10 to-yoel-blue/10"
-              onClick={() => navigate('premium')}
-            >
-              <CardContent className="flex items-center gap-4 p-5">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-yoel-primary to-yoel-gold text-white text-xl">
-                  👑
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-semibold gradient-text-premium">
-                    Passez \u00e0 Premium
-                  </h3>
-                  <p className="text-sm text-muted-foreground">
-                    XP x2, pas de publicit\u00e9s, et plus encore !
-                  </p>
-                </div>
-                <ChevronRight className="h-5 w-5 text-muted-foreground shrink-0" />
-              </CardContent>
-            </Card>
-          </motion.div>
-        )}
-
-        {/* Level Progress Overview */}
-        <motion.div variants={itemVariants}>
-          <Card className="glass-card overflow-hidden">
-            <CardHeader className="pb-2">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-base flex items-center gap-2">
-                  <Star className="h-5 w-5 text-yoel-primary" />
-                  Progression par niveau
-                </CardTitle>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-xs text-muted-foreground"
-                  onClick={() => navigate('levels')}
-                >
-                  Tous les niveaux
-                  <ChevronRight className="h-3 w-3" />
+                    <ChevronDown className="h-4 w-4" />
+                  </motion.div>
                 </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {LEVELS.map((lvl, idx) => (
-                <div key={lvl.code} className="space-y-1">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="flex items-center gap-2">
-                      <span>{lvl.icon}</span>
-                      <span className="font-medium">
-                        {lvl.code} - {lvl.name}
-                      </span>
-                    </span>
-                    <span className="text-muted-foreground text-xs">
-                      {lvl.completedUnits}/{lvl.units} unit\u00e9s
-                    </span>
-                  </div>
-                  <Progress value={lvl.progress} className="h-1.5" />
+              </CollapsibleTrigger>
+            </div>
+
+            <CollapsibleContent forceMount className="hidden data-[state=open]:block lg:block lg:contents">
+              <div className="space-y-4 sm:space-y-6 mt-2 lg:mt-0">
+                {/* ─── 7. Recent Badges ─────────────────────────────────── */}
+                <motion.div variants={itemVariants}>
+                  <Card className="glass-card overflow-hidden">
+                    <CardHeader className="pb-2 p-4 sm:p-6">
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="text-sm sm:text-base flex items-center gap-2">
+                          <Award className="h-4 w-4 sm:h-5 sm:w-5 text-yoel-primary" />
+                          Badges r\u00e9cents
+                        </CardTitle>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-xs text-muted-foreground"
+                          onClick={() => navigate('profile')}
+                        >
+                          Voir tout
+                          <ChevronRight className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0">
+                      <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-thin">
+                        {earnedBadges.map((badge, idx) => (
+                          <motion.div
+                            key={badge.id}
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.4 + idx * 0.1 }}
+                            className="flex flex-col items-center gap-1.5 min-w-[64px] sm:min-w-[72px] shrink-0"
+                          >
+                            <div className="flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-yoel-primary/10 to-yoel-gold/10 border border-yoel-primary/10 text-xl sm:text-2xl">
+                              {badge.icon}
+                            </div>
+                            <span className="text-[9px] sm:text-[10px] text-muted-foreground text-center leading-tight font-medium">
+                              {badge.name}
+                            </span>
+                          </motion.div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+
+                {/* ─── 8 & 9. Leaderboard + Word of the Day ──────────────── */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  {/* Leaderboard */}
+                  <motion.div variants={itemVariants}>
+                    <Card className="glass-card overflow-hidden h-full">
+                      <CardHeader className="pb-2 p-4 sm:p-6">
+                        <div className="flex items-center justify-between">
+                          <CardTitle className="text-sm sm:text-base flex items-center gap-2">
+                            <Trophy className="h-4 w-4 sm:h-5 sm:w-5 text-yoel-gold" />
+                            Classement
+                          </CardTitle>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-xs text-muted-foreground"
+                            onClick={() => navigate('stats')}
+                          >
+                            D\u00e9tails
+                            <ChevronRight className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="space-y-2 p-4 sm:p-6 pt-0 sm:pt-0">
+                        {LEADERBOARD.map((player, idx) => (
+                          <motion.div
+                            key={player.rank}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.5 + idx * 0.1 }}
+                            className="flex items-center gap-2 sm:gap-3 rounded-xl bg-muted/30 p-2.5 sm:p-3 transition-colors hover:bg-muted/50"
+                          >
+                            <div
+                              className={`flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full font-bold text-xs sm:text-sm ${
+                                player.rank === 1
+                                  ? 'bg-yoel-gold/20 text-yoel-gold'
+                                  : player.rank === 2
+                                  ? 'bg-gray-400/20 text-gray-500'
+                                  : 'bg-amber-700/20 text-amber-700'
+                              }`}
+                            >
+                              {player.rank === 1 ? (
+                                <Crown className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                              ) : (
+                                player.rank
+                              )}
+                            </div>
+                            <Avatar className="h-7 w-7 sm:h-8 sm:w-8">
+                              <AvatarFallback className="text-[10px] sm:text-xs font-semibold bg-yoel-blue/10 text-yoel-blue">
+                                {player.avatar}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs sm:text-sm font-medium truncate flex items-center gap-1">
+                                {player.name}
+                                {player.isPremium && (
+                                  <Star className="h-3 w-3 text-yoel-gold fill-yoel-gold" />
+                                )}
+                              </p>
+                            </div>
+                            <span className="text-xs sm:text-sm font-semibold text-muted-foreground">
+                              {player.xp.toLocaleString()} XP
+                            </span>
+                          </motion.div>
+                        ))}
+
+                        {/* Current user rank hint */}
+                        <Separator />
+                        <div className="flex items-center gap-2 sm:gap-3 rounded-xl bg-yoel-primary/5 p-2.5 sm:p-3">
+                          <div className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-yoel-primary/10 font-bold text-xs sm:text-sm text-yoel-primary">
+                            12
+                          </div>
+                          <Avatar className="h-7 w-7 sm:h-8 sm:w-8">
+                            <AvatarFallback className="text-[10px] sm:text-xs font-semibold bg-yoel-primary/10 text-yoel-primary">
+                              {displayName
+                                .split(' ')
+                                .map((n) => n[0])
+                                .join('')
+                                .toUpperCase()
+                                .slice(0, 2)}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs sm:text-sm font-medium truncate">{displayName} (vous)</p>
+                          </div>
+                          <span className="text-xs sm:text-sm font-semibold text-yoel-primary">
+                            {xp.toLocaleString()} XP
+                          </span>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+
+                  {/* Word of the Day */}
+                  <motion.div variants={itemVariants}>
+                    <Card className="glass-card overflow-hidden h-full">
+                      <CardHeader className="pb-2 p-4 sm:p-6">
+                        <CardTitle className="text-sm sm:text-base flex items-center gap-2">
+                          <Star className="h-4 w-4 sm:h-5 sm:w-5 text-yoel-gold" />
+                          Mot du jour
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-3 p-4 sm:p-6 pt-0 sm:pt-0">
+                        <div className="space-y-1">
+                          <h3 className="text-xl sm:text-2xl font-bold gradient-text-blue">
+                            {WORD_OF_THE_DAY.english}
+                          </h3>
+                          <p className="text-muted-foreground text-xs sm:text-sm">
+                            {WORD_OF_THE_DAY.french}
+                          </p>
+                          <p className="text-[10px] sm:text-xs text-muted-foreground font-mono">
+                            {WORD_OF_THE_DAY.phonetic}
+                          </p>
+                        </div>
+
+                        <div className="rounded-xl bg-muted/40 p-2.5 sm:p-3">
+                          <p className="text-xs sm:text-sm italic text-muted-foreground">
+                            &ldquo;{WORD_OF_THE_DAY.example}&rdquo;
+                          </p>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="rounded-full text-xs"
+                            onClick={() => {
+                              speakWord(WORD_OF_THE_DAY.english)
+                            }}
+                          >
+                            <Volume2 className="h-3.5 w-3.5 mr-1" />
+                            \u00c9couter
+                          </Button>
+                          <Badge
+                            variant="outline"
+                            className="text-yoel-green border-yoel-green/30 text-[10px]"
+                          >
+                            +5 XP
+                          </Badge>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
                 </div>
-              ))}
-            </CardContent>
-          </Card>
-        </motion.div>
+
+                {/* Premium Upsell Banner (only if not premium) */}
+                {!isPremium && (
+                  <motion.div variants={itemVariants}>
+                    <Card
+                      className="overflow-hidden border-0 cursor-pointer bg-gradient-to-r from-yoel-primary/10 via-yoel-gold/10 to-yoel-blue/10"
+                      onClick={() => navigate('premium')}
+                    >
+                      <CardContent className="flex items-center gap-3 sm:gap-4 p-4 sm:p-5">
+                        <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-gradient-to-br from-yoel-primary to-yoel-gold text-white text-lg sm:text-xl">
+                          👑
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-sm sm:text-base gradient-text-premium">
+                            Passez \u00e0 Premium
+                          </h3>
+                          <p className="text-xs sm:text-sm text-muted-foreground">
+                            XP x2, pas de publicit\u00e9s, et plus encore !
+                          </p>
+                        </div>
+                        <ChevronRight className="h-5 w-5 text-muted-foreground shrink-0" />
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                )}
+
+                {/* Level Progress Overview */}
+                <motion.div variants={itemVariants}>
+                  <Card className="glass-card overflow-hidden">
+                    <CardHeader className="pb-2 p-4 sm:p-6">
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="text-sm sm:text-base flex items-center gap-2">
+                          <Star className="h-4 w-4 sm:h-5 sm:w-5 text-yoel-primary" />
+                          Progression par niveau
+                        </CardTitle>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-xs text-muted-foreground"
+                          onClick={() => navigate('levels')}
+                        >
+                          D\u00e9tails
+                          <ChevronRight className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="space-y-2.5 p-4 sm:p-6 pt-0 sm:pt-0">
+                      {LEVELS.map((lvl, idx) => (
+                        <div key={lvl.code} className="space-y-1">
+                          <div className="flex items-center justify-between text-xs sm:text-sm">
+                            <span className="flex items-center gap-1.5 sm:gap-2">
+                              <span className="text-sm">{lvl.icon}</span>
+                              <span className="font-medium">
+                                {lvl.code} - {lvl.name}
+                              </span>
+                            </span>
+                            <span className="text-muted-foreground text-[10px] sm:text-xs">
+                              {lvl.completedUnits}/{lvl.units}
+                            </span>
+                          </div>
+                          <Progress value={lvl.progress} className="h-1 sm:h-1.5" />
+                        </div>
+                      ))}
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
+        </div>
       </motion.div>
 
       {/* ─── 10. Bottom Navigation Bar (Mobile) ──────────────────────── */}
