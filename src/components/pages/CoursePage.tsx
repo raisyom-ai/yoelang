@@ -451,7 +451,7 @@ export default function CoursePage() {
   // ─── RENDER: Lesson List View ───────────────────────────────────────────
   if (viewMode === 'list') {
     return (
-      <div className="min-h-screen bg-background flex flex-col">
+      <div className="min-h-screen bg-background flex flex-col overflow-x-hidden">
         <ScrollArea className="h-screen">
           <motion.div
             className="mx-auto max-w-4xl space-y-6 p-4 lg:p-6 pb-24"
@@ -608,12 +608,13 @@ export default function CoursePage() {
                             </div>
 
                             {/* Type badge & meta */}
-                            <div className="flex items-center gap-2 shrink-0">
-                              <Badge className={`${config.color} border-0 text-[10px]`}>
-                                <IconComp className="h-3 w-3 mr-1" />
-                                {config.label}
+                            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+                              <Badge className={`${config.color} border-0 text-[10px] px-1.5 sm:px-2.5`}>
+                                <IconComp className="h-3 w-3 mr-0.5 sm:mr-1" />
+                                <span className="hidden sm:inline">{config.label}</span>
+                                <span className="sm:hidden">{config.label.slice(0, 4)}.</span>
                               </Badge>
-                              <div className="flex flex-col items-end gap-0.5">
+                              <div className="hidden sm:flex flex-col items-end gap-0.5">
                                 <div className="flex items-center gap-0.5 text-[10px] text-muted-foreground">
                                   <Zap className="h-3 w-3 text-yoel-gold" />
                                   {l.xpReward} XP
@@ -686,7 +687,7 @@ export default function CoursePage() {
 
   // ─── RENDER: Study Mode ─────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col overflow-x-hidden">
       {/* Top Bar */}
       <motion.div
         variants={containerVariants}
@@ -722,13 +723,14 @@ export default function CoursePage() {
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <Badge className={`${typeConfig.color} border-0 text-[10px]`}>
-                {(() => { const Icon = typeConfig.icon; return <Icon className="h-3 w-3 mr-1" /> })()}
-                {typeConfig.label}
+            <div className="flex items-center gap-1 sm:gap-2 shrink-0 min-w-0">
+              <Badge className={`${typeConfig.color} border-0 text-[10px] px-1.5 sm:px-2.5`}>
+                {(() => { const Icon = typeConfig.icon; return <Icon className="h-3 w-3 mr-0.5 sm:mr-1" /> })()}
+                <span className="hidden sm:inline">{typeConfig.label}</span>
+                <span className="sm:hidden">{typeConfig.label.slice(0, 4)}.</span>
               </Badge>
-              <Badge variant="outline" className="text-[10px]">
-                <Zap className="h-3 w-3 mr-1 text-yoel-gold" />
+              <Badge variant="outline" className="text-[10px] px-1.5 sm:px-2.5 hidden sm:inline-flex">
+                <Zap className="h-3 w-3 mr-0.5 sm:mr-1 text-yoel-gold" />
                 {selectedLessonData?.xpReward ?? lesson?.xpReward ?? 15} XP
               </Badge>
             </div>
@@ -830,19 +832,19 @@ export default function CoursePage() {
         transition={{ delay: 0.3, type: 'spring', stiffness: 200, damping: 25 }}
         className="sticky bottom-0 z-40 glass border-t border-border/30"
       >
-        <div className="mx-auto max-w-3xl p-3 flex items-center justify-between gap-3">
+        <div className="mx-auto max-w-3xl p-2 sm:p-3 flex items-center justify-between gap-2 sm:gap-3">
           <Button
             variant="outline"
             size="sm"
-            className="rounded-xl"
+            className="rounded-xl shrink-0"
             onClick={goPrev}
             disabled={currentStep === 0}
           >
-            <ChevronLeft className="h-4 w-4 mr-1" />
-            Précédent
+            <ChevronLeft className="h-4 w-4 sm:mr-1" />
+            <span className="hidden sm:inline">Précédent</span>
           </Button>
 
-          <div className="flex items-center gap-1">
+          <div className="hidden sm:flex items-center gap-1">
             {LESSON_STEPS.map((_, i) => (
               <div
                 key={i}
@@ -856,6 +858,38 @@ export default function CoursePage() {
               />
             ))}
           </div>
+          {/* Compact progress for mobile */}
+          <div className="flex sm:hidden items-center gap-1.5 flex-1 justify-center min-w-0">
+            {(() => {
+              const maxDots = 7
+              const half = Math.floor(maxDots / 2)
+              let start = Math.max(0, currentStep - half)
+              const end = Math.min(totalSteps, start + maxDots)
+              if (end - start < maxDots) start = Math.max(0, end - maxDots)
+              const dots = []
+              for (let i = start; i < end; i++) {
+                dots.push(i)
+              }
+              return (
+                <>
+                  {start > 0 && <span className="text-[10px] text-muted-foreground">…</span>}
+                  {dots.map((i) => (
+                    <div
+                      key={i}
+                      className={`h-1.5 rounded-full transition-all ${
+                        i === currentStep
+                          ? 'w-5 bg-yoel-primary'
+                          : i < currentStep
+                          ? 'w-2 bg-yoel-green'
+                          : 'w-2 bg-muted-foreground/20'
+                      }`}
+                    />
+                  ))}
+                  {end < totalSteps && <span className="text-[10px] text-muted-foreground">…</span>}
+                </>
+              )
+            })()}
+          </div>
 
           {(() => {
             if (currentStepData?.type === 'quiz') return null
@@ -863,11 +897,12 @@ export default function CoursePage() {
               return (
                 <Button
                   size="sm"
-                  className="rounded-xl bg-yoel-gold hover:bg-yoel-gold/90 text-white"
+                  className="rounded-xl bg-yoel-gold hover:bg-yoel-gold/90 text-white shrink-0"
                   onClick={goNext}
                 >
-                  <Sparkles className="h-4 w-4 mr-1" />
-                  Passer au Quiz
+                  <Sparkles className="h-4 w-4 sm:mr-1" />
+                  <span className="hidden sm:inline">Passer au Quiz</span>
+                  <span className="sm:hidden">Quiz</span>
                 </Button>
               )
             }
@@ -875,11 +910,11 @@ export default function CoursePage() {
             return (
               <Button
                 size="sm"
-                className="rounded-xl bg-yoel-primary hover:bg-yoel-primary-dark text-white"
+                className="rounded-xl bg-yoel-primary hover:bg-yoel-primary-dark text-white shrink-0"
                 onClick={goNext}
               >
-                Suivant
-                <ChevronRight className="h-4 w-4 ml-1" />
+                <span className="hidden sm:inline">Suivant</span>
+                <ChevronRight className="h-4 w-4 sm:ml-1" />
               </Button>
             )
           })()}
