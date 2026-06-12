@@ -107,21 +107,21 @@ export default function LevelsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background overflow-x-hidden">
       <ScrollArea className="h-screen">
         <motion.div
-          className="mx-auto max-w-5xl space-y-6 p-4 lg:p-6 pb-24"
+          className="mx-auto max-w-5xl w-full space-y-4 sm:space-y-6 p-3 sm:p-4 lg:p-6 pb-24"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
         >
           {/* ─── Top Bar ─────────────────────────────────────────────── */}
-          <motion.div variants={itemVariants} className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
+          <motion.div variants={itemVariants} className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 min-w-0">
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-10 w-10 rounded-xl"
+                className="h-9 w-9 rounded-xl shrink-0"
                 onClick={goBack}
               >
                 <ArrowLeft className="h-5 w-5" />
@@ -129,23 +129,23 @@ export default function LevelsPage() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-10 w-10 rounded-xl text-muted-foreground hover:text-yoel-primary"
+                className="h-9 w-9 rounded-xl text-muted-foreground hover:text-yoel-primary shrink-0"
                 onClick={() => navigate('dashboard')}
               >
                 <Home className="h-4 w-4" />
               </Button>
-              <div>
-                <h1 className="text-xl font-bold gradient-text-primary">
+              <div className="min-w-0">
+                <h1 className="text-lg sm:text-xl font-bold gradient-text-primary truncate">
                   Parcours d&apos;apprentissage
                 </h1>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-[10px] sm:text-xs text-muted-foreground truncate">
                   Votre chemin vers la maîtrise de l&apos;anglais
                 </p>
               </div>
             </div>
             <Select value={filterLevel} onValueChange={setFilterLevel}>
-              <SelectTrigger className="w-[140px] h-9 text-xs rounded-xl">
-                <Filter className="h-3.5 w-3.5 mr-1.5" />
+              <SelectTrigger className="w-[110px] sm:w-[140px] h-9 text-xs rounded-xl shrink-0">
+                <Filter className="h-3.5 w-3.5 mr-1" />
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -159,32 +159,32 @@ export default function LevelsPage() {
 
           {/* ─── Summary Stats ────────────────────────────────────────── */}
           <motion.div variants={itemVariants}>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-3 gap-2 sm:gap-3">
               <Card className="glass-card overflow-hidden">
-                <CardContent className="flex flex-col items-center justify-center p-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-yoel-gold/15 mb-2">
-                    <Zap className="h-5 w-5 text-yoel-gold" />
+                <CardContent className="flex flex-col items-center justify-center p-2 sm:p-4">
+                  <div className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-yoel-gold/15 mb-1 sm:mb-2">
+                    <Zap className="h-4 w-4 sm:h-5 sm:w-5 text-yoel-gold" />
                   </div>
-                  <span className="text-xl font-bold gradient-text-primary">{xp.toLocaleString()}</span>
-                  <span className="text-[10px] text-muted-foreground font-medium">Total XP</span>
+                  <span className="text-base sm:text-xl font-bold gradient-text-primary">{xp.toLocaleString()}</span>
+                  <span className="text-[9px] sm:text-[10px] text-muted-foreground font-medium">Total XP</span>
                 </CardContent>
               </Card>
               <Card className="glass-card overflow-hidden">
-                <CardContent className="flex flex-col items-center justify-center p-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-yoel-blue/15 mb-2">
-                    <Trophy className="h-5 w-5 text-yoel-blue" />
+                <CardContent className="flex flex-col items-center justify-center p-2 sm:p-4">
+                  <div className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-yoel-blue/15 mb-1 sm:mb-2">
+                    <Trophy className="h-4 w-4 sm:h-5 sm:w-5 text-yoel-blue" />
                   </div>
-                  <span className="text-xl font-bold gradient-text-blue">{level}</span>
-                  <span className="text-[10px] text-muted-foreground font-medium">Niveau actuel</span>
+                  <span className="text-base sm:text-xl font-bold gradient-text-blue">{level}</span>
+                  <span className="text-[9px] sm:text-[10px] text-muted-foreground font-medium">Niveau actuel</span>
                 </CardContent>
               </Card>
               <Card className="glass-card overflow-hidden">
-                <CardContent className="flex flex-col items-center justify-center p-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-yoel-green/15 mb-2">
-                    <BookOpen className="h-5 w-5 text-yoel-green" />
+                <CardContent className="flex flex-col items-center justify-center p-2 sm:p-4">
+                  <div className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-yoel-green/15 mb-1 sm:mb-2">
+                    <BookOpen className="h-4 w-4 sm:h-5 sm:w-5 text-yoel-green" />
                   </div>
-                  <span className="text-xl font-bold text-yoel-green">{totalCompletedUnits}/{totalUnits}</span>
-                  <span className="text-[10px] text-muted-foreground font-medium">Unités</span>
+                  <span className="text-base sm:text-xl font-bold text-yoel-green">{totalCompletedUnits}/{totalUnits}</span>
+                  <span className="text-[9px] sm:text-[10px] text-muted-foreground font-medium">Unités</span>
                 </CardContent>
               </Card>
             </div>
@@ -192,16 +192,16 @@ export default function LevelsPage() {
 
           {/* ─── Level Roadmap ────────────────────────────────────────── */}
           <motion.div variants={itemVariants}>
-            <div className="flex items-center gap-2 mb-4">
+            <div className="flex items-center gap-2 mb-2 sm:mb-4">
               <Map className="h-5 w-5 text-yoel-primary" />
-              <h2 className="text-lg font-semibold">Carte des niveaux</h2>
+              <h2 className="text-base sm:text-lg font-semibold">Carte des niveaux</h2>
             </div>
           </motion.div>
 
           {/* Desktop: Horizontal winding path / Mobile: Vertical path */}
           <div className="relative">
             {/* Mobile: Vertical path */}
-            <div className="flex flex-col items-center lg:hidden space-y-0">
+            <div className="flex flex-col items-center lg:hidden space-y-0 w-full">
               {filteredLevels.map((lvl, index) => {
                 const originalIndex = LEVELS.indexOf(lvl)
                 const status = getLevelStatus(lvl, originalIndex)
@@ -232,6 +232,7 @@ export default function LevelsPage() {
                         status={status}
                         isActive={isActive}
                         onClick={() => handleLevelClick(lvl, originalIndex)}
+                        isMobile
                       />
                     </motion.div>
                   </div>
@@ -307,10 +308,10 @@ export default function LevelsPage() {
 
           {/* ─── Level Detail Section ──────────────────────────────────── */}
           <motion.div variants={itemVariants}>
-            <Separator className="my-4" />
-            <div className="flex items-center gap-2 mb-4">
+            <Separator className="my-2 sm:my-4" />
+            <div className="flex items-center gap-2 mb-2 sm:mb-4">
               <Star className="h-5 w-5 text-yoel-gold" />
-              <h2 className="text-lg font-semibold">Détails des niveaux</h2>
+              <h2 className="text-base sm:text-lg font-semibold">Détails des niveaux</h2>
             </div>
             <div className="space-y-3">
               {filteredLevels.map((lvl, index) => {
@@ -333,23 +334,23 @@ export default function LevelsPage() {
                       } ${isActive ? 'ring-2 ring-yoel-primary/40' : ''}`}
                       onClick={() => handleLevelClick(lvl, originalIndex)}
                     >
-                      <CardContent className="p-4">
-                        <div className="flex items-center gap-4">
+                      <CardContent className="p-3 sm:p-4">
+                        <div className="flex items-center gap-2 sm:gap-4">
                           {/* Icon */}
                           <div
-                            className={`flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${lvl.color} text-2xl shrink-0 shadow-md ${
+                            className={`flex h-11 w-11 sm:h-14 sm:w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${lvl.color} text-xl sm:text-2xl shrink-0 shadow-md ${
                               isActive ? 'animate-pulse-glow' : ''
                             }`}
                           >
-                            {status === 'locked' ? <Lock className="h-6 w-6 text-white/80" /> : lvl.icon}
+                            {status === 'locked' ? <Lock className="h-5 w-5 sm:h-6 sm:w-6 text-white/80" /> : lvl.icon}
                           </div>
 
                           {/* Info */}
                           <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-1">
+                            <div className="flex items-center gap-1.5 sm:gap-2 mb-0.5 sm:mb-1">
                               <Badge
                                 variant="secondary"
-                                className={`text-xs font-bold ${
+                                className={`text-[10px] sm:text-xs font-bold px-1.5 sm:px-2.5 ${
                                   status === 'completed'
                                     ? 'bg-yoel-green/15 text-yoel-green'
                                     : status === 'active'
@@ -361,31 +362,31 @@ export default function LevelsPage() {
                               >
                                 {lvl.code}
                               </Badge>
-                              <span className="font-semibold text-sm truncate">
+                              <span className="font-semibold text-xs sm:text-sm truncate">
                                 {lvl.name}
                               </span>
                               {status === 'completed' && (
-                                <CheckCircle2 className="h-4 w-4 text-yoel-green shrink-0" />
+                                <CheckCircle2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-yoel-green shrink-0" />
                               )}
                             </div>
-                            <p className="text-xs text-muted-foreground mb-2 line-clamp-1">
+                            <p className="text-[10px] sm:text-xs text-muted-foreground mb-1.5 sm:mb-2 line-clamp-1">
                               {lvl.description}
                             </p>
-                            <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-1.5 sm:gap-3">
                               <div className="flex-1">
-                                <Progress value={lvl.progress} className="h-2" />
+                                <Progress value={lvl.progress} className="h-1.5 sm:h-2" />
                               </div>
-                              <span className="text-xs font-medium text-muted-foreground shrink-0">
+                              <span className="text-[10px] sm:text-xs font-medium text-muted-foreground shrink-0">
                                 {lvl.progress}%
                               </span>
-                              <span className="text-[10px] text-muted-foreground shrink-0">
+                              <span className="text-[9px] sm:text-[10px] text-muted-foreground shrink-0 hidden sm:inline">
                                 {lvl.completedUnits}/{lvl.units} unités
                               </span>
                             </div>
                           </div>
 
                           {/* Action button */}
-                          <div className="shrink-0">
+                          <div className="shrink-0 hidden sm:block">
                             {status === 'completed' ? (
                               <Badge className="bg-yoel-green/15 text-yoel-green border-0 text-xs">
                                 Terminé
@@ -410,6 +411,16 @@ export default function LevelsPage() {
                               </Button>
                             )}
                           </div>
+                          {/* Mobile: compact chevron only */}
+                          <div className="shrink-0 sm:hidden">
+                            {status === 'completed' ? (
+                              <CheckCircle2 className="h-5 w-5 text-yoel-green" />
+                            ) : status === 'locked' ? (
+                              <Lock className="h-4 w-4 text-muted-foreground/40" />
+                            ) : (
+                              <ChevronRight className="h-5 w-5 text-muted-foreground/50" />
+                            )}
+                          </div>
                         </div>
                       </CardContent>
                     </Card>
@@ -422,20 +433,20 @@ export default function LevelsPage() {
           {/* ─── Journey Progress Summary ──────────────────────────────── */}
           <motion.div variants={itemVariants}>
             <Card className="overflow-hidden border-0 bg-gradient-to-r from-yoel-primary/5 via-transparent to-yoel-blue/5">
-              <CardContent className="p-5">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-yoel-primary/15">
-                    <Trophy className="h-5 w-5 text-yoel-primary" />
+              <CardContent className="p-3 sm:p-5">
+                <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+                  <div className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-yoel-primary/15">
+                    <Trophy className="h-4 w-4 sm:h-5 sm:w-5 text-yoel-primary" />
                   </div>
-                  <div>
-                    <h3 className="font-semibold text-sm">Progression globale</h3>
-                    <p className="text-xs text-muted-foreground">
+                  <div className="min-w-0">
+                    <h3 className="font-semibold text-xs sm:text-sm">Progression globale</h3>
+                    <p className="text-[10px] sm:text-xs text-muted-foreground truncate">
                       Continuez à apprendre pour débloquer tous les niveaux
                     </p>
                   </div>
                 </div>
                 <div className="space-y-1.5">
-                  <div className="flex items-center justify-between text-xs">
+                  <div className="flex items-center justify-between text-[10px] sm:text-xs">
                     <span className="text-muted-foreground">
                       {totalCompletedUnits} sur {totalUnits} unités complétées
                     </span>
@@ -445,10 +456,10 @@ export default function LevelsPage() {
                   </div>
                   <Progress
                     value={(totalCompletedUnits / totalUnits) * 100}
-                    className="h-3"
+                    className="h-2.5 sm:h-3"
                   />
                 </div>
-                <div className="flex items-center gap-4 mt-3 text-xs text-muted-foreground">
+                <div className="flex items-center gap-3 sm:gap-4 mt-2 sm:mt-3 text-[10px] sm:text-xs text-muted-foreground">
                   <span className="flex items-center gap-1">
                     <span className="h-2 w-2 rounded-full bg-yoel-green" />
                     {LEVELS.filter((l) => l.progress >= 100).length} terminé{LEVELS.filter((l) => l.progress >= 100).length > 1 ? 's' : ''}
@@ -478,12 +489,103 @@ function LevelCard({
   status,
   isActive,
   onClick,
+  isMobile = false,
 }: {
   level: LevelInfo
   status: 'completed' | 'active' | 'locked' | 'available'
   isActive: boolean
   onClick: () => void
+  isMobile?: boolean
 }) {
+  // Mobile: compact horizontal layout to prevent overflow
+  if (isMobile) {
+    return (
+      <motion.div
+        whileTap={status !== 'locked' ? { scale: 0.98 } : undefined}
+        className="relative w-full"
+      >
+        <Card
+          className={`overflow-hidden border-0 transition-all w-full ${
+            status === 'locked'
+              ? 'bg-muted/30 opacity-60'
+              : isActive
+              ? 'bg-gradient-to-br from-card to-card shadow-lg'
+              : 'glass-card'
+          } ${isActive ? 'ring-2 ring-yoel-primary/50' : ''}`}
+          onClick={status !== 'locked' ? onClick : undefined}
+        >
+          <div className="flex items-center gap-3 p-3">
+            {/* Left gradient accent */}
+            <div className={`w-1.5 self-stretch rounded-full bg-gradient-to-b ${level.color} shrink-0 ${
+              status === 'locked' ? 'opacity-30' : ''
+            }`} />
+
+            {/* Icon */}
+            <div
+              className={`flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br ${level.color} text-xl shrink-0 shadow-md ${
+                status === 'locked' ? 'opacity-40 grayscale' : ''
+              } ${isActive ? 'animate-float' : ''}`}
+            >
+              {status === 'locked' ? (
+                <Lock className="h-5 w-5 text-white/80" />
+              ) : (
+                level.icon
+              )}
+            </div>
+
+            {/* Info */}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-1.5 mb-0.5">
+                <Badge
+                  variant="secondary"
+                  className={`text-[9px] font-bold px-1 py-0 ${
+                    status === 'completed'
+                      ? 'bg-yoel-green/15 text-yoel-green'
+                      : status === 'active'
+                      ? 'bg-yoel-primary/15 text-yoel-primary'
+                      : 'bg-muted/50 text-muted-foreground'
+                  }`}
+                >
+                  {level.code}
+                </Badge>
+                <span className={`font-semibold text-xs truncate ${status === 'locked' ? 'text-muted-foreground' : ''}`}>
+                  {level.name}
+                </span>
+                {status === 'completed' && (
+                  <CheckCircle2 className="h-3 w-3 text-yoel-green shrink-0" />
+                )}
+              </div>
+              <p className="text-[9px] text-muted-foreground line-clamp-1 mb-1">
+                {level.description}
+              </p>
+              <div className="flex items-center gap-1.5">
+                <Progress
+                  value={level.progress}
+                  className={`h-1 flex-1 ${status === 'locked' ? 'opacity-30' : ''}`}
+                />
+                <span className="text-[9px] font-medium text-muted-foreground shrink-0">
+                  {level.progress}%
+                </span>
+              </div>
+            </div>
+
+            {/* Action */}
+            <div className="shrink-0">
+              {status === 'completed' ? (
+                <CheckCircle2 className="h-5 w-5 text-yoel-green" />
+              ) : status === 'locked' ? (
+                <Lock className="h-4 w-4 text-muted-foreground/40" />
+              ) : (
+                <ChevronRight className="h-5 w-5 text-muted-foreground/50" />
+              )}
+            </div>
+          </div>
+        </Card>
+      </motion.div>
+    )
+  }
+
+  // Desktop: vertical card layout
   return (
     <motion.div
       whileHover={status !== 'locked' ? { scale: 1.03, y: -4 } : undefined}

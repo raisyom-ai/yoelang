@@ -454,18 +454,18 @@ export default function CoursePage() {
       <div className="min-h-screen bg-background flex flex-col overflow-x-hidden">
         <ScrollArea className="h-screen">
           <motion.div
-            className="mx-auto max-w-4xl space-y-6 p-4 lg:p-6 pb-24"
+            className="mx-auto max-w-4xl w-full space-y-4 sm:space-y-6 p-3 sm:p-4 lg:p-6 pb-24"
             variants={containerVariants}
             initial="hidden"
             animate="visible"
           >
             {/* Top Bar */}
-            <motion.div variants={itemVariants} className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-3">
+            <motion.div variants={itemVariants} className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2 min-w-0">
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-10 w-10 rounded-xl"
+                  className="h-9 w-9 rounded-xl shrink-0"
                   onClick={goBack}
                 >
                   <ArrowLeft className="h-5 w-5" />
@@ -473,16 +473,16 @@ export default function CoursePage() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-10 w-10 rounded-xl text-muted-foreground hover:text-yoel-primary"
+                  className="h-9 w-9 rounded-xl text-muted-foreground hover:text-yoel-primary shrink-0"
                   onClick={() => navigate('dashboard')}
                 >
                   <Home className="h-4 w-4" />
                 </Button>
-                <div>
-                  <h1 className="text-xl font-bold gradient-text-primary">
+                <div className="min-w-0">
+                  <h1 className="text-lg sm:text-xl font-bold gradient-text-primary truncate">
                     {levelInfo.code} — {levelInfo.name}
                   </h1>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-[10px] sm:text-xs text-muted-foreground truncate">
                     Choisissez une leçon à étudier
                   </p>
                 </div>
@@ -492,31 +492,31 @@ export default function CoursePage() {
             {/* Level Progress Summary */}
             <motion.div variants={itemVariants}>
               <Card className="overflow-hidden border-0 bg-gradient-to-r from-yoel-primary/5 via-transparent to-yoel-gold/5">
-                <CardContent className="p-5">
-                  <div className="flex items-center gap-4 mb-3">
-                    <div className={`flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${levelInfo.color} text-3xl shadow-lg`}>
+                <CardContent className="p-3 sm:p-5">
+                  <div className="flex items-center gap-3 sm:gap-4 mb-2 sm:mb-3">
+                    <div className={`flex h-11 w-11 sm:h-14 sm:w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${levelInfo.color} text-xl sm:text-3xl shadow-lg shrink-0`}>
                       {levelInfo.icon}
                     </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <Badge variant="secondary" className="text-xs font-bold bg-yoel-primary/15 text-yoel-primary">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5 sm:gap-2 mb-0.5 sm:mb-1">
+                        <Badge variant="secondary" className="text-[10px] sm:text-xs font-bold bg-yoel-primary/15 text-yoel-primary px-1.5 sm:px-2.5">
                           {levelInfo.code}
                         </Badge>
-                        <span className="font-semibold">{levelInfo.name}</span>
+                        <span className="font-semibold text-xs sm:text-sm truncate">{levelInfo.name}</span>
                       </div>
-                      <p className="text-xs text-muted-foreground">{levelInfo.description}</p>
+                      <p className="text-[10px] sm:text-xs text-muted-foreground line-clamp-1">{levelInfo.description}</p>
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between text-sm">
+                  <div className="space-y-1.5 sm:space-y-2">
+                    <div className="flex items-center justify-between text-[10px] sm:text-sm">
                       <span className="text-muted-foreground">
                         {completedCount} sur {totalLessons} leçons complétées
                       </span>
                       <span className="font-semibold gradient-text-primary">{progressPercent}%</span>
                     </div>
-                    <Progress value={progressPercent} className="h-3" />
+                    <Progress value={progressPercent} className="h-2 sm:h-3" />
                   </div>
-                  <div className="flex items-center gap-4 mt-3 text-xs text-muted-foreground">
+                  <div className="flex items-center gap-3 sm:gap-4 mt-2 sm:mt-3 text-[10px] sm:text-xs text-muted-foreground">
                     <span className="flex items-center gap-1">
                       <span className="h-2 w-2 rounded-full bg-yoel-green" />
                       {completedCount} terminée{completedCount > 1 ? 's' : ''}
@@ -541,34 +541,34 @@ export default function CoursePage() {
                 <motion.div key={unit.id} variants={itemVariants}>
                   <Card className="glass-card overflow-hidden">
                     {/* Unit Header */}
-                    <div className="p-4 pb-3">
-                      <div className="flex items-center gap-3 mb-2">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-yoel-primary/10 text-xl shrink-0">
+                    <div className="p-3 sm:p-4 pb-2 sm:pb-3">
+                      <div className="flex items-center gap-2 sm:gap-3 mb-1.5 sm:mb-2">
+                        <div className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-yoel-primary/10 text-lg sm:text-xl shrink-0">
                           {unit.icon}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-0.5">
-                            <Badge variant="outline" className="text-[10px] font-bold px-1.5 py-0">
+                          <div className="flex items-center gap-1.5 sm:gap-2 mb-0.5">
+                            <Badge variant="outline" className="text-[9px] sm:text-[10px] font-bold px-1 sm:px-1.5 py-0">
                               Unité {unitIdx + 1}
                             </Badge>
                             {unitProgress === 100 && (
-                              <CheckCircle2 className="h-3.5 w-3.5 text-yoel-green" />
+                              <CheckCircle2 className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-yoel-green" />
                             )}
                           </div>
-                          <h3 className="font-semibold text-sm truncate">{unit.title}</h3>
-                          <p className="text-[11px] text-muted-foreground line-clamp-1">{unit.description}</p>
+                          <h3 className="font-semibold text-xs sm:text-sm truncate">{unit.title}</h3>
+                          <p className="text-[10px] sm:text-[11px] text-muted-foreground line-clamp-1">{unit.description}</p>
                         </div>
                         <div className="text-right shrink-0">
-                          <span className="text-xs font-medium text-muted-foreground">
+                          <span className="text-[10px] sm:text-xs font-medium text-muted-foreground">
                             {unitCompleted}/{unitLessons.length}
                           </span>
-                          <Progress value={unitProgress} className="h-1.5 w-20 mt-1" />
+                          <Progress value={unitProgress} className="h-1.5 w-16 sm:w-20 mt-1" />
                         </div>
                       </div>
                     </div>
 
                     {/* Lessons List */}
-                    <div className="px-2 pb-2 space-y-1">
+                    <div className="px-2 sm:px-2 pb-2 space-y-1">
                       {unitLessons.map((l, lIdx) => {
                         const config = getTypeConfig(l.type)
                         const IconComp = config.icon
@@ -580,7 +580,7 @@ export default function CoursePage() {
                             whileHover={{ scale: 1.01 }}
                             whileTap={{ scale: 0.99 }}
                             onClick={() => handleSelectLesson(l)}
-                            className={`w-full text-left rounded-xl p-3 transition-all flex items-center gap-3 ${
+                            className={`w-full text-left rounded-xl p-2.5 sm:p-3 transition-all flex items-center gap-2 sm:gap-3 ${
                               isCompleted
                                 ? 'bg-yoel-green/5 hover:bg-yoel-green/10 border border-yoel-green/20'
                                 : 'bg-muted/30 hover:bg-muted/50 border border-transparent hover:border-yoel-primary/20'
@@ -637,32 +637,32 @@ export default function CoursePage() {
 
             {/* Quick Stats */}
             <motion.div variants={itemVariants}>
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-3 gap-2 sm:gap-3">
                 <Card className="glass-card overflow-hidden">
-                  <CardContent className="flex flex-col items-center justify-center p-4">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-yoel-green/15 mb-2">
-                      <CheckCircle2 className="h-5 w-5 text-yoel-green" />
+                  <CardContent className="flex flex-col items-center justify-center p-2 sm:p-4">
+                    <div className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-yoel-green/15 mb-1 sm:mb-2">
+                      <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-yoel-green" />
                     </div>
-                    <span className="text-xl font-bold text-yoel-green">{completedCount}</span>
-                    <span className="text-[10px] text-muted-foreground font-medium">Terminées</span>
+                    <span className="text-base sm:text-xl font-bold text-yoel-green">{completedCount}</span>
+                    <span className="text-[9px] sm:text-[10px] text-muted-foreground font-medium">Terminées</span>
                   </CardContent>
                 </Card>
                 <Card className="glass-card overflow-hidden">
-                  <CardContent className="flex flex-col items-center justify-center p-4">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-yoel-primary/15 mb-2">
-                      <BookOpen className="h-5 w-5 text-yoel-primary" />
+                  <CardContent className="flex flex-col items-center justify-center p-2 sm:p-4">
+                    <div className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-yoel-primary/15 mb-1 sm:mb-2">
+                      <BookOpen className="h-4 w-4 sm:h-5 sm:w-5 text-yoel-primary" />
                     </div>
-                    <span className="text-xl font-bold gradient-text-primary">{totalLessons - completedCount}</span>
-                    <span className="text-[10px] text-muted-foreground font-medium">Restantes</span>
+                    <span className="text-base sm:text-xl font-bold gradient-text-primary">{totalLessons - completedCount}</span>
+                    <span className="text-[9px] sm:text-[10px] text-muted-foreground font-medium">Restantes</span>
                   </CardContent>
                 </Card>
                 <Card className="glass-card overflow-hidden">
-                  <CardContent className="flex flex-col items-center justify-center p-4">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-yoel-gold/15 mb-2">
-                      <Zap className="h-5 w-5 text-yoel-gold" />
+                  <CardContent className="flex flex-col items-center justify-center p-2 sm:p-4">
+                    <div className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-yoel-gold/15 mb-1 sm:mb-2">
+                      <Zap className="h-4 w-4 sm:h-5 sm:w-5 text-yoel-gold" />
                     </div>
-                    <span className="text-xl font-bold text-yoel-gold">{allLessons.reduce((a, l) => a + l.xpReward, 0)}</span>
-                    <span className="text-[10px] text-muted-foreground font-medium">XP total</span>
+                    <span className="text-base sm:text-xl font-bold text-yoel-gold">{allLessons.reduce((a, l) => a + l.xpReward, 0)}</span>
+                    <span className="text-[9px] sm:text-[10px] text-muted-foreground font-medium">XP total</span>
                   </CardContent>
                 </Card>
               </div>
