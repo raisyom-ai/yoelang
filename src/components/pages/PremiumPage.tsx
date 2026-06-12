@@ -74,16 +74,19 @@ interface Feature {
 const FEATURES: Feature[] = [
   { name: 'Leçons basiques', description: 'Accédez aux leçons fondamentales de votre niveau', free: true, premium: true, icon: BookOpen, color: 'text-yoel-primary', bg: 'bg-yoel-primary/10' },
   { name: 'Exercices illimités', description: 'Pratiquez sans limite avec des exercices variés', free: false, premium: true, icon: Dumbbell, color: 'text-yoel-green', bg: 'bg-yoel-green/10' },
-  { name: 'Chat IA avancé', description: 'Conversations intelligentes avec corrections en temps réel', free: false, premium: true, icon: MessageCircle, color: 'text-yoel-blue', bg: 'bg-yoel-blue/10' },
+  { name: 'Chat IA (50 msg/mois)', description: 'Conversations intelligentes avec corrections en temps réel', free: false, premium: true, icon: MessageCircle, color: 'text-yoel-blue', bg: 'bg-yoel-blue/10' },
+  { name: 'XP doublé', description: 'Gagnez le double d\'XP à chaque activité', free: false, premium: true, icon: Zap, color: 'text-yoel-gold', bg: 'bg-yoel-gold/10' },
+  { name: 'Zéro publicité', description: 'Apprenez sans interruption ni distraction', free: false, premium: true, icon: Ban, color: 'text-red-400', bg: 'bg-red-400/10' },
+  { name: 'Chat IA illimité', description: 'Conversations IA sans aucune limite', free: false, premium: true, icon: MessageCircle, color: 'text-yoel-blue', bg: 'bg-yoel-blue/10' },
   { name: 'Reconnaissance vocale', description: 'Améliorez votre prononciation avec l\'IA', free: false, premium: true, icon: Volume2, color: 'text-yoel-gold', bg: 'bg-yoel-gold/10' },
   { name: 'Certificats officiels', description: 'Obtenez des certificats pour chaque niveau complété', free: false, premium: true, icon: Award, color: 'text-yoel-primary', bg: 'bg-yoel-primary/10' },
-  { name: 'Zéro publicité', description: 'Apprenez sans interruption ni distraction', free: false, premium: true, icon: Ban, color: 'text-red-400', bg: 'bg-red-400/10' },
-  { name: 'Cours hors ligne', description: 'Téléchargez et apprenez sans connexion', free: false, premium: true, icon: Download, color: 'text-yoel-blue', bg: 'bg-yoel-blue/10' },
-  { name: 'Support prioritaire', description: 'Réponse garantie sous 24h', free: false, premium: true, icon: Headphones, color: 'text-yoel-green', bg: 'bg-yoel-green/10' },
   { name: 'Badges exclusifs', description: 'Débloquez des badges Premium uniques', free: false, premium: true, icon: Gem, color: 'text-yoel-gold', bg: 'bg-yoel-gold/10' },
-  { name: 'XP doublé', description: 'Gagnez le double d\'XP à chaque activité', free: false, premium: true, icon: Zap, color: 'text-yoel-gold', bg: 'bg-yoel-gold/10' },
   { name: 'Statistiques avancées', description: 'Analyse détaillée de votre progression', free: false, premium: true, icon: TrendingUp, color: 'text-yoel-primary', bg: 'bg-yoel-primary/10' },
+  { name: 'Cours hors ligne', description: 'Téléchargez et apprenez sans connexion', free: false, premium: true, icon: Download, color: 'text-yoel-blue', bg: 'bg-yoel-blue/10' },
   { name: 'Thèmes personnalisés', description: 'Personnalisez l\'apparence de l\'application', free: false, premium: true, icon: Palette, color: 'text-yoel-blue', bg: 'bg-yoel-blue/10' },
+  { name: 'Support prioritaire', description: 'Réponse garantie sous 24h', free: false, premium: true, icon: Headphones, color: 'text-yoel-green', bg: 'bg-yoel-green/10' },
+  { name: 'Accès anticipé', description: 'Découvrez les nouveautés en avant-première', free: false, premium: true, icon: Rocket, color: 'text-yoel-gold', bg: 'bg-yoel-gold/10' },
+  { name: 'Badge Légende', description: 'Badge exclusif réservé aux membres à vie', free: false, premium: true, icon: Crown, color: 'text-yoel-gold', bg: 'bg-yoel-gold/10' },
 ]
 
 // ─── Premium-Only Badges ────────────────────────────────────────────────────
@@ -97,25 +100,19 @@ const PREMIUM_BADGES = [
 
 // ─── Plans ──────────────────────────────────────────────────────────────────
 
-// ─── Included features (same for all Premium plans) ─────────────────────────
+// ─── Plan Feature Tiers ─────────────────────────────────────────────────────
 
-const INCLUDED_FEATURES = [
-  { icon: Dumbbell, text: 'Exercices illimités' },
-  { icon: MessageCircle, text: 'Chat IA avancé' },
-  { icon: Volume2, text: 'Reconnaissance vocale' },
-  { icon: Zap, text: 'XP doublé' },
-  { icon: Award, text: 'Certificats officiels' },
-  { icon: Gem, text: 'Badges exclusifs' },
-  { icon: TrendingUp, text: 'Statistiques avancées' },
-  { icon: Ban, text: 'Zéro publicité' },
-  { icon: Download, text: 'Cours hors ligne' },
-  { icon: Headphones, text: 'Support prioritaire' },
-  { icon: Palette, text: 'Thèmes personnalisés' },
-]
+interface PlanFeature {
+  icon: React.ComponentType<{ className?: string }>
+  text: string
+  /** If true, show in this plan; if string, show that text as a qualifier */
+  available: boolean | string
+}
 
 interface Plan {
   id: string
   name: string
+  subtitle: string
   price: string
   period: string
   monthlyEquivalent: string | null
@@ -123,12 +120,14 @@ interface Plan {
   recommended: boolean
   badge: string | null
   perks: string[]
+  features: PlanFeature[]
 }
 
 const PLANS: Plan[] = [
   {
     id: 'monthly',
-    name: 'Mensuel',
+    name: 'Essentiel',
+    subtitle: 'Mensuel',
     price: '9,99',
     period: '/mois',
     monthlyEquivalent: null,
@@ -136,10 +135,26 @@ const PLANS: Plan[] = [
     recommended: false,
     badge: null,
     perks: ['Sans engagement', 'Annulation facile', '7 jours d\'essai gratuit'],
+    features: [
+      { icon: Dumbbell, text: 'Exercices illimités', available: true },
+      { icon: MessageCircle, text: 'Chat IA', available: '50 msg/mois' },
+      { icon: Zap, text: 'XP doublé', available: true },
+      { icon: Ban, text: 'Zéro publicité', available: true },
+      { icon: Volume2, text: 'Reconnaissance vocale', available: false },
+      { icon: Award, text: 'Certificats officiels', available: false },
+      { icon: Gem, text: 'Badges exclusifs', available: false },
+      { icon: TrendingUp, text: 'Statistiques avancées', available: false },
+      { icon: Download, text: 'Cours hors ligne', available: false },
+      { icon: Palette, text: 'Thèmes personnalisés', available: false },
+      { icon: Headphones, text: 'Support prioritaire', available: false },
+      { icon: Rocket, text: 'Accès anticipé', available: false },
+      { icon: Crown, text: 'Badge Légende', available: false },
+    ],
   },
   {
     id: 'yearly',
-    name: 'Annuel',
+    name: 'Complet',
+    subtitle: 'Annuel',
     price: '79,99',
     period: '/an',
     monthlyEquivalent: '6,67€/mois',
@@ -147,10 +162,26 @@ const PLANS: Plan[] = [
     recommended: true,
     badge: 'POPULAIRE',
     perks: ['2 mois offerts', '7 jours d\'essai gratuit', 'Économisez 39,89€/an'],
+    features: [
+      { icon: Dumbbell, text: 'Exercices illimités', available: true },
+      { icon: MessageCircle, text: 'Chat IA', available: 'Illimité' },
+      { icon: Zap, text: 'XP doublé', available: true },
+      { icon: Ban, text: 'Zéro publicité', available: true },
+      { icon: Volume2, text: 'Reconnaissance vocale', available: true },
+      { icon: Award, text: 'Certificats officiels', available: true },
+      { icon: Gem, text: 'Badges exclusifs', available: true },
+      { icon: TrendingUp, text: 'Statistiques avancées', available: true },
+      { icon: Download, text: 'Cours hors ligne', available: true },
+      { icon: Palette, text: 'Thèmes personnalisés', available: false },
+      { icon: Headphones, text: 'Support prioritaire', available: false },
+      { icon: Rocket, text: 'Accès anticipé', available: false },
+      { icon: Crown, text: 'Badge Légende', available: false },
+    ],
   },
   {
     id: 'lifetime',
-    name: 'À vie',
+    name: 'Intégral',
+    subtitle: 'À vie',
     price: '199,99',
     period: '',
     monthlyEquivalent: null,
@@ -158,6 +189,21 @@ const PLANS: Plan[] = [
     recommended: false,
     badge: 'MEILLEURE VALEUR',
     perks: ['Paiement unique', 'Accès pour toujours', 'Toutes les futures mises à jour'],
+    features: [
+      { icon: Dumbbell, text: 'Exercices illimités', available: true },
+      { icon: MessageCircle, text: 'Chat IA', available: 'Illimité' },
+      { icon: Zap, text: 'XP doublé', available: true },
+      { icon: Ban, text: 'Zéro publicité', available: true },
+      { icon: Volume2, text: 'Reconnaissance vocale', available: true },
+      { icon: Award, text: 'Certificats officiels', available: true },
+      { icon: Gem, text: 'Badges exclusifs', available: true },
+      { icon: TrendingUp, text: 'Statistiques avancées', available: true },
+      { icon: Download, text: 'Cours hors ligne', available: true },
+      { icon: Palette, text: 'Thèmes personnalisés', available: true },
+      { icon: Headphones, text: 'Support prioritaire', available: true },
+      { icon: Rocket, text: 'Accès anticipé', available: true },
+      { icon: Crown, text: 'Badge Légende', available: true },
+    ],
   },
 ]
 
@@ -383,6 +429,7 @@ function PricingCard({
             {plan.name}
             {plan.recommended && <Crown className="h-4 w-4 text-yoel-gold" />}
           </CardTitle>
+          <CardDescription className="text-[11px]">{plan.subtitle}</CardDescription>
           {plan.savings && (
             <Badge className="w-fit bg-yoel-green/15 text-yoel-green border-0 text-[10px]">
               Économisez {plan.savings}
@@ -417,15 +464,29 @@ function PricingCard({
 
           <Separator className="my-3" />
 
-          {/* Included features */}
+          {/* Included features with tier differentiation */}
           <div className="flex-1 space-y-1.5 mb-4">
-            <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">Tout Premium inclus</p>
-            {INCLUDED_FEATURES.map((feat) => {
+            <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">Ce qui est inclus</p>
+            {plan.features.map((feat) => {
               const Icon = feat.icon
+              const isIncluded = feat.available !== false
+              const qualifier = typeof feat.available === 'string' ? feat.available : null
               return (
-                <div key={feat.text} className="flex items-center gap-2 text-xs">
-                  <Icon className="h-3.5 w-3.5 text-yoel-gold shrink-0" />
-                  <span>{feat.text}</span>
+                <div
+                  key={feat.text}
+                  className={`flex items-center gap-2 text-xs ${!isIncluded ? 'opacity-35' : ''}`}
+                >
+                  {isIncluded ? (
+                    <Icon className="h-3.5 w-3.5 text-yoel-gold shrink-0" />
+                  ) : (
+                    <X className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                  )}
+                  <span className={isIncluded ? '' : 'line-through'}>{feat.text}</span>
+                  {qualifier && (
+                    <Badge className="bg-yoel-gold/15 text-yoel-gold border-0 text-[9px] px-1.5 py-0 ml-auto shrink-0">
+                      {qualifier}
+                    </Badge>
+                  )}
                 </div>
               )
             })}
@@ -863,42 +924,82 @@ export default function PremiumPage() {
                         exit={{ opacity: 0, y: -10 }}
                         transition={{ duration: 0.2 }}
                       >
-                        {/* Comparison header */}
-                        <div className="grid grid-cols-3 gap-2 mb-3 px-2">
+                        {/* Comparison header — 4 columns */}
+                        <div className="grid grid-cols-5 gap-1 mb-3 px-2">
                           <div />
-                          <div className="text-center text-sm font-medium text-muted-foreground">Gratuit</div>
+                          <div className="text-center text-xs font-medium text-muted-foreground">Gratuit</div>
+                          <div className="text-center text-xs font-medium">Essentiel</div>
                           <div className="text-center">
-                            <Badge className="bg-yoel-gold/15 text-yoel-gold border-0 text-xs">
-                              <Crown className="h-3 w-3 mr-1" />
-                              Premium
+                            <Badge className="bg-yoel-gold/15 text-yoel-gold border-0 text-[10px]">
+                              <Crown className="h-2.5 w-2.5 mr-0.5" />
+                              Complet
                             </Badge>
                           </div>
+                          <div className="text-center text-xs font-semibold gradient-text-premium">Intégral</div>
                         </div>
 
-                        <div className="space-y-1">
+                        <div className="space-y-0.5">
                           {FEATURES.map((feature, idx) => {
                             const Icon = feature.icon
+                            // Determine availability per plan
+                            const monthlyPlan = PLANS.find(p => p.id === 'monthly')!
+                            const yearlyPlan = PLANS.find(p => p.id === 'yearly')!
+                            const lifetimePlan = PLANS.find(p => p.id === 'lifetime')!
+
+                            const monthlyFeat = monthlyPlan.features.find(f => f.text === feature.name || (feature.name.startsWith('Chat IA') && f.text === 'Chat IA'))
+                            const yearlyFeat = yearlyPlan.features.find(f => f.text === feature.name || (feature.name.startsWith('Chat IA') && f.text === 'Chat IA'))
+                            const lifetimeFeat = lifetimePlan.features.find(f => f.text === feature.name || (feature.name.startsWith('Chat IA') && f.text === 'Chat IA'))
+
+                            const isInMonthly = monthlyFeat ? monthlyFeat.available !== false : feature.free
+                            const isInYearly = yearlyFeat ? yearlyFeat.available !== false : feature.free
+                            const isInLifetime = lifetimeFeat ? lifetimeFeat.available !== false : feature.free
+
+                            const monthlyQualifier = monthlyFeat && typeof monthlyFeat.available === 'string' ? monthlyFeat.available : null
+                            const yearlyQualifier = yearlyFeat && typeof yearlyFeat.available === 'string' ? yearlyFeat.available : null
+
                             return (
                               <div
                                 key={feature.name}
-                                className="grid grid-cols-3 gap-2 items-center rounded-xl p-3 hover:bg-muted/20 transition-colors"
+                                className="grid grid-cols-5 gap-1 items-center rounded-xl p-2.5 hover:bg-muted/20 transition-colors"
                               >
                                 <div className="flex items-center gap-2 min-w-0">
-                                  <Icon className={`h-4 w-4 ${feature.color} shrink-0`} />
-                                  <span className="text-sm truncate">{feature.name}</span>
+                                  <Icon className={`h-3.5 w-3.5 ${feature.color} shrink-0`} />
+                                  <span className="text-xs truncate">{feature.name}</span>
                                 </div>
                                 <div className="flex justify-center">
                                   {feature.free ? (
-                                    <Check className="h-5 w-5 text-yoel-green" />
+                                    <Check className="h-4 w-4 text-yoel-green" />
                                   ) : (
-                                    <X className="h-5 w-5 text-muted-foreground/40" />
+                                    <X className="h-4 w-4 text-muted-foreground/30" />
+                                  )}
+                                </div>
+                                <div className="flex justify-center items-center gap-1">
+                                  {isInMonthly ? (
+                                    monthlyQualifier ? (
+                                      <span className="text-[9px] text-yoel-gold font-medium">{monthlyQualifier}</span>
+                                    ) : (
+                                      <Check className="h-4 w-4 text-yoel-green" />
+                                    )
+                                  ) : (
+                                    <X className="h-4 w-4 text-muted-foreground/30" />
+                                  )}
+                                </div>
+                                <div className="flex justify-center items-center gap-1">
+                                  {isInYearly ? (
+                                    yearlyQualifier ? (
+                                      <span className="text-[9px] text-yoel-gold font-medium">{yearlyQualifier}</span>
+                                    ) : (
+                                      <Check className="h-4 w-4 text-yoel-green" />
+                                    )
+                                  ) : (
+                                    <X className="h-4 w-4 text-muted-foreground/30" />
                                   )}
                                 </div>
                                 <div className="flex justify-center">
-                                  {feature.premium ? (
-                                    <Check className="h-5 w-5 text-yoel-green" />
+                                  {isInLifetime ? (
+                                    <Check className="h-4 w-4 text-yoel-green" />
                                   ) : (
-                                    <X className="h-5 w-5 text-muted-foreground/40" />
+                                    <X className="h-4 w-4 text-muted-foreground/30" />
                                   )}
                                 </div>
                               </div>
