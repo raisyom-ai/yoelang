@@ -6,6 +6,54 @@ export type PageId =
   | 'dashboard' | 'levels' | 'course' | 'exercises' 
   | 'chat' | 'stats' | 'profile' | 'settings' | 'premium' | 'certificate'
 
+// ─── Premium Plan Types ──────────────────────────────────────────────────
+
+export type PremiumPlan = 'essentiel' | 'complet' | 'integral'
+
+/**
+ * Check if a specific premium feature is available for the user's plan.
+ * Tier hierarchy: essentiel < complet < integral
+ */
+export const isFeatureAvailable = (
+  isPremium: boolean,
+  plan: PremiumPlan | null,
+  requiredTier: PremiumPlan,
+): boolean => {
+  if (!isPremium) return false
+  if (!plan) return false
+  const tierOrder: PremiumPlan[] = ['essentiel', 'complet', 'integral']
+  const userTierIndex = tierOrder.indexOf(plan)
+  const requiredTierIndex = tierOrder.indexOf(requiredTier)
+  return userTierIndex >= requiredTierIndex
+}
+
+/** Feature tier requirements */
+export const FEATURE_TIERS = {
+  exercises: 'essentiel' as PremiumPlan,       // Exercices illimités
+  chatBasic: 'essentiel' as PremiumPlan,       // Chat IA 50 msg/mois
+  xpDouble: 'essentiel' as PremiumPlan,        // XP doublé
+  noAds: 'essentiel' as PremiumPlan,           // Zéro publicité
+  voiceRecognition: 'complet' as PremiumPlan,  // Reconnaissance vocale
+  certificates: 'complet' as PremiumPlan,      // Certificats officiels
+  premiumBadges: 'complet' as PremiumPlan,     // Badges exclusifs
+  advancedStats: 'complet' as PremiumPlan,     // Statistiques avancées
+  offlineCourses: 'complet' as PremiumPlan,    // Cours hors ligne
+  themes: 'integral' as PremiumPlan,           // Thèmes personnalisés
+  prioritySupport: 'integral' as PremiumPlan,  // Support prioritaire
+  earlyAccess: 'integral' as PremiumPlan,      // Accès anticipé
+  legendBadge: 'integral' as PremiumPlan,      // Badge Légende
+} as const
+
+/** Chat message limits per plan */
+export const CHAT_LIMITS: Record<PremiumPlan, number> = {
+  essentiel: 50,
+  complet: Infinity,
+  integral: Infinity,
+}
+
+/** Free user daily exercise limit */
+export const FREE_EXERCISE_LIMIT = 3
+
 export interface UserState {
   id: string
   email: string
@@ -16,6 +64,7 @@ export interface UserState {
   streak: number
   coins: number
   isPremium: boolean
+  premiumPlan: PremiumPlan | null
   dailyGoal: number
   notifications: boolean
   darkMode: boolean
@@ -394,6 +443,17 @@ interface AppState {
   splashComplete: boolean
   setSplashComplete: (complete: boolean) => void
 
+  // Premium plan
+  chatMessagesSent: number
+  chatResetDate: string
+  canSendChatMessage: () => boolean
+  getRemainingChatMessages: () => number
+  exercisesCompletedToday: number
+  exerciseResetDate: string
+  canDoExercise: () => boolean
+  getRemainingExercises: () => number
+  incrementExerciseCount: () => void
+
   // XP tracking
   addXP: (amount: number) => void
   dailyXpEarned: number
@@ -577,9 +637,15 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   // Chat
   chatMessages: [],
-  addChatMessage: (msg) => set((state) => ({ 
-    chatMessages: [...state.chatMessages, msg] 
-  })),
+  addChatMessage: (msg) => set((state) => {
+    const today = getTodayStr()
+    const currentCount = state.chatResetDate !== today ? 0 : state.chatMessagesSent
+    return {
+      chatMessages: [...state.chatMessages, msg],
+      chatMessagesSent: currentCount + 1,
+      chatResetDate: today,
+    }
+  }),
   clearChat: () => set({ chatMessages: [] }),
   isChatLoading: false,
   setChatLoading: (loading) => set({ isChatLoading: loading }),
@@ -592,6 +658,62 @@ export const useAppStore = create<AppState>((set, get) => ({
   dailyXpEarned: 0,
   lastXpDate: '',
   dailyXpHistory: [],
+  // Premium plan tracking
+  chatMessagesSent: 0,
+  chatResetDate: getTodayStr(),
+  canSendChatMessage: () => {
+    const state = get()
+    if (!state.user?.isPremium) return false
+    const plan = state.user.premiumPlan
+    if (!plan) return false
+    // Reset counter if new day
+    const today = getTodayStr()
+    if (state.chatResetDate !== today) {
+      set({ chatMessagesSent: 0, chatResetDate: today })
+    }
+    const limit = CHAT_LIMITS[plan]
+    return get().chatMessagesSent < limit
+  },
+  getRemainingChatMessages: () => {
+    const state = get()
+    if (!state.user?.isPremium || !state.user.premiumPlan) return 0
+    const today = getTodayStr()
+    const sent = state.chatResetDate !== today ? 0 : state.chatMessagesSent
+    const limit = CHAT_LIMITS[state.user.premiumPlan]
+    return limit === Infinity ? -1 : Math.max(0, limit - sent)
+  },
+  exercisesCompletedToday: 0,
+  exerciseResetDate: getTodayStr(),
+  canDoExercise: () => {
+    const state = get()
+    // Premium users with essentiel+ have unlimited exercises
+    if (state.user?.isPremium && state.user.premiumPlan && isFeatureAvailable(state.user.isPremium, state.user.premiumPlan, 'essentiel')) {
+      return true
+    }
+    // Free users have limited exercises per day
+    const today = getTodayStr()
+    const completed = state.exerciseResetDate !== today ? 0 : state.exercisesCompletedToday
+    return completed < FREE_EXERCISE_LIMIT
+  },
+  getRemainingExercises: () => {
+    const state = get()
+    if (state.user?.isPremium && state.user.premiumPlan && isFeatureAvailable(state.user.isPremium, state.user.premiumPlan, 'essentiel')) {
+      return -1 // unlimited
+    }
+    const today = getTodayStr()
+    const completed = state.exerciseResetDate !== today ? 0 : state.exercisesCompletedToday
+    return Math.max(0, FREE_EXERCISE_LIMIT - completed)
+  },
+  incrementExerciseCount: () => set((state) => {
+    const today = getTodayStr()
+    const completed = state.exerciseResetDate !== today ? 0 : state.exercisesCompletedToday
+    return {
+      exercisesCompletedToday: completed + 1,
+      exerciseResetDate: today,
+    }
+  }),
+
+  // XP tracking
   addXP: (amount) => set((state) => {
     const today = getTodayStr()
     const isNewDay = state.lastXpDate !== today
@@ -611,9 +733,15 @@ export const useAppStore = create<AppState>((set, get) => ({
       updatedHistory = updatedHistory.slice(-7)
     }
 
-    const newDailyXp = isNewDay ? amount : state.dailyXpEarned + amount
+    // XP doublé for premium essentiel+
+    const hasXpDouble = state.user?.isPremium && state.user.premiumPlan
+      ? isFeatureAvailable(state.user.isPremium, state.user.premiumPlan, FEATURE_TIERS.xpDouble)
+      : false
+    const effectiveAmount = hasXpDouble ? amount * 2 : amount
+
+    const newDailyXp = isNewDay ? effectiveAmount : state.dailyXpEarned + effectiveAmount
     return {
-      user: state.user ? { ...state.user, xp: (state.user.xp || 0) + amount, coins: (state.user.coins || 0) + Math.floor(amount / 2) } : state.user,
+      user: state.user ? { ...state.user, xp: (state.user.xp || 0) + effectiveAmount, coins: (state.user.coins || 0) + Math.floor(effectiveAmount / 2) } : state.user,
       dailyXpEarned: newDailyXp,
       lastXpDate: today,
       dailyXpHistory: updatedHistory,
@@ -706,6 +834,12 @@ export const BADGES: Badge[] = [
   { id: 'level-c2', name: 'Polyglotte', icon: '🌍', description: 'Maîtrisez tous les niveaux', category: 'maitrise', requirement: 1 },
   { id: 'vocab-50', name: 'Collecteur', icon: '📦', description: 'Apprenez 50 mots', category: 'maitrise', requirement: 50 },
   { id: 'vocab-100', name: 'Encyclopédie', icon: '📖', description: 'Apprenez 100 mots', category: 'maitrise', requirement: 100 },
+
+  // ─── Premium ──────────────────────────────────────────────
+  { id: 'premium-star', name: 'Étoile Premium', icon: '⭐', description: 'Badge exclusif pour les membres Premium', category: 'maitrise', requirement: 1 },
+  { id: 'premium-diamond', name: 'Diamant', icon: '💎', description: 'Votre soutien fait briller Yoel', category: 'maitrise', requirement: 1 },
+  { id: 'premium-crown', name: 'Couronne', icon: '👑', description: 'La marque des apprenants dévoués', category: 'maitrise', requirement: 1 },
+  { id: 'premium-rocket', name: 'Fusée', icon: '🚀', description: 'Apprentissage accéléré garanti', category: 'maitrise', requirement: 1 },
 ]
 
 /**

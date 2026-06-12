@@ -7,9 +7,10 @@ import {
   ArrowLeft, CheckCircle2, XCircle, Star, Zap, Clock,
   Brain, BookOpen, MessageSquareText, Mic, RotateCcw,
   ChevronRight, Trophy, Sparkles, Volume2, Eye, EyeOff,
-  Hash, SkipForward, RefreshCw, AlertCircle, Loader2, Keyboard
+  Hash, SkipForward, RefreshCw, AlertCircle, Loader2, Keyboard,
+  Lock, Crown, Infinity as InfinityIcon
 } from 'lucide-react'
-import { useAppStore } from '@/lib/store'
+import { useAppStore, canDoExercise, getRemainingExercises, incrementExerciseCount, FREE_EXERCISE_LIMIT, isFeatureAvailable, FEATURE_TIERS } from '@/lib/store'
 import { useSpeechRecognition, type SpeechRecognitionResult } from '@/hooks/use-speech-recognition'
 import { speakWord } from '@/lib/speech-utils'
 import { EXERCISE_LEVELS, VOCAB_BY_LEVEL, QUIZ_BY_LEVEL, GRAMMAR_BY_LEVEL, PRONUNCIATION_BY_LEVEL, type VocabCard, type QuizQuestion, type GrammarExercise, type PronunciationWord, type ExerciseLevel } from '@/lib/exercises-data'
@@ -160,6 +161,7 @@ function ResultsSummary({
   passingScore?: number
 }) {
   const addXP = useAppStore((s) => s.addXP)
+  const incrementExCount = useAppStore((s) => s.incrementExerciseCount)
   const percentage = Math.round((score / total) * 100)
   const passed = percentage >= (passingScore ?? 60)
   const encouragement =
@@ -171,12 +173,14 @@ function ResultsSummary({
       ? 'Pas mal ! Révisez un peu plus pour passer la moyenne ! 📚'
       : 'Continuez à apprendre, vous progresserez ! 🌱'
 
-  // Award XP when results are shown
+  // Award XP and increment exercise count when results are shown
   useEffect(() => {
     if (xpEarned > 0) {
       addXP(xpEarned)
     }
-  }, [xpEarned, addXP])
+    // Increment the daily exercise counter
+    incrementExCount()
+  }, [xpEarned, addXP, incrementExCount])
 
   return (
     <motion.div
@@ -1617,8 +1621,20 @@ function PronunciationTab({ level, onAdvance }: { level: string; onAdvance?: () 
 export default function ExercisesPage() {
   const navigate = useAppStore((s) => s.navigate)
   const user = useAppStore((s) => s.user)
+  const storeCanDoExercise = useAppStore((s) => s.canDoExercise)
+  const storeGetRemainingExercises = useAppStore((s) => s.getRemainingExercises)
   const [selectedLevel, setSelectedLevel] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState('quiz')
+
+  // Premium gating state
+  const isPremium = user?.isPremium ?? false
+  const premiumPlan = user?.premiumPlan ?? null
+  const hasUnlimitedExercises = isPremium && premiumPlan
+    ? isFeatureAvailable(isPremium, premiumPlan, FEATURE_TIERS.exercises)
+    : false
+  const remainingExercises = storeGetRemainingExercises()
+  const canExercise = storeCanDoExercise()
+  const exercisesCompleted = hasUnlimitedExercises ? 0 : (FREE_EXERCISE_LIMIT - remainingExercises)
 
   const TAB_ORDER = ['quiz', 'grammar', 'vocabulary', 'pronunciation']
 
@@ -1793,7 +1809,61 @@ export default function ExercisesPage() {
                   <ArrowLeft className="h-3 w-3" />
                   Niveaux
                 </button>
+
+                {/* Exercise Limit Indicator */}
+                <div className="mt-2 ml-12">
+                  {hasUnlimitedExercises ? (
+                    <Badge className="bg-yoel-gold/15 text-yoel-gold border-yoel-gold/30 text-xs font-semibold gap-1 px-2.5 py-1">
+                      <InfinityIcon className="h-3.5 w-3.5" />
+                      Illimité
+                    </Badge>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1.5 text-xs">
+                        <div className="flex items-center gap-1 rounded-full bg-yoel-primary/10 px-2.5 py-1">
+                          <Zap className="h-3 w-3 text-yoel-primary" />
+                          <span className={`font-semibold ${remainingExercises === 0 ? 'text-destructive' : 'text-yoel-primary'}`}>
+                            {exercisesCompleted}/{FREE_EXERCISE_LIMIT} exercices gratuits aujourd&apos;hui
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
+
+              {/* Free user limit banner - subtle reminder */}
+              {!hasUnlimitedExercises && remainingExercises > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  <Card className="glass-card border-yoel-gold/20 bg-yoel-gold/5">
+                    <CardContent className="p-3 flex items-center gap-3">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-yoel-gold/15">
+                        <Crown className="h-4 w-4 text-yoel-gold" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-medium text-yoel-gold">
+                          {remainingExercises} exercice{remainingExercises > 1 ? 's' : ''} gratuit{remainingExercises > 1 ? 's' : ''} restant{remainingExercises > 1 ? 's' : ''}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          Passez à Premium pour des exercices illimités
+                        </p>
+                      </div>
+                      <Button
+                        size="sm"
+                        onClick={() => navigate('premium')}
+                        className="shrink-0 bg-yoel-gold hover:bg-yoel-gold/90 text-white rounded-full text-xs h-7 px-3"
+                      >
+                        <Crown className="h-3 w-3 mr-1" />
+                        Premium
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              )}
 
               {/* Tab Navigation */}
               <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
@@ -1810,18 +1880,104 @@ export default function ExercisesPage() {
                   ))}
                 </TabsList>
 
-                <TabsContent value="quiz" className="mt-0">
-                  <QuizTab level={selectedLevel} onAdvance={handleAdvanceToNextTab} />
-                </TabsContent>
-                <TabsContent value="grammar" className="mt-0">
-                  <GrammarTab level={selectedLevel} onAdvance={handleAdvanceToNextTab} />
-                </TabsContent>
-                <TabsContent value="vocabulary" className="mt-0">
-                  <VocabularyTab level={selectedLevel} onAdvance={handleAdvanceToNextTab} />
-                </TabsContent>
-                <TabsContent value="pronunciation" className="mt-0">
-                  <PronunciationTab level={selectedLevel} onAdvance={handleAdvanceToNextTab} />
-                </TabsContent>
+                {/* Lock overlay when free user has reached daily limit */}
+                {!canExercise && !hasUnlimitedExercises ? (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ type: 'spring', stiffness: 200, damping: 20 }}
+                  >
+                    <Card className="glass-card border-yoel-primary/20 overflow-hidden">
+                      <CardContent className="p-6 sm:p-8 flex flex-col items-center text-center space-y-5">
+                        {/* Lock icon */}
+                        <motion.div
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
+                          className="relative"
+                        >
+                          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-yoel-primary/10 border-2 border-yoel-primary/20">
+                            <Lock className="h-9 w-9 text-yoel-primary" />
+                          </div>
+                          <motion.div
+                            className="absolute -top-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full bg-yoel-gold text-white shadow-md"
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ delay: 0.5, type: 'spring' }}
+                          >
+                            <Crown className="h-3.5 w-3.5" />
+                          </motion.div>
+                        </motion.div>
+
+                        <div className="space-y-2">
+                          <h3 className="text-xl font-bold gradient-text-primary">
+                            Limite quotidienne atteinte
+                          </h3>
+                          <p className="text-sm text-muted-foreground max-w-[280px]">
+                            Vous avez utilisé vos {FREE_EXERCISE_LIMIT} exercices gratuits aujourd&apos;hui. Passez à Premium pour continuer à vous entraîner sans limite !
+                          </p>
+                        </div>
+
+                        {/* Benefits list */}
+                        <div className="w-full max-w-xs space-y-2 text-left">
+                          <div className="flex items-center gap-2 text-sm">
+                            <CheckCircle2 className="h-4 w-4 text-yoel-green shrink-0" />
+                            <span>Exercices illimités chaque jour</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-sm">
+                            <CheckCircle2 className="h-4 w-4 text-yoel-green shrink-0" />
+                            <span>XP doublé sur chaque exercice</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-sm">
+                            <CheckCircle2 className="h-4 w-4 text-yoel-green shrink-0" />
+                            <span>Reconnaissance vocale avancée</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-sm">
+                            <CheckCircle2 className="h-4 w-4 text-yoel-green shrink-0" />
+                            <span>Zéro publicité</span>
+                          </div>
+                        </div>
+
+                        {/* CTA Buttons */}
+                        <div className="flex flex-col sm:flex-row gap-3 w-full max-w-xs">
+                          <Button
+                            onClick={() => navigate('premium')}
+                            className="flex-1 bg-yoel-gold hover:bg-yoel-gold/90 text-white rounded-full shadow-md shadow-yoel-gold/20 font-semibold"
+                          >
+                            <Crown className="h-4 w-4 mr-1.5" />
+                            Passer à Premium
+                          </Button>
+                          <Button
+                            variant="outline"
+                            onClick={handleBackToLevels}
+                            className="flex-1 rounded-full"
+                          >
+                            Retour aux niveaux
+                          </Button>
+                        </div>
+
+                        <p className="text-xs text-muted-foreground">
+                          La limite se réinitialise chaque jour à minuit
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                ) : (
+                  <>
+                    <TabsContent value="quiz" className="mt-0">
+                      <QuizTab level={selectedLevel} onAdvance={handleAdvanceToNextTab} />
+                    </TabsContent>
+                    <TabsContent value="grammar" className="mt-0">
+                      <GrammarTab level={selectedLevel} onAdvance={handleAdvanceToNextTab} />
+                    </TabsContent>
+                    <TabsContent value="vocabulary" className="mt-0">
+                      <VocabularyTab level={selectedLevel} onAdvance={handleAdvanceToNextTab} />
+                    </TabsContent>
+                    <TabsContent value="pronunciation" className="mt-0">
+                      <PronunciationTab level={selectedLevel} onAdvance={handleAdvanceToNextTab} />
+                    </TabsContent>
+                  </>
+                )}
               </Tabs>
             </motion.div>
           )}

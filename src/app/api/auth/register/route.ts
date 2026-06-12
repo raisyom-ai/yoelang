@@ -33,6 +33,7 @@ export async function POST(req: NextRequest) {
         streak: 0,
         coins: 0,
         isPremium: false,
+        premiumPlan: null,
         dailyGoal: 0,
         notifications: true,
         darkMode: false,

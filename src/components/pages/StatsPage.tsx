@@ -5,13 +5,13 @@ import { motion } from 'framer-motion'
 import {
   ArrowLeft, Home, BarChart3, Flame, Zap, Target,
   BookOpen, Clock, Award, Lock, CheckCircle2, TrendingUp,
-  Calendar, Trophy, Brain, MessageCircle, Mic, BookMarked
+  Calendar, Trophy, Brain, MessageCircle, Mic, BookMarked, Crown
 } from 'lucide-react'
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   AreaChart, Area, ResponsiveContainer, PieChart, Pie, Cell
 } from 'recharts'
-import { useAppStore, LEVELS, BADGES, BADGE_CATEGORY_LABELS, BADGE_CATEGORY_COLORS, BADGE_CATEGORY_BG, calculateStreak, getWeekActivity, getRecommendedDailyGoal, getBadgeProgress, checkAndAwardBadges, type DailyXpRecord, type LessonHistoryEntry, type BadgeCategory } from '@/lib/store'
+import { useAppStore, LEVELS, BADGES, BADGE_CATEGORY_LABELS, BADGE_CATEGORY_COLORS, BADGE_CATEGORY_BG, calculateStreak, getWeekActivity, getRecommendedDailyGoal, getBadgeProgress, checkAndAwardBadges, isFeatureAvailable, FEATURE_TIERS, type DailyXpRecord, type LessonHistoryEntry, type BadgeCategory, type PremiumPlan } from '@/lib/store'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -252,6 +252,33 @@ const TYPE_LABELS: Record<string, string> = {
   pronunciation: 'Prononciation',
 }
 
+// ─── Premium Lock Overlay ────────────────────────────────────────────────────
+
+function PremiumLockOverlay({ onUpgrade }: { onUpgrade: () => void }) {
+  return (
+    <div className="absolute inset-0 z-10 flex items-center justify-center rounded-xl bg-background/60 backdrop-blur-[3px]">
+      <div className="flex flex-col items-center gap-2.5 rounded-xl bg-background/95 p-5 sm:p-6 shadow-lg border border-yoel-gold/20 text-center max-w-[220px]">
+        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-yoel-gold/10">
+          <Lock className="h-5 w-5 text-yoel-gold" />
+        </div>
+        <h3 className="text-sm font-bold text-foreground">Statistiques avancées</h3>
+        <Badge className="bg-yoel-gold/15 text-yoel-gold border-0 text-[10px] gap-1">
+          <Crown className="h-3 w-3" />
+          Complet+
+        </Badge>
+        <p className="text-[10px] text-muted-foreground leading-tight">Disponible avec le plan Complet</p>
+        <Button
+          size="sm"
+          onClick={onUpgrade}
+          className="bg-yoel-gold hover:bg-yoel-gold/90 text-white text-xs rounded-full px-4"
+        >
+          Voir les offres
+        </Button>
+      </div>
+    </div>
+  )
+}
+
 // ─── Main Component ─────────────────────────────────────────────────────────
 
 export default function StatsPage() {
@@ -260,6 +287,8 @@ export default function StatsPage() {
   const xp = user?.xp ?? 0
   const streak = calculateStreak(dailyXpHistory, dailyXpEarned)
   const isPremium = user?.isPremium ?? false
+  const premiumPlan = (user?.premiumPlan as PremiumPlan | null) ?? null
+  const hasAdvancedStats = isFeatureAvailable(isPremium, premiumPlan, FEATURE_TIERS.advancedStats)
   const level = user?.level ?? 'A1'
 
   // Dynamic effective goal
@@ -413,15 +442,18 @@ export default function StatsPage() {
               </CardContent>
             </Card>
 
-            <Card className="glass-card">
-              <CardContent className="p-3 sm:p-4 text-center">
-                <div className="mx-auto mb-1.5 sm:mb-2 flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-yoel-green/10">
-                  <Target className="h-4 w-4 sm:h-5 sm:w-5 text-yoel-green" />
-                </div>
-                <p className="text-xl sm:text-2xl font-bold text-yoel-green">{quizAccuracy}%</p>
-                <p className="text-[10px] sm:text-xs text-muted-foreground">Précision quiz</p>
-              </CardContent>
-            </Card>
+            <div className="relative">
+              <Card className="glass-card">
+                <CardContent className="p-3 sm:p-4 text-center">
+                  <div className="mx-auto mb-1.5 sm:mb-2 flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-yoel-green/10">
+                    <Target className="h-4 w-4 sm:h-5 sm:w-5 text-yoel-green" />
+                  </div>
+                  <p className="text-xl sm:text-2xl font-bold text-yoel-green">{quizAccuracy}%</p>
+                  <p className="text-[10px] sm:text-xs text-muted-foreground">Précision quiz</p>
+                </CardContent>
+              </Card>
+              {!hasAdvancedStats && <PremiumLockOverlay onUpgrade={() => navigate('premium')} />}
+            </div>
           </div>
         </motion.div>
 
@@ -599,104 +631,110 @@ export default function StatsPage() {
 
           {/* Lesson Type Distribution */}
           <motion.div variants={itemVariants}>
-            <Card className="glass-card h-full">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm sm:text-base flex items-center gap-2">
-                  <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5 text-yoel-primary" />
-                  Types de leçons
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {lessonTypeDistribution.length > 0 ? (
-                  <div className="flex flex-col items-center gap-2">
-                    <div className="h-[160px] sm:h-[180px] w-full">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <PieChart>
-                          <Pie
-                            data={lessonTypeDistribution}
-                            cx="50%"
-                            cy="50%"
-                            innerRadius={40}
-                            outerRadius={70}
-                            paddingAngle={4}
-                            dataKey="value"
-                          >
-                            {lessonTypeDistribution.map((entry, index) => (
-                              <Cell key={`cell-${index}`} fill={entry.color} />
-                            ))}
-                          </Pie>
-                          <Tooltip
-                            formatter={(value: number, name: string) => [`${value} leçon${value > 1 ? 's' : ''}`, name]}
-                          />
-                        </PieChart>
-                      </ResponsiveContainer>
+            <div className="relative">
+              <Card className="glass-card h-full">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm sm:text-base flex items-center gap-2">
+                    <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5 text-yoel-primary" />
+                    Types de leçons
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {lessonTypeDistribution.length > 0 ? (
+                    <div className="flex flex-col items-center gap-2">
+                      <div className="h-[160px] sm:h-[180px] w-full">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <PieChart>
+                            <Pie
+                              data={lessonTypeDistribution}
+                              cx="50%"
+                              cy="50%"
+                              innerRadius={40}
+                              outerRadius={70}
+                              paddingAngle={4}
+                              dataKey="value"
+                            >
+                              {lessonTypeDistribution.map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={entry.color} />
+                              ))}
+                            </Pie>
+                            <Tooltip
+                              formatter={(value: number, name: string) => [`${value} leçon${value > 1 ? 's' : ''}`, name]}
+                            />
+                          </PieChart>
+                        </ResponsiveContainer>
+                      </div>
+                      <div className="flex flex-wrap justify-center gap-x-3 gap-y-1">
+                        {lessonTypeDistribution.map((entry) => (
+                          <div key={entry.name} className="flex items-center gap-1.5 text-[10px] sm:text-xs">
+                            <span
+                              className="inline-block h-2.5 w-2.5 rounded-full shrink-0"
+                              style={{ backgroundColor: entry.color }}
+                            />
+                            <span className="text-muted-foreground">{entry.name}</span>
+                            <span className="font-semibold text-foreground">{entry.value}</span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                    <div className="flex flex-wrap justify-center gap-x-3 gap-y-1">
-                      {lessonTypeDistribution.map((entry) => (
-                        <div key={entry.name} className="flex items-center gap-1.5 text-[10px] sm:text-xs">
-                          <span
-                            className="inline-block h-2.5 w-2.5 rounded-full shrink-0"
-                            style={{ backgroundColor: entry.color }}
-                          />
-                          <span className="text-muted-foreground">{entry.name}</span>
-                          <span className="font-semibold text-foreground">{entry.value}</span>
-                        </div>
-                      ))}
+                  ) : (
+                    <div className="flex flex-col items-center justify-center py-8 text-center">
+                      <BarChart3 className="h-10 w-10 text-muted-foreground/30 mb-2" />
+                      <p className="text-xs text-muted-foreground">
+                        Complétez des leçons pour voir la répartition
+                      </p>
                     </div>
-                  </div>
-                ) : (
-                  <div className="flex flex-col items-center justify-center py-8 text-center">
-                    <BarChart3 className="h-10 w-10 text-muted-foreground/30 mb-2" />
-                    <p className="text-xs text-muted-foreground">
-                      Complétez des leçons pour voir la répartition
-                    </p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+                  )}
+                </CardContent>
+              </Card>
+              {!hasAdvancedStats && <PremiumLockOverlay onUpgrade={() => navigate('premium')} />}
+            </div>
           </motion.div>
         </div>
 
         {/* ─── Skills Bars ─────────────────────────────────────────────── */}
         <motion.div variants={itemVariants}>
-          <Card className="glass-card">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm sm:text-base flex items-center gap-2">
-                <Target className="h-4 w-4 sm:h-5 sm:w-5 text-yoel-gold" />
-                Compétences
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3 sm:space-y-4">
-              {skills.map((skill, idx) => {
-                const Icon = skill.icon
-                return (
-                  <motion.div
-                    key={skill.name}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.2 + idx * 0.08 }}
-                    className="space-y-1"
-                  >
-                    <div className="flex items-center justify-between text-xs sm:text-sm">
-                      <span className="flex items-center gap-1.5 font-medium">
-                        <Icon className={`h-3.5 w-3.5 ${skill.textColor}`} />
-                        {skill.name}
-                      </span>
-                      <span className="text-muted-foreground text-[10px] sm:text-xs font-semibold">{skill.value}%</span>
-                    </div>
-                    <div className="relative h-2 sm:h-2.5 w-full overflow-hidden rounded-full bg-muted/50">
-                      <motion.div
-                        className={`absolute inset-y-0 left-0 rounded-full bg-gradient-to-r ${skill.color}`}
-                        initial={{ width: 0 }}
-                        animate={{ width: `${skill.value}%` }}
-                        transition={{ duration: 0.8, delay: 0.3 + idx * 0.1, ease: 'easeOut' }}
-                      />
-                    </div>
-                  </motion.div>
-                )
-              })}
-            </CardContent>
-          </Card>
+          <div className="relative">
+            <Card className="glass-card">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm sm:text-base flex items-center gap-2">
+                  <Target className="h-4 w-4 sm:h-5 sm:w-5 text-yoel-gold" />
+                  Compétences
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3 sm:space-y-4">
+                {skills.map((skill, idx) => {
+                  const Icon = skill.icon
+                  return (
+                    <motion.div
+                      key={skill.name}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.2 + idx * 0.08 }}
+                      className="space-y-1"
+                    >
+                      <div className="flex items-center justify-between text-xs sm:text-sm">
+                        <span className="flex items-center gap-1.5 font-medium">
+                          <Icon className={`h-3.5 w-3.5 ${skill.textColor}`} />
+                          {skill.name}
+                        </span>
+                        <span className="text-muted-foreground text-[10px] sm:text-xs font-semibold">{skill.value}%</span>
+                      </div>
+                      <div className="relative h-2 sm:h-2.5 w-full overflow-hidden rounded-full bg-muted/50">
+                        <motion.div
+                          className={`absolute inset-y-0 left-0 rounded-full bg-gradient-to-r ${skill.color}`}
+                          initial={{ width: 0 }}
+                          animate={{ width: `${skill.value}%` }}
+                          transition={{ duration: 0.8, delay: 0.3 + idx * 0.1, ease: 'easeOut' }}
+                        />
+                      </div>
+                    </motion.div>
+                  )
+                })}
+              </CardContent>
+            </Card>
+            {!hasAdvancedStats && <PremiumLockOverlay onUpgrade={() => navigate('premium')} />}
+          </div>
         </motion.div>
 
         {/* ─── Streak Calendar + Time Stats ────────────────────────────── */}
@@ -806,6 +844,7 @@ export default function StatsPage() {
 
         {/* ─── Badge Showcase ──────────────────────────────────────────── */}
         <motion.div variants={itemVariants}>
+          <div className="relative">
           <Card className="glass-card">
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
@@ -892,6 +931,8 @@ export default function StatsPage() {
               })}
             </CardContent>
           </Card>
+          {!hasAdvancedStats && <PremiumLockOverlay onUpgrade={() => navigate('premium')} />}
+          </div>
         </motion.div>
       </motion.div>
     </div>

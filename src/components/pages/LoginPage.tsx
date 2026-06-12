@@ -63,6 +63,7 @@ export default function LoginPage() {
     streak: 7,
     coins: 350,
     isPremium: false,
+    premiumPlan: null,
     dailyGoal: 0,
     notifications: true,
     darkMode: false,

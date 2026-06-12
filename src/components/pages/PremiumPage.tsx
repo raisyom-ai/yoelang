@@ -9,7 +9,7 @@ import {
   Rocket, Brain, Palette, Lock, TrendingUp, Users,
   Gem, Flame, Trophy, Target, Clock, Heart
 } from 'lucide-react'
-import { useAppStore, BADGES, BADGE_CATEGORY_COLORS, type Badge as BadgeType } from '@/lib/store'
+import { useAppStore, BADGES, BADGE_CATEGORY_COLORS, type Badge as BadgeType, type PremiumPlan } from '@/lib/store'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -666,10 +666,28 @@ export default function PremiumPage() {
 
   const handleConfirmActivation = () => {
     // In a real app this would call a payment API
-    // For demo, we just update the store
+    // For demo, we just update the store with the selected plan
     if (user) {
+      const planMap: Record<string, PremiumPlan> = {
+        monthly: 'essentiel',
+        yearly: 'complet',
+        lifetime: 'integral',
+      }
+      const selectedPremiumPlan = selectedPlan ? planMap[selectedPlan] || 'essentiel' : 'essentiel'
+      
+      // Award premium badges based on plan tier
+      const badgeMap: Record<string, string[]> = {
+        essentiel: ['premium-star'],
+        complet: ['premium-star', 'premium-diamond', 'premium-crown'],
+        integral: ['premium-star', 'premium-diamond', 'premium-crown', 'premium-rocket'],
+      }
+      const newBadges = badgeMap[selectedPremiumPlan] || ['premium-star']
+      const currentBadges = useAppStore.getState().earnedBadges
+      const badgesToAdd = newBadges.filter(b => !currentBadges.includes(b))
+      
       useAppStore.setState({
-        user: { ...user, isPremium: true },
+        user: { ...user, isPremium: true, premiumPlan: selectedPremiumPlan },
+        earnedBadges: [...currentBadges, ...badgesToAdd],
       })
     }
     setShowActivation(false)

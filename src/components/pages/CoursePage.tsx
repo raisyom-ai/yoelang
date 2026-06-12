@@ -7,9 +7,9 @@ import {
   BookOpen, MessageSquare, PenTool, Headphones, Star, Trophy,
   Zap, Clock, CheckCircle2, XCircle, Award, Sparkles, RotateCcw,
   Play, RefreshCw, SkipForward, AlertCircle, Loader2, Square,
-  List, Lock, ChevronDown, ChevronUp
+  List, Lock, ChevronDown, ChevronUp, Crown
 } from 'lucide-react'
-import { useAppStore, DEMO_LESSONS, LEVELS, type LessonInfo } from '@/lib/store'
+import { useAppStore, DEMO_LESSONS, LEVELS, type LessonInfo, isFeatureAvailable, FEATURE_TIERS, type PremiumPlan } from '@/lib/store'
 import { COURSE_DATA, getLessonsForLevel, getUnitsForLevel, getTotalLessonsForLevel as getTotalLessonsFromCourseData, type LessonData, type UnitData } from '@/lib/course-data'
 import { speakWord } from '@/lib/speech-utils'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
@@ -20,6 +20,7 @@ import { Separator } from '@/components/ui/separator'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { useSpeechRecognition, type SpeechRecognitionResult } from '@/hooks/use-speech-recognition'
 import { getLessonContent, type VocabWord, type GrammarRule, type DialogueLine, type PronunciationItem } from '@/lib/lesson-content'
+import { toast } from 'sonner'
 
 // ─── Animation Variants ─────────────────────────────────────────────────────
 
@@ -243,7 +244,11 @@ function getTypeConfig(type: string) {
 // ─── Main Component ─────────────────────────────────────────────────────────
 
 export default function CoursePage() {
-  const { goBack, currentLevel, currentLesson, navigate, setCurrentLesson, setLastVisitedLesson, completedLessons, addCompletedLesson, addXP, addLessonHistoryEntry, earnedCertificates, earnCertificate, lessonHistory } = useAppStore()
+  const { goBack, currentLevel, currentLesson, navigate, setCurrentLesson, setLastVisitedLesson, completedLessons, addCompletedLesson, addXP, addLessonHistoryEntry, earnedCertificates, earnCertificate, lessonHistory, user } = useAppStore()
+
+  // Premium feature access checks
+  const voiceRecognitionAvailable = isFeatureAvailable(user?.isPremium ?? false, user?.premiumPlan ?? null, FEATURE_TIERS.voiceRecognition)
+  const certificatesAvailable = isFeatureAvailable(user?.isPremium ?? false, user?.premiumPlan ?? null, FEATURE_TIERS.certificates)
 
   // View mode: 'list' shows all lessons, 'study' shows the lesson steps
   const [viewMode, setViewMode] = useState<'list' | 'study'>('list')
@@ -254,6 +259,7 @@ export default function CoursePage() {
   const [isPlayingAudio, setIsPlayingAudio] = useState(false)
   const [showCompletionModal, setShowCompletionModal] = useState(false)
   const [showCertificateEarned, setShowCertificateEarned] = useState(false)
+  const [showCertificateUpsell, setShowCertificateUpsell] = useState(false)
   const [vocabRevealed, setVocabRevealed] = useState<Set<number>>(new Set())
   const [dialogueRevealed, setDialogueRevealed] = useState<Set<number>>(new Set())
   const [grammarAnswers, setGrammarAnswers] = useState<Set<number>>(new Set())
@@ -397,8 +403,15 @@ export default function CoursePage() {
         const avgScore = levelHistoryEntries.length > 0
           ? levelHistoryEntries.reduce((sum, e) => sum + e.score, 0) / levelHistoryEntries.length
           : score
-        earnCertificate(currentLevel, totalLessonsInLevel, newCompletedCount, avgScore)
-        setShowCertificateEarned(true)
+
+        if (certificatesAvailable) {
+          // User has Complet+ plan → award the certificate
+          earnCertificate(currentLevel, totalLessonsInLevel, newCompletedCount, avgScore)
+          setShowCertificateEarned(true)
+        } else {
+          // User doesn't have certificate access → show upsell modal
+          setShowCertificateUpsell(true)
+        }
       }
     }
     setShowCompletionModal(true)
@@ -824,6 +837,17 @@ export default function CoursePage() {
                     isPlayingAudio={isPlayingAudio}
                     onComplete={goNext}
                     lessonTitle={selectedLessonData?.title ?? lesson?.title ?? 'Prononciation'}
+                    voiceRecognitionAvailable={voiceRecognitionAvailable}
+                    onUpsellVoiceRecognition={() => {
+                      toast.error('Reconnaissance vocale disponible avec le plan Complet', {
+                        description: 'Passez au plan Complet pour utiliser le microphone et améliorer votre prononciation.',
+                        duration: 5000,
+                        action: {
+                          label: 'Voir les offres',
+                          onClick: () => navigate('premium'),
+                        },
+                      })
+                    }}
                   />
                 )}
                 {currentStepData?.type === 'vocab_match' && VOCAB_WORDS.length > 0 && (
@@ -955,7 +979,7 @@ export default function CoursePage() {
 
       {/* Completion Modal */}
       <AnimatePresence>
-        {showCompletionModal && quizScore !== null && !showCertificateEarned && (
+        {showCompletionModal && quizScore !== null && !showCertificateEarned && !showCertificateUpsell && (
           <LessonCompletionModal
             score={quizScore}
             passingScore={PASSING_SCORE}
@@ -1031,6 +1055,89 @@ export default function CoursePage() {
                     <Button
                       variant="outline"
                       onClick={() => setShowCertificateEarned(false)}
+                      className="w-full rounded-xl h-12"
+                    >
+                      Continuer
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Certificate Upsell Modal — user completed level but doesn't have Complet+ plan */}
+      <AnimatePresence>
+        {showCertificateUpsell && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.5, opacity: 0, y: 40 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.8, opacity: 0, y: 20 }}
+              transition={{ type: 'spring', stiffness: 260, damping: 20 }}
+              className="w-full max-w-sm"
+            >
+              <Card className="overflow-hidden border-0 shadow-2xl">
+                <div className="h-2 bg-gradient-to-r from-yoel-gold via-yoel-primary to-yoel-gold" />
+                <CardContent className="p-8 text-center space-y-5">
+                  {/* Celebration icon */}
+                  <motion.div
+                    animate={{ rotate: [0, -10, 10, -5, 5, 0] }}
+                    transition={{ duration: 0.8, repeat: 2 }}
+                    className="flex justify-center"
+                  >
+                    <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-yoel-gold/30 to-amber-500/30 shadow-lg relative">
+                      <span className="text-4xl">🏆</span>
+                      <div className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full bg-yoel-gold text-white shadow-md">
+                        <Lock className="h-3.5 w-3.5" />
+                      </div>
+                    </div>
+                  </motion.div>
+
+                  <div className="space-y-2">
+                    <h2 className="text-2xl font-black gradient-text-primary">
+                      Niveau Complété !
+                    </h2>
+                    <p className="text-sm text-muted-foreground">
+                      Félicitations ! Vous avez complété toutes les leçons du niveau
+                    </p>
+                  </div>
+
+                  <div className="inline-flex items-center gap-3 rounded-xl bg-gradient-to-r from-yoel-gold/10 to-yoel-primary/10 px-6 py-3 border border-yoel-gold/20">
+                    <span className="text-4xl font-black gradient-text-premium">{currentLevel}</span>
+                  </div>
+
+                  {/* Upsell message */}
+                  <div className="rounded-xl bg-yoel-gold/10 border border-yoel-gold/20 p-4 space-y-2">
+                    <div className="flex items-center justify-center gap-1.5 mb-1">
+                      <Crown className="h-4 w-4 text-yoel-gold" />
+                      <span className="text-sm font-semibold text-yoel-gold">Plan Complet requis</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Obtenez votre certificat officiel avec identifiant unique en passant au plan Complet.
+                    </p>
+                  </div>
+
+                  <div className="flex flex-col gap-2 pt-2">
+                    <Button
+                      onClick={() => {
+                        setShowCertificateUpsell(false)
+                        navigate('premium')
+                      }}
+                      className="w-full bg-gradient-to-r from-yoel-gold to-amber-500 hover:from-yoel-gold/90 hover:to-amber-500/90 text-white rounded-xl h-12"
+                    >
+                      <Crown className="h-5 w-5 mr-2" />
+                      Passer au plan Complet
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowCertificateUpsell(false)}
                       className="w-full rounded-xl h-12"
                     >
                       Continuer
@@ -1430,6 +1537,8 @@ function PronunciationStep({
   isPlayingAudio,
   onComplete,
   lessonTitle,
+  voiceRecognitionAvailable = true,
+  onUpsellVoiceRecognition,
 }: {
   item: PronunciationItem
   index: number
@@ -1437,10 +1546,13 @@ function PronunciationStep({
   isPlayingAudio: boolean
   onComplete: () => void
   lessonTitle: string
+  voiceRecognitionAvailable?: boolean
+  onUpsellVoiceRecognition?: () => void
 }) {
+  // Default to type mode if voice recognition is not available
   const [attemptCount, setAttemptCount] = useState(0)
   const [lastResult, setLastResult] = useState<SpeechRecognitionResult | null>(null)
-  const [inputMode, setInputMode] = useState<'mic' | 'type'>('mic')
+  const [inputMode, setInputMode] = useState<'mic' | 'type'>(voiceRecognitionAvailable ? 'mic' : 'type')
   const [typedAnswer, setTypedAnswer] = useState('')
   const autoAdvanceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const onCompleteRef = useRef(onComplete)
@@ -1659,11 +1771,35 @@ function PronunciationStep({
               <Button
                 variant={inputMode === 'mic' ? 'default' : 'outline'}
                 size="sm"
-                className={`rounded-full text-xs ${inputMode === 'mic' ? 'bg-yoel-gold hover:bg-yoel-gold/90 text-white' : ''}`}
-                onClick={() => setInputMode('mic')}
+                className={`rounded-full text-xs relative ${
+                  !voiceRecognitionAvailable
+                    ? 'border-muted-foreground/30 text-muted-foreground opacity-80'
+                    : inputMode === 'mic'
+                      ? 'bg-yoel-gold hover:bg-yoel-gold/90 text-white'
+                      : ''
+                }`}
+                onClick={() => {
+                  if (!voiceRecognitionAvailable) {
+                    onUpsellVoiceRecognition?.()
+                    return
+                  }
+                  setInputMode('mic')
+                }}
               >
-                <Mic className="h-3 w-3 mr-1" />
-                Microphone
+                {!voiceRecognitionAvailable ? (
+                  <>
+                    <Lock className="h-3 w-3 mr-1" />
+                    Microphone
+                    <Badge className="ml-1.5 bg-yoel-gold/20 text-yoel-gold border-0 text-[9px] px-1 py-0 leading-none">
+                      Complet+
+                    </Badge>
+                  </>
+                ) : (
+                  <>
+                    <Mic className="h-3 w-3 mr-1" />
+                    Microphone
+                  </>
+                )}
               </Button>
               <Button
                 variant={inputMode === 'type' ? 'default' : 'outline'}
@@ -1677,7 +1813,7 @@ function PronunciationStep({
             </div>
 
             {/* Microphone mode */}
-            {inputMode === 'mic' && (
+            {inputMode === 'mic' && voiceRecognitionAvailable && (
               <div className="space-y-4">
                 {!isSupported ? (
                   <div className="text-center space-y-3 p-4 rounded-xl bg-muted/30">

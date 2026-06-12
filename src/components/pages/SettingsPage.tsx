@@ -299,7 +299,7 @@ export default function SettingsPage() {
                 <div>
                   <p className="text-sm font-medium">Plan actuel</p>
                   <p className="text-sm text-muted-foreground">
-                    {isPremium ? 'YOELANG Premium' : 'Gratuit'}
+                    {isPremium ? (user?.premiumPlan === 'integral' ? 'Intégral (À vie)' : user?.premiumPlan === 'complet' ? 'Complet (Trimestriel)' : 'Essentiel (Mensuel)') : 'Gratuit'}
                   </p>
                 </div>
               </div>

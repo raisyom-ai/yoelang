@@ -5,9 +5,13 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   ArrowLeft, Home, Send, Mic, MicOff, Bot, User as UserIcon,
   Trash2, Sparkles, AlertCircle,
-  MessageCircle, Volume2, VolumeX, Speaker, ChevronDown, Loader2, CheckCircle2
+  MessageCircle, Volume2, VolumeX, Speaker, ChevronDown, Loader2, CheckCircle2,
+  Lock, Crown, Zap, Infinity as InfinityIcon
 } from 'lucide-react'
-import { useAppStore, type ChatMsg } from '@/lib/store'
+import {
+  useAppStore, type ChatMsg, type PremiumPlan,
+  isFeatureAvailable, FEATURE_TIERS
+} from '@/lib/store'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
@@ -802,7 +806,19 @@ export default function ChatPage() {
     clearChat,
     isChatLoading,
     setChatLoading,
+    canSendChatMessage,
+    getRemainingChatMessages,
   } = useAppStore()
+
+  // ─── Premium Gating State ─────────────────────────────────────────────
+  const isPremium = user?.isPremium ?? false
+  const premiumPlan: PremiumPlan | null = user?.premiumPlan ?? null
+  const hasChatAccess = isFeatureAvailable(isPremium, premiumPlan, FEATURE_TIERS.chatBasic)
+  const remainingMessages = getRemainingChatMessages()
+  const canSend = canSendChatMessage()
+  const isEssentiel = premiumPlan === 'essentiel'
+  const isLimitReached = isEssentiel && !canSend
+  const [showUpsell, setShowUpsell] = useState(false)
 
   const [inputValue, setInputValue] = useState('')
   const [isRecording, setIsRecording] = useState(false)
@@ -1020,6 +1036,22 @@ export default function ChatPage() {
     const trimmed = inputValue.trim()
     if (!trimmed || isChatLoading) return
 
+    // ─── Premium gating check ──────────────────────────────────────────
+    if (!canSend) {
+      if (!hasChatAccess) {
+        // Free user — show lock overlay
+        setShowUpsell(true)
+      } else {
+        // Essentiel user hit limit — toast + upsell
+        toast.error('Limite atteinte', {
+          description: 'Passez au plan Complet pour des messages illimités.',
+          duration: 4000,
+        })
+        setShowUpsell(true)
+      }
+      return
+    }
+
     // Stop any ongoing speech
     handleStopSpeak()
 
@@ -1159,7 +1191,7 @@ export default function ChatPage() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <motion.div
-        className="flex flex-col flex-1 max-w-2xl mx-auto w-full"
+        className="flex flex-col flex-1 max-w-2xl mx-auto w-full relative"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
@@ -1197,6 +1229,29 @@ export default function ChatPage() {
                   {level}
                 </Badge>
                 <span className="text-xs text-muted-foreground">Tuteur virtuel</span>
+                {/* ─── Remaining messages counter (Essentiel plan) ──── */}
+                {isEssentiel && (
+                  <Badge
+                    variant="outline"
+                    className={`text-[9px] px-1.5 py-0 gap-0.5 ${
+                      isLimitReached
+                        ? 'border-destructive/40 text-destructive bg-destructive/5'
+                        : remainingMessages <= 10
+                          ? 'border-amber-500/40 text-amber-600 bg-amber-500/5'
+                          : 'border-yoel-gold/40 text-yoel-gold bg-yoel-gold/5'
+                    }`}
+                  >
+                    <Zap className="h-2.5 w-2.5" />
+                    {isLimitReached ? '0/50' : `${50 - remainingMessages}/50`}
+                  </Badge>
+                )}
+                {/* ─── Unlimited badge (Complet/Intégral) ──── */}
+                {isPremium && !isEssentiel && (
+                  <Badge variant="outline" className="text-[9px] px-1.5 py-0 gap-0.5 border-yoel-green/40 text-yoel-green bg-yoel-green/5">
+                    <InfinityIcon className="h-2.5 w-2.5" />
+                    Illimité
+                  </Badge>
+                )}
               </div>
             </div>
           </div>
@@ -1413,7 +1468,7 @@ export default function ChatPage() {
 
             <Button
               onClick={handleSend}
-              disabled={!inputValue.trim() || isChatLoading}
+              disabled={!inputValue.trim() || isChatLoading || !canSend}
               size="icon"
               className="h-10 w-10 shrink-0 rounded-full bg-yoel-primary hover:bg-yoel-primary-dark text-white disabled:opacity-40"
             >
@@ -1422,9 +1477,150 @@ export default function ChatPage() {
           </div>
 
           <p className="text-[10px] text-muted-foreground text-center mt-2">
+            {isEssentiel && !isLimitReached
+              ? `${remainingMessages} message${remainingMessages !== 1 ? 's' : ''} restant${remainingMessages !== 1 ? 's' : ''} ce mois • `
+              : isLimitReached
+                ? 'Limite mensuelle atteinte • '
+                : ''
+            }
             Appuyez sur Entrée pour envoyer • 🎤 saisie vocale • 🔊 voix {VOICE_OPTIONS.find(v => v.id === selectedVoice)?.name ?? 'IA'}
           </p>
         </motion.div>
+
+        {/* ─── Essentiel Limit Reached Banner ──────────────────────────── */}
+        <AnimatePresence>
+          {isLimitReached && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 20 }}
+              className="absolute bottom-20 left-0 right-0 z-30 flex justify-center px-4"
+            >
+              <div className="glass-card flex items-center gap-3 rounded-2xl border border-amber-500/30 bg-amber-500/5 px-5 py-3.5 shadow-lg max-w-md w-full">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-500/10">
+                  <Zap className="h-5 w-5 text-amber-600" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-amber-700 dark:text-amber-400">
+                    Limite atteinte
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Passez au plan Complet pour des messages illimités.
+                  </p>
+                </div>
+                <Button
+                  size="sm"
+                  onClick={() => navigate('premium')}
+                  className="shrink-0 rounded-full bg-gradient-to-r from-yoel-gold to-amber-500 text-white hover:from-yoel-gold/90 hover:to-amber-500/90 text-xs px-3"
+                >
+                  <Crown className="h-3.5 w-3.5 mr-1" />
+                  Upgrade
+                </Button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* ─── Free User Lock Overlay ──────────────────────────────────── */}
+        <AnimatePresence>
+          {!hasChatAccess && !showUpsell && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 z-20 bg-background/80 backdrop-blur-sm flex items-center justify-center"
+            >
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                transition={{ type: 'spring', stiffness: 260, damping: 24 }}
+                className="glass-card mx-4 max-w-sm w-full rounded-2xl border border-border/50 p-6 text-center shadow-xl"
+              >
+                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-yoel-gold/20 to-amber-500/20 mx-auto mb-4">
+                  <Lock className="h-7 w-7 text-yoel-gold" />
+                </div>
+                <h3 className="text-lg font-bold mb-2">
+                  Chat IA Premium
+                </h3>
+                <p className="text-sm text-muted-foreground mb-1">
+                  Le Chat IA est une fonctionnalité premium.
+                </p>
+                <p className="text-xs text-muted-foreground mb-5">
+                  Avec le plan Essentiel, profitez de 50 messages par mois. Les plans Complet et Intégral offrent des messages illimités.
+                </p>
+                <Button
+                  onClick={() => navigate('premium')}
+                  className="w-full rounded-full bg-gradient-to-r from-yoel-gold to-amber-500 text-white hover:from-yoel-gold/90 hover:to-amber-500/90 font-semibold h-11"
+                >
+                  <Crown className="h-4 w-4 mr-2" />
+                  Découvrir les plans Premium
+                </Button>
+                <button
+                  onClick={goBack}
+                  className="mt-3 text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                >
+                  Retour
+                </button>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* ─── Premium Upsell Overlay (triggered on send attempt) ────── */}
+        <AnimatePresence>
+          {showUpsell && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4"
+              onClick={() => setShowUpsell(false)}
+            >
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                transition={{ type: 'spring', stiffness: 260, damping: 24 }}
+                className="glass-card max-w-sm w-full rounded-2xl border border-border/50 p-6 text-center shadow-2xl"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-yoel-gold/20 to-amber-500/20 mx-auto mb-4">
+                  {isLimitReached ? (
+                    <Zap className="h-7 w-7 text-amber-500" />
+                  ) : (
+                    <Lock className="h-7 w-7 text-yoel-gold" />
+                  )}
+                </div>
+                <h3 className="text-lg font-bold mb-2">
+                  {isLimitReached ? 'Limite mensuelle atteinte' : 'Chat IA Premium'}
+                </h3>
+                <p className="text-sm text-muted-foreground mb-5">
+                  {isLimitReached
+                    ? 'Vous avez utilisé vos 50 messages ce mois. Passez au plan Complet pour des messages illimités.'
+                    : 'Le Chat IA est réservé aux abonnés Premium. Choisissez un plan pour commencer à discuter avec votre tuteur IA.'
+                  }
+                </p>
+                <Button
+                  onClick={() => {
+                    setShowUpsell(false)
+                    navigate('premium')
+                  }}
+                  className="w-full rounded-full bg-gradient-to-r from-yoel-gold to-amber-500 text-white hover:from-yoel-gold/90 hover:to-amber-500/90 font-semibold h-11"
+                >
+                  <Crown className="h-4 w-4 mr-2" />
+                  {isLimitReached ? 'Passer au plan Complet' : 'Découvrir les plans Premium'}
+                </Button>
+                <button
+                  onClick={() => setShowUpsell(false)}
+                  className="mt-3 text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                >
+                  Fermer
+                </button>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </motion.div>
     </div>
   )
