@@ -118,24 +118,6 @@ export default function RegisterPage() {
     return Object.keys(newErrors).length === 0
   }
 
-  const createDemoUser = (emailAddr: string, userName: string, userLevel: string): UserState => ({
-    id: 'demo',
-    email: emailAddr,
-    name: userName,
-    avatar: null,
-    role: 'user',
-    level: userLevel || 'A1',
-    xp: 1250,
-    streak: 7,
-    coins: 350,
-    isPremium: false,
-    premiumPlan: null,
-    dailyGoal: 0,
-    notifications: true,
-    darkMode: false,
-    soundEnabled: true,
-  })
-
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     if (!validate()) return
@@ -150,21 +132,37 @@ export default function RegisterPage() {
 
       if (res.ok) {
         const data = await res.json()
-        setUser(data.user)
-        setCurrentLevel(data.user?.level || level || 'A1')
+        const registeredUser: UserState = {
+          id: data.user.id,
+          email: data.user.email,
+          name: data.user.name || data.user.email.split('@')[0],
+          avatar: data.user.avatar,
+          role: data.user.role || 'user',
+          level: data.user.level || level || 'A1',
+          xp: data.user.xp || 0,
+          streak: data.user.streak || 0,
+          coins: data.user.coins || 0,
+          isPremium: data.user.isPremium || false,
+          premiumPlan: data.user.premiumPlan || null,
+          dailyGoal: data.user.dailyGoal ?? 20,
+          notifications: data.user.notifications ?? true,
+          darkMode: data.user.darkMode ?? false,
+          soundEnabled: data.user.soundEnabled ?? true,
+        }
+        setUser(registeredUser)
+        setCurrentLevel(registeredUser.level)
         navigate('dashboard')
         toast.success('Bienvenue !', { description: 'Votre compte a été créé avec succès' })
       } else {
-        throw new Error('Register failed')
+        const data = await res.json().catch(() => null)
+        toast.error('Inscription échouée', {
+          description: data?.error || 'Impossible de créer votre compte. Veuillez réessayer.',
+        })
       }
     } catch {
       toast.error('Inscription échouée', {
-        description: 'Utilisation du mode démonstration',
+        description: 'Erreur de connexion au serveur. Veuillez réessayer.',
       })
-      const demoUser = createDemoUser(email, name, level)
-      setUser(demoUser)
-      setCurrentLevel(demoUser?.level || level || 'A1')
-      navigate('dashboard')
     } finally {
       setIsLoading(false)
     }

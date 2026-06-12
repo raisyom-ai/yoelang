@@ -53,24 +53,6 @@ export default function LoginPage() {
     return Object.keys(newErrors).length === 0
   }
 
-  const createDemoUser = (emailAddr: string): UserState => ({
-    id: 'demo',
-    email: emailAddr,
-    name: emailAddr.split('@')[0],
-    avatar: null,
-    role: 'user',
-    level: 'A1',
-    xp: 1250,
-    streak: 7,
-    coins: 350,
-    isPremium: false,
-    premiumPlan: null,
-    dailyGoal: 0,
-    notifications: true,
-    darkMode: false,
-    soundEnabled: true,
-  })
-
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     if (!validate()) return
@@ -111,21 +93,37 @@ export default function LoginPage() {
           return
         }
         
-        setUser(data.user)
-        setCurrentLevel(data.user?.level || 'A1')
+        const loggedInUser: UserState = {
+          id: data.user.id,
+          email: data.user.email,
+          name: data.user.name || data.user.email.split('@')[0],
+          avatar: data.user.avatar,
+          role: data.user.role || 'user',
+          level: data.user.level || 'A1',
+          xp: data.user.xp || 0,
+          streak: data.user.streak || 0,
+          coins: data.user.coins || 0,
+          isPremium: data.user.isPremium || false,
+          premiumPlan: data.user.premiumPlan || null,
+          dailyGoal: data.user.dailyGoal ?? 20,
+          notifications: data.user.notifications ?? true,
+          darkMode: data.user.darkMode ?? false,
+          soundEnabled: data.user.soundEnabled ?? true,
+        }
+        setUser(loggedInUser)
+        setCurrentLevel(loggedInUser.level)
         navigate('dashboard')
         toast.success('Bienvenue !', { description: 'Connexion réussie' })
       } else {
-        throw new Error('Login failed')
+        const data = await res.json().catch(() => null)
+        toast.error('Connexion échouée', {
+          description: data?.error || 'Email ou mot de passe incorrect',
+        })
       }
     } catch {
       toast.error('Connexion échouée', {
-        description: 'Utilisation du mode démonstration',
+        description: 'Erreur de connexion au serveur. Veuillez réessayer.',
       })
-      const demoUser = createDemoUser(email)
-      setUser(demoUser)
-      setCurrentLevel(demoUser?.level || 'A1')
-      navigate('dashboard')
     } finally {
       setIsLoading(false)
     }
@@ -392,45 +390,8 @@ export default function LoginPage() {
               variant="outline"
               className="w-full h-11 text-sm font-medium"
               disabled={isLoading}
-              onClick={async () => {
-                setIsLoading(true)
-                try {
-                  const res = await fetch('/api/auth/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: 'google@yoelang.com', password: 'GoogleDemo123!' }),
-                  })
-                  if (res.ok) {
-                    const data = await res.json()
-                    setUser(data.user)
-                    navigate('dashboard')
-                    toast.success('Bienvenue !', { description: 'Connexion Google réussie' })
-                  } else {
-                    throw new Error('Google demo login failed')
-                  }
-                } catch {
-                  const googleUser: UserState = {
-                    id: 'google-demo',
-                    email: 'google@yoelang.com',
-                    name: 'Utilisateur Google',
-                    avatar: null,
-                    role: 'user',
-                    level: 'A1',
-                    xp: 1250,
-                    streak: 7,
-                    coins: 350,
-                    isPremium: false,
-                    dailyGoal: 0,
-                    notifications: true,
-                    darkMode: false,
-                    soundEnabled: true,
-                  }
-                  setUser(googleUser)
-                  navigate('dashboard')
-                  toast.success('Bienvenue !', { description: 'Connecté avec Google (mode démo)' })
-                } finally {
-                  setIsLoading(false)
-                }
+              onClick={() => {
+                toast.info('Bientôt disponible', { description: 'La connexion avec Google sera bientôt disponible.' })
               }}
             >
               <Chrome className="w-5 h-5 mr-2" />
@@ -441,45 +402,8 @@ export default function LoginPage() {
               variant="outline"
               className="w-full h-11 text-sm font-medium"
               disabled={isLoading}
-              onClick={async () => {
-                setIsLoading(true)
-                try {
-                  const res = await fetch('/api/auth/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: 'apple@yoelang.com', password: 'AppleDemo123!' }),
-                  })
-                  if (res.ok) {
-                    const data = await res.json()
-                    setUser(data.user)
-                    navigate('dashboard')
-                    toast.success('Bienvenue !', { description: 'Connexion Apple réussie' })
-                  } else {
-                    throw new Error('Apple demo login failed')
-                  }
-                } catch {
-                  const appleUser: UserState = {
-                    id: 'apple-demo',
-                    email: 'apple@yoelang.com',
-                    name: 'Utilisateur Apple',
-                    avatar: null,
-                    role: 'user',
-                    level: 'A1',
-                    xp: 1250,
-                    streak: 7,
-                    coins: 350,
-                    isPremium: false,
-                    dailyGoal: 0,
-                    notifications: true,
-                    darkMode: false,
-                    soundEnabled: true,
-                  }
-                  setUser(appleUser)
-                  navigate('dashboard')
-                  toast.success('Bienvenue !', { description: 'Connecté avec Apple (mode démo)' })
-                } finally {
-                  setIsLoading(false)
-                }
+              onClick={() => {
+                toast.info('Bientôt disponible', { description: 'La connexion avec Apple sera bientôt disponible.' })
               }}
             >
               <Apple className="w-5 h-5 mr-2" />
