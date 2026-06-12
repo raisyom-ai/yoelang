@@ -54,7 +54,7 @@ const TYPE_LABELS_FR: Record<string, string> = {
 // ─── Main Component ─────────────────────────────────────────────────────────
 
 export default function ProfilePage() {
-  const { user, goBack, navigate, logout, dailyXpHistory, dailyXpEarned, lessonHistory } = useAppStore()
+  const { user, goBack, navigate, logout, dailyXpHistory, dailyXpEarned, lessonHistory, earnedCertificates } = useAppStore()
 
   const displayName = user?.name ?? 'Apprenant'
   const email = user?.email ?? 'apprenant@yoelang.com'
@@ -387,10 +387,12 @@ export default function ProfilePage() {
               </div>
               <div className="flex-1">
                 <h3 className="font-semibold gradient-text-premium text-lg">
-                  Mon Certificat
+                  Mes Certificats
                 </h3>
                 <p className="text-sm text-muted-foreground">
-                  Consultez et téléchargez votre certificat de niveau
+                  {earnedCertificates.length > 0
+                    ? `${earnedCertificates.length} certificat${earnedCertificates.length > 1 ? 's' : ''} obtenu${earnedCertificates.length > 1 ? 's' : ''} — ${earnedCertificates.map(c => c.level).join(', ')}`
+                    : 'Complétez un niveau pour obtenir votre certificat'}
                 </p>
               </div>
               <ChevronRight className="h-5 w-5 text-muted-foreground shrink-0" />

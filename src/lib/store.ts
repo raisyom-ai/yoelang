@@ -90,6 +90,39 @@ export interface WeekDayActivity {
   isFuture: boolean  // Whether this date is in the future
 }
 
+// ─── Certificate Entry ──────────────────────────────────────────────────────
+export interface CertificateEntry {
+  id: string               // Unique certificate ID (e.g. "YOELANG-A1-2025-001234")
+  level: string            // CEFR level (A1-C2)
+  earnedAt: string         // ISO date string when the certificate was earned
+  totalLessons: number     // Total lessons in the level at time of completion
+  completedLessons: number // Lessons completed
+  avgScore: number         // Average score across all lessons in the level
+  xpAtCompletion: number   // Total XP at the time of certificate earning
+  userName: string         // Name as it appeared when certificate was earned
+}
+
+const LEVEL_NAMES_FR: Record<string, string> = {
+  A1: 'Débutant',
+  A2: 'Élémentaire',
+  B1: 'Intermédiaire',
+  B2: 'Intermédiaire Supérieur',
+  C1: 'Avancé',
+  C2: 'Maîtrise',
+}
+
+export { LEVEL_NAMES_FR }
+
+/**
+ * Generate a unique certificate ID.
+ * Format: YOELANG-{LEVEL}-{YEAR}-{6-digit sequential}
+ */
+const generateCertificateId = (level: string): string => {
+  const year = new Date().getFullYear()
+  const seq = String(Math.floor(Math.random() * 999999)).padStart(6, '0')
+  return `YOELANG-${level}-${year}-${seq}`
+}
+
 /**
  * Calculate current streak from XP history.
  * A streak day = a day where xpEarned > 0.
@@ -344,6 +377,8 @@ interface AppState {
   earnBadge: (badgeId: string) => void
   dailyChallengeCompleted: boolean
   completeDailyChallenge: () => void
+  earnedCertificates: CertificateEntry[]
+  earnCertificate: (level: string, totalLessons: number, completedLessons: number, avgScore: number) => void
 }
 
 // Generate demo XP history for the past 7 days (so the adaptive algorithm has data to work with)
@@ -464,6 +499,19 @@ export const useAppStore = create<AppState>((set, get) => ({
     dailyXpHistory: state.dailyXpHistory.length > 0 ? state.dailyXpHistory : generateDemoXpHistory(user.level),
     // Initialize lesson history with demo data if empty
     lessonHistory: state.lessonHistory.length > 0 ? state.lessonHistory : generateDemoLessonHistory(user.level),
+    // Initialize with a demo A1 certificate so users can see the feature
+    earnedCertificates: state.earnedCertificates.length > 0 ? state.earnedCertificates : [
+      {
+        id: generateCertificateId('A1'),
+        level: 'A1',
+        earnedAt: new Date(Date.now() - 3 * 86400000).toISOString(), // 3 days ago
+        totalLessons: 20,
+        completedLessons: 20,
+        avgScore: 85,
+        xpAtCompletion: 300,
+        userName: user.name,
+      }
+    ],
   })),
   logout: () => set({ 
     user: null, 
@@ -475,6 +523,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     lastXpDate: '',
     dailyXpHistory: [],
     lessonHistory: [],
+    earnedCertificates: [],
   }),
 
   // Theme
@@ -557,6 +606,24 @@ export const useAppStore = create<AppState>((set, get) => ({
   })),
   dailyChallengeCompleted: false,
   completeDailyChallenge: () => set({ dailyChallengeCompleted: true }),
+  earnedCertificates: [],
+  earnCertificate: (level, totalLessons, completedLessons, avgScore) => set((state) => {
+    // Don't award duplicate certificate for same level
+    if (state.earnedCertificates.some((c) => c.level === level)) {
+      return state
+    }
+    const cert: CertificateEntry = {
+      id: generateCertificateId(level),
+      level,
+      earnedAt: new Date().toISOString(),
+      totalLessons,
+      completedLessons,
+      avgScore: Math.round(avgScore),
+      xpAtCompletion: state.user?.xp ?? 0,
+      userName: state.user?.name ?? 'Apprenant',
+    }
+    return { earnedCertificates: [...state.earnedCertificates, cert] }
+  }),
 }))
 
 // Demo data - built from course-data.ts

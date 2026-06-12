@@ -10,7 +10,7 @@ import {
   List, Lock, ChevronDown, ChevronUp
 } from 'lucide-react'
 import { useAppStore, DEMO_LESSONS, LEVELS, type LessonInfo } from '@/lib/store'
-import { COURSE_DATA, getLessonsForLevel, getUnitsForLevel, type LessonData, type UnitData } from '@/lib/course-data'
+import { COURSE_DATA, getLessonsForLevel, getUnitsForLevel, getTotalLessonsForLevel as getTotalLessonsFromCourseData, type LessonData, type UnitData } from '@/lib/course-data'
 import { speakWord } from '@/lib/speech-utils'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
@@ -243,7 +243,7 @@ function getTypeConfig(type: string) {
 // ─── Main Component ─────────────────────────────────────────────────────────
 
 export default function CoursePage() {
-  const { goBack, currentLevel, currentLesson, navigate, setCurrentLesson, completedLessons, addCompletedLesson, addXP, addLessonHistoryEntry } = useAppStore()
+  const { goBack, currentLevel, currentLesson, navigate, setCurrentLesson, completedLessons, addCompletedLesson, addXP, addLessonHistoryEntry, earnedCertificates, earnCertificate, lessonHistory } = useAppStore()
 
   // View mode: 'list' shows all lessons, 'study' shows the lesson steps
   const [viewMode, setViewMode] = useState<'list' | 'study'>('list')
@@ -253,6 +253,7 @@ export default function CoursePage() {
   const [direction, setDirection] = useState(1)
   const [isPlayingAudio, setIsPlayingAudio] = useState(false)
   const [showCompletionModal, setShowCompletionModal] = useState(false)
+  const [showCertificateEarned, setShowCertificateEarned] = useState(false)
   const [vocabRevealed, setVocabRevealed] = useState<Set<number>>(new Set())
   const [dialogueRevealed, setDialogueRevealed] = useState<Set<number>>(new Set())
   const [grammarAnswers, setGrammarAnswers] = useState<Set<number>>(new Set())
@@ -382,6 +383,20 @@ export default function CoursePage() {
         xpEarned: selectedLessonData.xpReward,
         completedAt: new Date().toISOString(),
       })
+
+      // Check if this was the last lesson in the level → award certificate
+      const totalLessonsInLevel = getTotalLessonsFromCourseData(currentLevel)
+      const newCompletedCount = allLessons.filter(l => l.completed || l.id === selectedLessonData.id).length
+      if (newCompletedCount >= totalLessonsInLevel && !earnedCertificates.some(c => c.level === currentLevel)) {
+        // Calculate average score from lesson history for this level
+        const levelLessonIds = allLessons.map(l => l.id)
+        const levelHistoryEntries = lessonHistory.filter(e => levelLessonIds.includes(e.lessonId))
+        const avgScore = levelHistoryEntries.length > 0
+          ? levelHistoryEntries.reduce((sum, e) => sum + e.score, 0) / levelHistoryEntries.length
+          : score
+        earnCertificate(currentLevel, totalLessonsInLevel, newCompletedCount, avgScore)
+        setShowCertificateEarned(true)
+      }
     }
     setShowCompletionModal(true)
   }
@@ -936,7 +951,7 @@ export default function CoursePage() {
 
       {/* Completion Modal */}
       <AnimatePresence>
-        {showCompletionModal && quizScore !== null && (
+        {showCompletionModal && quizScore !== null && !showCertificateEarned && (
           <LessonCompletionModal
             score={quizScore}
             passingScore={PASSING_SCORE}
@@ -948,6 +963,79 @@ export default function CoursePage() {
             onAdvance={handleAdvanceToNextLesson}
             onBackToList={handleCompletionBackToList}
           />
+        )}
+      </AnimatePresence>
+
+      {/* Certificate Earned Celebration Modal */}
+      <AnimatePresence>
+        {showCertificateEarned && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.5, opacity: 0, y: 40 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.8, opacity: 0, y: 20 }}
+              transition={{ type: 'spring', stiffness: 260, damping: 20 }}
+              className="w-full max-w-sm"
+            >
+              <Card className="overflow-hidden border-0 shadow-2xl">
+                <div className="h-2 bg-gradient-to-r from-yoel-gold via-yoel-primary to-yoel-gold" />
+                <CardContent className="p-8 text-center space-y-5">
+                  {/* Celebration icon */}
+                  <motion.div
+                    animate={{ rotate: [0, -10, 10, -5, 5, 0] }}
+                    transition={{ duration: 0.8, repeat: 2 }}
+                    className="flex justify-center"
+                  >
+                    <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-yoel-gold to-amber-500 shadow-lg">
+                      <span className="text-4xl">🏆</span>
+                    </div>
+                  </motion.div>
+
+                  <div className="space-y-2">
+                    <h2 className="text-2xl font-black gradient-text-premium">
+                      Certificat Obtenu !
+                    </h2>
+                    <p className="text-sm text-muted-foreground">
+                      Vous avez complété toutes les leçons du niveau
+                    </p>
+                  </div>
+
+                  <div className="inline-flex items-center gap-3 rounded-xl bg-gradient-to-r from-yoel-gold/10 to-yoel-primary/10 px-6 py-3 border border-yoel-gold/20">
+                    <span className="text-4xl font-black gradient-text-premium">{currentLevel}</span>
+                  </div>
+
+                  <p className="text-xs text-muted-foreground">
+                    Votre certificat officiel avec identifiant unique est maintenant disponible dans votre profil.
+                  </p>
+
+                  <div className="flex flex-col gap-2 pt-2">
+                    <Button
+                      onClick={() => {
+                        setShowCertificateEarned(false)
+                        navigate('certificate')
+                      }}
+                      className="w-full bg-gradient-to-r from-yoel-gold to-amber-500 hover:from-yoel-gold/90 hover:to-amber-500/90 text-white rounded-xl h-12"
+                    >
+                      <Award className="h-5 w-5 mr-2" />
+                      Voir mon certificat
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowCertificateEarned(false)}
+                      className="w-full rounded-xl h-12"
+                    >
+                      Continuer
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
     </div>
