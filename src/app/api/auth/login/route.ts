@@ -33,10 +33,15 @@ export async function POST(req: NextRequest) {
     const { password: _password, ...userWithoutPassword } = user
     void _password
 
+    // If user is admin, redirect to admin dashboard
+    const isAdmin = user.role === 'admin'
+
     return NextResponse.json({
       success: true,
+      isAdmin,
       user: {
         ...userWithoutPassword,
+        role: user.role || 'user',
         level: user.level || 'A1',
         xp: user.xp || 0,
         streak: user.streak || 0,

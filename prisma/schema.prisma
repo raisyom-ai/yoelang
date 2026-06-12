@@ -13,6 +13,7 @@ model User {
   name           String?
   password       String
   avatar         String?
+  role           String   @default("user") // "user" | "admin"
   level          String   @default("A1")
   xp             Int      @default(0)
   streak         Int      @default(0)

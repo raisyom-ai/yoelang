@@ -5,6 +5,7 @@ export type PageId =
   | 'splash' | 'home' | 'login' | 'register' 
   | 'dashboard' | 'levels' | 'course' | 'exercises' 
   | 'chat' | 'stats' | 'profile' | 'settings' | 'premium' | 'certificate'
+  | 'admin-login' | 'admin-dashboard'
 
 // ─── Premium Plan Types ──────────────────────────────────────────────────
 
@@ -59,6 +60,7 @@ export interface UserState {
   email: string
   name: string
   avatar: string | null
+  role: 'user' | 'admin'
   level: string
   xp: number
   streak: number

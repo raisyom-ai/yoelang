@@ -2,7 +2,7 @@
 
 import { useState, FormEvent } from 'react'
 import { motion } from 'framer-motion'
-import { Mail, Lock, Eye, EyeOff, Loader2, Chrome, Apple, BookOpen, Globe, Sparkles, ArrowLeft } from 'lucide-react'
+import { Mail, Lock, Eye, EyeOff, Loader2, Chrome, Apple, BookOpen, Globe, Sparkles, ArrowLeft, Shield } from 'lucide-react'
 import { useAppStore, type UserState } from '@/lib/store'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -58,6 +58,7 @@ export default function LoginPage() {
     email: emailAddr,
     name: emailAddr.split('@')[0],
     avatar: null,
+    role: 'user',
     level: 'A1',
     xp: 1250,
     streak: 7,
@@ -84,6 +85,32 @@ export default function LoginPage() {
 
       if (res.ok) {
         const data = await res.json()
+        
+        // If the user is an admin, redirect to admin dashboard
+        if (data.isAdmin) {
+          const adminUser: UserState = {
+            id: data.user.id,
+            email: data.user.email,
+            name: data.user.name || 'Admin',
+            avatar: data.user.avatar,
+            role: 'admin',
+            level: data.user.level || 'C2',
+            xp: data.user.xp || 0,
+            streak: data.user.streak || 0,
+            coins: data.user.coins || 0,
+            isPremium: true,
+            premiumPlan: 'integral',
+            dailyGoal: data.user.dailyGoal || 20,
+            notifications: data.user.notifications ?? true,
+            darkMode: data.user.darkMode ?? false,
+            soundEnabled: data.user.soundEnabled ?? true,
+          }
+          setUser(adminUser)
+          navigate('admin-dashboard')
+          toast.success('Bienvenue Admin !', { description: 'Connexion au panneau d\'administration' })
+          return
+        }
+        
         setUser(data.user)
         setCurrentLevel(data.user?.level || 'A1')
         navigate('dashboard')
@@ -387,6 +414,7 @@ export default function LoginPage() {
                     email: 'google@yoelang.com',
                     name: 'Utilisateur Google',
                     avatar: null,
+                    role: 'user',
                     level: 'A1',
                     xp: 1250,
                     streak: 7,
@@ -435,6 +463,7 @@ export default function LoginPage() {
                     email: 'apple@yoelang.com',
                     name: 'Utilisateur Apple',
                     avatar: null,
+                    role: 'user',
                     level: 'A1',
                     xp: 1250,
                     streak: 7,
@@ -471,6 +500,22 @@ export default function LoginPage() {
               className="text-yoel-primary hover:text-yoel-primary-dark font-semibold transition-colors"
             >
               Inscrivez-vous
+            </button>
+          </motion.p>
+
+          {/* Admin link */}
+          <motion.p
+            custom={9}
+            variants={fadeInUp}
+            className="mt-4 text-center"
+          >
+            <button
+              type="button"
+              onClick={() => navigate('admin-login')}
+              className="text-xs text-muted-foreground/50 hover:text-muted-foreground transition-colors inline-flex items-center gap-1"
+            >
+              <Shield className="w-3 h-3" />
+              Administration
             </button>
           </motion.p>
         </motion.div>

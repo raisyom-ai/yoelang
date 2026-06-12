@@ -123,6 +123,7 @@ export default function RegisterPage() {
     email: emailAddr,
     name: userName,
     avatar: null,
+    role: 'user',
     level: userLevel || 'A1',
     xp: 1250,
     streak: 7,
