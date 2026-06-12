@@ -83,7 +83,7 @@ const WORD_OF_THE_DAY = {
   english: 'Serendipity',
   french: 'Sérendipité',
   phonetic: '/ˌser.ənˈdɪp.ə.ti/',
-  example: 'Finding that caf\u00e9 was pure serendipity.',
+  example: 'Finding that café was pure serendipity.',
 }
 
 const WEEK_DAYS = [
@@ -104,12 +104,14 @@ function CircularProgress({
   size = 120,
   strokeWidth = 8,
   className = '',
+  compact = false,
 }: {
   value: number
   max: number
   size?: number
   strokeWidth?: number
   className?: string
+  compact?: boolean
 }) {
   const radius = (size - strokeWidth) / 2
   const circumference = 2 * Math.PI * radius
@@ -151,14 +153,14 @@ function CircularProgress({
       </svg>
       <div className="absolute flex flex-col items-center justify-center">
         <motion.span
-          className="text-lg sm:text-2xl font-bold gradient-text-primary"
+          className={`${compact ? 'text-base' : 'text-lg sm:text-2xl'} font-bold gradient-text-primary`}
           initial={{ opacity: 0, scale: 0.5 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.8, type: 'spring' }}
         >
           {value}
         </motion.span>
-        <span className="text-[10px] sm:text-xs text-muted-foreground">/ {max} XP</span>
+        <span className={`${compact ? 'text-[8px]' : 'text-[10px] sm:text-xs'} text-muted-foreground`}>/ {max} XP</span>
       </div>
     </div>
   )
@@ -182,14 +184,14 @@ function QuickAction({
       whileHover={{ scale: 1.04, y: -2 }}
       whileTap={{ scale: 0.96 }}
       onClick={onClick}
-      className="flex flex-col items-center justify-center gap-1.5 sm:gap-2 rounded-2xl p-3 sm:p-4 glass-card transition-colors hover:bg-yoel-primary/5 dark:hover:bg-yoel-primary/10 cursor-pointer min-h-[80px] sm:min-h-[100px]"
+      className="flex flex-col items-center justify-center gap-1 sm:gap-2 rounded-2xl p-2 sm:p-4 glass-card transition-colors hover:bg-yoel-primary/5 dark:hover:bg-yoel-primary/10 cursor-pointer min-h-[72px] sm:min-h-[100px]"
     >
       <div
-        className={`flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-gradient-to-br ${color} shadow-md`}
+        className={`flex h-9 w-9 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-gradient-to-br ${color} shadow-md`}
       >
-        <Icon className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+        <Icon className="h-4.5 w-4.5 sm:h-6 sm:w-6 text-white" />
       </div>
-      <span className="text-xs sm:text-sm font-medium">{label}</span>
+      <span className="text-[11px] sm:text-sm font-medium leading-tight">{label}</span>
     </motion.button>
   )
 }
@@ -211,14 +213,14 @@ function BottomNavItem({
     <motion.button
       whileTap={{ scale: 0.9 }}
       onClick={onClick}
-      className={`flex flex-col items-center justify-center gap-0.5 px-3 py-2 rounded-lg transition-colors cursor-pointer ${
+      className={`flex flex-col items-center justify-center gap-0.5 px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer ${
         active
           ? 'text-yoel-primary'
           : 'text-muted-foreground hover:text-foreground'
       }`}
     >
-      <Icon className="h-5 w-5" />
-      <span className="text-[10px] font-medium">{label}</span>
+      <Icon className="h-4.5 w-4.5" />
+      <span className="text-[9px] font-medium leading-tight">{label}</span>
       {active && (
         <motion.div
           layoutId="bottomNavIndicator"
@@ -294,10 +296,10 @@ export default function DashboardPage() {
   // Greeting based on time
   const hour = new Date().getHours()
   const greeting =
-    hour < 12 ? 'Bonjour' : hour < 18 ? 'Bon apr\u00e8s-midi' : 'Bonsoir'
+    hour < 12 ? 'Bonjour' : hour < 18 ? 'Bon après-midi' : 'Bonsoir'
 
   return (
-    <div className="min-h-screen bg-background pb-24 lg:pb-8">
+    <div className="min-h-screen bg-background pb-[88px] lg:pb-8">
       {/* ─── Sticky Top Bar ──────────────────────────────────────────── */}
       <div className="sticky top-0 z-40 bg-background/80 backdrop-blur-lg border-b border-border/40">
         <div className="mx-auto max-w-4xl flex items-center justify-between gap-2 sm:gap-3 px-4 py-2 sm:py-2.5 lg:px-6">
@@ -378,7 +380,7 @@ export default function DashboardPage() {
       </div>
 
       <motion.div
-        className="mx-auto max-w-4xl space-y-4 sm:space-y-6 p-4 lg:p-6"
+        className="mx-auto max-w-4xl space-y-3 sm:space-y-6 p-3 sm:p-4 lg:p-6"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
@@ -404,23 +406,28 @@ export default function DashboardPage() {
         {/* ─── 2. Daily Goal Card (compact on mobile) ────────────────── */}
         <motion.div variants={itemVariants}>
           <Card className="glass-card overflow-hidden">
-            <CardContent className="flex flex-row items-center gap-4 p-4 sm:p-6 sm:gap-6">
-              <CircularProgress
-                value={DAILY_XP_EARNED}
-                max={DAILY_XP_GOAL}
-                size={90}
-                strokeWidth={8}
-                className="shrink-0 sm:hidden"
-              />
-              <CircularProgress
-                value={DAILY_XP_EARNED}
-                max={DAILY_XP_GOAL}
-                size={130}
-                strokeWidth={10}
-                className="shrink-0 hidden sm:block"
-              />
+            <CardContent className="flex flex-row items-center gap-3 p-3 sm:p-6 sm:gap-6">
+              {/* Mobile: compact 80px ring */}
+              <div className="shrink-0 sm:hidden">
+                <CircularProgress
+                  value={DAILY_XP_EARNED}
+                  max={DAILY_XP_GOAL}
+                  size={80}
+                  strokeWidth={7}
+                  compact
+                />
+              </div>
+              {/* Desktop: larger ring */}
+              <div className="shrink-0 hidden sm:block">
+                <CircularProgress
+                  value={DAILY_XP_EARNED}
+                  max={DAILY_XP_GOAL}
+                  size={130}
+                  strokeWidth={10}
+                />
+              </div>
               <div className="flex-1 min-w-0 space-y-1 sm:space-y-2">
-                <h3 className="text-base sm:text-lg font-semibold">
+                <h3 className="text-sm sm:text-lg font-semibold">
                   Objectif du jour
                 </h3>
                 <p className="text-muted-foreground text-xs sm:text-sm">
@@ -428,11 +435,10 @@ export default function DashboardPage() {
                     ? '🎉 Objectif atteint !'
                     : `Encore ${DAILY_XP_GOAL - DAILY_XP_EARNED} XP !`}
                 </p>
-                <div className="flex items-center gap-2">
-                  <Target className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-yoel-primary" />
-                  <span className="text-xs sm:text-sm font-medium text-yoel-primary">
-                    {Math.round((DAILY_XP_EARNED / DAILY_XP_GOAL) * 100)}%
-                    compl\u00e9t\u00e9
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <Target className="h-3 w-3 sm:h-4 sm:w-4 text-yoel-primary shrink-0" />
+                  <span className="text-[11px] sm:text-sm font-medium text-yoel-primary whitespace-nowrap">
+                    {Math.round((DAILY_XP_EARNED / DAILY_XP_GOAL) * 100)}% complété
                   </span>
                 </div>
               </div>
@@ -449,23 +455,23 @@ export default function DashboardPage() {
             <div className="relative">
               {/* Accent bar */}
               <div className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-yoel-primary to-yoel-gold rounded-l-xl" />
-              <CardContent className="flex items-center gap-3 sm:gap-4 p-4 sm:p-5 pl-5 sm:pl-6">
-                <div className="flex h-12 w-12 sm:h-14 sm:w-14 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-yoel-primary/20 to-yoel-gold/20 overflow-hidden">
-                  <img src="/practice-english.png" alt="Practice" className="h-12 w-12 sm:h-14 sm:w-14 object-cover rounded-xl" />
+              <CardContent className="flex items-center gap-2.5 sm:gap-4 p-3 sm:p-5 pl-4 sm:pl-6">
+                <div className="flex h-11 w-11 sm:h-14 sm:w-14 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-yoel-primary/20 to-yoel-gold/20 overflow-hidden">
+                  <img src="/practice-english.png" alt="Practice" className="h-11 w-11 sm:h-14 sm:w-14 object-cover rounded-xl" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-[10px] sm:text-xs text-muted-foreground font-medium uppercase tracking-wider">
+                  <p className="text-[9px] sm:text-xs text-muted-foreground font-medium uppercase tracking-wider">
                     Continuer
                   </p>
                   <h3 className="font-semibold truncate mt-0.5 text-sm sm:text-base">
                     {nextLesson.title}
                   </h3>
-                  <div className="flex items-center gap-3 mt-1">
-                    <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                  <div className="flex items-center gap-2 sm:gap-3 mt-0.5">
+                    <span className="flex items-center gap-0.5 text-[11px] sm:text-xs text-muted-foreground whitespace-nowrap">
                       <Zap className="h-3 w-3 text-yoel-gold" />
                       {nextLesson.xpReward} XP
                     </span>
-                    <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                    <span className="flex items-center gap-0.5 text-[11px] sm:text-xs text-muted-foreground whitespace-nowrap">
                       <Clock className="h-3 w-3" />
                       {nextLesson.duration} min
                     </span>
@@ -473,7 +479,7 @@ export default function DashboardPage() {
                 </div>
                 <Button
                   size="sm"
-                  className="bg-yoel-primary hover:bg-yoel-primary-dark text-white rounded-full shrink-0"
+                  className="bg-yoel-primary hover:bg-yoel-primary-dark text-white rounded-full shrink-0 h-8 w-8 sm:h-9 sm:w-9 p-0"
                 >
                   <ChevronRight className="h-4 w-4" />
                 </Button>
@@ -484,7 +490,7 @@ export default function DashboardPage() {
 
         {/* ─── 4. Quick Actions Grid ──────────────────────────────────── */}
         <motion.div variants={itemVariants}>
-          <div className="grid grid-cols-4 gap-2 sm:gap-3">
+          <div className="grid grid-cols-4 gap-1.5 sm:gap-3">
             <QuickAction
               icon={BookOpen}
               label="Leçons"
@@ -517,23 +523,23 @@ export default function DashboardPage() {
           {/* Daily Challenge */}
           <motion.div variants={itemVariants}>
             <Card className="glass-card overflow-hidden h-full">
-              <CardHeader className="pb-2 p-4 sm:p-6">
+              <CardHeader className="pb-2 p-3 sm:p-6">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-sm sm:text-base flex items-center gap-2">
-                    <Zap className="h-4 w-4 sm:h-5 sm:w-5 text-yoel-gold" />
-                    D\u00e9fi du jour
+                  <CardTitle className="text-sm sm:text-base flex items-center gap-1.5 sm:gap-2">
+                    <Zap className="h-4 w-4 sm:h-5 sm:w-5 text-yoel-gold shrink-0" />
+                    Défi du jour
                   </CardTitle>
-                  <Badge className="bg-yoel-gold/15 text-yoel-gold border-0 text-[10px] sm:text-xs">
+                  <Badge className="bg-yoel-gold/15 text-yoel-gold border-0 text-[10px] sm:text-xs shrink-0">
                     +{DAILY_CHALLENGE.xpReward} XP
                   </Badge>
                 </div>
               </CardHeader>
-              <CardContent className="space-y-3 p-4 sm:p-6 pt-0 sm:pt-0">
-                <p className="font-medium text-xs sm:text-sm">
+              <CardContent className="space-y-2.5 p-3 sm:p-6 pt-0 sm:pt-0">
+                <p className="font-medium text-xs sm:text-sm leading-relaxed">
                   {DAILY_CHALLENGE.question}
                 </p>
 
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-1.5 sm:gap-2">
                   {DAILY_CHALLENGE.options.map((option, idx) => {
                     const isSelected = selectedOption === idx
                     const isCorrect = idx === DAILY_CHALLENGE.correctIndex
@@ -577,7 +583,7 @@ export default function DashboardPage() {
                       ? `${Math.floor(challengeTime / 60)}:${(challengeTime % 60)
                           .toString()
                           .padStart(2, '0')}`
-                      : 'Temps \u00e9coul\u00e9'}
+                      : 'Temps écoulé'}
                   </span>
                   {challengeAnswered && (
                     <span
@@ -600,21 +606,21 @@ export default function DashboardPage() {
           {/* Streak Calendar */}
           <motion.div variants={itemVariants}>
             <Card className="glass-card overflow-hidden h-full">
-              <CardHeader className="pb-2 p-4 sm:p-6">
-                <CardTitle className="text-sm sm:text-base flex items-center gap-2">
-                  <Flame className="h-4 w-4 sm:h-5 sm:w-5 text-orange-500" />
-                  S\u00e9rie de {streak} jours
+              <CardHeader className="pb-2 p-3 sm:p-6">
+                <CardTitle className="text-sm sm:text-base flex items-center gap-1.5 sm:gap-2">
+                  <Flame className="h-4 w-4 sm:h-5 sm:w-5 text-orange-500 shrink-0" />
+                  Série de {streak} jours
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3 p-4 sm:p-6 pt-0 sm:pt-0">
-                <div className="grid grid-cols-7 gap-1.5 sm:gap-2">
+              <CardContent className="space-y-2.5 p-3 sm:p-6 pt-0 sm:pt-0">
+                <div className="grid grid-cols-7 gap-1 sm:gap-2">
                   {WEEK_DAYS.map((d, idx) => (
                     <motion.div
                       key={d.day}
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
                       transition={{ delay: 0.3 + idx * 0.06, type: 'spring' }}
-                      className={`flex flex-col items-center gap-0.5 sm:gap-1 rounded-lg sm:rounded-xl py-1.5 sm:py-2 px-0.5 sm:px-1 transition-colors ${
+                      className={`flex flex-col items-center gap-0.5 rounded-lg sm:rounded-xl py-1 sm:py-2 px-0.5 transition-colors ${
                         d.completed
                           ? 'bg-gradient-to-b from-orange-500/20 to-orange-600/10 border border-orange-500/20'
                           : 'bg-muted/40 border border-transparent'
@@ -632,7 +638,7 @@ export default function DashboardPage() {
 
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] sm:text-xs text-muted-foreground">
-                    Continuez votre s\u00e9rie !
+                    Continuez votre série !
                   </span>
                   <Badge
                     variant="outline"
@@ -645,7 +651,7 @@ export default function DashboardPage() {
                 {isPremium && (
                   <div className="rounded-lg bg-yoel-gold/10 p-2 text-center">
                     <span className="text-[10px] sm:text-xs gradient-text-premium font-semibold">
-                      👑 R\u00e9compense x2 avec Premium
+                      👑 Récompense x2 avec Premium
                     </span>
                   </div>
                 )}
@@ -680,7 +686,7 @@ export default function DashboardPage() {
             </div>
 
             <CollapsibleContent forceMount className="hidden data-[state=open]:block lg:block lg:contents">
-              <div className="space-y-4 sm:space-y-6 mt-2 lg:mt-0">
+              <div className="space-y-3 sm:space-y-6 mt-2 lg:mt-0">
                 {/* ─── 7. Recent Badges ─────────────────────────────────── */}
                 <motion.div variants={itemVariants}>
                   <Card className="glass-card overflow-hidden">
@@ -688,7 +694,7 @@ export default function DashboardPage() {
                       <div className="flex items-center justify-between">
                         <CardTitle className="text-sm sm:text-base flex items-center gap-2">
                           <Award className="h-4 w-4 sm:h-5 sm:w-5 text-yoel-primary" />
-                          Badges r\u00e9cents
+                          Badges récents
                         </CardTitle>
                         <Button
                           variant="ghost"
@@ -741,7 +747,7 @@ export default function DashboardPage() {
                             className="text-xs text-muted-foreground"
                             onClick={() => navigate('stats')}
                           >
-                            D\u00e9tails
+                            Détails
                             <ChevronRight className="h-3 w-3" />
                           </Button>
                         </div>
@@ -854,7 +860,7 @@ export default function DashboardPage() {
                             }}
                           >
                             <Volume2 className="h-3.5 w-3.5 mr-1" />
-                            \u00c9couter
+                            Écouter
                           </Button>
                           <Badge
                             variant="outline"
@@ -881,10 +887,10 @@ export default function DashboardPage() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <h3 className="font-semibold text-sm sm:text-base gradient-text-premium">
-                            Passez \u00e0 Premium
+                            Passez à Premium
                           </h3>
                           <p className="text-xs sm:text-sm text-muted-foreground">
-                            XP x2, pas de publicit\u00e9s, et plus encore !
+                            XP x2, pas de publicités, et plus encore !
                           </p>
                         </div>
                         <ChevronRight className="h-5 w-5 text-muted-foreground shrink-0" />
@@ -947,7 +953,7 @@ export default function DashboardPage() {
         className="fixed bottom-0 left-0 right-0 z-50 lg:hidden"
       >
         <div className="mx-auto max-w-md">
-          <div className="glass mx-3 mb-3 flex items-center justify-around rounded-2xl border border-border/50 py-1.5 shadow-lg">
+          <div className="glass mx-2 sm:mx-3 mb-2 sm:mb-3 flex items-center justify-around rounded-2xl border border-border/50 py-1 px-1 shadow-lg">
             <BottomNavItem
               icon={Home}
               label="Accueil"
