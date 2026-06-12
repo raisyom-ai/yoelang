@@ -1,6 +1,7 @@
 'use client'
 
-import { useAppStore, type PageId } from '@/lib/store'
+import { useEffect } from 'react'
+import { useAppStore, type PageId, type UserState } from '@/lib/store'
 import { AnimatePresence, motion } from 'framer-motion'
 import dynamic from 'next/dynamic'
 
@@ -43,7 +44,76 @@ const pageComponents: Record<PageId, React.ComponentType> = {
 
 export default function YOELANGApp() {
   const currentPage = useAppStore((s) => s.currentPage)
+  const { setUser, setCurrentLevel, navigate } = useAppStore()
   const PageComponent = pageComponents[currentPage]
+
+  // Handle OAuth callback — when user returns from Google/Apple OAuth
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('oauth') === '1') {
+      // Clean up the URL
+      window.history.replaceState({}, '', '/')
+      
+      // Fetch the NextAuth session
+      fetch('/api/auth/session')
+        .then((res) => res.json())
+        .then((session) => {
+          if (session?.user) {
+            const user = session.user
+            // Check if admin
+            if (user.role === 'admin') {
+              const adminUser: UserState = {
+                id: user.id,
+                email: user.email,
+                name: user.name || 'Admin',
+                avatar: null,
+                role: 'admin',
+                level: user.level || 'C2',
+                xp: user.xp || 0,
+                streak: user.streak || 0,
+                coins: user.coins || 0,
+                isPremium: true,
+                premiumPlan: 'integral',
+                dailyGoal: user.dailyGoal || 20,
+                notifications: true,
+                darkMode: false,
+                soundEnabled: true,
+              }
+              setUser(adminUser)
+              navigate('admin-dashboard')
+              return
+            }
+
+            // Regular user
+            const oauthUser: UserState = {
+              id: user.id,
+              email: user.email,
+              name: user.name || user.email.split('@')[0],
+              avatar: null,
+              role: 'user',
+              level: user.level || 'A1',
+              xp: user.xp || 0,
+              streak: user.streak || 0,
+              coins: user.coins || 0,
+              isPremium: user.isPremium || false,
+              premiumPlan: user.premiumPlan || null,
+              dailyGoal: user.dailyGoal ?? 20,
+              notifications: true,
+              darkMode: false,
+              soundEnabled: true,
+            }
+            setUser(oauthUser)
+            setCurrentLevel(oauthUser.level)
+            navigate('dashboard')
+          } else {
+            navigate('login')
+          }
+        })
+        .catch(() => {
+          navigate('login')
+        })
+    }
+  }, [setUser, setCurrentLevel, navigate])
 
   return (
     <main className="min-h-screen bg-background text-foreground overflow-x-hidden">

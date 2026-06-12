@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, FormEvent } from 'react'
+import { useState, FormEvent, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Mail, Lock, Eye, EyeOff, Loader2, Chrome, Apple, BookOpen, Globe, Sparkles, ArrowLeft, Shield } from 'lucide-react'
 import { useAppStore, type UserState } from '@/lib/store'
@@ -33,6 +33,15 @@ export default function LoginPage() {
   const [rememberMe, setRememberMe] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [errors, setErrors] = useState<FormErrors>({})
+  const [oauthProviders, setOauthProviders] = useState<{ google: boolean; apple: boolean }>({ google: false, apple: false })
+
+  // Check which OAuth providers are configured
+  useEffect(() => {
+    fetch('/api/auth/providers')
+      .then((res) => res.json())
+      .then((data) => setOauthProviders(data))
+      .catch(() => {})
+  }, [])
 
   const validate = (): boolean => {
     const newErrors: FormErrors = {}
@@ -53,7 +62,25 @@ export default function LoginPage() {
     return Object.keys(newErrors).length === 0
   }
 
-  const handleSubmit = async (e: FormEvent) => {
+  const buildUserState = (data: Record<string, unknown>): UserState => ({
+    id: data.id as string,
+    email: data.email as string,
+    name: (data.name as string) || (data.email as string).split('@')[0],
+    avatar: (data.avatar as string | null) || null,
+    role: ((data.role as string) || 'user') as 'user' | 'admin',
+    level: (data.level as string) || 'A1',
+    xp: (data.xp as number) || 0,
+    streak: (data.streak as number) || 0,
+    coins: (data.coins as number) || 0,
+    isPremium: (data.isPremium as boolean) || false,
+    premiumPlan: (data.premiumPlan as string | null) || null,
+    dailyGoal: (data.dailyGoal as number) ?? 20,
+    notifications: (data.notifications as boolean) ?? true,
+    darkMode: (data.darkMode as boolean) ?? false,
+    soundEnabled: (data.soundEnabled as boolean) ?? true,
+  })
+
+  const handleEmailLogin = async (e: FormEvent) => {
     e.preventDefault()
     if (!validate()) return
 
@@ -67,49 +94,17 @@ export default function LoginPage() {
 
       if (res.ok) {
         const data = await res.json()
-        
+
         // If the user is an admin, redirect to admin dashboard
         if (data.isAdmin) {
-          const adminUser: UserState = {
-            id: data.user.id,
-            email: data.user.email,
-            name: data.user.name || 'Admin',
-            avatar: data.user.avatar,
-            role: 'admin',
-            level: data.user.level || 'C2',
-            xp: data.user.xp || 0,
-            streak: data.user.streak || 0,
-            coins: data.user.coins || 0,
-            isPremium: true,
-            premiumPlan: 'integral',
-            dailyGoal: data.user.dailyGoal || 20,
-            notifications: data.user.notifications ?? true,
-            darkMode: data.user.darkMode ?? false,
-            soundEnabled: data.user.soundEnabled ?? true,
-          }
+          const adminUser = buildUserState({ ...data.user, role: 'admin' })
           setUser(adminUser)
           navigate('admin-dashboard')
           toast.success('Bienvenue Admin !', { description: 'Connexion au panneau d\'administration' })
           return
         }
-        
-        const loggedInUser: UserState = {
-          id: data.user.id,
-          email: data.user.email,
-          name: data.user.name || data.user.email.split('@')[0],
-          avatar: data.user.avatar,
-          role: data.user.role || 'user',
-          level: data.user.level || 'A1',
-          xp: data.user.xp || 0,
-          streak: data.user.streak || 0,
-          coins: data.user.coins || 0,
-          isPremium: data.user.isPremium || false,
-          premiumPlan: data.user.premiumPlan || null,
-          dailyGoal: data.user.dailyGoal ?? 20,
-          notifications: data.user.notifications ?? true,
-          darkMode: data.user.darkMode ?? false,
-          soundEnabled: data.user.soundEnabled ?? true,
-        }
+
+        const loggedInUser = buildUserState(data.user)
         setUser(loggedInUser)
         setCurrentLevel(loggedInUser.level)
         navigate('dashboard')
@@ -127,6 +122,29 @@ export default function LoginPage() {
     } finally {
       setIsLoading(false)
     }
+  }
+
+  const handleGoogleLogin = async () => {
+    if (!oauthProviders.google) {
+      toast.info('Bientôt disponible', { description: 'La connexion avec Google sera bientôt disponible.' })
+      return
+    }
+
+    setIsLoading(true)
+    // Redirect to NextAuth Google sign-in
+    // The callback will be handled by our OAuth callback page
+    window.location.href = '/api/auth/signin/google?callbackUrl=' + encodeURIComponent(window.location.origin + '/?oauth=1')
+  }
+
+  const handleAppleLogin = async () => {
+    if (!oauthProviders.apple) {
+      toast.info('Bientôt disponible', { description: 'La connexion avec Apple sera bientôt disponible.' })
+      return
+    }
+
+    setIsLoading(true)
+    // Redirect to NextAuth Apple sign-in
+    window.location.href = '/api/auth/signin/apple?callbackUrl=' + encodeURIComponent(window.location.origin + '/?oauth=1')
   }
 
   return (
@@ -272,10 +290,58 @@ export default function LoginPage() {
             </p>
           </motion.div>
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-5">
+          {/* Social buttons — show first for better UX */}
+          <motion.div custom={2} variants={fadeInUp} className="space-y-3">
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full h-11 text-sm font-medium"
+              disabled={isLoading}
+              onClick={handleGoogleLogin}
+            >
+              {isLoading ? (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              ) : (
+                <Chrome className="w-5 h-5 mr-2" />
+              )}
+              Continuer avec Google
+              {!oauthProviders.google && (
+                <span className="ml-2 text-[10px] text-muted-foreground/60">bientôt</span>
+              )}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full h-11 text-sm font-medium"
+              disabled={isLoading}
+              onClick={handleAppleLogin}
+            >
+              {isLoading ? (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              ) : (
+                <Apple className="w-5 h-5 mr-2" />
+              )}
+              Continuer avec Apple
+              {!oauthProviders.apple && (
+                <span className="ml-2 text-[10px] text-muted-foreground/60">bientôt</span>
+              )}
+            </Button>
+          </motion.div>
+
+          {/* Divider */}
+          <motion.div custom={3} variants={fadeInUp} className="my-6">
+            <div className="relative">
+              <Separator />
+              <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background px-3 text-xs text-muted-foreground uppercase">
+                ou avec email
+              </span>
+            </div>
+          </motion.div>
+
+          {/* Email/Password Form */}
+          <form onSubmit={handleEmailLogin} className="space-y-5">
             {/* Email */}
-            <motion.div custom={2} variants={fadeInUp} className="space-y-2">
+            <motion.div custom={4} variants={fadeInUp} className="space-y-2">
               <Label htmlFor="email">Adresse email</Label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -299,7 +365,7 @@ export default function LoginPage() {
             </motion.div>
 
             {/* Password */}
-            <motion.div custom={3} variants={fadeInUp} className="space-y-2">
+            <motion.div custom={5} variants={fadeInUp} className="space-y-2">
               <Label htmlFor="password">Mot de passe</Label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -333,7 +399,7 @@ export default function LoginPage() {
 
             {/* Remember & Forgot */}
             <motion.div
-              custom={4}
+              custom={6}
               variants={fadeInUp}
               className="flex items-center justify-between"
             >
@@ -358,7 +424,7 @@ export default function LoginPage() {
             </motion.div>
 
             {/* Submit button */}
-            <motion.div custom={5} variants={fadeInUp}>
+            <motion.div custom={7} variants={fadeInUp}>
               <Button
                 type="submit"
                 disabled={isLoading}
@@ -372,44 +438,6 @@ export default function LoginPage() {
               </Button>
             </motion.div>
           </form>
-
-          {/* Divider */}
-          <motion.div custom={6} variants={fadeInUp} className="my-6">
-            <div className="relative">
-              <Separator />
-              <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background px-3 text-xs text-muted-foreground uppercase">
-                ou
-              </span>
-            </div>
-          </motion.div>
-
-          {/* Social buttons */}
-          <motion.div custom={7} variants={fadeInUp} className="space-y-3">
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full h-11 text-sm font-medium"
-              disabled={isLoading}
-              onClick={() => {
-                toast.info('Bientôt disponible', { description: 'La connexion avec Google sera bientôt disponible.' })
-              }}
-            >
-              <Chrome className="w-5 h-5 mr-2" />
-              Continuer avec Google
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full h-11 text-sm font-medium"
-              disabled={isLoading}
-              onClick={() => {
-                toast.info('Bientôt disponible', { description: 'La connexion avec Apple sera bientôt disponible.' })
-              }}
-            >
-              <Apple className="w-5 h-5 mr-2" />
-              Continuer avec Apple
-            </Button>
-          </motion.div>
 
           {/* Register link */}
           <motion.p

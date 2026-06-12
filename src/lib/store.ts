@@ -5,7 +5,7 @@ export type PageId =
   | 'splash' | 'home' | 'login' | 'register' 
   | 'dashboard' | 'levels' | 'course' | 'exercises' 
   | 'chat' | 'stats' | 'profile' | 'settings' | 'premium' | 'certificate'
-  | 'admin-login' | 'admin-dashboard'
+  | 'admin-login' | 'admin-dashboard' | 'oauth-callback'
 
 // ─── Premium Plan Types ──────────────────────────────────────────────────
 
