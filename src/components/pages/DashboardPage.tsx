@@ -53,7 +53,7 @@ const pulseVariants = {
 
 // Daily XP goal and earned are now dynamic — derived from the store
 
-// ─── Daily Challenges — 3 per day, adapted to level ──────────────────────────
+// ─── Daily Challenges — 3 per day, adapted to level, different every day ─────
 interface Challenge {
   question: string
   options: string[]
@@ -64,95 +64,225 @@ interface Challenge {
 
 const CHALLENGE_POOL: Record<string, Challenge[]> = {
   A1: [
+    // Grammar
     { question: 'Traduisez : "Elle ___ une pomme."', options: ['have', 'has', 'haves', 'having'], correctIndex: 1, xpReward: 15, type: 'grammar' },
-    { question: 'Quel mot signifie "chat" en anglais ?', options: ['Dog', 'Cat', 'Bird', 'Fish'], correctIndex: 1, xpReward: 10, type: 'vocabulary' },
-    { question: 'Traduisez : "Bonjour, comment allez-vous ?"', options: ['Hello, how are you?', 'Goodbye, see you!', 'Please, thank you', 'Yes, I am fine'], correctIndex: 0, xpReward: 15, type: 'translation' },
     { question: 'Complétez : "I ___ a student."', options: ['am', 'is', 'are', 'be'], correctIndex: 0, xpReward: 15, type: 'grammar' },
+    { question: 'Complétez : "We ___ from France."', options: ['comes', 'come', 'coming', 'comed'], correctIndex: 1, xpReward: 15, type: 'grammar' },
+    { question: 'Complétez : "There ___ three cats."', options: ['is', 'are', 'am', 'be'], correctIndex: 1, xpReward: 15, type: 'grammar' },
+    { question: 'Complétez : "He ___ not like coffee."', options: ['do', 'does', 'is', 'has'], correctIndex: 1, xpReward: 15, type: 'grammar' },
+    { question: 'Complétez : "This is ___ apple."', options: ['a', 'an', 'the', 'some'], correctIndex: 1, xpReward: 15, type: 'grammar' },
+    // Vocabulary
+    { question: 'Quel mot signifie "chat" en anglais ?', options: ['Dog', 'Cat', 'Bird', 'Fish'], correctIndex: 1, xpReward: 10, type: 'vocabulary' },
     { question: 'Quel est le contraire de "big" ?', options: ['Tall', 'Small', 'Long', 'Wide'], correctIndex: 1, xpReward: 10, type: 'vocabulary' },
-    { question: "Traduisez : \"Je m'appelle Marie.\"", options: ['My name is Marie', 'I call Marie', 'Me is Marie', 'I am call Marie'], correctIndex: 0, xpReward: 15, type: 'translation' },
-    { question: 'Complétez : "She ___ to school every day."', options: ['go', 'goes', 'going', 'gone'], correctIndex: 1, xpReward: 15, type: 'conjugaison' },
     { question: 'Que signifie "water" en français ?', options: ['Feu', 'Air', 'Eau', 'Terre'], correctIndex: 2, xpReward: 10, type: 'vocabulary' },
-    { question: 'Traduisez : "Où est la gare ?"', options: ['Where is the station?', 'When is the train?', 'How is the bus?', 'What is the road?'], correctIndex: 0, xpReward: 15, type: 'translation' },
-    { question: 'Complétez : "They ___ playing football."', options: ['am', 'is', 'are', 'be'], correctIndex: 2, xpReward: 15, type: 'conjugaison' },
     { question: 'Quel mot signifie "livre" en anglais ?', options: ['Book', 'Look', 'Cook', 'Hook'], correctIndex: 0, xpReward: 10, type: 'vocabulary' },
+    { question: 'Que signifie "happy" en français ?', options: ['Triste', 'Heureux', 'Fatigué', 'En colère'], correctIndex: 1, xpReward: 10, type: 'vocabulary' },
+    { question: 'Quel mot signifie "maison" en anglais ?', options: ['Horse', 'House', 'Horse', 'Hour'], correctIndex: 1, xpReward: 10, type: 'vocabulary' },
+    // Translation
+    { question: 'Traduisez : "Bonjour, comment allez-vous ?"', options: ['Hello, how are you?', 'Goodbye, see you!', 'Please, thank you', 'Yes, I am fine'], correctIndex: 0, xpReward: 15, type: 'translation' },
+    { question: "Traduisez : \"Je m'appelle Marie.\"", options: ['My name is Marie', 'I call Marie', 'Me is Marie', 'I am call Marie'], correctIndex: 0, xpReward: 15, type: 'translation' },
+    { question: 'Traduisez : "Où est la gare ?"', options: ['Where is the station?', 'When is the train?', 'How is the bus?', 'What is the road?'], correctIndex: 0, xpReward: 15, type: 'translation' },
     { question: "Traduisez : \"Il fait beau aujourd'hui.\"", options: ['It is nice today', 'It is bad today', 'It is cold today', 'It is hot today'], correctIndex: 0, xpReward: 15, type: 'translation' },
+    { question: 'Traduisez : "J\'ai faim."', options: ['I am hungry', 'I am angry', 'I am happy', 'I am thirsty'], correctIndex: 0, xpReward: 15, type: 'translation' },
+    { question: 'Traduisez : "Elle est ma sœur."', options: ['She is my sister', 'She is my brother', 'He is my sister', 'She is my mother'], correctIndex: 0, xpReward: 15, type: 'translation' },
+    // Conjugaison
+    { question: 'Complétez : "She ___ to school every day."', options: ['go', 'goes', 'going', 'gone'], correctIndex: 1, xpReward: 15, type: 'conjugaison' },
+    { question: 'Complétez : "They ___ playing football."', options: ['am', 'is', 'are', 'be'], correctIndex: 2, xpReward: 15, type: 'conjugaison' },
+    { question: 'Complétez : "I ___ English right now."', options: ['learn', 'learns', 'am learning', 'learned'], correctIndex: 2, xpReward: 15, type: 'conjugaison' },
+    { question: 'Complétez : "He ___ breakfast every morning."', options: ['eat', 'eats', 'eating', 'ate'], correctIndex: 1, xpReward: 15, type: 'conjugaison' },
+    { question: 'Complétez : "We ___ to the cinema yesterday."', options: ['go', 'goes', 'went', 'going'], correctIndex: 2, xpReward: 15, type: 'conjugaison' },
+    { question: 'Complétez : "She ___ TV at the moment."', options: ['watches', 'watch', 'is watching', 'watched'], correctIndex: 2, xpReward: 15, type: 'conjugaison' },
   ],
   A2: [
-    { question: 'Traduisez : "She ___ to the store yesterday."', options: ['go', 'goes', 'went', 'going'], correctIndex: 2, xpReward: 20, type: 'conjugaison' },
+    // Grammar
     { question: 'Quel est le pluriel de "child" ?', options: ['Childs', 'Children', 'Childrens', 'Childes'], correctIndex: 1, xpReward: 15, type: 'grammar' },
-    { question: 'Traduisez : "Je voudrais une tasse de thé."', options: ['I would like a cup of tea', 'I want a glass of tea', 'I like a tea cup', 'I will have tea'], correctIndex: 0, xpReward: 20, type: 'translation' },
     { question: 'Complétez : "I have been living here ___ 2010."', options: ['for', 'since', 'from', 'during'], correctIndex: 1, xpReward: 20, type: 'grammar' },
-    { question: 'Que signifie "schedule" en français ?', options: ['Horloge', 'Emploi du temps', 'Calendrier', 'Montre'], correctIndex: 1, xpReward: 15, type: 'vocabulary' },
-    { question: "Traduisez : \"Nous avons visité Paris l'année dernière.\"", options: ['We visited Paris last year', 'We visit Paris next year', 'We are visiting Paris now', 'We will visit Paris'], correctIndex: 0, xpReward: 20, type: 'translation' },
-    { question: 'Quelle est la forme correcte ? "He ___ to music every night."', options: ['listen', 'listens', 'listening', 'listened'], correctIndex: 1, xpReward: 20, type: 'conjugaison' },
     { question: 'Quel mot est un adjectif ?', options: ['Quickly', 'Beautiful', 'Running', 'Happiness'], correctIndex: 1, xpReward: 15, type: 'grammar' },
+    { question: 'Complétez : "She is ___ than her sister."', options: ['tall', 'taller', 'tallest', 'more tall'], correctIndex: 1, xpReward: 20, type: 'grammar' },
+    { question: 'Complétez : "I have ___ seen that movie."', options: ['ever', 'never', 'already', 'yet'], correctIndex: 2, xpReward: 20, type: 'grammar' },
+    { question: 'Complétez : "___ you like some coffee?"', options: ['Do', 'Would', 'Are', 'Have'], correctIndex: 1, xpReward: 20, type: 'grammar' },
+    // Vocabulary
+    { question: 'Que signifie "schedule" en français ?', options: ['Horloge', 'Emploi du temps', 'Calendrier', 'Montre'], correctIndex: 1, xpReward: 15, type: 'vocabulary' },
+    { question: 'Que signifie "improve" en français ?', options: ['Ignorer', 'Améliorer', 'Imiter', 'Importer'], correctIndex: 1, xpReward: 15, type: 'vocabulary' },
+    { question: 'Quel mot signifie "voisin" en anglais ?', options: ['Neighbour', 'Nephew', 'Neither', 'Narrow'], correctIndex: 0, xpReward: 15, type: 'vocabulary' },
+    { question: 'Que signifie "comfortable" en français ?', options: ['Gênant', 'Confortable', 'Commun', 'Compliqué'], correctIndex: 1, xpReward: 15, type: 'vocabulary' },
+    { question: 'Quel mot désigne un "conseil" en anglais ?', options: ['Advise', 'Advice', 'Advance', 'Adverse'], correctIndex: 1, xpReward: 15, type: 'vocabulary' },
+    { question: 'Que signifie "discover" en français ?', options: ['Discuter', 'Découvrir', 'Disparaître', 'Disposer'], correctIndex: 1, xpReward: 15, type: 'vocabulary' },
+    // Translation
+    { question: 'Traduisez : "Je voudrais une tasse de thé."', options: ['I would like a cup of tea', 'I want a glass of tea', 'I like a tea cup', 'I will have tea'], correctIndex: 0, xpReward: 20, type: 'translation' },
+    { question: "Traduisez : \"Nous avons visité Paris l'année dernière.\"", options: ['We visited Paris last year', 'We visit Paris next year', 'We are visiting Paris now', 'We will visit Paris'], correctIndex: 0, xpReward: 20, type: 'translation' },
     { question: "Traduisez : \"Pourriez-vous m'aider, s'il vous plaît ?\"", options: ['Could you help me, please?', 'Can you help I please?', 'Would you helping me?', 'Do you help me please?'], correctIndex: 0, xpReward: 20, type: 'translation' },
+    { question: 'Traduisez : "Il fait froid en hiver."', options: ['It is cold in winter', 'It is hot in winter', 'It is cold in summer', 'It is warm in winter'], correctIndex: 0, xpReward: 20, type: 'translation' },
+    { question: 'Traduisez : "Je dois partir maintenant."', options: ['I must leave now', 'I can leave now', 'I will leave before', 'I should leaving now'], correctIndex: 0, xpReward: 20, type: 'translation' },
+    { question: 'Traduisez : "Elle est plus intelligente que lui."', options: ['She is smarter than him', 'She is more smart that him', 'She is smartest than him', 'She is as smart than him'], correctIndex: 0, xpReward: 20, type: 'translation' },
+    // Conjugaison
+    { question: 'Traduisez : "She ___ to the store yesterday."', options: ['go', 'goes', 'went', 'going'], correctIndex: 2, xpReward: 20, type: 'conjugaison' },
+    { question: 'Quelle est la forme correcte ? "He ___ to music every night."', options: ['listen', 'listens', 'listening', 'listened'], correctIndex: 1, xpReward: 20, type: 'conjugaison' },
+    { question: 'Complétez : "They ___ already ___ lunch."', options: ['have/eaten', 'has/eaten', 'had/ate', 'are/eating'], correctIndex: 0, xpReward: 20, type: 'conjugaison' },
+    { question: 'Complétez : "We ___ to Paris next summer."', options: ['will travel', 'are travel', 'traveling', 'travels'], correctIndex: 0, xpReward: 20, type: 'conjugaison' },
+    { question: 'Complétez : "I ___ my homework when she called."', options: ['was doing', 'am doing', 'did', 'do'], correctIndex: 0, xpReward: 20, type: 'conjugaison' },
+    { question: 'Complétez : "She ___ French since 2020."', options: ['has studied', 'have studied', 'studied', 'is studying'], correctIndex: 0, xpReward: 20, type: 'conjugaison' },
   ],
   B1: [
+    // Grammar
     { question: 'Complétez : "If I ___ rich, I would travel the world."', options: ['am', 'was', 'were', 'be'], correctIndex: 2, xpReward: 25, type: 'grammar' },
-    { question: 'Que signifie "to achieve" en français ?', options: ['Échouer', 'Accomplir', 'Abandonner', 'Accepter'], correctIndex: 1, xpReward: 20, type: 'vocabulary' },
-    { question: "Traduisez : \"Bien qu'il soit fatigué, il a continué à travailler.\"", options: ['Although he was tired, he kept working', 'Even he was tired, he continued work', 'Despite he is tired, he works', 'Though he tired, he working still'], correctIndex: 0, xpReward: 25, type: 'translation' },
-    { question: 'Complétez : "By the time we arrived, the movie ___."', options: ['started', 'has started', 'had started', 'starts'], correctIndex: 2, xpReward: 25, type: 'conjugaison' },
-    { question: 'Quel est le synonyme de "significant" ?', options: ['Trivial', 'Meaningful', 'Vague', 'Ordinary'], correctIndex: 1, xpReward: 20, type: 'vocabulary' },
-    { question: "Traduisez : \"Il m'a dit qu'il viendrait demain.\"", options: ['He told me he would come tomorrow', 'He said me he will come tomorrow', 'He told me he comes tomorrow', 'He say to me he coming tomorrow'], correctIndex: 0, xpReward: 25, type: 'translation' },
     { question: 'Complétez : "She suggested that he ___ harder."', options: ['studies', 'study', 'studied', 'studying'], correctIndex: 1, xpReward: 25, type: 'grammar' },
+    { question: 'Complétez : "I wish I ___ harder at school."', options: ['study', 'studied', 'had studied', 'would study'], correctIndex: 2, xpReward: 25, type: 'grammar' },
+    { question: 'Complétez : "___ it rain, we would stay home."', options: ['If', 'Should', 'Were', 'Had'], correctIndex: 1, xpReward: 25, type: 'grammar' },
+    { question: 'Complétez : "The book ___ I read was fascinating."', options: ['who', 'which', 'what', 'whom'], correctIndex: 1, xpReward: 25, type: 'grammar' },
+    { question: 'Complétez : "He is used ___ early."', options: ['to wake', 'to waking', 'waking', 'wake'], correctIndex: 1, xpReward: 25, type: 'grammar' },
+    // Vocabulary
+    { question: 'Que signifie "to achieve" en français ?', options: ['Échouer', 'Accomplir', 'Abandonner', 'Accepter'], correctIndex: 1, xpReward: 20, type: 'vocabulary' },
+    { question: 'Quel est le synonyme de "significant" ?', options: ['Trivial', 'Meaningful', 'Vague', 'Ordinary'], correctIndex: 1, xpReward: 20, type: 'vocabulary' },
     { question: 'Que signifie "overwhelmed" en français ?', options: ['Enthousiaste', 'Débordé', 'Indifférent', 'Soulagé'], correctIndex: 1, xpReward: 20, type: 'vocabulary' },
+    { question: 'Que signifie "compromise" en français ?', options: ['Promesse', 'Compromis', 'Complot', 'Compliment'], correctIndex: 1, xpReward: 20, type: 'vocabulary' },
+    { question: 'Quel mot signifie "persévérance" en anglais ?', options: ['Perseverance', 'Perception', 'Permission', 'Performance'], correctIndex: 0, xpReward: 20, type: 'vocabulary' },
+    { question: 'Que signifie "reluctant" en français ?', options: ['Rapide', 'Réticent', 'Religieux', 'Relaxé'], correctIndex: 1, xpReward: 20, type: 'vocabulary' },
+    // Translation
+    { question: "Traduisez : \"Bien qu'il soit fatigué, il a continué à travailler.\"", options: ['Although he was tired, he kept working', 'Even he was tired, he continued work', 'Despite he is tired, he works', 'Though he tired, he working still'], correctIndex: 0, xpReward: 25, type: 'translation' },
+    { question: "Traduisez : \"Il m'a dit qu'il viendrait demain.\"", options: ['He told me he would come tomorrow', 'He said me he will come tomorrow', 'He told me he comes tomorrow', 'He say to me he coming tomorrow'], correctIndex: 0, xpReward: 25, type: 'translation' },
     { question: 'Traduisez : "Je souhaiterais avoir plus de temps."', options: ['I wish I had more time', 'I wish I have more time', 'I hope having more time', 'I want more time would'], correctIndex: 0, xpReward: 25, type: 'translation' },
+    { question: 'Traduisez : "Plus elle étudie, plus elle progresse."', options: ['The more she studies, the more she improves', 'More she studies, more she improves', 'She studies more, she improves more', 'As she studies, she improves'], correctIndex: 0, xpReward: 25, type: 'translation' },
+    { question: 'Traduisez : "Il a évité de répondre à la question."', options: ['He avoided answering the question', 'He avoided to answer the question', 'He avoided answer the question', 'He avoided to answering the question'], correctIndex: 0, xpReward: 25, type: 'translation' },
+    { question: 'Traduisez : "Nous aurions dû partir plus tôt."', options: ['We should have left earlier', 'We must have left earlier', 'We could left earlier', 'We would have leave earlier'], correctIndex: 0, xpReward: 25, type: 'translation' },
+    // Conjugaison
+    { question: 'Complétez : "By the time we arrived, the movie ___."', options: ['started', 'has started', 'had started', 'starts'], correctIndex: 2, xpReward: 25, type: 'conjugaison' },
+    { question: 'Complétez : "She ___ here since 2015."', options: ['lives', 'has lived', 'lived', 'is living'], correctIndex: 1, xpReward: 25, type: 'conjugaison' },
+    { question: 'Complétez : "If I had known, I ___ differently."', options: ['would act', 'would have acted', 'will act', 'acted'], correctIndex: 1, xpReward: 25, type: 'conjugaison' },
+    { question: 'Complétez : "The report ___ by the time you arrive."', options: ['will be finished', 'will finish', 'finishes', 'is finishing'], correctIndex: 0, xpReward: 25, type: 'conjugaison' },
+    { question: 'Complétez : "He denied ___ the window."', options: ['breaking', 'to break', 'break', 'broke'], correctIndex: 0, xpReward: 25, type: 'conjugaison' },
+    { question: 'Complétez : "They ___ working when the phone rang."', options: ['were', 'was', 'are', 'have been'], correctIndex: 0, xpReward: 25, type: 'conjugaison' },
   ],
   B2: [
+    // Grammar
     { question: 'Complétez : "Had I known, I ___ differently."', options: ['would act', 'would have acted', 'will act', 'acted'], correctIndex: 1, xpReward: 30, type: 'grammar' },
-    { question: 'Que signifie "to undermine" en français ?', options: ['Renforcer', 'Saper', 'Comprendre', 'Nier'], correctIndex: 1, xpReward: 25, type: 'vocabulary' },
-    { question: "Traduisez : \"Quoi qu'il arrive, nous devons persévérer.\"", options: ['Whatever happens, we must persevere', 'What happens, we should persevere', 'Whatever will happen, we must persisted', 'No matter what, we persevering'], correctIndex: 0, xpReward: 30, type: 'translation' },
     { question: 'Complétez : "Not only ___ intelligent, but she is also kind."', options: ['she is', 'is she', 'does she', 'she does'], correctIndex: 1, xpReward: 30, type: 'grammar' },
-    { question: 'Quel mot complète : "The results were ___ with previous findings."', options: ['consistent', 'considerate', 'consecutive', 'conspicuous'], correctIndex: 0, xpReward: 25, type: 'vocabulary' },
-    { question: "Traduisez : \"Il est peu probable qu'elle accepte cette proposition.\"", options: ['It is unlikely that she will accept this proposal', 'She is unlikely accepting this proposal', 'It is improbable she accepts that', 'She unlikely will accept the proposition'], correctIndex: 0, xpReward: 30, type: 'translation' },
-    { question: 'Complétez : "The report ___ the need for further research."', options: ['underscores', 'undercharges', 'underachieves', 'underestimates'], correctIndex: 0, xpReward: 30, type: 'vocabulary' },
-    { question: 'Traduisez : "En dépit des difficultés, le projet a abouti."', options: ['Despite the difficulties, the project succeeded', 'In spite difficulties, the project succeed', 'Despite difficulties, project was success', 'Although the difficulties, project succeeded'], correctIndex: 0, xpReward: 30, type: 'translation' },
     { question: 'Complétez : "She insisted on ___ the report herself."', options: ['writing', 'to write', 'write', 'wrote'], correctIndex: 0, xpReward: 30, type: 'grammar' },
+    { question: 'Complétez : "It is high time we ___ action."', options: ['take', 'took', 'taking', 'taken'], correctIndex: 1, xpReward: 30, type: 'grammar' },
+    { question: 'Complétez : "Rarely ___ such a remarkable performance."', options: ['have I seen', 'I have seen', 'I saw', 'did I saw'], correctIndex: 0, xpReward: 30, type: 'grammar' },
+    { question: 'Complétez : "But for your help, I ___ failed."', options: ['would have', 'will have', 'had', 'would'], correctIndex: 0, xpReward: 30, type: 'grammar' },
+    // Vocabulary
+    { question: 'Que signifie "to undermine" en français ?', options: ['Renforcer', 'Saper', 'Comprendre', 'Nier'], correctIndex: 1, xpReward: 25, type: 'vocabulary' },
+    { question: 'Quel mot complète : "The results were ___ with previous findings."', options: ['consistent', 'considerate', 'consecutive', 'conspicuous'], correctIndex: 0, xpReward: 25, type: 'vocabulary' },
+    { question: 'Complétez : "The report ___ the need for further research."', options: ['underscores', 'undercharges', 'underachieves', 'underestimates'], correctIndex: 0, xpReward: 30, type: 'vocabulary' },
+    { question: 'Que signifie "pragmatic" en français ?', options: ['Pratique', 'Pragmatique', 'Précis', 'Prétentieux'], correctIndex: 1, xpReward: 25, type: 'vocabulary' },
+    { question: 'Que signifie "ambiguous" en français ?', options: ['Ambitieux', 'Ambigu', 'Amical', 'Ample'], correctIndex: 1, xpReward: 25, type: 'vocabulary' },
+    { question: 'Quel mot signifie "inévitable" en anglais ?', options: ['Inevitable', 'Incredible', 'Invisible', 'Invincible'], correctIndex: 0, xpReward: 25, type: 'vocabulary' },
+    // Translation
+    { question: "Traduisez : \"Quoi qu'il arrive, nous devons persévérer.\"", options: ['Whatever happens, we must persevere', 'What happens, we should persevere', 'Whatever will happen, we must persisted', 'No matter what, we persevering'], correctIndex: 0, xpReward: 30, type: 'translation' },
+    { question: "Traduisez : \"Il est peu probable qu'elle accepte cette proposition.\"", options: ['It is unlikely that she will accept this proposal', 'She is unlikely accepting this proposal', 'It is improbable she accepts that', 'She unlikely will accept the proposition'], correctIndex: 0, xpReward: 30, type: 'translation' },
+    { question: 'Traduisez : "En dépit des difficultés, le projet a abouti."', options: ['Despite the difficulties, the project succeeded', 'In spite difficulties, the project succeed', 'Despite difficulties, project was success', 'Although the difficulties, project succeeded'], correctIndex: 0, xpReward: 30, type: 'translation' },
+    { question: 'Traduisez : "Il eut fallu qu\'il en fût averti."', options: ['He should have been informed of it', 'He must be informed about it', 'He should be informed from it', 'He had to been told about it'], correctIndex: 0, xpReward: 30, type: 'translation' },
+    { question: 'Traduisez : "Quoi qu\'il en soit, nous devons avancer."', options: ['Be that as it may, we must move forward', 'Whatever it is, we must go', 'However it is, we should advance', 'No matter, we must progressing'], correctIndex: 0, xpReward: 30, type: 'translation' },
+    { question: 'Traduisez : "Non seulement il est brillant, mais il est aussi modeste."', options: ['Not only is he brilliant, but he is also modest', 'Not only he is brilliant, but also he is modest', 'He is not only brilliant, but too he is modest', 'Not just he brilliant, but he modest also'], correctIndex: 0, xpReward: 30, type: 'translation' },
+    // Conjugaison
+    { question: 'Complétez : "She ___ here for five years by next June."', options: ['will have worked', 'will work', 'works', 'has worked'], correctIndex: 0, xpReward: 30, type: 'conjugaison' },
+    { question: 'Complétez : "The house ___ before we moved in."', options: ['was being renovated', 'is renovating', 'renovated', 'has renovated'], correctIndex: 0, xpReward: 30, type: 'conjugaison' },
+    { question: 'Complétez : "I wish I ___ told you earlier."', options: ['had', 'have', 'would', 'should'], correctIndex: 0, xpReward: 30, type: 'conjugaison' },
+    { question: 'Complétez : "He ___ to have been misinformed."', options: ['appears', 'appearing', 'appeared', 'is appeared'], correctIndex: 0, xpReward: 30, type: 'conjugaison' },
+    { question: 'Complétez : "Were she ___ , she would understand."', options: ['present', 'presented', 'presenting', 'presents'], correctIndex: 0, xpReward: 30, type: 'conjugaison' },
+    { question: 'Complétez : "They ___ the project by December."', options: ['will have completed', 'will complete', 'complete', 'have completed'], correctIndex: 0, xpReward: 30, type: 'conjugaison' },
   ],
   C1: [
+    // Grammar
     { question: 'Complétez : "The implications of this policy are ___ understood."', options: ['scarcely', 'scarce', 'scarceness', 'scarsed'], correctIndex: 0, xpReward: 35, type: 'grammar' },
-    { question: 'Que signifie "to corroborate" en français ?', options: ['Contredire', 'Confirmer', 'Corrompre', 'Corriger'], correctIndex: 1, xpReward: 30, type: 'vocabulary' },
-    { question: "Traduisez : \"Il a été convenu que les parties s'engageraient dans un dialogue constructif.\"", options: ['It was agreed that the parties would engage in constructive dialogue', 'It was agreed the parties will engage in constructive dialog', 'They agreed that parties shall engage constructively', 'It has agreed parties would engaged in constructive dialogue'], correctIndex: 0, xpReward: 35, type: 'translation' },
     { question: 'Complétez : "So ___ the impact that policymakers were forced to reconsider."', options: ['profound was', 'profound', 'was profound', 'did profound'], correctIndex: 0, xpReward: 35, type: 'grammar' },
-    { question: 'Quel mot décrit un "raisonnement trompeur mais apparemment logique" ?', options: ['Sophistry', 'Serendipity', 'Sophistication', 'Sovereignty'], correctIndex: 0, xpReward: 30, type: 'vocabulary' },
-    { question: 'Traduisez : "Nonobstant les objections soulevées, la motion a été adoptée."', options: ['Notwithstanding the objections raised, the motion was passed', 'Despite objections raising, the motion passed', 'Notwithstanding objections, motion has been passing', 'In spite of raised objections, motion was passing'], correctIndex: 0, xpReward: 35, type: 'translation' },
     { question: 'Complétez : "Little ___ the challenges that lay ahead."', options: ['did they anticipate', 'they anticipated', 'they did anticipate', 'anticipated they'], correctIndex: 0, xpReward: 35, type: 'grammar' },
+    { question: 'Complétez : "Under no circumstances ___ acceptable."', options: ['is this', 'this is', 'was this being', 'this being'], correctIndex: 0, xpReward: 35, type: 'grammar' },
+    { question: 'Complétez : "Seldom ___ such a comprehensive analysis."', options: ['has one encountered', 'one has encountered', 'one encountered', 'did one encountered'], correctIndex: 0, xpReward: 35, type: 'grammar' },
+    { question: 'Complétez : "Only then ___ the gravity of the situation."', options: ['did she realize', 'she realized', 'she did realize', 'realized she'], correctIndex: 0, xpReward: 35, type: 'grammar' },
+    // Vocabulary
+    { question: 'Que signifie "to corroborate" en français ?', options: ['Contredire', 'Confirmer', 'Corrompre', 'Corriger'], correctIndex: 1, xpReward: 30, type: 'vocabulary' },
+    { question: 'Quel mot décrit un "raisonnement trompeur mais apparemment logique" ?', options: ['Sophistry', 'Serendipity', 'Sophistication', 'Sovereignty'], correctIndex: 0, xpReward: 30, type: 'vocabulary' },
     { question: 'Que signifie "prescient" en français ?', options: ['Prévoyant', 'Présent', 'Précieux', 'Précaire'], correctIndex: 0, xpReward: 30, type: 'vocabulary' },
+    { question: 'Que signifie "ephemeral" en français ?', options: ['Éternel', 'Éphémère', 'Épais', 'Élégant'], correctIndex: 1, xpReward: 30, type: 'vocabulary' },
+    { question: 'Que signifie "juxtapose" en français ?', options: ['Justifier', 'Juxtaposer', 'Jubilé', 'Jeter'], correctIndex: 1, xpReward: 30, type: 'vocabulary' },
+    { question: 'Que signifie "vindicate" en français ?', options: ['Vaincre', 'Justifier', 'Violenter', 'Vinculer'], correctIndex: 1, xpReward: 30, type: 'vocabulary' },
+    // Translation
+    { question: "Traduisez : \"Il a été convenu que les parties s'engageraient dans un dialogue constructif.\"", options: ['It was agreed that the parties would engage in constructive dialogue', 'It was agreed the parties will engage in constructive dialog', 'They agreed that parties shall engage constructively', 'It has agreed parties would engaged in constructive dialogue'], correctIndex: 0, xpReward: 35, type: 'translation' },
+    { question: 'Traduisez : "Nonobstant les objections soulevées, la motion a été adoptée."', options: ['Notwithstanding the objections raised, the motion was passed', 'Despite objections raising, the motion passed', 'Notwithstanding objections, motion has been passing', 'In spite of raised objections, motion was passing'], correctIndex: 0, xpReward: 35, type: 'translation' },
     { question: "Traduisez : \"Force est de constater que cette approche s'avère contre-productive.\"", options: ['It must be acknowledged that this approach proves counterproductive', 'We must acknowledge this approach is counter-product', 'It has to be admitted that approach proves against productive', 'One must note this approach being counterproductive'], correctIndex: 0, xpReward: 35, type: 'translation' },
+    { question: 'Traduisez : "Il se peut que la décision soit contestée."', options: ['It may well be that the decision is contested', 'It can be the decision is contested', 'Maybe the decision being contested', 'The decision perhaps is being contest'], correctIndex: 0, xpReward: 35, type: 'translation' },
+    { question: 'Traduisez : "Encore eût-il fallu qu\'il en prît conscience."', options: ['He would first have had to become aware of it', 'He should have became aware about it', 'He must first realize about it', 'He had to first become conscious of that'], correctIndex: 0, xpReward: 35, type: 'translation' },
+    { question: 'Traduisez : "Quelle que soit l\'issue, il faudra en tirer les leçons."', options: ['Whatever the outcome, lessons will need to be drawn', 'Whatever the result, we need to learn', 'Any outcome, lessons must be taken', 'No matter the end, we should draw conclusions'], correctIndex: 0, xpReward: 35, type: 'translation' },
+    // Conjugaison
+    { question: 'Complétez : "He is believed ___ the scene before the police arrived."', options: ['to have left', 'to leave', 'leaving', 'having left'], correctIndex: 0, xpReward: 35, type: 'conjugaison' },
+    { question: 'Complétez : "The proposal ___ to have been poorly received."', options: ['appears', 'appearing', 'appeared', 'is appearing'], correctIndex: 0, xpReward: 35, type: 'conjugaison' },
+    { question: 'Complétez : "She would rather he ___ earlier."', options: ['arrived', 'arrive', 'arrives', 'arriving'], correctIndex: 0, xpReward: 35, type: 'conjugaison' },
+    { question: 'Complétez : "It is imperative that she ___ informed."', options: ['be', 'is', 'will be', 'would be'], correctIndex: 0, xpReward: 35, type: 'conjugaison' },
+    { question: 'Complétez : "Not until the results ___ released will we know."', options: ['are', 'will be', 'being', 'have'], correctIndex: 0, xpReward: 35, type: 'conjugaison' },
+    { question: 'Complétez : "Were he ___ the truth, he would act differently."', options: ['to know', 'knowing', 'knew', 'known'], correctIndex: 0, xpReward: 35, type: 'conjugaison' },
   ],
   C2: [
+    // Grammar
     { question: 'Complétez : "Were the hypothesis ___ , the ramifications would be far-reaching."', options: ['to be validated', 'validating', 'validated', 'to validate'], correctIndex: 0, xpReward: 40, type: 'grammar' },
-    { question: 'Que signifie "to obfuscate" en français ?', options: ['Rendre confus', 'Obscurcir', 'Rendre obsolète', 'Omettre'], correctIndex: 1, xpReward: 35, type: 'vocabulary' },
-    { question: 'Traduisez : "Il incombe aux instances dirigeantes de veiller à la conformité réglementaire."', options: ['It is incumbent upon the governing bodies to ensure regulatory compliance', 'It is incumbent to governing bodies ensuring regulatory compliance', 'It falls upon governing bodies to ensure regulation compliance', 'It is obliging the governing bodies to ensure regulation conformity'], correctIndex: 0, xpReward: 40, type: 'translation' },
     { question: 'Complétez : "At no time ___ the authority to unilaterally amend the provisions."', options: ['did the committee have', 'the committee had', 'had the committee', 'the committee did have'], correctIndex: 0, xpReward: 40, type: 'grammar' },
-    { question: "Quel terme désigne \"l'art de persuader par le discours\" ?", options: ['Rhetoric', 'Hermeneutics', 'Dialectics', 'Exegesis'], correctIndex: 0, xpReward: 35, type: 'vocabulary' },
-    { question: "Traduisez : \"Quoi que l'on puisse avancer, la prépondérance des preuves atteste de cette conclusion.\"", options: ['Whatever one may argue, the preponderance of evidence attests to this conclusion', 'Whatever you advance, the preponderance of evidences attests this', 'No matter what is advanced, evidence preponderance attests the conclusion', 'Whichever one argues, the preponderating evidence attests to that'], correctIndex: 0, xpReward: 40, type: 'translation' },
     { question: 'Complétez : "Not until the findings ___ public did the institution acknowledge its oversight."', options: ['became', 'become', 'had become', 'becoming'], correctIndex: 0, xpReward: 40, type: 'grammar' },
+    { question: 'Complétez : "Such ___ the magnitude of the crisis that extraordinary measures were warranted."', options: ['was', 'is', 'had been', 'has been'], correctIndex: 0, xpReward: 40, type: 'grammar' },
+    { question: 'Complétez : "Only by ___ the underlying assumptions can one grasp the full implications."', options: ['questioning', 'question', 'questioned', 'to question'], correctIndex: 0, xpReward: 40, type: 'grammar' },
+    { question: 'Complétez : "Far ___ it from me to question their judgment."', options: ['be', 'is', 'was', 'being'], correctIndex: 0, xpReward: 40, type: 'grammar' },
+    // Vocabulary
+    { question: 'Que signifie "to obfuscate" en français ?', options: ['Rendre confus', 'Obscurcir', 'Rendre obsolète', 'Omettre'], correctIndex: 1, xpReward: 35, type: 'vocabulary' },
+    { question: "Quel terme désigne \"l'art de persuader par le discours\" ?", options: ['Rhetoric', 'Hermeneutics', 'Dialectics', 'Exegesis'], correctIndex: 0, xpReward: 35, type: 'vocabulary' },
     { question: 'Que signifie "to renege" en français ?', options: ['Renoncer', 'Renégocier', 'Rénover', 'Rendre'], correctIndex: 0, xpReward: 35, type: 'vocabulary' },
+    { question: 'Que signifie "recalcitrant" en français ?', options: ['Rétif', 'Reflétant', 'Recyclé', 'Reconnaisant'], correctIndex: 0, xpReward: 35, type: 'vocabulary' },
+    { question: 'Que signifie "preponderance" en français ?', options: ['Prépondérance', 'Préparation', 'Prévention', 'Prédilection'], correctIndex: 0, xpReward: 35, type: 'vocabulary' },
+    { question: 'Que signifie "incumbent" en français ?', options: ['Incombant', 'Incroyable', 'Inclusif', 'Incisif'], correctIndex: 0, xpReward: 35, type: 'vocabulary' },
+    // Translation
+    { question: 'Traduisez : "Il incombe aux instances dirigeantes de veiller à la conformité réglementaire."', options: ['It is incumbent upon the governing bodies to ensure regulatory compliance', 'It is incumbent to governing bodies ensuring regulatory compliance', 'It falls upon governing bodies to ensure regulation compliance', 'It is obliging the governing bodies to ensure regulation conformity'], correctIndex: 0, xpReward: 40, type: 'translation' },
+    { question: "Traduisez : \"Quoi que l'on puisse avancer, la prépondérance des preuves atteste de cette conclusion.\"", options: ['Whatever one may argue, the preponderance of evidence attests to this conclusion', 'Whatever you advance, the preponderance of evidences attests this', 'No matter what is advanced, evidence preponderance attests the conclusion', 'Whichever one argues, the preponderating evidence attests to that'], correctIndex: 0, xpReward: 40, type: 'translation' },
     { question: "Traduisez : \"L'exégèse de ce passage requiert une appréciation nuancée du contexte socio-historique.\"", options: ['The exegesis of this passage requires a nuanced appreciation of the socio-historical context', 'Exegesis of this passage demands a nuanced appreciation for socio-historic context', 'The exegesis for this passage require nuanced appreciation of socio-historical contexts', 'This passage exegesis requires nuanced appreciating of the socio-historical context'], correctIndex: 0, xpReward: 40, type: 'translation' },
+    { question: 'Traduisez : "Il s\'ensuit que toute dérogation au principe susvisé serait réputée nulle et non avenue."', options: ['It follows that any derogation from the aforementioned principle would be deemed null and void', 'It follows any deviation from above principle would be null', 'Therefore any departure from said principle is considered void', 'It ensues that all derogation to the principle would be nullified'], correctIndex: 0, xpReward: 40, type: 'translation' },
+    { question: 'Traduisez : "Encore convient-il de souligner les limites inhérentes à cette approche."', options: ['It should nonetheless be emphasized that there are inherent limitations to this approach', 'Still it is convenient to underline inherent limits of this approach', 'Yet one must pointing out the inherent limitations of that approach', 'However it fits to highlight inherent limits in this method'], correctIndex: 0, xpReward: 40, type: 'translation' },
+    { question: 'Traduisez : "Tout porte à croire que ladite politique s\'avère contre-productive."', options: ['There is every indication that the said policy proves counterproductive', 'Everything carries to believe said policy is counter-product', 'All leads to think the policy is proving counter-productive', 'There is all reason to believe this policy being counterproductive'], correctIndex: 0, xpReward: 40, type: 'translation' },
+    // Conjugaison
+    { question: 'Complétez : "The findings ___ to suggest a paradigm shift is warranted."', options: ['appear', 'appears', 'appearing', 'appeared'], correctIndex: 0, xpReward: 40, type: 'conjugaison' },
+    { question: 'Complétez : "Had the evidence ___ forthcoming, the verdict might have differed."', options: ['been', 'being', 'be', 'was'], correctIndex: 0, xpReward: 40, type: 'conjugaison' },
+    { question: 'Complétez : "It is imperative that the provisions ___ strictly adhered to."', options: ['be', 'are', 'will be', 'would be'], correctIndex: 0, xpReward: 40, type: 'conjugaison' },
+    { question: 'Complétez : "Not only ___ the report, but she also disseminated its findings."', options: ['did she author', 'she authored', 'she did author', 'authored she'], correctIndex: 0, xpReward: 40, type: 'conjugaison' },
+    { question: 'Complétez : "Little ___ the profound implications of the ruling."', options: ['did they foresee', 'they foresaw', 'they did foresee', 'foresaw they'], correctIndex: 0, xpReward: 40, type: 'conjugaison' },
+    { question: 'Complétez : "Were it not for the timely intervention, the project ___."', options: ['would have foundered', 'will founder', 'founders', 'would found'], correctIndex: 0, xpReward: 40, type: 'conjugaison' },
   ],
 }
 
-// Sélectionner 3 défis du jour basés sur la date et le niveau
+const ALL_CHALLENGE_TYPES: Challenge['type'][] = ['grammar', 'vocabulary', 'translation', 'conjugaison']
+
+/**
+ * Sélectionner 3 défis du jour basés sur la date et le niveau.
+ * - Chaque jour, 3 types sur 4 sont sélectionnés (rotation)
+ * - Le défi change chaque jour grâce au dayOfYear comme seed
+ * - Les défis sont adaptés au niveau de l'apprenant
+ */
 const getDailyChallenges = (level: string): Challenge[] => {
   const pool = CHALLENGE_POOL[level] || CHALLENGE_POOL.A1
-  const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000)
-  // Pick 3 challenges that rotate daily, ensuring one of each type
-  const types: Challenge['type'][] = ['grammar', 'vocabulary', 'translation']
+  const now = new Date()
+  const startOfYear = new Date(now.getFullYear(), 0, 0)
+  const dayOfYear = Math.floor((now.getTime() - startOfYear.getTime()) / 86400000)
+
+  // Rotate which 3 of 4 types are shown each day
+  // This ensures conjugaison is also regularly featured
+  const typeOffset = dayOfYear % ALL_CHALLENGE_TYPES.length
+  const selectedTypes = [
+    ...ALL_CHALLENGE_TYPES.slice(typeOffset),
+    ...ALL_CHALLENGE_TYPES.slice(0, typeOffset),
+  ].slice(0, 3) // pick 3 out of 4, rotating daily
+
   const result: Challenge[] = []
-  for (const type of types) {
+  for (const type of selectedTypes) {
     const typed = pool.filter((c) => c.type === type)
     if (typed.length > 0) {
-      const idx = (dayOfYear + result.length * 3) % typed.length
+      // Use dayOfYear + type index as offset to get different challenges per type
+      const idx = (dayOfYear + result.length * 7) % typed.length
       result.push(typed[idx])
     }
   }
-  // If we don't have enough, fill with remaining
+
+  // If we don't have enough (shouldn't happen), fill with remaining
   while (result.length < 3) {
     const idx = (dayOfYear + result.length) % pool.length
     result.push(pool[idx])
   }
+
   return result
 }
 
