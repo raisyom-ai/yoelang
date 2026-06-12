@@ -54,7 +54,7 @@ const TYPE_LABELS_FR: Record<string, string> = {
 // ─── Main Component ─────────────────────────────────────────────────────────
 
 export default function ProfilePage() {
-  const { user, goBack, navigate, logout, dailyXpHistory, dailyXpEarned, lessonHistory, earnedCertificates } = useAppStore()
+  const { user, goBack, navigate, logout, dailyXpHistory, dailyXpEarned, lessonHistory, earnedCertificates, earnedBadges: earnedBadgeIds } = useAppStore()
 
   const displayName = user?.name ?? 'Apprenant'
   const email = user?.email ?? 'apprenant@yoelang.com'
@@ -66,7 +66,7 @@ export default function ProfilePage() {
   const level = user?.level ?? 'A1'
   const isPremium = user?.isPremium ?? false
 
-  const earnedBadges = BADGES.filter((b) => b.earnedAt)
+  const earnedBadges = BADGES.filter((b) => earnedBadgeIds.includes(b.id))
   const currentLevelInfo = LEVELS.find((l) => l.code === level) ?? LEVELS[0]
 
   const initials = displayName

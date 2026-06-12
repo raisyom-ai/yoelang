@@ -11,7 +11,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   AreaChart, Area, ResponsiveContainer, PieChart, Pie, Cell
 } from 'recharts'
-import { useAppStore, LEVELS, BADGES, calculateStreak, getWeekActivity, getRecommendedDailyGoal, type DailyXpRecord, type LessonHistoryEntry } from '@/lib/store'
+import { useAppStore, LEVELS, BADGES, BADGE_CATEGORY_LABELS, BADGE_CATEGORY_COLORS, BADGE_CATEGORY_BG, calculateStreak, getWeekActivity, getRecommendedDailyGoal, getBadgeProgress, checkAndAwardBadges, type DailyXpRecord, type LessonHistoryEntry, type BadgeCategory } from '@/lib/store'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -255,7 +255,7 @@ const TYPE_LABELS: Record<string, string> = {
 // ─── Main Component ─────────────────────────────────────────────────────────
 
 export default function StatsPage() {
-  const { user, goBack, navigate, dailyXpHistory, dailyXpEarned, lessonHistory, completedLessons } = useAppStore()
+  const { user, goBack, navigate, dailyXpHistory, dailyXpEarned, lessonHistory, completedLessons, earnedBadges: earnedBadgesStore, earnBadge, chatMessages } = useAppStore()
 
   const xp = user?.xp ?? 0
   const streak = calculateStreak(dailyXpHistory, dailyXpEarned)
@@ -315,9 +315,42 @@ export default function StatsPage() {
     return Math.round(activeDaysHistory.reduce((s, d) => s + d.xpEarned, 0) / activeDaysHistory.length)
   }, [dailyXpHistory])
 
-  // Earned badges
-  const earnedBadges = BADGES.filter((b) => b.earnedAt)
-  const lockedBadges = BADGES.filter((b) => !b.earnedAt)
+  // Earned badges — from store earnedBadges IDs
+  const earnedBadgeIds = earnedBadgesStore
+  const earnedBadgesList = BADGES.filter((b) => earnedBadgeIds.includes(b.id))
+  const lockedBadgesList = BADGES.filter((b) => !earnedBadgeIds.includes(b.id))
+
+  // Badge progress computation
+  const perfectQuizCount = lessonHistory.filter(e => e.score === 100).length
+  const highScoreCount = lessonHistory.filter(e => e.score >= 90).length
+  const chatCount = chatMessages.filter(m => m.role === 'user').length / 2 // rough estimate
+  const vocabLearned = lessonHistory
+    .filter(e => e.type === 'vocabulaire')
+    .length * 5 // ~5 words per vocab lesson
+
+  // Group badges by category
+  const badgesByCategory = useMemo(() => {
+    const cats: BadgeCategory[] = ['serie', 'lecons', 'quiz', 'social', 'maitrise']
+    return cats.map(cat => ({
+      category: cat,
+      label: BADGE_CATEGORY_LABELS[cat],
+      color: BADGE_CATEGORY_COLORS[cat],
+      bg: BADGE_CATEGORY_BG[cat],
+      badges: BADGES.filter(b => b.category === cat),
+    }))
+  }, [])
+
+  // Auto-earn badges when conditions are met
+  useMemo(() => {
+    const newBadges = checkAndAwardBadges(
+      earnedBadgeIds, streak, totalLessonsCompleted,
+      perfectQuizCount, highScoreCount, chatCount,
+      level, vocabLearned
+    )
+    for (const badgeId of newBadges) {
+      earnBadge(badgeId)
+    }
+  }, [streak, totalLessonsCompleted, perfectQuizCount, highScoreCount, chatCount, level, vocabLearned])
 
   return (
     <div className="min-h-screen bg-background">
@@ -781,82 +814,82 @@ export default function StatsPage() {
                   Badges
                 </CardTitle>
                 <Badge variant="secondary" className="text-[10px] sm:text-xs">
-                  {earnedBadges.length}/{BADGES.length}
+                  {earnedBadgesList.length}/{BADGES.length}
                 </Badge>
               </div>
             </CardHeader>
-            <CardContent>
-              <Tabs defaultValue="earned" className="space-y-3">
-                <TabsList className="w-full grid grid-cols-2">
-                  <TabsTrigger value="earned" className="text-xs">
-                    Obtenus ({earnedBadges.length})
-                  </TabsTrigger>
-                  <TabsTrigger value="locked" className="text-xs">
-                    Verrouillés ({lockedBadges.length})
-                  </TabsTrigger>
-                </TabsList>
-
-                <TabsContent value="earned">
-                  {earnedBadges.length > 0 ? (
-                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
-                      {earnedBadges.map((badge, idx) => (
-                        <motion.div
-                          key={badge.id}
-                          initial={{ opacity: 0, scale: 0.8 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          transition={{ delay: 0.1 * idx, type: 'spring' }}
-                          className="flex flex-col items-center gap-1.5 rounded-xl bg-gradient-to-br from-yoel-gold/5 to-yoel-primary/5 border border-yoel-gold/20 p-2.5 sm:p-3"
-                        >
-                          <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-gradient-to-br from-yoel-gold/20 to-yoel-primary/10 text-xl sm:text-2xl">
-                            {badge.icon}
-                          </div>
-                          <span className="text-[10px] sm:text-xs font-medium text-center leading-tight">{badge.name}</span>
-                          <span className="text-[9px] sm:text-[10px] text-muted-foreground text-center leading-tight">
-                            {badge.description}
-                          </span>
-                          <div className="flex items-center gap-1 text-[9px] sm:text-[10px] text-yoel-green">
-                            <CheckCircle2 className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
-                            {badge.earnedAt && new Date(badge.earnedAt).toLocaleDateString('fr-FR', { month: 'short', day: 'numeric' })}
-                          </div>
-                        </motion.div>
-                      ))}
+            <CardContent className="space-y-4">
+              {/* Category groups */}
+              {badgesByCategory.map((cat) => {
+                const earnedInCat = cat.badges.filter(b => earnedBadgeIds.includes(b.id))
+                if (cat.badges.length === 0) return null
+                return (
+                  <div key={cat.category}>
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className={`h-2 w-2 rounded-full bg-gradient-to-r ${cat.color}`} />
+                      <span className="text-xs font-semibold text-foreground">{cat.label}</span>
+                      <span className="text-[10px] text-muted-foreground">{earnedInCat.length}/{cat.badges.length}</span>
                     </div>
-                  ) : (
-                    <div className="flex flex-col items-center justify-center py-8 text-center">
-                      <Award className="h-10 w-10 text-muted-foreground/30 mb-2" />
-                      <p className="text-xs text-muted-foreground">
-                        Complétez des leçons pour gagner des badges
-                      </p>
-                    </div>
-                  )}
-                </TabsContent>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                      {cat.badges.map((badge) => {
+                        const isEarned = earnedBadgeIds.includes(badge.id)
+                        const progress = getBadgeProgress(
+                          badge, streak, totalLessonsCompleted,
+                          perfectQuizCount, highScoreCount, chatCount,
+                          level, vocabLearned
+                        )
+                        const progressPct = Math.min(100, Math.round((progress / badge.requirement) * 100))
 
-                <TabsContent value="locked">
-                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
-                    {lockedBadges.map((badge, idx) => (
-                      <motion.div
-                        key={badge.id}
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 0.6, scale: 1 }}
-                        transition={{ delay: 0.1 * idx, type: 'spring' }}
-                        className="flex flex-col items-center gap-1.5 rounded-xl bg-muted/30 border border-border/50 p-2.5 sm:p-3 grayscale"
-                      >
-                        <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-muted/50 text-xl sm:text-2xl">
-                          {badge.icon}
-                        </div>
-                        <span className="text-[10px] sm:text-xs font-medium text-center leading-tight">{badge.name}</span>
-                        <span className="text-[9px] sm:text-[10px] text-muted-foreground text-center leading-tight">
-                          {badge.description}
-                        </span>
-                        <div className="flex items-center gap-1 text-[9px] sm:text-[10px] text-muted-foreground">
-                          <Lock className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
-                          Verrouillé
-                        </div>
-                      </motion.div>
-                    ))}
+                        return (
+                          <motion.div
+                            key={badge.id}
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: isEarned ? 1 : 0.7, scale: 1 }}
+                            transition={{ type: 'spring', stiffness: 260, damping: 24 }}
+                            className={`flex items-start gap-2 rounded-xl p-2 sm:p-2.5 border ${
+                              isEarned
+                                ? `bg-gradient-to-br ${cat.bg} border-yoel-gold/20`
+                                : 'bg-muted/20 border-border/30'
+                            }`}
+                          >
+                            <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-lg ${
+                              isEarned ? `bg-gradient-to-br ${cat.color} text-white` : 'bg-muted/40 grayscale'
+                            }`}>
+                              {badge.icon}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className={`text-[10px] sm:text-xs font-semibold leading-tight ${isEarned ? 'text-foreground' : 'text-muted-foreground'}`}>
+                                {badge.name}
+                              </p>
+                              <p className="text-[9px] text-muted-foreground leading-tight mt-0.5 line-clamp-2">
+                                {badge.description}
+                              </p>
+                              {isEarned ? (
+                                <div className="flex items-center gap-1 mt-1 text-[9px] text-yoel-green">
+                                  <CheckCircle2 className="h-2.5 w-2.5" />
+                                  Obtenu
+                                </div>
+                              ) : (
+                                <div className="mt-1">
+                                  <div className="relative h-1 w-full overflow-hidden rounded-full bg-muted/50">
+                                    <div
+                                      className={`absolute inset-y-0 left-0 rounded-full bg-gradient-to-r ${cat.color} transition-all duration-500`}
+                                      style={{ width: `${progressPct}%` }}
+                                    />
+                                  </div>
+                                  <p className="text-[8px] sm:text-[9px] text-muted-foreground mt-0.5">
+                                    {progress}/{badge.requirement}
+                                  </p>
+                                </div>
+                              )}
+                            </div>
+                          </motion.div>
+                        )
+                      })}
+                    </div>
                   </div>
-                </TabsContent>
-              </Tabs>
+                )
+              })}
             </CardContent>
           </Card>
         </motion.div>

@@ -22,12 +22,41 @@ export interface UserState {
   soundEnabled: boolean
 }
 
+export type BadgeCategory = 'serie' | 'lecons' | 'quiz' | 'social' | 'maitrise'
+
 export interface Badge {
   id: string
   name: string
   icon: string
   description: string
+  category: BadgeCategory
+  /** The target value to earn this badge (e.g. 3 for a 3-day streak) */
+  requirement: number
   earnedAt?: string
+}
+
+export const BADGE_CATEGORY_LABELS: Record<BadgeCategory, string> = {
+  serie: 'Série',
+  lecons: 'Leçons',
+  quiz: 'Quiz',
+  social: 'Social',
+  maitrise: 'Maîtrise',
+}
+
+export const BADGE_CATEGORY_COLORS: Record<BadgeCategory, string> = {
+  serie: 'from-orange-500 to-red-500',
+  lecons: 'from-yoel-primary to-yoel-primary-dark',
+  quiz: 'from-yoel-green to-emerald-700',
+  social: 'from-yoel-blue to-yoel-blue-dark',
+  maitrise: 'from-yoel-gold to-amber-700',
+}
+
+export const BADGE_CATEGORY_BG: Record<BadgeCategory, string> = {
+  serie: 'bg-orange-500/10',
+  lecons: 'bg-yoel-primary/10',
+  quiz: 'bg-yoel-green/10',
+  social: 'bg-yoel-blue/10',
+  maitrise: 'bg-yoel-gold/10',
 }
 
 export interface LevelInfo {
@@ -604,7 +633,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     const updated = [{ ...entry, id }, ...state.lessonHistory].slice(0, 50)
     return { lessonHistory: updated }
   }),
-  earnedBadges: ['first-lesson', 'streak-3', 'streak-7', 'quiz-master', 'vocabulary-100'],
+  earnedBadges: ['streak-1', 'streak-3', 'streak-7', 'first-lesson', 'lessons-5', 'lessons-10', 'perfect-quiz', 'chat-first', 'vocab-50'],
   earnBadge: (badgeId) => set((state) => ({
     earnedBadges: state.earnedBadges.includes(badgeId) ? state.earnedBadges : [...state.earnedBadges, badgeId],
   })),
@@ -643,17 +672,134 @@ export const LEVELS: LevelInfo[] = Object.values(COURSE_DATA).map((level) => ({
 }))
 
 export const BADGES: Badge[] = [
-  { id: 'first-lesson', name: 'First Step', icon: '👣', description: 'Complete your first lesson', earnedAt: '2025-01-15' },
-  { id: 'streak-3', name: 'On Fire', icon: '🔥', description: '3-day streak', earnedAt: '2025-01-18' },
-  { id: 'streak-7', name: 'Week Warrior', icon: '⚔️', description: '7-day streak', earnedAt: '2025-01-22' },
-  { id: 'quiz-master', name: 'Quiz Master', icon: '🧠', description: 'Score 100% on 5 quizzes', earnedAt: '2025-02-01' },
-  { id: 'vocabulary-100', name: 'Word Collector', icon: '📚', description: 'Learn 100 words', earnedAt: '2025-02-10' },
-  { id: 'chat-10', name: 'Social Butterfly', icon: '🦋', description: 'Have 10 AI conversations' },
-  { id: 'streak-30', name: 'Unstoppable', icon: '💪', description: '30-day streak' },
-  { id: 'level-a2', name: 'Level Up', icon: '🚀', description: 'Reach A2 level' },
-  { id: 'perfect-week', name: 'Perfect Week', icon: '💎', description: 'Complete all daily challenges for a week' },
-  { id: 'polyglot', name: 'Polyglot', icon: '🌍', description: 'Master all levels' },
+  // ─── Série (Streak) ──────────────────────────────────────────
+  { id: 'streak-1', name: 'Premier Pas', icon: '🌱', description: 'Atteignez 1 jour de série', category: 'serie', requirement: 1 },
+  { id: 'streak-3', name: 'En Feu', icon: '🔥', description: 'Atteignez 3 jours de série', category: 'serie', requirement: 3 },
+  { id: 'streak-7', name: 'Guerrier', icon: '⚔️', description: 'Atteignez 7 jours de série', category: 'serie', requirement: 7 },
+  { id: 'streak-14', name: 'Infatigable', icon: '💪', description: 'Atteignez 14 jours de série', category: 'serie', requirement: 14 },
+  { id: 'streak-30', name: 'Inarrêtable', icon: '🏆', description: 'Atteignez 30 jours de série', category: 'serie', requirement: 30 },
+  { id: 'streak-100', name: 'Légende', icon: '👑', description: 'Atteignez 100 jours de série', category: 'serie', requirement: 100 },
+
+  // ─── Leçons (Lessons) ────────────────────────────────────────
+  { id: 'first-lesson', name: 'Déclic', icon: '👣', description: 'Complétez votre première leçon', category: 'lecons', requirement: 1 },
+  { id: 'lessons-5', name: 'Apprenti', icon: '📖', description: 'Complétez 5 leçons', category: 'lecons', requirement: 5 },
+  { id: 'lessons-10', name: 'Étudiant', icon: '🎓', description: 'Complétez 10 leçons', category: 'lecons', requirement: 10 },
+  { id: 'lessons-25', name: 'Érudit', icon: '📚', description: 'Complétez 25 leçons', category: 'lecons', requirement: 25 },
+  { id: 'lessons-50', name: 'Savant', icon: '🏛️', description: 'Complétez 50 leçons', category: 'lecons', requirement: 50 },
+
+  // ─── Quiz ────────────────────────────────────────────────────
+  { id: 'perfect-quiz', name: 'Parfait', icon: '💯', description: 'Obtenez 100% à un quiz', category: 'quiz', requirement: 1 },
+  { id: 'perfect-5', name: 'Précision', icon: '🎯', description: 'Obtenez 100% à 5 quiz', category: 'quiz', requirement: 5 },
+  { id: 'perfect-10', name: 'Maître Quiz', icon: '🧠', description: 'Obtenez 100% à 10 quiz', category: 'quiz', requirement: 10 },
+  { id: 'score-90-10', name: 'Excellence', icon: '⭐', description: 'Score ≥ 90% sur 10 leçons', category: 'quiz', requirement: 10 },
+
+  // ─── Social ──────────────────────────────────────────────────
+  { id: 'chat-first', name: 'Bavard', icon: '💬', description: 'Ayez votre première conversation IA', category: 'social', requirement: 1 },
+  { id: 'chat-10', name: 'Papillon', icon: '🦋', description: 'Ayez 10 conversations IA', category: 'social', requirement: 10 },
+  { id: 'chat-50', name: 'Orateur', icon: '🎤', description: 'Ayez 50 conversations IA', category: 'social', requirement: 50 },
+
+  // ─── Maîtrise (Mastery) ──────────────────────────────────────
+  { id: 'level-a2', name: 'Ascension', icon: '🚀', description: 'Atteignez le niveau A2', category: 'maitrise', requirement: 1 },
+  { id: 'level-b1', name: 'Progression', icon: '🏔️', description: 'Atteignez le niveau B1', category: 'maitrise', requirement: 1 },
+  { id: 'level-b2', name: 'Expertise', icon: '🌟', description: 'Atteignez le niveau B2', category: 'maitrise', requirement: 1 },
+  { id: 'level-c1', name: 'Virtuosité', icon: '✨', description: 'Atteignez le niveau C1', category: 'maitrise', requirement: 1 },
+  { id: 'level-c2', name: 'Polyglotte', icon: '🌍', description: 'Maîtrisez tous les niveaux', category: 'maitrise', requirement: 1 },
+  { id: 'vocab-50', name: 'Collecteur', icon: '📦', description: 'Apprenez 50 mots', category: 'maitrise', requirement: 50 },
+  { id: 'vocab-100', name: 'Encyclopédie', icon: '📖', description: 'Apprenez 100 mots', category: 'maitrise', requirement: 100 },
 ]
+
+/**
+ * Compute the current progress for a given badge based on live store data.
+ * Returns a number from 0 to badge.requirement.
+ */
+export const getBadgeProgress = (
+  badge: Badge,
+  streak: number,
+  lessonCount: number,
+  perfectQuizCount: number,
+  highScoreCount: number,
+  chatCount: number,
+  userLevel: string,
+  vocabCount: number,
+): number => {
+  switch (badge.id) {
+    // Série badges
+    case 'streak-1':
+    case 'streak-3':
+    case 'streak-7':
+    case 'streak-14':
+    case 'streak-30':
+    case 'streak-100':
+      return Math.min(streak, badge.requirement)
+
+    // Leçons badges
+    case 'first-lesson':
+    case 'lessons-5':
+    case 'lessons-10':
+    case 'lessons-25':
+    case 'lessons-50':
+      return Math.min(lessonCount, badge.requirement)
+
+    // Quiz badges
+    case 'perfect-quiz':
+    case 'perfect-5':
+    case 'perfect-10':
+      return Math.min(perfectQuizCount, badge.requirement)
+    case 'score-90-10':
+      return Math.min(highScoreCount, badge.requirement)
+
+    // Social badges
+    case 'chat-first':
+    case 'chat-10':
+    case 'chat-50':
+      return Math.min(chatCount, badge.requirement)
+
+    // Maîtrise badges — level reached
+    case 'level-a2':
+      return ['A2','B1','B2','C1','C2'].includes(userLevel) ? 1 : 0
+    case 'level-b1':
+      return ['B1','B2','C1','C2'].includes(userLevel) ? 1 : 0
+    case 'level-b2':
+      return ['B2','C1','C2'].includes(userLevel) ? 1 : 0
+    case 'level-c1':
+      return ['C1','C2'].includes(userLevel) ? 1 : 0
+    case 'level-c2':
+      return userLevel === 'C2' ? 1 : 0
+
+    // Vocab badges
+    case 'vocab-50':
+    case 'vocab-100':
+      return Math.min(vocabCount, badge.requirement)
+
+    default:
+      return 0
+  }
+}
+
+/**
+ * Check all badges and auto-earn any that should be awarded.
+ * Returns an array of newly earned badge IDs.
+ */
+export const checkAndAwardBadges = (
+  earnedBadges: string[],
+  streak: number,
+  lessonCount: number,
+  perfectQuizCount: number,
+  highScoreCount: number,
+  chatCount: number,
+  userLevel: string,
+  vocabCount: number,
+): string[] => {
+  const newlyEarned: string[] = []
+  for (const badge of BADGES) {
+    if (earnedBadges.includes(badge.id)) continue
+    const progress = getBadgeProgress(badge, streak, lessonCount, perfectQuizCount, highScoreCount, chatCount, userLevel, vocabCount)
+    if (progress >= badge.requirement) {
+      newlyEarned.push(badge.id)
+    }
+  }
+  return newlyEarned
+}
 
 export const DEMO_LESSONS: LessonInfo[] = COURSE_DATA.A1.lessons.map((l, i) => ({
   id: l.id,

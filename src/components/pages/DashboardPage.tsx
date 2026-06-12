@@ -546,7 +546,7 @@ function BottomNavItem({
 // ─── Main Component ─────────────────────────────────────────────────────────
 
 export default function DashboardPage() {
-  const { user, isDarkMode, toggleDarkMode, navigate, currentLesson, lastVisitedLesson, dailyChallengeCompleted, completeDailyChallenge, addXP, dailyXpEarned, dailyXpHistory } = useAppStore()
+  const { user, isDarkMode, toggleDarkMode, navigate, currentLesson, lastVisitedLesson, dailyChallengeCompleted, completeDailyChallenge, addXP, dailyXpEarned, dailyXpHistory, earnedBadges: earnedBadgeIds } = useAppStore()
 
   // Derive data with fallbacks
   const displayName = user?.name ?? 'Apprenant'
@@ -646,7 +646,7 @@ export default function DashboardPage() {
   }
 
   // Earned badges (first 5)
-  const earnedBadges = BADGES.filter((b) => b.earnedAt).slice(0, 5)
+  const earnedBadges = BADGES.filter((b) => earnedBadgeIds.includes(b.id)).slice(0, 5)
 
   // Level progress
   const levelProgress = currentLevelInfo.progress
