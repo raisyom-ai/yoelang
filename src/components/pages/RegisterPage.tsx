@@ -128,7 +128,7 @@ export default function RegisterPage() {
     streak: 7,
     coins: 350,
     isPremium: false,
-    dailyGoal: 20,
+    dailyGoal: 0,
     notifications: true,
     darkMode: false,
     soundEnabled: true,
@@ -604,14 +604,14 @@ export default function RegisterPage() {
                       const data = await loginRes.json()
                       setUser(data.user)
                     } else {
-                      const googleUser = { id: 'google-demo', email: 'google@yoelang.com', name: 'Utilisateur Google', avatar: null, level: 'A1', xp: 0, streak: 0, coins: 0, isPremium: false, dailyGoal: 20, notifications: true, darkMode: false, soundEnabled: true }
+                      const googleUser = { id: 'google-demo', email: 'google@yoelang.com', name: 'Utilisateur Google', avatar: null, level: 'A1', xp: 0, streak: 0, coins: 0, isPremium: false, dailyGoal: 0, notifications: true, darkMode: false, soundEnabled: true }
                       setUser(googleUser)
                     }
                     navigate('dashboard')
                     toast.success('Bienvenue !', { description: 'Connecté avec Google' })
                   }
                 } catch {
-                  const googleUser = { id: 'google-demo', email: 'google@yoelang.com', name: 'Utilisateur Google', avatar: null, level: 'A1', xp: 0, streak: 0, coins: 0, isPremium: false, dailyGoal: 20, notifications: true, darkMode: false, soundEnabled: true }
+                  const googleUser = { id: 'google-demo', email: 'google@yoelang.com', name: 'Utilisateur Google', avatar: null, level: 'A1', xp: 0, streak: 0, coins: 0, isPremium: false, dailyGoal: 0, notifications: true, darkMode: false, soundEnabled: true }
                   setUser(googleUser)
                   navigate('dashboard')
                   toast.success('Bienvenue !', { description: 'Connecté avec Google (mode démo)' })
@@ -651,14 +651,14 @@ export default function RegisterPage() {
                       const data = await loginRes.json()
                       setUser(data.user)
                     } else {
-                      const appleUser = { id: 'apple-demo', email: 'apple@yoelang.com', name: 'Utilisateur Apple', avatar: null, level: 'A1', xp: 0, streak: 0, coins: 0, isPremium: false, dailyGoal: 20, notifications: true, darkMode: false, soundEnabled: true }
+                      const appleUser = { id: 'apple-demo', email: 'apple@yoelang.com', name: 'Utilisateur Apple', avatar: null, level: 'A1', xp: 0, streak: 0, coins: 0, isPremium: false, dailyGoal: 0, notifications: true, darkMode: false, soundEnabled: true }
                       setUser(appleUser)
                     }
                     navigate('dashboard')
                     toast.success('Bienvenue !', { description: 'Connecté avec Apple' })
                   }
                 } catch {
-                  const appleUser = { id: 'apple-demo', email: 'apple@yoelang.com', name: 'Utilisateur Apple', avatar: null, level: 'A1', xp: 0, streak: 0, coins: 0, isPremium: false, dailyGoal: 20, notifications: true, darkMode: false, soundEnabled: true }
+                  const appleUser = { id: 'apple-demo', email: 'apple@yoelang.com', name: 'Utilisateur Apple', avatar: null, level: 'A1', xp: 0, streak: 0, coins: 0, isPremium: false, dailyGoal: 0, notifications: true, darkMode: false, soundEnabled: true }
                   setUser(appleUser)
                   navigate('dashboard')
                   toast.success('Bienvenue !', { description: 'Connecté avec Apple (mode démo)' })

@@ -8,7 +8,7 @@ import {
   Volume2, Trophy, Clock, Target, Home, User, Settings,
   Zap, Award, Crown, ChevronDown
 } from 'lucide-react'
-import { useAppStore, LEVELS, BADGES, DEMO_LESSONS, type PageId } from '@/lib/store'
+import { useAppStore, LEVELS, BADGES, DEMO_LESSONS, getRecommendedDailyGoal, type PageId } from '@/lib/store'
 import { speakWord } from '@/lib/speech-utils'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
@@ -51,8 +51,7 @@ const pulseVariants = {
 
 // ─── Demo Data ──────────────────────────────────────────────────────────────
 
-const DAILY_XP_GOAL = 20
-const DAILY_XP_EARNED = 12
+// Daily XP goal and earned are now dynamic — derived from the store
 
 // Défis journaliers rotatifs basés sur le jour de l'année
 const DAILY_CHALLENGES = [
@@ -234,7 +233,7 @@ function BottomNavItem({
 // ─── Main Component ─────────────────────────────────────────────────────────
 
 export default function DashboardPage() {
-  const { user, isDarkMode, toggleDarkMode, navigate, currentLesson, dailyChallengeCompleted, completeDailyChallenge, addXP } = useAppStore()
+  const { user, isDarkMode, toggleDarkMode, navigate, currentLesson, dailyChallengeCompleted, completeDailyChallenge, addXP, dailyXpEarned } = useAppStore()
 
   // Derive data with fallbacks
   const displayName = user?.name ?? 'Apprenant'
@@ -246,6 +245,10 @@ export default function DashboardPage() {
 
   // Current level info
   const currentLevelInfo = LEVELS.find((l) => l.code === level) ?? LEVELS[0]
+
+  // Dynamic daily goal: if dailyGoal is 0 (auto), compute from level & progress; otherwise use manual value
+  const recommendedGoal = getRecommendedDailyGoal(level, currentLevelInfo.progress)
+  const effectiveDailyGoal = user?.dailyGoal && user.dailyGoal > 0 ? user.dailyGoal : recommendedGoal
 
   // Next lesson to continue
   const nextLesson = currentLesson ?? DEMO_LESSONS.find((l) => !l.completed) ?? DEMO_LESSONS[3]
@@ -410,8 +413,8 @@ export default function DashboardPage() {
               {/* Mobile: compact 80px ring */}
               <div className="shrink-0 sm:hidden">
                 <CircularProgress
-                  value={DAILY_XP_EARNED}
-                  max={DAILY_XP_GOAL}
+                  value={dailyXpEarned}
+                  max={effectiveDailyGoal}
                   size={80}
                   strokeWidth={7}
                   compact
@@ -420,25 +423,32 @@ export default function DashboardPage() {
               {/* Desktop: larger ring */}
               <div className="shrink-0 hidden sm:block">
                 <CircularProgress
-                  value={DAILY_XP_EARNED}
-                  max={DAILY_XP_GOAL}
+                  value={dailyXpEarned}
+                  max={effectiveDailyGoal}
                   size={130}
                   strokeWidth={10}
                 />
               </div>
               <div className="flex-1 min-w-0 space-y-1 sm:space-y-2">
-                <h3 className="text-sm sm:text-lg font-semibold">
-                  Objectif du jour
-                </h3>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-sm sm:text-lg font-semibold">
+                    Objectif du jour
+                  </h3>
+                  {(!user?.dailyGoal || user.dailyGoal === 0) && (
+                    <Badge variant="secondary" className="text-[9px] px-1.5 py-0 shrink-0">
+                      Auto
+                    </Badge>
+                  )}
+                </div>
                 <p className="text-muted-foreground text-xs sm:text-sm">
-                  {DAILY_XP_EARNED >= DAILY_XP_GOAL
+                  {dailyXpEarned >= effectiveDailyGoal
                     ? '🎉 Objectif atteint !'
-                    : `Encore ${DAILY_XP_GOAL - DAILY_XP_EARNED} XP !`}
+                    : `Encore ${effectiveDailyGoal - dailyXpEarned} XP sur ${effectiveDailyGoal} !`}
                 </p>
                 <div className="flex items-center gap-1.5 sm:gap-2">
                   <Target className="h-3 w-3 sm:h-4 sm:w-4 text-yoel-primary shrink-0" />
                   <span className="text-[11px] sm:text-sm font-medium text-yoel-primary whitespace-nowrap">
-                    {Math.round((DAILY_XP_EARNED / DAILY_XP_GOAL) * 100)}% complété
+                    {effectiveDailyGoal > 0 ? Math.round((dailyXpEarned / effectiveDailyGoal) * 100) : 0}% complété
                   </span>
                 </div>
               </div>

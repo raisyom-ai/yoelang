@@ -59,6 +59,26 @@ export interface ChatMsg {
   timestamp: Date
 }
 
+// Helper: get today's date as YYYY-MM-DD string
+const getTodayStr = () => new Date().toISOString().split('T')[0]
+
+// Helper: compute recommended daily goal based on level and progress
+export const getRecommendedDailyGoal = (level: string, progress: number): number => {
+  // Base goal by level (higher levels = more ambitious goals)
+  const levelGoals: Record<string, number> = {
+    A1: 10,
+    A2: 15,
+    B1: 20,
+    B2: 25,
+    C1: 35,
+    C2: 50,
+  }
+  const base = levelGoals[level] ?? 20
+  // Increase goal slightly as progress within level increases
+  const progressBonus = Math.floor(progress / 50) * 5
+  return base + progressBonus
+}
+
 interface AppState {
   // Navigation
   currentPage: PageId
@@ -95,6 +115,9 @@ interface AppState {
 
   // XP tracking
   addXP: (amount: number) => void
+  dailyXpEarned: number
+  lastXpDate: string
+  setDailyGoal: (goal: number) => void
   completedLessons: string[]
   addCompletedLesson: (lessonId: string) => void
   earnedBadges: string[]
@@ -158,8 +181,20 @@ export const useAppStore = create<AppState>((set, get) => ({
   setSplashComplete: (complete) => set({ splashComplete: complete }),
 
   // XP tracking
-  addXP: (amount) => set((state) => ({
-    user: state.user ? { ...state.user, xp: (state.user.xp || 0) + amount, coins: (state.user.coins || 0) + Math.floor(amount / 2) } : state.user,
+  dailyXpEarned: 0,
+  lastXpDate: '',
+  addXP: (amount) => set((state) => {
+    const today = getTodayStr()
+    const isNewDay = state.lastXpDate !== today
+    const newDailyXp = isNewDay ? amount : state.dailyXpEarned + amount
+    return {
+      user: state.user ? { ...state.user, xp: (state.user.xp || 0) + amount, coins: (state.user.coins || 0) + Math.floor(amount / 2) } : state.user,
+      dailyXpEarned: newDailyXp,
+      lastXpDate: today,
+    }
+  }),
+  setDailyGoal: (goal) => set((state) => ({
+    user: state.user ? { ...state.user, dailyGoal: goal } : state.user,
   })),
   completedLessons: [],
   addCompletedLesson: (lessonId) => set((state) => ({

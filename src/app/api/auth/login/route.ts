@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
         streak: user.streak || 0,
         coins: user.coins || 0,
         isPremium: user.isPremium || false,
-        dailyGoal: user.dailyGoal || 20,
+        dailyGoal: user.dailyGoal ?? 0,
         notifications: user.notifications ?? true,
         darkMode: user.darkMode ?? false,
         soundEnabled: user.soundEnabled ?? true,

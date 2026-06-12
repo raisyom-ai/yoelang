@@ -49,16 +49,25 @@ const itemVariants = {
 // ─── Main Component ─────────────────────────────────────────────────────────
 
 export default function SettingsPage() {
-  const { user, goBack, navigate, isDarkMode, toggleDarkMode } = useAppStore()
+  const { user, goBack, navigate, isDarkMode, toggleDarkMode, setDailyGoal } = useAppStore()
 
   const displayName = user?.name ?? 'Apprenant'
   const email = user?.email ?? 'apprenant@yoelang.com'
   const isPremium = user?.isPremium ?? false
-  const dailyGoal = user?.dailyGoal ?? 20
+  const dailyGoal = user?.dailyGoal ?? 0
   const notifications = user?.notifications ?? true
   const soundEnabled = user?.soundEnabled ?? true
 
   const [localGoal, setLocalGoal] = useState(String(dailyGoal))
+
+  // Sync daily goal changes to the store
+  const handleGoalChange = (value: string) => {
+    setLocalGoal(value)
+    setDailyGoal(Number(value))
+  }
+
+  // Label for daily goal display
+  const dailyGoalLabel = dailyGoal === 0 ? 'Auto' : `${dailyGoal} XP`
   const [localNotif, setLocalNotif] = useState(notifications)
   const [localEmail, setLocalEmail] = useState(true)
   const [localSound, setLocalSound] = useState(soundEnabled)
@@ -142,13 +151,14 @@ export default function SettingsPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium">Objectif quotidien</p>
-                  <p className="text-xs text-muted-foreground">XP à gagner par jour</p>
+                  <p className="text-xs text-muted-foreground">{dailyGoal === 0 ? 'Adapté automatiquement à votre niveau' : 'XP à gagner par jour'}</p>
                 </div>
-                <Select value={localGoal} onValueChange={setLocalGoal}>
+                <Select value={localGoal} onValueChange={handleGoalChange}>
                   <SelectTrigger className="w-[120px]">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="0">🤖 Auto</SelectItem>
                     <SelectItem value="10">10 XP</SelectItem>
                     <SelectItem value="20">20 XP</SelectItem>
                     <SelectItem value="30">30 XP</SelectItem>
