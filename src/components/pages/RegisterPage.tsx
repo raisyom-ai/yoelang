@@ -195,6 +195,26 @@ export default function RegisterPage() {
     soundEnabled: (data.soundEnabled as boolean) ?? true,
   })
 
+  const fetchUserProgress = async (userId: string) => {
+    try {
+      const res = await fetch(`/api/user/progress?userId=${userId}`)
+      if (res.ok) {
+        const data = await res.json()
+        if (data.success) {
+          loadUserProgress({
+            completedLessons: data.completedLessons || [],
+            completions: data.completions || [],
+            certificates: data.certificates || [],
+            examAttempts: data.examAttempts || [],
+            earnedBadges: data.earnedBadges || [],
+          })
+        }
+      }
+    } catch {
+      // Progress loading failed, continue with empty state
+    }
+  }
+
   const handleOAuthSuccess = (data: Record<string, unknown>) => {
     if (data.isAdmin) {
       const adminUser = buildUserState({ ...data.user, role: 'admin' } as Record<string, unknown>)
@@ -207,6 +227,10 @@ export default function RegisterPage() {
     const user = buildUserState(data.user as Record<string, unknown>)
     setUser(user)
     setCurrentLevel(user.level)
+
+    // Load user progress from database
+    fetchUserProgress(user.id)
+
     navigate('dashboard')
 
     if (data.isNewUser) {
