@@ -8,7 +8,7 @@ import {
   Volume2, Trophy, Clock, Target, Home, User, Settings,
   Zap, Award, Crown, ChevronDown, CheckCircle
 } from 'lucide-react'
-import { useAppStore, LEVELS, BADGES, DEMO_LESSONS, getRecommendedDailyGoal, calculateStreak, getWeekActivity, type PageId, type LessonHistoryEntry } from '@/lib/store'
+import { useAppStore, LEVELS, BADGES, getRecommendedDailyGoal, calculateStreak, getWeekActivity, type PageId } from '@/lib/store'
 import { getLessonContent, type VocabWord, type GrammarRule } from '@/lib/lesson-content'
 import { speakWord } from '@/lib/speech-utils'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
@@ -546,7 +546,7 @@ function BottomNavItem({
 // ─── Main Component ─────────────────────────────────────────────────────────
 
 export default function DashboardPage() {
-  const { user, isDarkMode, toggleDarkMode, navigate, currentLesson, lastVisitedLesson, dailyChallengeCompleted, completeDailyChallenge, addXP, dailyXpEarned, dailyXpHistory, lessonHistory } = useAppStore()
+  const { user, isDarkMode, toggleDarkMode, navigate, currentLesson, lastVisitedLesson, dailyChallengeCompleted, completeDailyChallenge, addXP, dailyXpEarned, dailyXpHistory } = useAppStore()
 
   // Derive data with fallbacks
   const displayName = user?.name ?? 'Apprenant'
@@ -572,16 +572,10 @@ export default function DashboardPage() {
   // Word of the day — different every day, adapted to level
   const wordOfTheDay = getWordOfTheDay(level)
 
-  // Recent lesson — the last lesson the learner visited, or the first uncompleted lesson as fallback
-  const recentLesson = lastVisitedLesson ?? DEMO_LESSONS.find((l) => !l.completed) ?? DEMO_LESSONS[0]
-
-  // Last learning session — what the learner studied before leaving
-  const lastSession = lessonHistory.length > 0 ? lessonHistory[0] : null
-  const lastSessionContent = lastSession ? getLessonContent(lastSession.lessonId) : null
-  // Show up to 4 vocabulary words learned
-  const learnedVocab: VocabWord[] = lastSessionContent?.vocab?.slice(0, 4) ?? []
-  // Grammar title learned
-  const learnedGrammar: GrammarRule | null = lastSessionContent?.grammar ?? null
+  // Last visited lesson content — only what the learner actually studied before leaving
+  const lastVisitedContent = lastVisitedLesson ? getLessonContent(lastVisitedLesson.id) : null
+  const learnedVocab: VocabWord[] = lastVisitedContent?.vocab?.slice(0, 4) ?? []
+  const learnedGrammar: GrammarRule | null = lastVisitedContent?.grammar ?? null
 
   // Daily challenges — 3 per day, level-adapted
   const todayChallenges = getDailyChallenges(level)
@@ -843,20 +837,19 @@ export default function DashboardPage() {
                       <p className="text-[10px] sm:text-xs text-muted-foreground font-medium uppercase tracking-wider">
                         Ce que vous avez appris
                       </p>
-                      {lastSession && (
+                      {lastVisitedLesson && (
                         <div className="flex items-center gap-1.5 mt-0.5">
                           <Badge variant="secondary" className="text-[9px] sm:text-[10px] px-1.5 py-0 h-4 sm:h-5 bg-yoel-primary/10 text-yoel-primary">
-                            {lastSession.type === 'vocabulaire' ? 'Vocabulaire' : lastSession.type === 'grammaire' ? 'Grammaire' : lastSession.type === 'conversation' ? 'Conversation' : lastSession.type === 'conjugaison' ? 'Conjugaison' : lastSession.type === 'pronunciation' ? 'Prononciation' : lastSession.type}
+                            {lastVisitedLesson.type === 'vocabulary' ? 'Vocabulaire' : lastVisitedLesson.type === 'grammar' ? 'Grammaire' : lastVisitedLesson.type === 'conversation' ? 'Conversation' : lastVisitedLesson.type === 'pronunciation' ? 'Prononciation' : lastVisitedLesson.type}
                           </Badge>
                           <span className="flex items-center gap-0.5 text-[10px] sm:text-xs text-muted-foreground">
                             <Zap className="h-2.5 w-2.5 text-yoel-gold" />
-                            +{lastSession.xpEarned} XP
+                            {lastVisitedLesson.xpReward} XP
                           </span>
-                          {lastSession.score > 0 && (
-                            <span className="text-[10px] sm:text-xs text-yoel-green font-medium">
-                              {lastSession.score}%
-                            </span>
-                          )}
+                          <span className="flex items-center gap-0.5 text-[10px] sm:text-xs text-muted-foreground">
+                            <Clock className="h-2.5 w-2.5" />
+                            {lastVisitedLesson.duration} min
+                          </span>
                         </div>
                       )}
                     </div>
@@ -872,7 +865,7 @@ export default function DashboardPage() {
                 </div>
 
                 {/* Learning Content Recap */}
-                {lastSession && learnedVocab.length > 0 ? (
+                {lastVisitedLesson && learnedVocab.length > 0 ? (
                   <div className="space-y-2.5">
                     {/* Vocabulary learned */}
                     <div>
