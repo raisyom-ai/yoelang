@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, FormEvent, useEffect } from 'react'
+import { useState, FormEvent } from 'react'
 import { motion } from 'framer-motion'
 import { Mail, Lock, Eye, EyeOff, Loader2, Chrome, Apple, BookOpen, Globe, Sparkles, ArrowLeft, Shield } from 'lucide-react'
 import { useAppStore, type UserState } from '@/lib/store'
@@ -10,11 +10,14 @@ import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Separator } from '@/components/ui/separator'
 import { toast } from 'sonner'
+import OAuthDialog from '@/components/OAuthDialog'
 
 interface FormErrors {
   email?: string
   password?: string
 }
+
+type OAuthProvider = 'google' | 'apple'
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 20 },
@@ -33,15 +36,7 @@ export default function LoginPage() {
   const [rememberMe, setRememberMe] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [errors, setErrors] = useState<FormErrors>({})
-  const [oauthProviders, setOauthProviders] = useState<{ google: boolean; apple: boolean }>({ google: false, apple: false })
-
-  // Check which OAuth providers are configured
-  useEffect(() => {
-    fetch('/api/auth/providers')
-      .then((res) => res.json())
-      .then((data) => setOauthProviders(data))
-      .catch(() => {})
-  }, [])
+  const [oauthDialog, setOauthDialog] = useState<OAuthProvider | null>(null)
 
   const validate = (): boolean => {
     const newErrors: FormErrors = {}
@@ -79,6 +74,27 @@ export default function LoginPage() {
     darkMode: (data.darkMode as boolean) ?? false,
     soundEnabled: (data.soundEnabled as boolean) ?? true,
   })
+
+  const handleOAuthSuccess = (data: Record<string, unknown>) => {
+    if (data.isAdmin) {
+      const adminUser = buildUserState({ ...data.user, role: 'admin' } as Record<string, unknown>)
+      setUser(adminUser)
+      navigate('admin-dashboard')
+      toast.success('Bienvenue Admin !', { description: 'Connexion au panneau d\'administration' })
+      return
+    }
+
+    const user = buildUserState(data.user as Record<string, unknown>)
+    setUser(user)
+    setCurrentLevel(user.level)
+    navigate('dashboard')
+
+    if (data.isNewUser) {
+      toast.success('Bienvenue !', { description: 'Votre compte a été créé avec succès' })
+    } else {
+      toast.success('Bon retour !', { description: 'Connexion réussie' })
+    }
+  }
 
   const handleEmailLogin = async (e: FormEvent) => {
     e.preventDefault()
@@ -124,31 +140,20 @@ export default function LoginPage() {
     }
   }
 
-  const handleGoogleLogin = async () => {
-    if (!oauthProviders.google) {
-      toast.info('Bientôt disponible', { description: 'La connexion avec Google sera bientôt disponible.' })
-      return
-    }
-
-    setIsLoading(true)
-    // Redirect to NextAuth Google sign-in
-    // The callback will be handled by our OAuth callback page
-    window.location.href = '/api/auth/signin/google?callbackUrl=' + encodeURIComponent(window.location.origin + '/?oauth=1')
-  }
-
-  const handleAppleLogin = async () => {
-    if (!oauthProviders.apple) {
-      toast.info('Bientôt disponible', { description: 'La connexion avec Apple sera bientôt disponible.' })
-      return
-    }
-
-    setIsLoading(true)
-    // Redirect to NextAuth Apple sign-in
-    window.location.href = '/api/auth/signin/apple?callbackUrl=' + encodeURIComponent(window.location.origin + '/?oauth=1')
-  }
-
   return (
     <div className="min-h-screen flex flex-col lg:flex-row">
+      {/* OAuth Dialog */}
+      {oauthDialog && (
+        <OAuthDialog
+          provider={oauthDialog}
+          onClose={() => setOauthDialog(null)}
+          onSuccess={(data) => {
+            setOauthDialog(null)
+            handleOAuthSuccess(data)
+          }}
+        />
+      )}
+
       {/* Left branding panel */}
       <motion.div
         initial={{ opacity: 0, x: -40 }}
@@ -290,41 +295,27 @@ export default function LoginPage() {
             </p>
           </motion.div>
 
-          {/* Social buttons — show first for better UX */}
+          {/* Social buttons */}
           <motion.div custom={2} variants={fadeInUp} className="space-y-3">
             <Button
               type="button"
               variant="outline"
-              className="w-full h-11 text-sm font-medium"
+              className="w-full h-11 text-sm font-medium hover:border-red-300 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors"
               disabled={isLoading}
-              onClick={handleGoogleLogin}
+              onClick={() => setOauthDialog('google')}
             >
-              {isLoading ? (
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              ) : (
-                <Chrome className="w-5 h-5 mr-2" />
-              )}
+              <Chrome className="w-5 h-5 mr-2 text-red-500" />
               Continuer avec Google
-              {!oauthProviders.google && (
-                <span className="ml-2 text-[10px] text-muted-foreground/60">bientôt</span>
-              )}
             </Button>
             <Button
               type="button"
               variant="outline"
-              className="w-full h-11 text-sm font-medium"
+              className="w-full h-11 text-sm font-medium hover:border-gray-400 hover:bg-gray-50 dark:hover:bg-gray-900/30 transition-colors"
               disabled={isLoading}
-              onClick={handleAppleLogin}
+              onClick={() => setOauthDialog('apple')}
             >
-              {isLoading ? (
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              ) : (
-                <Apple className="w-5 h-5 mr-2" />
-              )}
+              <Apple className="w-5 h-5 mr-2" />
               Continuer avec Apple
-              {!oauthProviders.apple && (
-                <span className="ml-2 text-[10px] text-muted-foreground/60">bientôt</span>
-              )}
             </Button>
           </motion.div>
 

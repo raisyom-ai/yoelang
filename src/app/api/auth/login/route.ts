@@ -22,6 +22,15 @@ export async function POST(req: NextRequest) {
       )
     }
 
+    // Check if this is an OAuth-only account (can't log in with password)
+    if (user.password.startsWith('oauth:')) {
+      const provider = user.password.includes('google') ? 'Google' : 'Apple'
+      return NextResponse.json(
+        { error: `Ce compte utilise la connexion ${provider}. Veuillez cliquer sur "Continuer avec ${provider}" pour vous connecter.` },
+        { status: 401 }
+      )
+    }
+
     const validPassword = await bcrypt.compare(password, user.password)
     if (!validPassword) {
       return NextResponse.json(
