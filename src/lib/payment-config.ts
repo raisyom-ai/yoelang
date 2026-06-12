@@ -28,8 +28,8 @@ export const PAYMENT_ACCOUNTS: PaymentAccount[] = [
   {
     method: 'orange_money',
     label: 'Orange Money',
-    number: '78000000', // ⚠️ REMPLACEZ PAR VOTRE NUMÉRO ORANGE MONEY
-    displayNumber: '78 00 00 00', // ⚠️ REMPLACEZ PAR VOTRE NUMÉRO FORMATÉ
+    number: '0777530173',
+    displayNumber: '077 75 30 17 3',
     icon: '🟠',
     color: 'text-orange-600',
     bg: 'bg-orange-500/10',
@@ -47,8 +47,8 @@ export const PAYMENT_ACCOUNTS: PaymentAccount[] = [
   {
     method: 'wave',
     label: 'Wave',
-    number: '78000001', // ⚠️ REMPLACEZ PAR VOTRE NUMÉRO WAVE
-    displayNumber: '78 00 00 01', // ⚠️ REMPLACEZ PAR VOTRE NUMÉRO FORMATÉ
+    number: '0777530173',
+    displayNumber: '077 75 30 17 3',
     icon: '🔵',
     color: 'text-blue-600',
     bg: 'bg-blue-500/10',

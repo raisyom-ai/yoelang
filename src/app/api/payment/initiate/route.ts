@@ -126,8 +126,9 @@ export async function POST(req: NextRequest) {
         expiresAt: payment.expiresAt,
       },
     })
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Payment initiate error:', error)
-    return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 })
+    const message = error instanceof Error ? error.message : 'Erreur serveur'
+    return NextResponse.json({ error: 'Erreur serveur', detail: message }, { status: 500 })
   }
 }
