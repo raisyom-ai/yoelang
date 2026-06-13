@@ -2,7 +2,7 @@
 
 import { useState, useEffect, type ReactNode } from 'react'
 import { signIn } from 'next-auth/react'
-import { Chrome, Apple, Loader2, AlertCircle, Copy, Check } from 'lucide-react'
+import { Chrome, Apple, Loader2, AlertCircle, Copy, Check, Info } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { toast } from 'sonner'
@@ -49,6 +49,11 @@ export default function OAuthButtonGroup({
   const [showSetupHint, setShowSetupHint] = useState(checkOAuthError)
   const [copied, setCopied] = useState(false)
 
+  // Compute the redirect URI from the browser's current origin
+  const browserRedirectUri = typeof window !== 'undefined'
+    ? `${window.location.origin}/api/auth/callback/google`
+    : null
+
   // Fetch provider availability and detected URL on mount
   useEffect(() => {
     Promise.all([
@@ -70,7 +75,10 @@ export default function OAuthButtonGroup({
   const handleOAuthSignIn = async (provider: 'google' | 'apple') => {
     setLoadingProvider(provider)
     try {
-      await signIn(provider, { callbackUrl })
+      // Use the current browser origin as callbackUrl so NextAuth
+      // generates the correct redirect_uri for Google/Apple OAuth
+      const origin = typeof window !== 'undefined' ? window.location.origin : ''
+      await signIn(provider, { callbackUrl: origin || callbackUrl })
     } catch {
       setLoadingProvider(null)
     }
@@ -106,6 +114,9 @@ export default function OAuthButtonGroup({
   if (!hasAnyProvider) {
     return <>{children}</>
   }
+
+  // Determine the correct redirect URI to show (prefer browser origin over server detection)
+  const displayRedirectUri = browserRedirectUri || detectInfo?.oauthRedirectUris?.google || ''
 
   return (
     <>
@@ -146,37 +157,47 @@ export default function OAuthButtonGroup({
           </Button>
         )}
 
-        {/* Setup hint when OAuth fails (redirect_uri_mismatch) */}
-        {showSetupHint && detectInfo && (
+        {/* Setup info button — always visible when Google is configured */}
+        {hasGoogle && (
+          <button
+            type="button"
+            className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors mx-auto"
+            onClick={() => setShowSetupHint(!showSetupHint)}
+          >
+            <Info className="w-3.5 h-3.5" />
+            {showSetupHint ? 'Masquer la configuration OAuth' : 'Configuration Google OAuth'}
+          </button>
+        )}
+
+        {/* Setup hint — shows the exact redirect URI to configure */}
+        {showSetupHint && hasGoogle && (
           <div className="rounded-lg border border-amber-200 bg-amber-50 dark:bg-amber-950/20 dark:border-amber-800 p-3 space-y-2">
             <div className="flex items-start gap-2">
               <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 mt-0.5 shrink-0" />
-              <div className="space-y-1.5">
+              <div className="space-y-1.5 flex-1 min-w-0">
                 <p className="text-sm font-medium text-amber-800 dark:text-amber-300">
-                  Connexion OAuth échouée
+                  URI de redirection Google OAuth
                 </p>
                 <p className="text-xs text-amber-700 dark:text-amber-400">
-                  L&apos;URI de redirection n&apos;est pas configurée dans Google Cloud Console. Ajoutez l&apos;URI suivante :
+                  Ajoutez cette URI dans Google Cloud Console :
                 </p>
-                {hasGoogle && detectInfo.oauthRedirectUris.google && (
-                  <div className="flex items-center gap-1.5 bg-white/60 dark:bg-black/20 rounded px-2 py-1.5">
-                    <code className="text-xs text-amber-900 dark:text-amber-200 break-all flex-1">
-                      {detectInfo.oauthRedirectUris.google}
-                    </code>
-                    <button
-                      type="button"
-                      onClick={() => copyToClipboard(detectInfo.oauthRedirectUris.google)}
-                      className="shrink-0 p-1 hover:bg-amber-100 dark:hover:bg-amber-900/30 rounded transition-colors"
-                      title="Copier"
-                    >
-                      {copied ? (
-                        <Check className="w-3.5 h-3.5 text-green-600" />
-                      ) : (
-                        <Copy className="w-3.5 h-3.5 text-amber-600" />
-                      )}
-                    </button>
-                  </div>
-                )}
+                <div className="flex items-center gap-1.5 bg-white/60 dark:bg-black/20 rounded px-2 py-1.5">
+                  <code className="text-xs text-amber-900 dark:text-amber-200 break-all flex-1">
+                    {displayRedirectUri}
+                  </code>
+                  <button
+                    type="button"
+                    onClick={() => copyToClipboard(displayRedirectUri)}
+                    className="shrink-0 p-1 hover:bg-amber-100 dark:hover:bg-amber-900/30 rounded transition-colors"
+                    title="Copier"
+                  >
+                    {copied ? (
+                      <Check className="w-3.5 h-3.5 text-green-600" />
+                    ) : (
+                      <Copy className="w-3.5 h-3.5 text-amber-600" />
+                    )}
+                  </button>
+                </div>
                 <p className="text-xs text-amber-600 dark:text-amber-500">
                   Google Cloud Console → APIs &amp; Services → Credentials → OAuth 2.0 Client → URIs de redirection autorisées
                 </p>
