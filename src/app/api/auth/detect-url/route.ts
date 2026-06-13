@@ -1,0 +1,45 @@
+import { NextRequest, NextResponse } from 'next/server'
+
+/**
+ * Diagnostic endpoint that returns the detected external URL
+ * and the OAuth redirect URI that needs to be configured in
+ * Google Cloud Console / Apple Developer Portal.
+ *
+ * GET /api/auth/detect-url
+ */
+export async function GET(req: NextRequest) {
+  const host = req.headers.get('host')
+  const proto = req.headers.get('x-forwarded-proto') || 'https'
+  const port = req.headers.get('x-forwarded-port')
+
+  let detectedUrl: string
+  if (host) {
+    if (host.includes(':')) {
+      detectedUrl = `${proto}://${host}`
+    } else if (port && port !== '80' && port !== '443') {
+      detectedUrl = `${proto}://${host}:${port}`
+    } else {
+      detectedUrl = `${proto}://${host}`
+    }
+  } else {
+    detectedUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000'
+  }
+
+  return NextResponse.json({
+    detectedUrl,
+    currentNextAuthUrl: process.env.NEXTAUTH_URL || '(not set)',
+    headers: {
+      host: host || '(not set)',
+      'x-forwarded-proto': proto,
+      'x-forwarded-port': port || '(not set)',
+    },
+    oauthRedirectUris: {
+      google: `${detectedUrl}/api/auth/callback/google`,
+      apple: `${detectedUrl}/api/auth/callback/apple`,
+    },
+    instructions: {
+      google: `Add "${detectedUrl}/api/auth/callback/google" as an authorized redirect URI in Google Cloud Console → APIs & Services → Credentials → OAuth 2.0 Client`,
+      apple: `Add "${detectedUrl}/api/auth/callback/apple" as a return URL in Apple Developer Portal → Services ID → Sign in with Apple`,
+    },
+  })
+}
