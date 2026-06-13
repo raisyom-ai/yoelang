@@ -52,7 +52,8 @@ export const authOptions: NextAuthOptions = {
         }
 
         // Check if this is an OAuth-only account (no password set)
-        if (!user.password || user.password.startsWith('oauth_')) {
+        // Support both 'oauth_' (NextAuth OAuth) and 'oauth:' (legacy) prefixes
+        if (!user.password || user.password.startsWith('oauth_') || user.password.startsWith('oauth:')) {
           throw new Error('Ce compte utilise la connexion Google ou Apple. Veuillez utiliser le bouton correspondant.')
         }
 
@@ -95,8 +96,16 @@ export const authOptions: NextAuthOptions = {
         })
 
         if (existingUser) {
-          // User exists — update their info if needed
-          // If the user was OAuth-only and now logs in again, that's fine
+          // User exists — attach DB fields to the user object so the JWT callback can read them
+          user.id = existingUser.id
+          user.role = existingUser.role
+          user.level = existingUser.level
+          user.xp = existingUser.xp
+          user.streak = existingUser.streak
+          user.coins = existingUser.coins
+          user.isPremium = existingUser.isPremium
+          user.premiumPlan = existingUser.premiumPlan
+          user.dailyGoal = existingUser.dailyGoal
           return true
         }
 
@@ -104,7 +113,7 @@ export const authOptions: NextAuthOptions = {
         const name = user.name || email.split('@')[0]
         const oauthProvider = account.provider === 'google' ? 'google' : 'apple'
 
-        await db.user.create({
+        const newUser = await db.user.create({
           data: {
             email,
             name,
@@ -118,6 +127,17 @@ export const authOptions: NextAuthOptions = {
             dailyGoal: 20,
           },
         })
+
+        // Attach DB fields to the user object so the JWT callback can read them
+        user.id = newUser.id
+        user.role = newUser.role
+        user.level = newUser.level
+        user.xp = newUser.xp
+        user.streak = newUser.streak
+        user.coins = newUser.coins
+        user.isPremium = newUser.isPremium
+        user.premiumPlan = newUser.premiumPlan
+        user.dailyGoal = newUser.dailyGoal
 
         return true
       }
@@ -182,7 +202,7 @@ export const authOptions: NextAuthOptions = {
     error: '/',
   },
 
-  secret: process.env.NEXTAUTH_SECRET || 'yoelang-dev-secret-change-in-production',
+  secret: process.env.NEXTAUTH_SECRET,
   debug: false,
 }
 

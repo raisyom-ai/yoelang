@@ -2,7 +2,7 @@
 
 import { useState, FormEvent, useMemo } from 'react'
 import { motion } from 'framer-motion'
-import { Mail, Lock, Eye, EyeOff, Loader2, Chrome, Apple, User, BookOpen, Globe, Sparkles, Shield, Check, ArrowLeft } from 'lucide-react'
+import { Mail, Lock, Eye, EyeOff, Loader2, User, BookOpen, Globe, Sparkles, Shield, Check, ArrowLeft } from 'lucide-react'
 import { useAppStore, type UserState } from '@/lib/store'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Separator } from '@/components/ui/separator'
 import { toast } from 'sonner'
-import OAuthDialog from '@/components/OAuthDialog'
+import OAuthButtonGroup from '@/components/OAuthButtonGroup'
 
 interface FormErrors {
   name?: string
@@ -48,8 +48,6 @@ function getPasswordStrength(password: string): {
   return { score, label: 'Très fort', color: 'bg-yoel-green' }
 }
 
-type OAuthProvider = 'google' | 'apple'
-
 export default function RegisterPage() {
   const { navigate, goBack, setUser, setCurrentLevel, loadUserProgress } = useAppStore()
   const [name, setName] = useState('')
@@ -62,7 +60,6 @@ export default function RegisterPage() {
   const [acceptTerms, setAcceptTerms] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [errors, setErrors] = useState<FormErrors>({})
-  const [oauthDialog, setOauthDialog] = useState<OAuthProvider | null>(null)
 
   const passwordStrength = useMemo(() => getPasswordStrength(password), [password])
 
@@ -177,82 +174,8 @@ export default function RegisterPage() {
     }
   }
 
-  const buildUserState = (data: Record<string, unknown>): UserState => ({
-    id: data.id as string,
-    email: data.email as string,
-    name: (data.name as string) || (data.email as string).split('@')[0],
-    avatar: (data.avatar as string | null) || null,
-    role: ((data.role as string) || 'user') as 'user' | 'admin',
-    level: (data.level as string) || 'A1',
-    xp: (data.xp as number) || 0,
-    streak: (data.streak as number) || 0,
-    coins: (data.coins as number) || 0,
-    isPremium: (data.isPremium as boolean) || false,
-    premiumPlan: (data.premiumPlan as string | null) || null,
-    dailyGoal: (data.dailyGoal as number) ?? 20,
-    notifications: (data.notifications as boolean) ?? true,
-    darkMode: (data.darkMode as boolean) ?? false,
-    soundEnabled: (data.soundEnabled as boolean) ?? true,
-  })
-
-  const fetchUserProgress = async (userId: string) => {
-    try {
-      const res = await fetch(`/api/user/progress?userId=${userId}`)
-      if (res.ok) {
-        const data = await res.json()
-        if (data.success) {
-          loadUserProgress({
-            completedLessons: data.completedLessons || [],
-            completions: data.completions || [],
-            certificates: data.certificates || [],
-            examAttempts: data.examAttempts || [],
-            earnedBadges: data.earnedBadges || [],
-          })
-        }
-      }
-    } catch {
-      // Progress loading failed, continue with empty state
-    }
-  }
-
-  const handleOAuthSuccess = (data: Record<string, unknown>) => {
-    if (data.isAdmin) {
-      const adminUser = buildUserState({ ...data.user, role: 'admin' } as Record<string, unknown>)
-      setUser(adminUser)
-      navigate('admin-dashboard')
-      toast.success('Bienvenue Admin !', { description: 'Connexion au panneau d\'administration' })
-      return
-    }
-
-    const user = buildUserState(data.user as Record<string, unknown>)
-    setUser(user)
-    setCurrentLevel(user.level)
-
-    // Load user progress from database
-    fetchUserProgress(user.id)
-
-    navigate('dashboard')
-
-    if (data.isNewUser) {
-      toast.success('Bienvenue !', { description: 'Votre compte a été créé avec succès' })
-    } else {
-      toast.success('Bon retour !', { description: 'Connexion réussie' })
-    }
-  }
-
   return (
     <div className="min-h-screen flex flex-col lg:flex-row">
-      {/* OAuth Dialog */}
-      {oauthDialog && (
-        <OAuthDialog
-          provider={oauthDialog}
-          onClose={() => setOauthDialog(null)}
-          onSuccess={(data) => {
-            setOauthDialog(null)
-            handleOAuthSuccess(data)
-          }}
-        />
-      )}
       {/* Left branding panel */}
       <motion.div
         initial={{ opacity: 0, x: -40 }}
@@ -617,27 +540,8 @@ export default function RegisterPage() {
           </motion.div>
 
           {/* Social buttons */}
-          <motion.div custom={10} variants={fadeInUp} className="space-y-3">
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full h-11 text-sm font-medium hover:border-red-300 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors"
-              disabled={isLoading}
-              onClick={() => setOauthDialog('google')}
-            >
-              <Chrome className="w-5 h-5 mr-2 text-red-500" />
-              Continuer avec Google
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full h-11 text-sm font-medium hover:border-gray-400 hover:bg-gray-50 dark:hover:bg-gray-900/30 transition-colors"
-              disabled={isLoading}
-              onClick={() => setOauthDialog('apple')}
-            >
-              <Apple className="w-5 h-5 mr-2" />
-              Continuer avec Apple
-            </Button>
+          <motion.div custom={10} variants={fadeInUp}>
+            <OAuthButtonGroup disabled={isLoading} />
           </motion.div>
 
           {/* Login link */}

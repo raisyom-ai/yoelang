@@ -1,3 +1,18 @@
+// ╔══════════════════════════════════════════════════════════════════════════╗
+// ║  ⚠️  DEPRECATED — DO NOT USE IN PRODUCTION                            ║
+// ║                                                                        ║
+// ║  This route implements FAKE OAuth by checking email domains.           ║
+// ║  It is NOT real OAuth authentication — it does not verify the user     ║
+// ║  with Google or Apple.                                                 ║
+// ║                                                                        ║
+// ║  Real OAuth is now handled by NextAuth.js providers (Google/Apple).    ║
+// ║  See: src/lib/auth.ts for the real OAuth configuration.                ║
+// ║  See: src/components/OAuthButtonGroup.tsx for the real OAuth UI.       ║
+// ║                                                                        ║
+// ║  This route is kept ONLY as a development fallback and will be        ║
+// ║  removed in a future version.                                          ║
+// ╚══════════════════════════════════════════════════════════════════════════╝
+
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 

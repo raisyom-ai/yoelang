@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import { useAppStore, type PageId, type UserState } from '@/lib/store'
 import { AnimatePresence, motion } from 'framer-motion'
 import dynamic from 'next/dynamic'
+import { toast } from 'sonner'
 
 // Dynamic imports for code splitting
 const SplashScreen = dynamic(() => import('@/components/pages/SplashScreen'), { ssr: false })
@@ -126,11 +127,14 @@ export default function YOELANGApp() {
               })
 
             navigate('dashboard')
+            toast.success('Connexion r\u00e9ussie', { description: 'Bienvenue sur YOELANG !' })
           } else {
+            toast.error('Connexion \u00e9chou\u00e9e', { description: 'Impossible de r\u00e9cup\u00e9rer votre session.' })
             navigate('login')
           }
         })
         .catch(() => {
+          toast.error('Connexion \u00e9chou\u00e9e', { description: 'Erreur lors de la r\u00e9cup\u00e9ration de votre session.' })
           navigate('login')
         })
     }
