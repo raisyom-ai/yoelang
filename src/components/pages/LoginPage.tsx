@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Separator } from '@/components/ui/separator'
 import { toast } from 'sonner'
 import OAuthButtonGroup from '@/components/OAuthButtonGroup'
 
@@ -283,121 +282,104 @@ export default function LoginPage() {
             </p>
           </motion.div>
 
-          {/* Social buttons */}
+          {/* OAuth buttons + email form (separator managed by OAuthButtonGroup) */}
           <motion.div custom={2} variants={fadeInUp}>
-            <OAuthButtonGroup disabled={isLoading} />
-          </motion.div>
+            <OAuthButtonGroup disabled={isLoading}>
+              <form onSubmit={handleEmailLogin} className="space-y-5">
+                {/* Email */}
+                <div className="space-y-2">
+                  <Label htmlFor="email">Adresse email</Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="votre@email.com"
+                      value={email}
+                      onChange={(e) => {
+                        setEmail(e.target.value)
+                        if (errors.email) setErrors((prev) => ({ ...prev, email: undefined }))
+                      }}
+                      className={`pl-10 h-11 ${errors.email ? 'border-destructive' : ''}`}
+                      autoComplete="email"
+                      disabled={isLoading}
+                    />
+                  </div>
+                  {errors.email && (
+                    <p className="text-sm text-destructive">{errors.email}</p>
+                  )}
+                </div>
 
-          {/* Divider */}
-          <motion.div custom={3} variants={fadeInUp} className="my-6">
-            <div className="relative">
-              <Separator />
-              <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background px-3 text-xs text-muted-foreground uppercase">
-                ou avec email
-              </span>
-            </div>
-          </motion.div>
+                {/* Password */}
+                <div className="space-y-2">
+                  <Label htmlFor="password">Mot de passe</Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      id="password"
+                      type={showPassword ? 'text' : 'password'}
+                      placeholder="••••••••"
+                      value={password}
+                      onChange={(e) => {
+                        setPassword(e.target.value)
+                        if (errors.password) setErrors((prev) => ({ ...prev, password: undefined }))
+                      }}
+                      className={`pl-10 pr-10 h-11 ${errors.password ? 'border-destructive' : ''}`}
+                      autoComplete="current-password"
+                      disabled={isLoading}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                      tabIndex={-1}
+                      aria-label={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
+                    >
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                  {errors.password && (
+                    <p className="text-sm text-destructive">{errors.password}</p>
+                  )}
+                </div>
 
-          {/* Email/Password Form */}
-          <form onSubmit={handleEmailLogin} className="space-y-5">
-            {/* Email */}
-            <motion.div custom={4} variants={fadeInUp} className="space-y-2">
-              <Label htmlFor="email">Adresse email</Label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="votre@email.com"
-                  value={email}
-                  onChange={(e) => {
-                    setEmail(e.target.value)
-                    if (errors.email) setErrors((prev) => ({ ...prev, email: undefined }))
-                  }}
-                  className={`pl-10 h-11 ${errors.email ? 'border-destructive' : ''}`}
-                  autoComplete="email"
+                {/* Remember & Forgot */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      id="remember"
+                      checked={rememberMe}
+                      onCheckedChange={(checked) => setRememberMe(checked === true)}
+                      disabled={isLoading}
+                    />
+                    <Label htmlFor="remember" className="text-sm font-normal cursor-pointer">
+                      Se souvenir de moi
+                    </Label>
+                  </div>
+                  <button
+                    type="button"
+                    className="text-sm text-yoel-primary hover:text-yoel-primary-dark transition-colors font-medium"
+                    onClick={() => toast.info('Fonctionnalité à venir', { description: 'La réinitialisation du mot de passe sera bientôt disponible.' })}
+                  >
+                    Mot de passe oublié ?
+                  </button>
+                </div>
+
+                {/* Submit button */}
+                <Button
+                  type="submit"
                   disabled={isLoading}
-                />
-              </div>
-              {errors.email && (
-                <p className="text-sm text-destructive">{errors.email}</p>
-              )}
-            </motion.div>
-
-            {/* Password */}
-            <motion.div custom={5} variants={fadeInUp} className="space-y-2">
-              <Label htmlFor="password">Mot de passe</Label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input
-                  id="password"
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => {
-                    setPassword(e.target.value)
-                    if (errors.password) setErrors((prev) => ({ ...prev, password: undefined }))
-                  }}
-                  className={`pl-10 pr-10 h-11 ${errors.password ? 'border-destructive' : ''}`}
-                  autoComplete="current-password"
-                  disabled={isLoading}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                  tabIndex={-1}
-                  aria-label={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
+                  className="w-full h-11 text-base font-semibold bg-gradient-to-r from-yoel-primary to-yoel-primary-dark hover:from-yoel-primary-dark hover:to-yoel-primary text-white shadow-lg hover:shadow-xl transition-all duration-300"
                 >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
-              </div>
-              {errors.password && (
-                <p className="text-sm text-destructive">{errors.password}</p>
-              )}
-            </motion.div>
-
-            {/* Remember & Forgot */}
-            <motion.div
-              custom={6}
-              variants={fadeInUp}
-              className="flex items-center justify-between"
-            >
-              <div className="flex items-center gap-2">
-                <Checkbox
-                  id="remember"
-                  checked={rememberMe}
-                  onCheckedChange={(checked) => setRememberMe(checked === true)}
-                  disabled={isLoading}
-                />
-                <Label htmlFor="remember" className="text-sm font-normal cursor-pointer">
-                  Se souvenir de moi
-                </Label>
-              </div>
-              <button
-                type="button"
-                className="text-sm text-yoel-primary hover:text-yoel-primary-dark transition-colors font-medium"
-                onClick={() => toast.info('Fonctionnalité à venir', { description: 'La réinitialisation du mot de passe sera bientôt disponible.' })}
-              >
-                Mot de passe oublié ?
-              </button>
-            </motion.div>
-
-            {/* Submit button */}
-            <motion.div custom={7} variants={fadeInUp}>
-              <Button
-                type="submit"
-                disabled={isLoading}
-                className="w-full h-11 text-base font-semibold bg-gradient-to-r from-yoel-primary to-yoel-primary-dark hover:from-yoel-primary-dark hover:to-yoel-primary text-white shadow-lg hover:shadow-xl transition-all duration-300"
-              >
-                {isLoading ? (
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                ) : (
-                  'Se connecter'
-                )}
-              </Button>
-            </motion.div>
-          </form>
+                  {isLoading ? (
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                  ) : (
+                    'Se connecter'
+                  )}
+                </Button>
+              </form>
+            </OAuthButtonGroup>
+          </motion.div>
 
           {/* Register link */}
           <motion.p

@@ -1,10 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, type ReactNode } from 'react'
 import { signIn } from 'next-auth/react'
-import { Chrome, Apple, Loader2, AlertCircle } from 'lucide-react'
+import { Chrome, Apple, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
+import { Separator } from '@/components/ui/separator'
 
 interface ProviderStatus {
   google: boolean
@@ -16,11 +16,14 @@ interface OAuthButtonGroupProps {
   disabled?: boolean
   /** Callback URL after OAuth sign-in — defaults to '/?oauth=1' */
   callbackUrl?: string
+  /** Content to show below OAuth buttons with a separator (e.g. email/password form) */
+  children?: ReactNode
 }
 
 export default function OAuthButtonGroup({
   disabled = false,
   callbackUrl = '/?oauth=1',
+  children,
 }: OAuthButtonGroupProps) {
   const [providers, setProviders] = useState<ProviderStatus | null>(null)
   const [loadingProvider, setLoadingProvider] = useState<'google' | 'apple' | null>(null)
@@ -34,7 +37,6 @@ export default function OAuthButtonGroup({
         setProviders(data)
       })
       .catch(() => {
-        // On error, assume no providers are configured
         setProviders({ google: false, apple: false })
       })
       .finally(() => {
@@ -47,112 +49,87 @@ export default function OAuthButtonGroup({
     try {
       await signIn(provider, { callbackUrl })
     } catch {
-      // signIn redirects the page, so this catch is only for unexpected errors
       setLoadingProvider(null)
     }
   }
 
-  const isLoading = checkingProviders || disabled
-  const anyProviderConfigured = providers?.google || providers?.apple
-  const noProviderConfigured = providers && !anyProviderConfigured
+  // Only show configured providers — hide unconfigured ones entirely
+  const hasGoogle = providers?.google === true
+  const hasApple = providers?.apple === true
+  const hasAnyProvider = hasGoogle || hasApple
+  const isLoading = disabled || loadingProvider !== null
+
+  // While checking, show a loading state
+  if (checkingProviders) {
+    return (
+      <div className="space-y-3">
+        <Button type="button" variant="outline" className="w-full h-11 text-sm font-medium" disabled>
+          <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+          Chargement...
+        </Button>
+      </div>
+    )
+  }
+
+  // If no providers are configured, just show children (email form) without separator
+  if (!hasAnyProvider) {
+    return <>{children}</>
+  }
 
   return (
-    <div className="space-y-3">
-      {/* Google button */}
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <span className="block w-full">
-            <Button
-              type="button"
-              variant="outline"
-              className={`w-full h-11 text-sm font-medium transition-colors ${
-                providers?.google
-                  ? 'hover:border-red-300 hover:bg-red-50 dark:hover:bg-red-950/20'
-                  : 'opacity-60 cursor-not-allowed'
-              }`}
-              disabled={isLoading || !providers?.google || loadingProvider !== null}
-              onClick={() => handleOAuthSignIn('google')}
-            >
-              {loadingProvider === 'google' ? (
-                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-              ) : checkingProviders ? (
-                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-              ) : (
-                <Chrome className="w-5 h-5 mr-2 text-red-500" />
-              )}
-              Continuer avec Google
-              {!providers?.google && !checkingProviders && (
-                <span className="ml-2 text-[10px] bg-muted text-muted-foreground px-1.5 py-0.5 rounded-full">
-                  Non configuré
-                </span>
-              )}
-            </Button>
-          </span>
-        </TooltipTrigger>
-        {providers && !providers.google && (
-          <TooltipContent side="bottom" className="max-w-xs">
-            <p className="font-medium mb-1">OAuth Google non configuré</p>
-            <p className="text-xs text-muted-foreground">
-              Ajoutez GOOGLE_CLIENT_ID et GOOGLE_CLIENT_SECRET dans le fichier .env
-              pour activer la connexion via Google.
-            </p>
-          </TooltipContent>
+    <>
+      <div className="space-y-3">
+        {/* Google button — only shown if configured */}
+        {hasGoogle && (
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full h-11 text-sm font-medium hover:border-red-300 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors"
+            disabled={isLoading}
+            onClick={() => handleOAuthSignIn('google')}
+          >
+            {loadingProvider === 'google' ? (
+              <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+            ) : (
+              <Chrome className="w-5 h-5 mr-2 text-red-500" />
+            )}
+            Continuer avec Google
+          </Button>
         )}
-      </Tooltip>
 
-      {/* Apple button */}
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <span className="block w-full">
-            <Button
-              type="button"
-              variant="outline"
-              className={`w-full h-11 text-sm font-medium transition-colors ${
-                providers?.apple
-                  ? 'hover:border-gray-400 hover:bg-gray-50 dark:hover:bg-gray-900/30'
-                  : 'opacity-60 cursor-not-allowed'
-              }`}
-              disabled={isLoading || !providers?.apple || loadingProvider !== null}
-              onClick={() => handleOAuthSignIn('apple')}
-            >
-              {loadingProvider === 'apple' ? (
-                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-              ) : checkingProviders ? (
-                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-              ) : (
-                <Apple className="w-5 h-5 mr-2" />
-              )}
-              Continuer avec Apple
-              {!providers?.apple && !checkingProviders && (
-                <span className="ml-2 text-[10px] bg-muted text-muted-foreground px-1.5 py-0.5 rounded-full">
-                  Non configuré
-                </span>
-              )}
-            </Button>
-          </span>
-        </TooltipTrigger>
-        {providers && !providers.apple && (
-          <TooltipContent side="bottom" className="max-w-xs">
-            <p className="font-medium mb-1">OAuth Apple non configuré</p>
-            <p className="text-xs text-muted-foreground">
-              Ajoutez APPLE_ID, APPLE_TEAM_ID, APPLE_KEY_ID et APPLE_PRIVATE_KEY
-              dans le fichier .env pour activer la connexion via Apple.
-            </p>
-          </TooltipContent>
+        {/* Apple button — only shown if configured */}
+        {hasApple && (
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full h-11 text-sm font-medium hover:border-gray-400 hover:bg-gray-50 dark:hover:bg-gray-900/30 transition-colors"
+            disabled={isLoading}
+            onClick={() => handleOAuthSignIn('apple')}
+          >
+            {loadingProvider === 'apple' ? (
+              <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+            ) : (
+              <Apple className="w-5 h-5 mr-2" />
+            )}
+            Continuer avec Apple
+          </Button>
         )}
-      </Tooltip>
+      </div>
 
-      {/* Info message when no providers are configured */}
-      {noProviderConfigured && (
-        <div className="flex items-start gap-2 p-2.5 rounded-lg bg-muted/50 border border-muted">
-          <AlertCircle className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />
-          <p className="text-xs text-muted-foreground leading-relaxed">
-            La connexion via Google/Apple nécessite des identifiants OAuth.
-            Consultez le fichier <code className="font-mono bg-muted px-1 rounded">.env</code> pour
-            les instructions de configuration. En attendant, utilisez votre email et mot de passe.
-          </p>
-        </div>
+      {/* Separator + children (email form) — only shown when at least one OAuth provider is active */}
+      {children && (
+        <>
+          <div className="my-6">
+            <div className="relative">
+              <Separator />
+              <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background px-3 text-xs text-muted-foreground uppercase">
+                ou avec email
+              </span>
+            </div>
+          </div>
+          {children}
+        </>
       )}
-    </div>
+    </>
   )
 }
