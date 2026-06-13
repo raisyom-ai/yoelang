@@ -10,17 +10,12 @@ import { NextRequest, NextResponse } from 'next/server'
 export async function GET(req: NextRequest) {
   const host = req.headers.get('host')
   const proto = req.headers.get('x-forwarded-proto') || 'https'
-  const port = req.headers.get('x-forwarded-port')
 
+  // Use Host header as-is — it includes port if non-standard
+  // Do NOT trust X-Forwarded-Port (it may be the internal port)
   let detectedUrl: string
   if (host) {
-    if (host.includes(':')) {
-      detectedUrl = `${proto}://${host}`
-    } else if (port && port !== '80' && port !== '443') {
-      detectedUrl = `${proto}://${host}:${port}`
-    } else {
-      detectedUrl = `${proto}://${host}`
-    }
+    detectedUrl = `${proto}://${host}`
   } else {
     detectedUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000'
   }
@@ -31,7 +26,7 @@ export async function GET(req: NextRequest) {
     headers: {
       host: host || '(not set)',
       'x-forwarded-proto': proto,
-      'x-forwarded-port': port || '(not set)',
+      'x-forwarded-port': req.headers.get('x-forwarded-port') || '(not set)',
     },
     oauthRedirectUris: {
       google: `${detectedUrl}/api/auth/callback/google`,

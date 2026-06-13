@@ -203,6 +203,7 @@ export const authOptions: NextAuthOptions = {
   },
 
   secret: process.env.NEXTAUTH_SECRET,
+  trustHost: true, // Trust X-Forwarded-* headers from reverse proxy (Caddy) for correct OAuth redirect_uri
   debug: false,
 }
 
