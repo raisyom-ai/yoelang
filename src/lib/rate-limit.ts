@@ -90,6 +90,12 @@ export const chatLimiter = createRateLimiter({ windowMs: 60_000, maxRequests: 20
 /** Payment initiate: 3 per minute per user */
 export const paymentLimiter = createRateLimiter({ windowMs: 60_000, maxRequests: 3 })
 
+/** Password change: 5 attempts per 15 minutes per IP */
+export const passwordChangeLimiter = createRateLimiter({ windowMs: 15 * 60_000, maxRequests: 5 })
+
+/** Avatar upload: 10 per minute per IP */
+export const avatarUploadLimiter = createRateLimiter({ windowMs: 60_000, maxRequests: 10 })
+
 /**
  * Get client IP from request headers.
  * Works behind reverse proxies (Caddy, Nginx, Cloudflare).

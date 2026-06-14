@@ -11,6 +11,7 @@ import {
 import { useAppStore, getLevelsForUser, BADGES, getRecommendedDailyGoal, calculateStreak, getWeekActivity, type PageId } from '@/lib/store'
 import { getLessonContent, type VocabWord, type GrammarRule } from '@/lib/lesson-content'
 import { speakWord } from '@/lib/speech-utils'
+import UserSessionWidget from '@/components/UserSessionWidget'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Button } from '@/components/ui/button'
@@ -669,17 +670,6 @@ export default function DashboardPage() {
       <div className="sticky top-0 z-40 bg-background/80 backdrop-blur-lg border-b border-border/40">
         <div className="mx-auto max-w-4xl flex items-center justify-between gap-2 sm:gap-3 px-4 py-2 sm:py-2.5 lg:px-6">
           <div className="flex items-center gap-2 min-w-0">
-            <Avatar className="h-9 w-9 ring-2 ring-yoel-primary/30">
-              <AvatarImage src={user?.avatar ?? undefined} alt={displayName} />
-              <AvatarFallback className="bg-yoel-primary/10 text-yoel-primary font-semibold text-xs">
-                {displayName
-                  .split(' ')
-                  .map((n) => n[0])
-                  .join('')
-                  .toUpperCase()
-                  .slice(0, 2)}
-              </AvatarFallback>
-            </Avatar>
             <div className="min-w-0">
               <p className="text-xs text-muted-foreground truncate">
                 {greeting} 👋
@@ -709,37 +699,8 @@ export default function DashboardPage() {
               <span className="text-xs sm:text-sm font-semibold text-yoel-gold">{coins}</span>
             </div>
 
-            {/* Dark Mode Toggle */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 sm:h-9 sm:w-9 hidden sm:flex"
-              onClick={toggleDarkMode}
-            >
-              <AnimatePresence mode="wait">
-                {isDarkMode ? (
-                  <motion.div
-                    key="sun"
-                    initial={{ rotate: -90, opacity: 0 }}
-                    animate={{ rotate: 0, opacity: 1 }}
-                    exit={{ rotate: 90, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <Sun className="h-4 w-4" />
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key="moon"
-                    initial={{ rotate: 90, opacity: 0 }}
-                    animate={{ rotate: 0, opacity: 1 }}
-                    exit={{ rotate: -90, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <Moon className="h-4 w-4" />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </Button>
+            {/* User Session Widget */}
+            <UserSessionWidget />
           </div>
         </div>
       </div>

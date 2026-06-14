@@ -57,7 +57,7 @@ export async function PUT(req: NextRequest) {
     // Only allow safe fields to be updated
     // SECURITY: isPremium and premiumPlan are NOT included — only admin/payments can change these
     const allowedFields = [
-      'name', 'level', 'xp', 'streak', 'coins',
+      'name', 'avatar', 'level', 'xp', 'streak', 'coins',
       'dailyGoal', 'notifications', 'darkMode', 'soundEnabled',
     ]
     

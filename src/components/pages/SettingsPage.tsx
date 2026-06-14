@@ -1,11 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { motion } from 'framer-motion'
 import {
   ArrowLeft, Home, User, GraduationCap, Bell, Palette, Crown,
   HelpCircle, Trash2, ChevronRight, Shield, Moon, Sun,
-  Mail, MessageSquare, Volume2, Star, Lock, Globe
+  Mail, MessageSquare, Volume2, Star, Lock, Globe,
+  Camera, Check, Loader2, Eye, EyeOff
 } from 'lucide-react'
 import { useAppStore } from '@/lib/store'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -13,6 +14,9 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Switch } from '@/components/ui/switch'
 import { Separator } from '@/components/ui/separator'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import {
   AlertDialog,
@@ -25,6 +29,15 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
 
 // ─── Animation Variants ─────────────────────────────────────────────────────
 
@@ -49,7 +62,7 @@ const itemVariants = {
 // ─── Main Component ─────────────────────────────────────────────────────────
 
 export default function SettingsPage() {
-  const { user, goBack, navigate, isDarkMode, toggleDarkMode, setDailyGoal } = useAppStore()
+  const { user, goBack, navigate, isDarkMode, toggleDarkMode, setDailyGoal, setUser } = useAppStore()
 
   const displayName = user?.name ?? 'Apprenant'
   const email = user?.email ?? 'apprenant@yoelang.com'
@@ -59,6 +72,30 @@ export default function SettingsPage() {
   const soundEnabled = user?.soundEnabled ?? true
 
   const [localGoal, setLocalGoal] = useState(String(dailyGoal))
+  const [localNotif, setLocalNotif] = useState(notifications)
+  const [localEmail, setLocalEmail] = useState(true)
+  const [localSound, setLocalSound] = useState(soundEnabled)
+  const [localLang, setLocalLang] = useState('fr')
+
+  // ─── Profile Edit State ────────────────────────────────────────────────
+  const [editName, setEditName] = useState(displayName)
+  const [isNameDialogOpen, setIsNameDialogOpen] = useState(false)
+  const [isSavingName, setIsSavingName] = useState(false)
+
+  // ─── Password Change State ─────────────────────────────────────────────
+  const [currentPassword, setCurrentPassword] = useState('')
+  const [newPassword, setNewPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false)
+  const [showNewPassword, setShowNewPassword] = useState(false)
+  const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false)
+  const [isChangingPassword, setIsChangingPassword] = useState(false)
+  const [passwordError, setPasswordError] = useState('')
+  const [passwordSuccess, setPasswordSuccess] = useState(false)
+
+  // ─── Avatar Upload State ───────────────────────────────────────────────
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false)
 
   // Sync daily goal changes to the store
   const handleGoalChange = (value: string) => {
@@ -66,12 +103,126 @@ export default function SettingsPage() {
     setDailyGoal(Number(value))
   }
 
-  // Label for daily goal display
   const dailyGoalLabel = dailyGoal === 0 ? 'Auto' : `${dailyGoal} XP`
-  const [localNotif, setLocalNotif] = useState(notifications)
-  const [localEmail, setLocalEmail] = useState(true)
-  const [localSound, setLocalSound] = useState(soundEnabled)
-  const [localLang, setLocalLang] = useState('fr')
+
+  // ─── Handle Name Change ────────────────────────────────────────────────
+  const handleNameSave = async () => {
+    if (!user || !editName.trim()) return
+    setIsSavingName(true)
+    try {
+      const res = await fetch('/api/user', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.id, name: editName.trim() }),
+      })
+      const data = await res.json()
+      if (data.success) {
+        setUser({ ...user, name: editName.trim() })
+        setIsNameDialogOpen(false)
+      }
+    } catch (error) {
+      console.error('Name update error:', error)
+    } finally {
+      setIsSavingName(false)
+    }
+  }
+
+  // ─── Handle Password Change ────────────────────────────────────────────
+  const handlePasswordChange = async () => {
+    setPasswordError('')
+    setPasswordSuccess(false)
+
+    if (!user) return
+
+    if (!currentPassword) {
+      setPasswordError('Veuillez entrer votre mot de passe actuel')
+      return
+    }
+
+    if (newPassword.length < 6) {
+      setPasswordError('Le nouveau mot de passe doit contenir au moins 6 caractères')
+      return
+    }
+
+    if (newPassword !== confirmPassword) {
+      setPasswordError('Les mots de passe ne correspondent pas')
+      return
+    }
+
+    setIsChangingPassword(true)
+    try {
+      const res = await fetch('/api/user/change-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user.id,
+          currentPassword,
+          newPassword,
+        }),
+      })
+      const data = await res.json()
+
+      if (data.success) {
+        setPasswordSuccess(true)
+        setCurrentPassword('')
+        setNewPassword('')
+        setConfirmPassword('')
+        setTimeout(() => {
+          setIsPasswordDialogOpen(false)
+          setPasswordSuccess(false)
+        }, 1500)
+      } else {
+        setPasswordError(data.error || 'Erreur lors du changement de mot de passe')
+      }
+    } catch {
+      setPasswordError('Erreur de connexion au serveur')
+    } finally {
+      setIsChangingPassword(false)
+    }
+  }
+
+  // ─── Handle Avatar Upload ──────────────────────────────────────────────
+  const handleAvatarClick = () => {
+    fileInputRef.current?.click()
+  }
+
+  const handleAvatarFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file || !user) return
+
+    // Validate file
+    if (!file.type.startsWith('image/')) {
+      return
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      return // Max 5MB
+    }
+
+    setIsUploadingAvatar(true)
+    try {
+      const formData = new FormData()
+      formData.append('avatar', file)
+      formData.append('userId', user.id)
+
+      const res = await fetch('/api/user/avatar', {
+        method: 'POST',
+        body: formData,
+      })
+      const data = await res.json()
+
+      if (data.success && data.avatarUrl) {
+        setUser({ ...user, avatar: data.avatarUrl })
+      }
+    } catch (error) {
+      console.error('Avatar upload error:', error)
+    } finally {
+      setIsUploadingAvatar(false)
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''
+      }
+    }
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -93,6 +244,60 @@ export default function SettingsPage() {
           <h1 className="text-xl font-bold gradient-text-primary">Paramètres</h1>
         </motion.div>
 
+        {/* ─── Avatar & Profile Photo ──────────────────────────────────── */}
+        <motion.div variants={itemVariants}>
+          <Card className="glass-card">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-5">
+                <div className="relative group">
+                  <Avatar className="h-20 w-20 ring-4 ring-yoel-primary/20 transition-all group-hover:ring-yoel-primary/40">
+                    <AvatarImage src={user?.avatar ?? undefined} alt={displayName} />
+                    <AvatarFallback className="bg-yoel-primary/10 text-yoel-primary font-bold text-2xl">
+                      {displayName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <button
+                    onClick={handleAvatarClick}
+                    disabled={isUploadingAvatar}
+                    className="absolute inset-0 flex items-center justify-center rounded-full bg-black/0 transition-all group-hover:bg-black/40 cursor-pointer disabled:cursor-not-allowed"
+                  >
+                    {isUploadingAvatar ? (
+                      <Loader2 className="h-6 w-6 text-white animate-spin" />
+                    ) : (
+                      <Camera className="h-6 w-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                    )}
+                  </button>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAvatarFileChange}
+                    className="hidden"
+                  />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-lg">{displayName}</h3>
+                  <p className="text-sm text-muted-foreground">{email}</p>
+                  <div className="flex items-center gap-2 mt-1">
+                    {isPremium && (
+                      <Badge className="bg-yoel-gold/15 text-yoel-gold border-0 text-xs">
+                        <Crown className="h-3 w-3 mr-1" />
+                        Premium
+                      </Badge>
+                    )}
+                    <Badge variant="secondary" className="text-xs">
+                      {user?.level ?? 'A1'}
+                    </Badge>
+                  </div>
+                  <p className="text-[11px] text-muted-foreground mt-2">
+                    Cliquez sur la photo pour la changer
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
         {/* ─── Compte ──────────────────────────────────────────────────── */}
         <motion.div variants={itemVariants}>
           <Card className="glass-card">
@@ -103,37 +308,183 @@ export default function SettingsPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
+              {/* Name */}
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium">Nom</p>
                   <p className="text-sm text-muted-foreground">{displayName}</p>
                 </div>
-                <Button variant="ghost" size="sm" className="text-xs text-muted-foreground">
-                  <Shield className="h-3 w-3 mr-1" />
-                  Modifier
-                </Button>
+                <Dialog open={isNameDialogOpen} onOpenChange={setIsNameDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button variant="ghost" size="sm" className="text-xs text-muted-foreground">
+                      <Shield className="h-3 w-3 mr-1" />
+                      Modifier
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                      <DialogTitle>Modifier votre nom</DialogTitle>
+                      <DialogDescription>
+                        Ce nom sera affiché sur votre profil et dans l&apos;application.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="py-4">
+                      <Label htmlFor="name" className="text-sm font-medium">Nouveau nom</Label>
+                      <Input
+                        id="name"
+                        value={editName}
+                        onChange={(e) => setEditName(e.target.value)}
+                        className="mt-2"
+                        placeholder="Votre nom"
+                        onKeyDown={(e) => { if (e.key === 'Enter') handleNameSave() }}
+                      />
+                    </div>
+                    <DialogFooter>
+                      <Button variant="outline" onClick={() => setIsNameDialogOpen(false)}>
+                        Annuler
+                      </Button>
+                      <Button
+                        onClick={handleNameSave}
+                        disabled={isSavingName || !editName.trim()}
+                        className="bg-yoel-primary hover:bg-yoel-primary/90 text-white"
+                      >
+                        {isSavingName ? (
+                          <Loader2 className="h-4 w-4 animate-spin mr-1" />
+                        ) : (
+                          <Check className="h-4 w-4 mr-1" />
+                        )}
+                        Enregistrer
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
               </div>
               <Separator />
+              {/* Email */}
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium">Email</p>
                   <p className="text-sm text-muted-foreground">{email}</p>
                 </div>
-                <Button variant="ghost" size="sm" className="text-xs text-muted-foreground">
-                  <Shield className="h-3 w-3 mr-1" />
-                  Modifier
-                </Button>
+                <Badge variant="secondary" className="text-xs">
+                  <Mail className="h-3 w-3 mr-1" />
+                  Vérifié
+                </Badge>
               </div>
               <Separator />
+              {/* Password */}
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium">Mot de passe</p>
                   <p className="text-sm text-muted-foreground">••••••••</p>
                 </div>
-                <Button variant="ghost" size="sm" className="text-xs text-muted-foreground">
-                  <Lock className="h-3 w-3 mr-1" />
-                  Changer
-                </Button>
+                <Dialog open={isPasswordDialogOpen} onOpenChange={(open) => {
+                  setIsPasswordDialogOpen(open)
+                  if (!open) {
+                    setCurrentPassword('')
+                    setNewPassword('')
+                    setConfirmPassword('')
+                    setPasswordError('')
+                    setPasswordSuccess(false)
+                  }
+                }}>
+                  <DialogTrigger asChild>
+                    <Button variant="ghost" size="sm" className="text-xs text-muted-foreground">
+                      <Lock className="h-3 w-3 mr-1" />
+                      Changer
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                      <DialogTitle>Changer le mot de passe</DialogTitle>
+                      <DialogDescription>
+                        Entrez votre mot de passe actuel puis le nouveau.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4 py-4">
+                      {/* Current Password */}
+                      <div className="space-y-2">
+                        <Label htmlFor="current-password" className="text-sm font-medium">Mot de passe actuel</Label>
+                        <div className="relative">
+                          <Input
+                            id="current-password"
+                            type={showCurrentPassword ? 'text' : 'password'}
+                            value={currentPassword}
+                            onChange={(e) => { setCurrentPassword(e.target.value); setPasswordError('') }}
+                            placeholder="••••••••"
+                            className="pr-10"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                          >
+                            {showCurrentPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                          </button>
+                        </div>
+                      </div>
+                      {/* New Password */}
+                      <div className="space-y-2">
+                        <Label htmlFor="new-password" className="text-sm font-medium">Nouveau mot de passe</Label>
+                        <div className="relative">
+                          <Input
+                            id="new-password"
+                            type={showNewPassword ? 'text' : 'password'}
+                            value={newPassword}
+                            onChange={(e) => { setNewPassword(e.target.value); setPasswordError('') }}
+                            placeholder="Minimum 6 caractères"
+                            className="pr-10"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowNewPassword(!showNewPassword)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                          >
+                            {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                          </button>
+                        </div>
+                      </div>
+                      {/* Confirm Password */}
+                      <div className="space-y-2">
+                        <Label htmlFor="confirm-password" className="text-sm font-medium">Confirmer le mot de passe</Label>
+                        <Input
+                          id="confirm-password"
+                          type="password"
+                          value={confirmPassword}
+                          onChange={(e) => { setConfirmPassword(e.target.value); setPasswordError('') }}
+                          placeholder="Retapez le nouveau mot de passe"
+                        />
+                      </div>
+                      {/* Error / Success Messages */}
+                      {passwordError && (
+                        <p className="text-sm text-destructive font-medium">{passwordError}</p>
+                      )}
+                      {passwordSuccess && (
+                        <p className="text-sm text-yoel-green font-medium flex items-center gap-1">
+                          <Check className="h-4 w-4" />
+                          Mot de passe changé avec succès !
+                        </p>
+                      )}
+                    </div>
+                    <DialogFooter>
+                      <Button variant="outline" onClick={() => setIsPasswordDialogOpen(false)}>
+                        Annuler
+                      </Button>
+                      <Button
+                        onClick={handlePasswordChange}
+                        disabled={isChangingPassword || !currentPassword || !newPassword || !confirmPassword}
+                        className="bg-yoel-primary hover:bg-yoel-primary/90 text-white"
+                      >
+                        {isChangingPassword ? (
+                          <Loader2 className="h-4 w-4 animate-spin mr-1" />
+                        ) : (
+                          <Lock className="h-4 w-4 mr-1" />
+                        )}
+                        Changer le mot de passe
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
               </div>
             </CardContent>
           </Card>
