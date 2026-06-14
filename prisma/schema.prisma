@@ -27,14 +27,16 @@ model User {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
-  progress     UserProgress[]
-  badges       UserBadge[]
-  completions  LessonCompletion[]
-  chatMessages ChatMessage[]
-  payments     Payment[]
-  examAttempts ExamAttempt[]
-  certificates Certificate[]
-  leaderboard  Leaderboard[]
+  progress        UserProgress[]
+  badges          UserBadge[]
+  completions     LessonCompletion[]
+  chatMessages    ChatMessage[]
+  payments        Payment[]
+  examAttempts    ExamAttempt[]
+  certificates    Certificate[]
+  leaderboard     Leaderboard[]
+  shopPurchases   ShopPurchase[]
+  challengeCompletions ChallengeCompletion[]
 }
 
 model Level {
@@ -207,4 +209,46 @@ model Certificate {
 
   @@unique([userId, level])
   @@index([certificateId])
+}
+
+// ─── Coin Shop ──────────────────────────────────────────────────────────────
+
+model ShopItem {
+  id          String @id @default(cuid())
+  itemId      String @unique   // e.g. "streak_saver", "xp_boost", "theme_ocean"
+  name        String
+  description String
+  icon        String           // emoji
+  category    String           // "boost" | "cosmetic" | "protection"
+  price       Int              // in coins
+  duration    Int    @default(0) // duration in hours (0 = permanent)
+  active      Boolean @default(true)
+
+  purchases ShopPurchase[]
+}
+
+model ShopPurchase {
+  id         String   @id @default(cuid())
+  userId     String
+  itemId     String
+  purchasedAt DateTime @default(now())
+  expiresAt  DateTime? // null = permanent
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  shopItem ShopItem  @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// ─── Challenge Completions ───────────────────────────────────────────────────
+
+model ChallengeCompletion {
+  id          String   @id @default(cuid())
+  userId      String
+  challengeId String
+  completedAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, challengeId])
 }

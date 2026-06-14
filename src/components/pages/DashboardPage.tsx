@@ -6,7 +6,8 @@ import {
   ArrowLeft, BookOpen, Dumbbell, MessageCircle, BarChart3,
   Moon, Sun, Bell, Flame, Coins, Star, ChevronRight,
   Volume2, Trophy, Clock, Target, Home, User, Settings,
-  Zap, Award, Crown, ChevronDown, CheckCircle
+  Zap, Award, Crown, ChevronDown, CheckCircle, ShoppingBag,
+  Trophy as TrophyIcon, Swords
 } from 'lucide-react'
 import { useAppStore, getLevelsForUser, BADGES, getRecommendedDailyGoal, calculateStreak, getWeekActivity, type PageId } from '@/lib/store'
 import { getLessonContent, type VocabWord, type GrammarRule } from '@/lib/lesson-content'
@@ -913,6 +914,27 @@ export default function DashboardPage() {
               label="Stats"
               color="from-yoel-gold to-amber-700"
               onClick={() => navigate('stats')}
+            />
+          </div>
+          {/* ─── Second Row: New Features ──────────────────────────────── */}
+          <div className="grid grid-cols-3 gap-1.5 sm:gap-3 mt-1.5 sm:mt-3">
+            <QuickAction
+              icon={Swords}
+              label="Défis"
+              color="from-orange-500 to-red-600"
+              onClick={() => navigate('challenges')}
+            />
+            <QuickAction
+              icon={Trophy}
+              label="Classement"
+              color="from-amber-500 to-yellow-600"
+              onClick={() => navigate('leaderboard')}
+            />
+            <QuickAction
+              icon={ShoppingBag}
+              label="Boutique"
+              color="from-purple-500 to-pink-600"
+              onClick={() => navigate('shop')}
             />
           </div>
         </motion.div>
