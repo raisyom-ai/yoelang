@@ -34,7 +34,6 @@ model User {
   payments        Payment[]
   examAttempts    ExamAttempt[]
   certificates    Certificate[]
-  leaderboard     Leaderboard[]
   shopPurchases   ShopPurchase[]
   challengeCompletions ChallengeCompletion[]
 }
@@ -129,29 +128,9 @@ model ChatMessage {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-model DailyChallenge {
-  id            String @id @default(cuid())
-  date          String
-  type          String
-  question      String
-  options       String
-  correctAnswer String
-  xpReward      Int    @default(15)
-
-  @@unique([date, type])
-}
-
-model Leaderboard {
-  id     String @id @default(cuid())
-  userId String
-  period String
-  score  Int
-  rank   Int
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, period])
-}
+// DailyChallenge and Leaderboard models removed — challenges are generated
+// dynamically by /api/challenges and leaderboard is computed on-the-fly
+// from User.xp and LessonCompletion data. No need for pre-computed tables.
 
 model Payment {
   id              String   @id @default(cuid())
@@ -235,7 +214,7 @@ model ShopPurchase {
   expiresAt  DateTime? // null = permanent
 
   user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  shopItem ShopItem  @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  shopItem ShopItem  @relation(fields: [itemId], references: [itemId], onDelete: Cascade)
 
   @@index([userId])
 }

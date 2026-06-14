@@ -52,12 +52,11 @@ const pulseVariants = {
   },
 }
 
-// ─── Demo Data ──────────────────────────────────────────────────────────────
+// ─── API Data Types ──────────────────────────────────────────────────────────
 
-// Daily XP goal and earned are now dynamic — derived from the store
-
-// ─── Daily Challenges — 3 per day, adapted to level, different every day ─────
-interface Challenge {
+// Challenges from /api/challenges
+interface ApiChallenge {
+  id: string
   question: string
   options: string[]
   correctIndex: number
@@ -65,249 +64,41 @@ interface Challenge {
   type: 'grammar' | 'vocabulary' | 'translation' | 'conjugaison'
 }
 
-const CHALLENGE_POOL: Record<string, Challenge[]> = {
-  A1: [
-    // Grammar
-    { question: 'Traduisez : "Elle ___ une pomme."', options: ['have', 'has', 'haves', 'having'], correctIndex: 1, xpReward: 15, type: 'grammar' },
-    { question: 'Complétez : "I ___ a student."', options: ['am', 'is', 'are', 'be'], correctIndex: 0, xpReward: 15, type: 'grammar' },
-    { question: 'Complétez : "We ___ from France."', options: ['comes', 'come', 'coming', 'comed'], correctIndex: 1, xpReward: 15, type: 'grammar' },
-    { question: 'Complétez : "There ___ three cats."', options: ['is', 'are', 'am', 'be'], correctIndex: 1, xpReward: 15, type: 'grammar' },
-    { question: 'Complétez : "He ___ not like coffee."', options: ['do', 'does', 'is', 'has'], correctIndex: 1, xpReward: 15, type: 'grammar' },
-    { question: 'Complétez : "This is ___ apple."', options: ['a', 'an', 'the', 'some'], correctIndex: 1, xpReward: 15, type: 'grammar' },
-    // Vocabulary
-    { question: 'Quel mot signifie "chat" en anglais ?', options: ['Dog', 'Cat', 'Bird', 'Fish'], correctIndex: 1, xpReward: 10, type: 'vocabulary' },
-    { question: 'Quel est le contraire de "big" ?', options: ['Tall', 'Small', 'Long', 'Wide'], correctIndex: 1, xpReward: 10, type: 'vocabulary' },
-    { question: 'Que signifie "water" en français ?', options: ['Feu', 'Air', 'Eau', 'Terre'], correctIndex: 2, xpReward: 10, type: 'vocabulary' },
-    { question: 'Quel mot signifie "livre" en anglais ?', options: ['Book', 'Look', 'Cook', 'Hook'], correctIndex: 0, xpReward: 10, type: 'vocabulary' },
-    { question: 'Que signifie "happy" en français ?', options: ['Triste', 'Heureux', 'Fatigué', 'En colère'], correctIndex: 1, xpReward: 10, type: 'vocabulary' },
-    { question: 'Quel mot signifie "maison" en anglais ?', options: ['Horse', 'House', 'Horse', 'Hour'], correctIndex: 1, xpReward: 10, type: 'vocabulary' },
-    // Translation
-    { question: 'Traduisez : "Bonjour, comment allez-vous ?"', options: ['Hello, how are you?', 'Goodbye, see you!', 'Please, thank you', 'Yes, I am fine'], correctIndex: 0, xpReward: 15, type: 'translation' },
-    { question: "Traduisez : \"Je m'appelle Marie.\"", options: ['My name is Marie', 'I call Marie', 'Me is Marie', 'I am call Marie'], correctIndex: 0, xpReward: 15, type: 'translation' },
-    { question: 'Traduisez : "Où est la gare ?"', options: ['Where is the station?', 'When is the train?', 'How is the bus?', 'What is the road?'], correctIndex: 0, xpReward: 15, type: 'translation' },
-    { question: "Traduisez : \"Il fait beau aujourd'hui.\"", options: ['It is nice today', 'It is bad today', 'It is cold today', 'It is hot today'], correctIndex: 0, xpReward: 15, type: 'translation' },
-    { question: 'Traduisez : "J\'ai faim."', options: ['I am hungry', 'I am angry', 'I am happy', 'I am thirsty'], correctIndex: 0, xpReward: 15, type: 'translation' },
-    { question: 'Traduisez : "Elle est ma sœur."', options: ['She is my sister', 'She is my brother', 'He is my sister', 'She is my mother'], correctIndex: 0, xpReward: 15, type: 'translation' },
-    // Conjugaison
-    { question: 'Complétez : "She ___ to school every day."', options: ['go', 'goes', 'going', 'gone'], correctIndex: 1, xpReward: 15, type: 'conjugaison' },
-    { question: 'Complétez : "They ___ playing football."', options: ['am', 'is', 'are', 'be'], correctIndex: 2, xpReward: 15, type: 'conjugaison' },
-    { question: 'Complétez : "I ___ English right now."', options: ['learn', 'learns', 'am learning', 'learned'], correctIndex: 2, xpReward: 15, type: 'conjugaison' },
-    { question: 'Complétez : "He ___ breakfast every morning."', options: ['eat', 'eats', 'eating', 'ate'], correctIndex: 1, xpReward: 15, type: 'conjugaison' },
-    { question: 'Complétez : "We ___ to the cinema yesterday."', options: ['go', 'goes', 'went', 'going'], correctIndex: 2, xpReward: 15, type: 'conjugaison' },
-    { question: 'Complétez : "She ___ TV at the moment."', options: ['watches', 'watch', 'is watching', 'watched'], correctIndex: 2, xpReward: 15, type: 'conjugaison' },
-  ],
-  A2: [
-    // Grammar
-    { question: 'Quel est le pluriel de "child" ?', options: ['Childs', 'Children', 'Childrens', 'Childes'], correctIndex: 1, xpReward: 15, type: 'grammar' },
-    { question: 'Complétez : "I have been living here ___ 2010."', options: ['for', 'since', 'from', 'during'], correctIndex: 1, xpReward: 20, type: 'grammar' },
-    { question: 'Quel mot est un adjectif ?', options: ['Quickly', 'Beautiful', 'Running', 'Happiness'], correctIndex: 1, xpReward: 15, type: 'grammar' },
-    { question: 'Complétez : "She is ___ than her sister."', options: ['tall', 'taller', 'tallest', 'more tall'], correctIndex: 1, xpReward: 20, type: 'grammar' },
-    { question: 'Complétez : "I have ___ seen that movie."', options: ['ever', 'never', 'already', 'yet'], correctIndex: 2, xpReward: 20, type: 'grammar' },
-    { question: 'Complétez : "___ you like some coffee?"', options: ['Do', 'Would', 'Are', 'Have'], correctIndex: 1, xpReward: 20, type: 'grammar' },
-    // Vocabulary
-    { question: 'Que signifie "schedule" en français ?', options: ['Horloge', 'Emploi du temps', 'Calendrier', 'Montre'], correctIndex: 1, xpReward: 15, type: 'vocabulary' },
-    { question: 'Que signifie "improve" en français ?', options: ['Ignorer', 'Améliorer', 'Imiter', 'Importer'], correctIndex: 1, xpReward: 15, type: 'vocabulary' },
-    { question: 'Quel mot signifie "voisin" en anglais ?', options: ['Neighbour', 'Nephew', 'Neither', 'Narrow'], correctIndex: 0, xpReward: 15, type: 'vocabulary' },
-    { question: 'Que signifie "comfortable" en français ?', options: ['Gênant', 'Confortable', 'Commun', 'Compliqué'], correctIndex: 1, xpReward: 15, type: 'vocabulary' },
-    { question: 'Quel mot désigne un "conseil" en anglais ?', options: ['Advise', 'Advice', 'Advance', 'Adverse'], correctIndex: 1, xpReward: 15, type: 'vocabulary' },
-    { question: 'Que signifie "discover" en français ?', options: ['Discuter', 'Découvrir', 'Disparaître', 'Disposer'], correctIndex: 1, xpReward: 15, type: 'vocabulary' },
-    // Translation
-    { question: 'Traduisez : "Je voudrais une tasse de thé."', options: ['I would like a cup of tea', 'I want a glass of tea', 'I like a tea cup', 'I will have tea'], correctIndex: 0, xpReward: 20, type: 'translation' },
-    { question: "Traduisez : \"Nous avons visité Paris l'année dernière.\"", options: ['We visited Paris last year', 'We visit Paris next year', 'We are visiting Paris now', 'We will visit Paris'], correctIndex: 0, xpReward: 20, type: 'translation' },
-    { question: "Traduisez : \"Pourriez-vous m'aider, s'il vous plaît ?\"", options: ['Could you help me, please?', 'Can you help I please?', 'Would you helping me?', 'Do you help me please?'], correctIndex: 0, xpReward: 20, type: 'translation' },
-    { question: 'Traduisez : "Il fait froid en hiver."', options: ['It is cold in winter', 'It is hot in winter', 'It is cold in summer', 'It is warm in winter'], correctIndex: 0, xpReward: 20, type: 'translation' },
-    { question: 'Traduisez : "Je dois partir maintenant."', options: ['I must leave now', 'I can leave now', 'I will leave before', 'I should leaving now'], correctIndex: 0, xpReward: 20, type: 'translation' },
-    { question: 'Traduisez : "Elle est plus intelligente que lui."', options: ['She is smarter than him', 'She is more smart that him', 'She is smartest than him', 'She is as smart than him'], correctIndex: 0, xpReward: 20, type: 'translation' },
-    // Conjugaison
-    { question: 'Traduisez : "She ___ to the store yesterday."', options: ['go', 'goes', 'went', 'going'], correctIndex: 2, xpReward: 20, type: 'conjugaison' },
-    { question: 'Quelle est la forme correcte ? "He ___ to music every night."', options: ['listen', 'listens', 'listening', 'listened'], correctIndex: 1, xpReward: 20, type: 'conjugaison' },
-    { question: 'Complétez : "They ___ already ___ lunch."', options: ['have/eaten', 'has/eaten', 'had/ate', 'are/eating'], correctIndex: 0, xpReward: 20, type: 'conjugaison' },
-    { question: 'Complétez : "We ___ to Paris next summer."', options: ['will travel', 'are travel', 'traveling', 'travels'], correctIndex: 0, xpReward: 20, type: 'conjugaison' },
-    { question: 'Complétez : "I ___ my homework when she called."', options: ['was doing', 'am doing', 'did', 'do'], correctIndex: 0, xpReward: 20, type: 'conjugaison' },
-    { question: 'Complétez : "She ___ French since 2020."', options: ['has studied', 'have studied', 'studied', 'is studying'], correctIndex: 0, xpReward: 20, type: 'conjugaison' },
-  ],
-  B1: [
-    // Grammar
-    { question: 'Complétez : "If I ___ rich, I would travel the world."', options: ['am', 'was', 'were', 'be'], correctIndex: 2, xpReward: 25, type: 'grammar' },
-    { question: 'Complétez : "She suggested that he ___ harder."', options: ['studies', 'study', 'studied', 'studying'], correctIndex: 1, xpReward: 25, type: 'grammar' },
-    { question: 'Complétez : "I wish I ___ harder at school."', options: ['study', 'studied', 'had studied', 'would study'], correctIndex: 2, xpReward: 25, type: 'grammar' },
-    { question: 'Complétez : "___ it rain, we would stay home."', options: ['If', 'Should', 'Were', 'Had'], correctIndex: 1, xpReward: 25, type: 'grammar' },
-    { question: 'Complétez : "The book ___ I read was fascinating."', options: ['who', 'which', 'what', 'whom'], correctIndex: 1, xpReward: 25, type: 'grammar' },
-    { question: 'Complétez : "He is used ___ early."', options: ['to wake', 'to waking', 'waking', 'wake'], correctIndex: 1, xpReward: 25, type: 'grammar' },
-    // Vocabulary
-    { question: 'Que signifie "to achieve" en français ?', options: ['Échouer', 'Accomplir', 'Abandonner', 'Accepter'], correctIndex: 1, xpReward: 20, type: 'vocabulary' },
-    { question: 'Quel est le synonyme de "significant" ?', options: ['Trivial', 'Meaningful', 'Vague', 'Ordinary'], correctIndex: 1, xpReward: 20, type: 'vocabulary' },
-    { question: 'Que signifie "overwhelmed" en français ?', options: ['Enthousiaste', 'Débordé', 'Indifférent', 'Soulagé'], correctIndex: 1, xpReward: 20, type: 'vocabulary' },
-    { question: 'Que signifie "compromise" en français ?', options: ['Promesse', 'Compromis', 'Complot', 'Compliment'], correctIndex: 1, xpReward: 20, type: 'vocabulary' },
-    { question: 'Quel mot signifie "persévérance" en anglais ?', options: ['Perseverance', 'Perception', 'Permission', 'Performance'], correctIndex: 0, xpReward: 20, type: 'vocabulary' },
-    { question: 'Que signifie "reluctant" en français ?', options: ['Rapide', 'Réticent', 'Religieux', 'Relaxé'], correctIndex: 1, xpReward: 20, type: 'vocabulary' },
-    // Translation
-    { question: "Traduisez : \"Bien qu'il soit fatigué, il a continué à travailler.\"", options: ['Although he was tired, he kept working', 'Even he was tired, he continued work', 'Despite he is tired, he works', 'Though he tired, he working still'], correctIndex: 0, xpReward: 25, type: 'translation' },
-    { question: "Traduisez : \"Il m'a dit qu'il viendrait demain.\"", options: ['He told me he would come tomorrow', 'He said me he will come tomorrow', 'He told me he comes tomorrow', 'He say to me he coming tomorrow'], correctIndex: 0, xpReward: 25, type: 'translation' },
-    { question: 'Traduisez : "Je souhaiterais avoir plus de temps."', options: ['I wish I had more time', 'I wish I have more time', 'I hope having more time', 'I want more time would'], correctIndex: 0, xpReward: 25, type: 'translation' },
-    { question: 'Traduisez : "Plus elle étudie, plus elle progresse."', options: ['The more she studies, the more she improves', 'More she studies, more she improves', 'She studies more, she improves more', 'As she studies, she improves'], correctIndex: 0, xpReward: 25, type: 'translation' },
-    { question: 'Traduisez : "Il a évité de répondre à la question."', options: ['He avoided answering the question', 'He avoided to answer the question', 'He avoided answer the question', 'He avoided to answering the question'], correctIndex: 0, xpReward: 25, type: 'translation' },
-    { question: 'Traduisez : "Nous aurions dû partir plus tôt."', options: ['We should have left earlier', 'We must have left earlier', 'We could left earlier', 'We would have leave earlier'], correctIndex: 0, xpReward: 25, type: 'translation' },
-    // Conjugaison
-    { question: 'Complétez : "By the time we arrived, the movie ___."', options: ['started', 'has started', 'had started', 'starts'], correctIndex: 2, xpReward: 25, type: 'conjugaison' },
-    { question: 'Complétez : "She ___ here since 2015."', options: ['lives', 'has lived', 'lived', 'is living'], correctIndex: 1, xpReward: 25, type: 'conjugaison' },
-    { question: 'Complétez : "If I had known, I ___ differently."', options: ['would act', 'would have acted', 'will act', 'acted'], correctIndex: 1, xpReward: 25, type: 'conjugaison' },
-    { question: 'Complétez : "The report ___ by the time you arrive."', options: ['will be finished', 'will finish', 'finishes', 'is finishing'], correctIndex: 0, xpReward: 25, type: 'conjugaison' },
-    { question: 'Complétez : "He denied ___ the window."', options: ['breaking', 'to break', 'break', 'broke'], correctIndex: 0, xpReward: 25, type: 'conjugaison' },
-    { question: 'Complétez : "They ___ working when the phone rang."', options: ['were', 'was', 'are', 'have been'], correctIndex: 0, xpReward: 25, type: 'conjugaison' },
-  ],
-  B2: [
-    // Grammar
-    { question: 'Complétez : "Had I known, I ___ differently."', options: ['would act', 'would have acted', 'will act', 'acted'], correctIndex: 1, xpReward: 30, type: 'grammar' },
-    { question: 'Complétez : "Not only ___ intelligent, but she is also kind."', options: ['she is', 'is she', 'does she', 'she does'], correctIndex: 1, xpReward: 30, type: 'grammar' },
-    { question: 'Complétez : "She insisted on ___ the report herself."', options: ['writing', 'to write', 'write', 'wrote'], correctIndex: 0, xpReward: 30, type: 'grammar' },
-    { question: 'Complétez : "It is high time we ___ action."', options: ['take', 'took', 'taking', 'taken'], correctIndex: 1, xpReward: 30, type: 'grammar' },
-    { question: 'Complétez : "Rarely ___ such a remarkable performance."', options: ['have I seen', 'I have seen', 'I saw', 'did I saw'], correctIndex: 0, xpReward: 30, type: 'grammar' },
-    { question: 'Complétez : "But for your help, I ___ failed."', options: ['would have', 'will have', 'had', 'would'], correctIndex: 0, xpReward: 30, type: 'grammar' },
-    // Vocabulary
-    { question: 'Que signifie "to undermine" en français ?', options: ['Renforcer', 'Saper', 'Comprendre', 'Nier'], correctIndex: 1, xpReward: 25, type: 'vocabulary' },
-    { question: 'Quel mot complète : "The results were ___ with previous findings."', options: ['consistent', 'considerate', 'consecutive', 'conspicuous'], correctIndex: 0, xpReward: 25, type: 'vocabulary' },
-    { question: 'Complétez : "The report ___ the need for further research."', options: ['underscores', 'undercharges', 'underachieves', 'underestimates'], correctIndex: 0, xpReward: 30, type: 'vocabulary' },
-    { question: 'Que signifie "pragmatic" en français ?', options: ['Pratique', 'Pragmatique', 'Précis', 'Prétentieux'], correctIndex: 1, xpReward: 25, type: 'vocabulary' },
-    { question: 'Que signifie "ambiguous" en français ?', options: ['Ambitieux', 'Ambigu', 'Amical', 'Ample'], correctIndex: 1, xpReward: 25, type: 'vocabulary' },
-    { question: 'Quel mot signifie "inévitable" en anglais ?', options: ['Inevitable', 'Incredible', 'Invisible', 'Invincible'], correctIndex: 0, xpReward: 25, type: 'vocabulary' },
-    // Translation
-    { question: "Traduisez : \"Quoi qu'il arrive, nous devons persévérer.\"", options: ['Whatever happens, we must persevere', 'What happens, we should persevere', 'Whatever will happen, we must persisted', 'No matter what, we persevering'], correctIndex: 0, xpReward: 30, type: 'translation' },
-    { question: "Traduisez : \"Il est peu probable qu'elle accepte cette proposition.\"", options: ['It is unlikely that she will accept this proposal', 'She is unlikely accepting this proposal', 'It is improbable she accepts that', 'She unlikely will accept the proposition'], correctIndex: 0, xpReward: 30, type: 'translation' },
-    { question: 'Traduisez : "En dépit des difficultés, le projet a abouti."', options: ['Despite the difficulties, the project succeeded', 'In spite difficulties, the project succeed', 'Despite difficulties, project was success', 'Although the difficulties, project succeeded'], correctIndex: 0, xpReward: 30, type: 'translation' },
-    { question: 'Traduisez : "Il eut fallu qu\'il en fût averti."', options: ['He should have been informed of it', 'He must be informed about it', 'He should be informed from it', 'He had to been told about it'], correctIndex: 0, xpReward: 30, type: 'translation' },
-    { question: 'Traduisez : "Quoi qu\'il en soit, nous devons avancer."', options: ['Be that as it may, we must move forward', 'Whatever it is, we must go', 'However it is, we should advance', 'No matter, we must progressing'], correctIndex: 0, xpReward: 30, type: 'translation' },
-    { question: 'Traduisez : "Non seulement il est brillant, mais il est aussi modeste."', options: ['Not only is he brilliant, but he is also modest', 'Not only he is brilliant, but also he is modest', 'He is not only brilliant, but too he is modest', 'Not just he brilliant, but he modest also'], correctIndex: 0, xpReward: 30, type: 'translation' },
-    // Conjugaison
-    { question: 'Complétez : "She ___ here for five years by next June."', options: ['will have worked', 'will work', 'works', 'has worked'], correctIndex: 0, xpReward: 30, type: 'conjugaison' },
-    { question: 'Complétez : "The house ___ before we moved in."', options: ['was being renovated', 'is renovating', 'renovated', 'has renovated'], correctIndex: 0, xpReward: 30, type: 'conjugaison' },
-    { question: 'Complétez : "I wish I ___ told you earlier."', options: ['had', 'have', 'would', 'should'], correctIndex: 0, xpReward: 30, type: 'conjugaison' },
-    { question: 'Complétez : "He ___ to have been misinformed."', options: ['appears', 'appearing', 'appeared', 'is appeared'], correctIndex: 0, xpReward: 30, type: 'conjugaison' },
-    { question: 'Complétez : "Were she ___ , she would understand."', options: ['present', 'presented', 'presenting', 'presents'], correctIndex: 0, xpReward: 30, type: 'conjugaison' },
-    { question: 'Complétez : "They ___ the project by December."', options: ['will have completed', 'will complete', 'complete', 'have completed'], correctIndex: 0, xpReward: 30, type: 'conjugaison' },
-  ],
-  C1: [
-    // Grammar
-    { question: 'Complétez : "The implications of this policy are ___ understood."', options: ['scarcely', 'scarce', 'scarceness', 'scarsed'], correctIndex: 0, xpReward: 35, type: 'grammar' },
-    { question: 'Complétez : "So ___ the impact that policymakers were forced to reconsider."', options: ['profound was', 'profound', 'was profound', 'did profound'], correctIndex: 0, xpReward: 35, type: 'grammar' },
-    { question: 'Complétez : "Little ___ the challenges that lay ahead."', options: ['did they anticipate', 'they anticipated', 'they did anticipate', 'anticipated they'], correctIndex: 0, xpReward: 35, type: 'grammar' },
-    { question: 'Complétez : "Under no circumstances ___ acceptable."', options: ['is this', 'this is', 'was this being', 'this being'], correctIndex: 0, xpReward: 35, type: 'grammar' },
-    { question: 'Complétez : "Seldom ___ such a comprehensive analysis."', options: ['has one encountered', 'one has encountered', 'one encountered', 'did one encountered'], correctIndex: 0, xpReward: 35, type: 'grammar' },
-    { question: 'Complétez : "Only then ___ the gravity of the situation."', options: ['did she realize', 'she realized', 'she did realize', 'realized she'], correctIndex: 0, xpReward: 35, type: 'grammar' },
-    // Vocabulary
-    { question: 'Que signifie "to corroborate" en français ?', options: ['Contredire', 'Confirmer', 'Corrompre', 'Corriger'], correctIndex: 1, xpReward: 30, type: 'vocabulary' },
-    { question: 'Quel mot décrit un "raisonnement trompeur mais apparemment logique" ?', options: ['Sophistry', 'Serendipity', 'Sophistication', 'Sovereignty'], correctIndex: 0, xpReward: 30, type: 'vocabulary' },
-    { question: 'Que signifie "prescient" en français ?', options: ['Prévoyant', 'Présent', 'Précieux', 'Précaire'], correctIndex: 0, xpReward: 30, type: 'vocabulary' },
-    { question: 'Que signifie "ephemeral" en français ?', options: ['Éternel', 'Éphémère', 'Épais', 'Élégant'], correctIndex: 1, xpReward: 30, type: 'vocabulary' },
-    { question: 'Que signifie "juxtapose" en français ?', options: ['Justifier', 'Juxtaposer', 'Jubilé', 'Jeter'], correctIndex: 1, xpReward: 30, type: 'vocabulary' },
-    { question: 'Que signifie "vindicate" en français ?', options: ['Vaincre', 'Justifier', 'Violenter', 'Vinculer'], correctIndex: 1, xpReward: 30, type: 'vocabulary' },
-    // Translation
-    { question: "Traduisez : \"Il a été convenu que les parties s'engageraient dans un dialogue constructif.\"", options: ['It was agreed that the parties would engage in constructive dialogue', 'It was agreed the parties will engage in constructive dialog', 'They agreed that parties shall engage constructively', 'It has agreed parties would engaged in constructive dialogue'], correctIndex: 0, xpReward: 35, type: 'translation' },
-    { question: 'Traduisez : "Nonobstant les objections soulevées, la motion a été adoptée."', options: ['Notwithstanding the objections raised, the motion was passed', 'Despite objections raising, the motion passed', 'Notwithstanding objections, motion has been passing', 'In spite of raised objections, motion was passing'], correctIndex: 0, xpReward: 35, type: 'translation' },
-    { question: "Traduisez : \"Force est de constater que cette approche s'avère contre-productive.\"", options: ['It must be acknowledged that this approach proves counterproductive', 'We must acknowledge this approach is counter-product', 'It has to be admitted that approach proves against productive', 'One must note this approach being counterproductive'], correctIndex: 0, xpReward: 35, type: 'translation' },
-    { question: 'Traduisez : "Il se peut que la décision soit contestée."', options: ['It may well be that the decision is contested', 'It can be the decision is contested', 'Maybe the decision being contested', 'The decision perhaps is being contest'], correctIndex: 0, xpReward: 35, type: 'translation' },
-    { question: 'Traduisez : "Encore eût-il fallu qu\'il en prît conscience."', options: ['He would first have had to become aware of it', 'He should have became aware about it', 'He must first realize about it', 'He had to first become conscious of that'], correctIndex: 0, xpReward: 35, type: 'translation' },
-    { question: 'Traduisez : "Quelle que soit l\'issue, il faudra en tirer les leçons."', options: ['Whatever the outcome, lessons will need to be drawn', 'Whatever the result, we need to learn', 'Any outcome, lessons must be taken', 'No matter the end, we should draw conclusions'], correctIndex: 0, xpReward: 35, type: 'translation' },
-    // Conjugaison
-    { question: 'Complétez : "He is believed ___ the scene before the police arrived."', options: ['to have left', 'to leave', 'leaving', 'having left'], correctIndex: 0, xpReward: 35, type: 'conjugaison' },
-    { question: 'Complétez : "The proposal ___ to have been poorly received."', options: ['appears', 'appearing', 'appeared', 'is appearing'], correctIndex: 0, xpReward: 35, type: 'conjugaison' },
-    { question: 'Complétez : "She would rather he ___ earlier."', options: ['arrived', 'arrive', 'arrives', 'arriving'], correctIndex: 0, xpReward: 35, type: 'conjugaison' },
-    { question: 'Complétez : "It is imperative that she ___ informed."', options: ['be', 'is', 'will be', 'would be'], correctIndex: 0, xpReward: 35, type: 'conjugaison' },
-    { question: 'Complétez : "Not until the results ___ released will we know."', options: ['are', 'will be', 'being', 'have'], correctIndex: 0, xpReward: 35, type: 'conjugaison' },
-    { question: 'Complétez : "Were he ___ the truth, he would act differently."', options: ['to know', 'knowing', 'knew', 'known'], correctIndex: 0, xpReward: 35, type: 'conjugaison' },
-  ],
-  C2: [
-    // Grammar
-    { question: 'Complétez : "Were the hypothesis ___ , the ramifications would be far-reaching."', options: ['to be validated', 'validating', 'validated', 'to validate'], correctIndex: 0, xpReward: 40, type: 'grammar' },
-    { question: 'Complétez : "At no time ___ the authority to unilaterally amend the provisions."', options: ['did the committee have', 'the committee had', 'had the committee', 'the committee did have'], correctIndex: 0, xpReward: 40, type: 'grammar' },
-    { question: 'Complétez : "Not until the findings ___ public did the institution acknowledge its oversight."', options: ['became', 'become', 'had become', 'becoming'], correctIndex: 0, xpReward: 40, type: 'grammar' },
-    { question: 'Complétez : "Such ___ the magnitude of the crisis that extraordinary measures were warranted."', options: ['was', 'is', 'had been', 'has been'], correctIndex: 0, xpReward: 40, type: 'grammar' },
-    { question: 'Complétez : "Only by ___ the underlying assumptions can one grasp the full implications."', options: ['questioning', 'question', 'questioned', 'to question'], correctIndex: 0, xpReward: 40, type: 'grammar' },
-    { question: 'Complétez : "Far ___ it from me to question their judgment."', options: ['be', 'is', 'was', 'being'], correctIndex: 0, xpReward: 40, type: 'grammar' },
-    // Vocabulary
-    { question: 'Que signifie "to obfuscate" en français ?', options: ['Rendre confus', 'Obscurcir', 'Rendre obsolète', 'Omettre'], correctIndex: 1, xpReward: 35, type: 'vocabulary' },
-    { question: "Quel terme désigne \"l'art de persuader par le discours\" ?", options: ['Rhetoric', 'Hermeneutics', 'Dialectics', 'Exegesis'], correctIndex: 0, xpReward: 35, type: 'vocabulary' },
-    { question: 'Que signifie "to renege" en français ?', options: ['Renoncer', 'Renégocier', 'Rénover', 'Rendre'], correctIndex: 0, xpReward: 35, type: 'vocabulary' },
-    { question: 'Que signifie "recalcitrant" en français ?', options: ['Rétif', 'Reflétant', 'Recyclé', 'Reconnaisant'], correctIndex: 0, xpReward: 35, type: 'vocabulary' },
-    { question: 'Que signifie "preponderance" en français ?', options: ['Prépondérance', 'Préparation', 'Prévention', 'Prédilection'], correctIndex: 0, xpReward: 35, type: 'vocabulary' },
-    { question: 'Que signifie "incumbent" en français ?', options: ['Incombant', 'Incroyable', 'Inclusif', 'Incisif'], correctIndex: 0, xpReward: 35, type: 'vocabulary' },
-    // Translation
-    { question: 'Traduisez : "Il incombe aux instances dirigeantes de veiller à la conformité réglementaire."', options: ['It is incumbent upon the governing bodies to ensure regulatory compliance', 'It is incumbent to governing bodies ensuring regulatory compliance', 'It falls upon governing bodies to ensure regulation compliance', 'It is obliging the governing bodies to ensure regulation conformity'], correctIndex: 0, xpReward: 40, type: 'translation' },
-    { question: "Traduisez : \"Quoi que l'on puisse avancer, la prépondérance des preuves atteste de cette conclusion.\"", options: ['Whatever one may argue, the preponderance of evidence attests to this conclusion', 'Whatever you advance, the preponderance of evidences attests this', 'No matter what is advanced, evidence preponderance attests the conclusion', 'Whichever one argues, the preponderating evidence attests to that'], correctIndex: 0, xpReward: 40, type: 'translation' },
-    { question: "Traduisez : \"L'exégèse de ce passage requiert une appréciation nuancée du contexte socio-historique.\"", options: ['The exegesis of this passage requires a nuanced appreciation of the socio-historical context', 'Exegesis of this passage demands a nuanced appreciation for socio-historic context', 'The exegesis for this passage require nuanced appreciation of socio-historical contexts', 'This passage exegesis requires nuanced appreciating of the socio-historical context'], correctIndex: 0, xpReward: 40, type: 'translation' },
-    { question: 'Traduisez : "Il s\'ensuit que toute dérogation au principe susvisé serait réputée nulle et non avenue."', options: ['It follows that any derogation from the aforementioned principle would be deemed null and void', 'It follows any deviation from above principle would be null', 'Therefore any departure from said principle is considered void', 'It ensues that all derogation to the principle would be nullified'], correctIndex: 0, xpReward: 40, type: 'translation' },
-    { question: 'Traduisez : "Encore convient-il de souligner les limites inhérentes à cette approche."', options: ['It should nonetheless be emphasized that there are inherent limitations to this approach', 'Still it is convenient to underline inherent limits of this approach', 'Yet one must pointing out the inherent limitations of that approach', 'However it fits to highlight inherent limits in this method'], correctIndex: 0, xpReward: 40, type: 'translation' },
-    { question: 'Traduisez : "Tout porte à croire que ladite politique s\'avère contre-productive."', options: ['There is every indication that the said policy proves counterproductive', 'Everything carries to believe said policy is counter-product', 'All leads to think the policy is proving counter-productive', 'There is all reason to believe this policy being counterproductive'], correctIndex: 0, xpReward: 40, type: 'translation' },
-    // Conjugaison
-    { question: 'Complétez : "The findings ___ to suggest a paradigm shift is warranted."', options: ['appear', 'appears', 'appearing', 'appeared'], correctIndex: 0, xpReward: 40, type: 'conjugaison' },
-    { question: 'Complétez : "Had the evidence ___ forthcoming, the verdict might have differed."', options: ['been', 'being', 'be', 'was'], correctIndex: 0, xpReward: 40, type: 'conjugaison' },
-    { question: 'Complétez : "It is imperative that the provisions ___ strictly adhered to."', options: ['be', 'are', 'will be', 'would be'], correctIndex: 0, xpReward: 40, type: 'conjugaison' },
-    { question: 'Complétez : "Not only ___ the report, but she also disseminated its findings."', options: ['did she author', 'she authored', 'she did author', 'authored she'], correctIndex: 0, xpReward: 40, type: 'conjugaison' },
-    { question: 'Complétez : "Little ___ the profound implications of the ruling."', options: ['did they foresee', 'they foresaw', 'they did foresee', 'foresaw they'], correctIndex: 0, xpReward: 40, type: 'conjugaison' },
-    { question: 'Complétez : "Were it not for the timely intervention, the project ___."', options: ['would have foundered', 'will founder', 'founders', 'would found'], correctIndex: 0, xpReward: 40, type: 'conjugaison' },
-  ],
+interface ChallengeState {
+  status: 'unanswered' | 'correct' | 'wrong'
+  selectedIndex: number | null
+  xpEarned?: number
+  correctIndex?: number
 }
 
-const ALL_CHALLENGE_TYPES: Challenge['type'][] = ['grammar', 'vocabulary', 'translation', 'conjugaison']
-
-/**
- * Sélectionner 3 défis du jour basés sur la date et le niveau.
- * - Chaque jour, 3 types sur 4 sont sélectionnés (rotation)
- * - Le défi change chaque jour grâce au dayOfYear comme seed
- * - Les défis sont adaptés au niveau de l'apprenant
- */
-const getDailyChallenges = (level: string): Challenge[] => {
-  const pool = CHALLENGE_POOL[level] || CHALLENGE_POOL.A1
-  const now = new Date()
-  const startOfYear = new Date(now.getFullYear(), 0, 0)
-  const dayOfYear = Math.floor((now.getTime() - startOfYear.getTime()) / 86400000)
-
-  // Rotate which 3 of 4 types are shown each day
-  // This ensures conjugaison is also regularly featured
-  const typeOffset = dayOfYear % ALL_CHALLENGE_TYPES.length
-  const selectedTypes = [
-    ...ALL_CHALLENGE_TYPES.slice(typeOffset),
-    ...ALL_CHALLENGE_TYPES.slice(0, typeOffset),
-  ].slice(0, 3) // pick 3 out of 4, rotating daily
-
-  const result: Challenge[] = []
-  for (const type of selectedTypes) {
-    const typed = pool.filter((c) => c.type === type)
-    if (typed.length > 0) {
-      // Use dayOfYear + type index as offset to get different challenges per type
-      const idx = (dayOfYear + result.length * 7) % typed.length
-      result.push(typed[idx])
-    }
-  }
-
-  // If we don't have enough (shouldn't happen), fill with remaining
-  while (result.length < 3) {
-    const idx = (dayOfYear + result.length) % pool.length
-    result.push(pool[idx])
-  }
-
-  return result
+// Leaderboard from /api/leaderboard
+interface LeaderboardEntry {
+  rank: number
+  name: string
+  avatar: string | null
+  level: string
+  xp: number
+  isPremium: boolean
+  streak: number
+  userId: string
 }
 
-const TYPE_LABELS: Record<Challenge['type'], string> = {
+const TYPE_LABELS: Record<string, string> = {
   grammar: 'Grammaire',
   vocabulary: 'Vocabulaire',
   translation: 'Traduction',
   conjugaison: 'Conjugaison',
 }
 
-const TYPE_COLORS: Record<Challenge['type'], string> = {
+const TYPE_COLORS: Record<string, string> = {
   grammar: 'bg-yoel-primary/10 text-yoel-primary',
   vocabulary: 'bg-yoel-green/10 text-yoel-green',
   translation: 'bg-yoel-blue/10 text-yoel-blue',
   conjugaison: 'bg-yoel-gold/10 text-yoel-gold',
 }
 
-const LEADERBOARD = [
-  { rank: 1, name: 'Marie L.', xp: 4820, avatar: 'ML', isPremium: true },
-  { rank: 2, name: 'Thomas R.', xp: 3650, avatar: 'TR', isPremium: false },
-  { rank: 3, name: 'Sophie M.', xp: 2990, avatar: 'SM', isPremium: true },
-]
+// ─── Old CHALLENGE_POOL & LEADERBOARD removed — now uses /api/challenges & /api/leaderboard ──
+
 
 // ─── Word of the Day — Different word every day, level-adapted ──────────────
 
@@ -548,7 +339,7 @@ function BottomNavItem({
 // ─── Main Component ─────────────────────────────────────────────────────────
 
 export default function DashboardPage() {
-  const { user, isDarkMode, toggleDarkMode, navigate, currentLesson, lastVisitedLesson, dailyChallengeCompleted, completeDailyChallenge, addXP, dailyXpEarned, dailyXpHistory, earnedBadges: earnedBadgeIds, completedLessons } = useAppStore()
+  const { user, isDarkMode, toggleDarkMode, navigate, currentLesson, lastVisitedLesson, dailyXpEarned, dailyXpHistory, earnedBadges: earnedBadgeIds, completedLessons } = useAppStore()
 
   // Derive data with fallbacks
   const displayName = user?.name ?? 'Apprenant'
@@ -582,73 +373,131 @@ export default function DashboardPage() {
   const learnedVocab: VocabWord[] = lastVisitedContent?.vocab?.slice(0, 4) ?? []
   const learnedGrammar: GrammarRule | null = lastVisitedContent?.grammar ?? null
 
-  // Daily challenges — 3 per day, level-adapted
-  const todayChallenges = getDailyChallenges(level)
+  // ─── API-backed Daily Challenges ─────────────────────────────────────────
+  const [apiChallenges, setApiChallenges] = useState<ApiChallenge[]>([])
+  const [completedIds, setCompletedIds] = useState<string[]>([])
+  const [challengeStates, setChallengeStates] = useState<Record<string, ChallengeState>>({})
   const [currentChallengeIdx, setCurrentChallengeIdx] = useState(0)
-  const [selectedOption, setSelectedOption] = useState<number | null>(null)
-  const [challengeResults, setChallengeResults] = useState<(boolean | null)[]>([null, null, null])
-  const [challengeTime, setChallengeTime] = useState(60)
-  const [challengeAnswered, setChallengeAnswered] = useState(false)
-  const allChallengesDone = challengeResults.every((r) => r !== null)
+  const [submittingChallengeId, setSubmittingChallengeId] = useState<string | null>(null)
+  const todayChallenges = apiChallenges
+  const currentChallenge = todayChallenges[currentChallengeIdx]
+  const completedCount = completedIds.length
+  const allChallengesDone = completedCount === todayChallenges.length && todayChallenges.length > 0
 
   // Collapsible "more content" section (collapsed by default on mobile)
   const [moreOpen, setMoreOpen] = useState(false)
 
-  const currentChallenge = todayChallenges[currentChallengeIdx]
-
-  // Track previous challenge index to detect changes
-  const [prevChallengeIdx, setPrevChallengeIdx] = useState(0)
-  if (currentChallengeIdx !== prevChallengeIdx) {
-    setPrevChallengeIdx(currentChallengeIdx)
-    setChallengeTime(60)
-    setChallengeAnswered(false)
-    setSelectedOption(null)
-  }
-
+  // Fetch challenges from API
   useEffect(() => {
-    if (challengeAnswered || allChallengesDone) return
-    const timer = setInterval(() => {
-      setChallengeTime((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer)
-          // Time's up — mark as wrong
-          setChallengeAnswered(true)
-          setChallengeResults((prev) => {
-            const next = [...prev]
-            next[currentChallengeIdx] = false
-            return next
+    const fetchChallenges = async () => {
+      try {
+        const userId = user?.id
+        const params = userId ? `?userId=${userId}` : ''
+        const res = await fetch(`/api/challenges${params}`)
+        if (!res.ok) return
+        const data = await res.json()
+        if (data.success) {
+          setApiChallenges(data.challenges)
+          setCompletedIds(data.completedIds)
+          // Initialize states for already completed
+          const initialStates: Record<string, ChallengeState> = {}
+          data.completedIds.forEach((id: string) => {
+            const ch = data.challenges.find((c: ApiChallenge) => c.id === id)
+            if (ch) {
+              initialStates[id] = { status: 'correct', selectedIndex: ch.correctIndex, xpEarned: ch.xpReward }
+            }
           })
-          return 0
+          setChallengeStates(initialStates)
         }
-        return prev - 1
-      })
-    }, 1000)
-    return () => clearInterval(timer)
-  }, [challengeAnswered, currentChallengeIdx, allChallengesDone])
+      } catch (err) {
+        console.error('Dashboard challenges fetch error:', err)
+      }
+    }
+    fetchChallenges()
+  }, [user?.id])
 
-  const handleChallengeAnswer = (index: number) => {
-    if (challengeAnswered) return
-    setSelectedOption(index)
-    setChallengeAnswered(true)
-    const isCorrect = index === currentChallenge.correctIndex
-    setChallengeResults((prev) => {
-      const next = [...prev]
-      next[currentChallengeIdx] = isCorrect
-      return next
-    })
-    if (isCorrect) {
-      addXP(currentChallenge.xpReward)
+  // Submit challenge answer
+  const handleChallengeAnswer = async (index: number) => {
+    if (!currentChallenge || !user?.id) return
+    const challengeId = currentChallenge.id
+    if (completedIds.includes(challengeId)) return
+    const state = challengeStates[challengeId]
+    if (state?.status === 'correct') return
+
+    setSubmittingChallengeId(challengeId)
+    setChallengeStates(prev => ({
+      ...prev,
+      [challengeId]: { ...prev[challengeId], selectedIndex: index },
+    }))
+
+    try {
+      const res = await fetch('/api/challenges', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.id, challengeId, answerIndex: index }),
+      })
+      const data = await res.json()
+
+      if (data.correct) {
+        setChallengeStates(prev => ({
+          ...prev,
+          [challengeId]: { status: 'correct', selectedIndex: index, xpEarned: data.xpEarned },
+        }))
+        setCompletedIds(prev => [...prev, challengeId])
+        // Update user XP in store
+        if (data.totalXp !== undefined) {
+          useAppStore.setState(s => ({ user: s.user ? { ...s.user, xp: data.totalXp } : null }))
+        }
+      } else {
+        setChallengeStates(prev => ({
+          ...prev,
+          [challengeId]: { status: 'wrong', selectedIndex: index, correctIndex: data.correctIndex },
+        }))
+      }
+    } catch (err) {
+      console.error('Challenge submit error:', err)
+      setChallengeStates(prev => ({
+        ...prev,
+        [challengeId]: { status: 'unanswered', selectedIndex: null },
+      }))
+    } finally {
+      setSubmittingChallengeId(null)
     }
   }
 
   const handleNextChallenge = () => {
     if (currentChallengeIdx < todayChallenges.length - 1) {
-      setCurrentChallengeIdx((prev) => prev + 1)
-    }
-    if (allChallengesDone) {
-      completeDailyChallenge()
+      setCurrentChallengeIdx(prev => prev + 1)
     }
   }
+
+  // ─── API-backed Leaderboard ──────────────────────────────────────────────
+  const [topLeaderboard, setTopLeaderboard] = useState<LeaderboardEntry[]>([])
+  const [userRank, setUserRank] = useState<LeaderboardEntry | null>(null)
+
+  useEffect(() => {
+    const fetchLeaderboard = async () => {
+      try {
+        const userId = user?.id
+        const params = new URLSearchParams({ period: 'alltime', level: 'all' })
+        if (userId) params.set('userId', userId)
+        const res = await fetch(`/api/leaderboard?${params.toString()}`)
+        if (!res.ok) return
+        const data = await res.json()
+        if (data.success) {
+          setTopLeaderboard(data.leaderboard.slice(0, 3))
+          setUserRank(data.userEntry ?? null)
+          // If user is in top 3, no need for separate userRank display
+          if (data.leaderboard.some((e: LeaderboardEntry) => e.userId === userId)) {
+            setUserRank(null) // They're already shown in top 3
+          }
+        }
+      } catch (err) {
+        console.error('Dashboard leaderboard fetch error:', err)
+      }
+    }
+    fetchLeaderboard()
+  }, [user?.id])
 
   // Earned badges (first 5)
   const earnedBadges = BADGES.filter((b) => earnedBadgeIds.includes(b.id)).slice(0, 5)
@@ -951,7 +800,7 @@ export default function DashboardPage() {
                     Défis du jour
                   </CardTitle>
                   <div className="flex items-center gap-1.5">
-                    {!allChallengesDone && (
+                    {!allChallengesDone && currentChallenge && (
                       <Badge className="bg-yoel-gold/15 text-yoel-gold border-0 text-[10px] sm:text-xs shrink-0">
                         +{currentChallenge.xpReward} XP
                       </Badge>
@@ -962,9 +811,9 @@ export default function DashboardPage() {
                         <div
                           key={idx}
                           className={`h-2 w-2 rounded-full transition-colors ${
-                            challengeResults[idx] === true
+                            completedIds.includes(todayChallenges[idx]?.id)
                               ? 'bg-yoel-green'
-                              : challengeResults[idx] === false
+                              : todayChallenges[idx] && challengeStates[todayChallenges[idx].id]?.status === 'wrong'
                               ? 'bg-destructive'
                               : idx === currentChallengeIdx && !allChallengesDone
                               ? 'bg-yoel-gold'
@@ -982,45 +831,35 @@ export default function DashboardPage() {
                   <div className="space-y-3">
                     <div className="flex items-center justify-center gap-2 py-3">
                       <span className="text-2xl">
-                        {challengeResults.filter(Boolean).length === 3 ? '🏆' : challengeResults.filter(Boolean).length >= 2 ? '👏' : '💪'}
+                        {completedCount === 3 ? '🏆' : completedCount >= 2 ? '👏' : '💪'}
                       </span>
                       <div>
-                        <p className="font-semibold text-sm">
-                          {challengeResults.filter(Boolean).length}/3 correct
-                        </p>
+                        <p className="font-semibold text-sm">{completedCount}/3 correct</p>
                         <p className="text-xs text-muted-foreground">
-                          {challengeResults.filter(Boolean).length === 3
-                            ? 'Parfait ! Tous les défis réussis !'
-                            : challengeResults.filter(Boolean).length >= 2
-                            ? 'Bravo ! Continuez comme ça !'
-                            : 'Continuez à vous entraîner !'}
+                          {completedCount === 3 ? 'Parfait ! Tous les défis réussis !' : completedCount >= 2 ? 'Bravo ! Continuez comme ça !' : 'Continuez à vous entraîner !'}
                         </p>
                       </div>
                     </div>
-                    {/* Show each challenge result */}
                     <div className="space-y-1.5">
-                      {todayChallenges.map((ch, idx) => (
-                        <div
-                          key={idx}
-                          className={`flex items-center gap-2 rounded-lg p-2 text-xs ${
-                            challengeResults[idx]
-                              ? 'bg-yoel-green/10 text-yoel-green'
-                              : 'bg-destructive/10 text-destructive'
-                          }`}
-                        >
-                          <span className="shrink-0">{challengeResults[idx] ? '✓' : '✗'}</span>
-                          <Badge className={`text-[9px] px-1 py-0 border-0 shrink-0 ${TYPE_COLORS[ch.type]}`}>
-                            {TYPE_LABELS[ch.type]}
-                          </Badge>
-                          <span className="truncate font-medium">{ch.question}</span>
-                        </div>
-                      ))}
+                      {todayChallenges.map((ch, idx) => {
+                        const isCompleted = completedIds.includes(ch.id)
+                        const isWrong = challengeStates[ch.id]?.status === 'wrong'
+                        return (
+                          <div key={ch.id} className={`flex items-center gap-2 rounded-lg p-2 text-xs ${
+                            isCompleted ? 'bg-yoel-green/10 text-yoel-green' : 'bg-destructive/10 text-destructive'
+                          }`}>
+                            <span className="shrink-0">{isCompleted ? '✓' : '✗'}</span>
+                            <Badge className={`text-[9px] px-1 py-0 border-0 shrink-0 ${TYPE_COLORS[ch.type]}`}>
+                              {TYPE_LABELS[ch.type]}
+                            </Badge>
+                            <span className="truncate font-medium">{ch.question}</span>
+                          </div>
+                        )
+                      })}
                     </div>
                   </div>
-                ) : (
-                  /* ── Active challenge ── */
+                ) : currentChallenge ? (
                   <>
-                    {/* Challenge type badge */}
                     <div className="flex items-center gap-2">
                       <Badge className={`text-[9px] px-1.5 py-0 border-0 ${TYPE_COLORS[currentChallenge.type]}`}>
                         {TYPE_LABELS[currentChallenge.type]}
@@ -1035,33 +874,31 @@ export default function DashboardPage() {
 
                     <div className="grid grid-cols-2 gap-1.5 sm:gap-2">
                       {currentChallenge.options.map((option, idx) => {
-                        const isSelected = selectedOption === idx
-                        const isCorrect = idx === currentChallenge.correctIndex
-                        let btnClass =
-                          'text-xs sm:text-sm py-1.5 sm:py-2 rounded-xl border transition-all font-medium'
+                        const state = challengeStates[currentChallenge.id]
+                        const isSelected = state?.selectedIndex === idx
+                        const isCorrectOption = idx === currentChallenge.correctIndex
+                        const isWrongSelection = state?.status === 'wrong' && isSelected
+                        const isCorrectReveal = (state?.status === 'correct' || state?.status === 'wrong') && isCorrectOption
+                        const isDisabled = completedIds.includes(currentChallenge.id) || state?.status === 'correct' || state?.status === 'wrong' || submittingChallengeId === currentChallenge.id
 
-                        if (challengeAnswered) {
-                          if (isCorrect) {
-                            btnClass +=
-                              ' bg-yoel-green/20 border-yoel-green/40 text-yoel-green'
-                          } else if (isSelected && !isCorrect) {
-                            btnClass +=
-                              ' bg-destructive/15 border-destructive/40 text-destructive'
-                          } else {
-                            btnClass +=
-                              ' bg-muted/50 border-muted text-muted-foreground'
-                          }
+                        let btnClass = 'text-xs sm:text-sm py-1.5 sm:py-2 rounded-xl border transition-all font-medium'
+
+                        if (state?.status === 'correct' && isCorrectOption) {
+                          btnClass += ' bg-yoel-green/20 border-yoel-green/40 text-yoel-green'
+                        } else if (isWrongSelection) {
+                          btnClass += ' bg-destructive/15 border-destructive/40 text-destructive'
+                        } else if (isCorrectReveal && state?.status === 'wrong') {
+                          btnClass += ' bg-yoel-green/20 border-yoel-green/40 text-yoel-green'
                         } else {
-                          btnClass +=
-                            ' bg-background border-border hover:border-yoel-primary/50 hover:bg-yoel-primary/5 cursor-pointer'
+                          btnClass += isDisabled ? ' bg-muted/50 border-muted text-muted-foreground' : ' bg-background border-border hover:border-yoel-primary/50 hover:bg-yoel-primary/5 cursor-pointer'
                         }
 
                         return (
                           <motion.button
                             key={idx}
-                            whileTap={!challengeAnswered ? { scale: 0.95 } : undefined}
-                            onClick={() => handleChallengeAnswer(idx)}
-                            disabled={challengeAnswered}
+                            whileTap={!isDisabled ? { scale: 0.95 } : undefined}
+                            onClick={() => { if (!isDisabled) handleChallengeAnswer(idx) }}
+                            disabled={isDisabled}
                             className={btnClass}
                           >
                             {option}
@@ -1071,36 +908,30 @@ export default function DashboardPage() {
                     </div>
 
                     <div className="flex items-center justify-between text-xs text-muted-foreground">
-                      <span className="flex items-center gap-1">
-                        <Clock className="h-3 w-3" />
-                        {challengeTime > 0
-                          ? `${Math.floor(challengeTime / 60)}:${(challengeTime % 60)
-                              .toString()
-                              .padStart(2, '0')}`
-                          : 'Temps écoulé'}
-                      </span>
-                      {challengeAnswered && (
-                        <div className="flex items-center gap-2">
-                          <span
-                            className={
-                              challengeResults[currentChallengeIdx]
-                                ? 'text-yoel-green font-medium'
-                                : 'text-destructive font-medium'
-                            }
-                          >
-                            {challengeResults[currentChallengeIdx] ? '✓ Correct !' : '✗ Incorrect'}
-                          </span>
-                          <Button
-                            size="sm"
-                            className="h-7 rounded-full bg-yoel-primary hover:bg-yoel-primary-dark text-white text-xs px-3"
-                            onClick={handleNextChallenge}
-                          >
-                            {currentChallengeIdx < todayChallenges.length - 1 ? 'Suivant →' : 'Voir résultats'}
-                          </Button>
-                        </div>
+                      {completedIds.includes(currentChallenge.id) && (
+                        <span className="text-yoel-green font-medium">✓ Correct ! +{challengeStates[currentChallenge.id]?.xpEarned} XP</span>
+                      )}
+                      {challengeStates[currentChallenge.id]?.status === 'wrong' && (
+                        <span className="text-destructive font-medium">✗ Mauvaise réponse</span>
+                      )}
+                      {(challengeStates[currentChallenge.id]?.status === 'correct' || challengeStates[currentChallenge.id]?.status === 'wrong') && (
+                        <Button
+                          size="sm"
+                          className="h-7 rounded-full bg-yoel-primary hover:bg-yoel-primary-dark text-white text-xs px-3"
+                          onClick={handleNextChallenge}
+                        >
+                          {currentChallengeIdx < todayChallenges.length - 1 ? 'Suivant →' : 'Voir résultats'}
+                        </Button>
+                      )}
+                      {submittingChallengeId === currentChallenge.id && (
+                        <span className="text-muted-foreground animate-pulse">Vérification…</span>
                       )}
                     </div>
                   </>
+                ) : (
+                  <div className="text-center py-4">
+                    <p className="text-xs text-muted-foreground">Chargement des défis…</p>
+                  </div>
                 )}
               </CardContent>
             </Card>
@@ -1261,7 +1092,7 @@ export default function DashboardPage() {
                             variant="ghost"
                             size="sm"
                             className="text-xs text-muted-foreground"
-                            onClick={() => navigate('stats')}
+                            onClick={() => navigate('leaderboard')}
                           >
                             Détails
                             <ChevronRight className="h-3 w-3" />
@@ -1269,71 +1100,79 @@ export default function DashboardPage() {
                         </div>
                       </CardHeader>
                       <CardContent className="space-y-2 p-4 sm:p-6 pt-0 sm:pt-0">
-                        {LEADERBOARD.map((player, idx) => (
-                          <motion.div
-                            key={player.rank}
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: 0.5 + idx * 0.1 }}
-                            className="flex items-center gap-2 sm:gap-3 rounded-xl bg-muted/30 p-2.5 sm:p-3 transition-colors hover:bg-muted/50"
-                          >
-                            <div
-                              className={`flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full font-bold text-xs sm:text-sm ${
-                                player.rank === 1
-                                  ? 'bg-yoel-gold/20 text-yoel-gold'
-                                  : player.rank === 2
-                                  ? 'bg-gray-400/20 text-gray-500'
-                                  : 'bg-amber-700/20 text-amber-700'
-                              }`}
+                        {topLeaderboard.map((player, idx) => {
+                          const initials = player.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+                          return (
+                            <motion.div
+                              key={player.userId}
+                              initial={{ opacity: 0, x: -20 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: 0.5 + idx * 0.1 }}
+                              className="flex items-center gap-2 sm:gap-3 rounded-xl bg-muted/30 p-2.5 sm:p-3 transition-colors hover:bg-muted/50"
                             >
-                              {player.rank === 1 ? (
-                                <Crown className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                              ) : (
-                                player.rank
-                              )}
-                            </div>
-                            <Avatar className="h-7 w-7 sm:h-8 sm:w-8">
-                              <AvatarFallback className="text-[10px] sm:text-xs font-semibold bg-yoel-blue/10 text-yoel-blue">
-                                {player.avatar}
-                              </AvatarFallback>
-                            </Avatar>
-                            <div className="flex-1 min-w-0">
-                              <p className="text-xs sm:text-sm font-medium truncate flex items-center gap-1">
-                                {player.name}
-                                {player.isPremium && (
-                                  <Star className="h-3 w-3 text-yoel-gold fill-yoel-gold" />
+                              <div
+                                className={`flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full font-bold text-xs sm:text-sm ${
+                                  player.rank === 1
+                                    ? 'bg-yoel-gold/20 text-yoel-gold'
+                                    : player.rank === 2
+                                    ? 'bg-gray-400/20 text-gray-500'
+                                    : 'bg-amber-700/20 text-amber-700'
+                                }`}
+                              >
+                                {player.rank === 1 ? (
+                                  <Crown className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                                ) : (
+                                  player.rank
                                 )}
-                              </p>
-                            </div>
-                            <span className="text-xs sm:text-sm font-semibold text-muted-foreground">
-                              {player.xp.toLocaleString()} XP
-                            </span>
-                          </motion.div>
-                        ))}
+                              </div>
+                              <Avatar className="h-7 w-7 sm:h-8 sm:w-8">
+                                {player.avatar && <AvatarImage src={player.avatar} alt={player.name} />}
+                                <AvatarFallback className="text-[10px] sm:text-xs font-semibold bg-yoel-blue/10 text-yoel-blue">
+                                  {initials}
+                                </AvatarFallback>
+                              </Avatar>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-xs sm:text-sm font-medium truncate flex items-center gap-1">
+                                  {player.name}
+                                  {player.isPremium && (
+                                    <Star className="h-3 w-3 text-yoel-gold fill-yoel-gold" />
+                                  )}
+                                </p>
+                              </div>
+                              <span className="text-xs sm:text-sm font-semibold text-muted-foreground">
+                                {player.xp.toLocaleString()} XP
+                              </span>
+                            </motion.div>
+                          )
+                        })}
 
-                        {/* Current user rank hint */}
-                        <Separator />
-                        <div className="flex items-center gap-2 sm:gap-3 rounded-xl bg-yoel-primary/5 p-2.5 sm:p-3">
-                          <div className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-yoel-primary/10 font-bold text-xs sm:text-sm text-yoel-primary">
-                            12
+                        {userRank && (
+                          <>
+                            <Separator />
+                            <div className="flex items-center gap-2 sm:gap-3 rounded-xl bg-yoel-primary/5 p-2.5 sm:p-3">
+                              <div className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-yoel-primary/10 font-bold text-xs sm:text-sm text-yoel-primary">
+                                {userRank.rank}
+                              </div>
+                              <Avatar className="h-7 w-7 sm:h-8 sm:w-8">
+                                {userRank.avatar && <AvatarImage src={userRank.avatar} alt={userRank.name} />}
+                                <AvatarFallback className="text-[10px] sm:text-xs font-semibold bg-yoel-primary/10 text-yoel-primary">
+                                  {displayName.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)}
+                                </AvatarFallback>
+                              </Avatar>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-xs sm:text-sm font-medium truncate">{displayName} (vous)</p>
+                              </div>
+                              <span className="text-xs sm:text-sm font-semibold text-yoel-primary">
+                                {userRank.xp.toLocaleString()} XP
+                              </span>
+                            </div>
+                          </>
+                        )}
+                        {!userRank && topLeaderboard.length === 0 && (
+                          <div className="text-center py-4">
+                            <p className="text-xs text-muted-foreground">Aucun classement disponible</p>
                           </div>
-                          <Avatar className="h-7 w-7 sm:h-8 sm:w-8">
-                            <AvatarFallback className="text-[10px] sm:text-xs font-semibold bg-yoel-primary/10 text-yoel-primary">
-                              {displayName
-                                .split(' ')
-                                .map((n) => n[0])
-                                .join('')
-                                .toUpperCase()
-                                .slice(0, 2)}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-xs sm:text-sm font-medium truncate">{displayName} (vous)</p>
-                          </div>
-                          <span className="text-xs sm:text-sm font-semibold text-yoel-primary">
-                            {xp.toLocaleString()} XP
-                          </span>
-                        </div>
+                        )}
                       </CardContent>
                     </Card>
                   </motion.div>
