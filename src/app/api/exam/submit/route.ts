@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { getTotalLessonsForLevel } from '@/lib/course-data'
+import { hasPremiumTier } from '@/lib/api-utils'
 
 function generateCertificateId(level: string): string {
   const year = new Date().getFullYear()
-  const seq = String(Math.floor(Math.random() * 999999)).padStart(6, '0')
-  return `YOELANG-${level}-${year}-${seq}`
+  // Use crypto.randomUUID for collision-resistant IDs instead of Math.random()
+  const unique = crypto.randomUUID().replace(/-/g, '').slice(0, 6).toUpperCase()
+  return `YOELANG-${level}-${year}-${unique}`
 }
 
 export async function POST(req: NextRequest) {
@@ -19,6 +21,26 @@ export async function POST(req: NextRequest) {
         { error: 'Missing required fields' },
         { status: 400 }
       )
+    }
+
+    // Verify user exists
+    const existingUser = await db.user.findUnique({ where: { id: userId } })
+    if (!existingUser) {
+      return NextResponse.json({ error: 'Utilisateur non trouvé' }, { status: 404 })
+    }
+
+    // Certificate feature requires Complet+ plan — but anyone can attempt the exam
+    const canGetCertificate = hasPremiumTier(existingUser.isPremium, existingUser.premiumPlan, 'complet')
+
+    // Validate level value
+    const VALID_LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']
+    if (!VALID_LEVELS.includes(level)) {
+      return NextResponse.json({ error: 'Niveau invalide' }, { status: 400 })
+    }
+
+    // Validate score range
+    if (score < 0 || score > 100) {
+      return NextResponse.json({ error: 'Score invalide (0-100)' }, { status: 400 })
     }
 
     // Create exam attempt record
@@ -72,12 +94,12 @@ export async function POST(req: NextRequest) {
           ? Math.round(completions.reduce((sum, c) => sum + c.score, 0) / completions.length)
           : score
 
-        // Create certificate (only if one doesn't already exist for this level)
+        // Create certificate (only if premium Complet+ AND one doesn't already exist for this level)
         const existingCert = await db.certificate.findUnique({
           where: { userId_level: { userId, level } },
         })
 
-        if (!existingCert) {
+        if (!existingCert && canGetCertificate) {
           const certId = generateCertificateId(level)
           const certificate = await db.certificate.create({
             data: {
@@ -95,7 +117,7 @@ export async function POST(req: NextRequest) {
             },
           })
           certificateId = certificate.certificateId
-        } else {
+        } else if (existingCert) {
           certificateId = existingCert.certificateId
         }
 
@@ -122,6 +144,10 @@ export async function POST(req: NextRequest) {
       newLevel,
       xpEarned: xpEarned || 0,
       certificateId,
+      certificateAvailable: canGetCertificate,
+      certificateMessage: !canGetCertificate && passed
+        ? 'Les certificats officiels nécessitent le plan Complet ou Intégral'
+        : undefined,
     })
   } catch (error) {
     console.error('Exam submit error:', error)

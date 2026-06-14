@@ -5,8 +5,12 @@ import { db } from '@/lib/db'
  * GET /api/payment/verify
  * 
  * Checks the status of a payment.
- * - For gateway mode: polls the provider API
+ * - For gateway mode: would poll the provider API
  * - For direct mode: checks if admin has approved the payment
+ * 
+ * SECURITY: No auto-approval. Payments are only confirmed via:
+ * 1. Admin manual approval (admin panel)
+ * 2. Webhook callback from payment provider
  * 
  * Query: paymentId
  */
@@ -32,84 +36,43 @@ export async function GET(req: NextRequest) {
       )
     }
 
-    // ─── Direct transfer mode ────────────────────────────────────────
-    // Payment is waiting for admin validation
-    if (payment.status === 'pending_validation') {
+    // Check if payment has been approved (by admin or webhook)
+    const activated = payment.status === 'success'
+
+    // Check if payment has expired
+    if (payment.expiresAt && new Date() > new Date(payment.expiresAt) && payment.status === 'pending') {
+      await db.payment.update({
+        where: { id: paymentId },
+        data: { status: 'expired' },
+      })
       return NextResponse.json({
         success: true,
-        payment,
+        payment: { ...payment, status: 'expired' },
         activated: false,
-        message: 'En attente de validation par l\'administrateur',
+        message: 'Le délai de paiement a expiré. Veuillez réessayer.',
       })
     }
 
-    // ─── Gateway mode ────────────────────────────────────────────────
-    // For demo: simulate auto-confirmation after a delay
-    if (payment.status === 'pending') {
-      const elapsed = Date.now() - payment.createdAt.getTime()
-      if (elapsed > 5000) {
-        // Simulate successful payment
-        await db.payment.update({
-          where: { id: paymentId },
-          data: {
-            status: 'success',
-            paidAt: new Date(),
-          },
-        })
-
-        // Activate premium for the user
-        await activatePremium(payment.userId, payment.planId)
-
-        // Refresh payment data
-        const updatedPayment = await db.payment.findUnique({
-          where: { id: paymentId },
-        })
-
-        return NextResponse.json({
-          success: true,
-          payment: updatedPayment,
-          activated: true,
-        })
-      }
-    }
-
-    // Payment already succeeded
-    if (payment.status === 'success') {
-      return NextResponse.json({
-        success: true,
-        payment,
-        activated: true,
-      })
+    // Status-specific messages
+    let message: string | undefined
+    if (payment.status === 'pending_validation') {
+      message = 'En attente de validation par l\'administrateur'
+    } else if (payment.status === 'pending') {
+      message = 'En attente de confirmation du fournisseur de paiement'
+    } else if (payment.status === 'failed') {
+      message = 'Le paiement a été refusé'
+    } else if (payment.status === 'success') {
+      message = 'Paiement confirmé ! Premium activé.'
     }
 
     return NextResponse.json({
       success: true,
       payment,
-      activated: payment.status === 'success',
+      activated,
+      message,
     })
   } catch (error) {
     console.error('Payment verify error:', error)
     return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 })
   }
-}
-
-/**
- * Activate premium for a user after successful payment.
- */
-async function activatePremium(userId: string, planId: string) {
-  const planMap: Record<string, string> = {
-    essentiel: 'essentiel',
-    complet: 'complet',
-    integral: 'integral',
-  }
-
-  const premiumPlan = planMap[planId] || 'essentiel'
-
-  await db.user.update({
-    where: { id: userId },
-    data: {
-      isPremium: true,
-      premiumPlan: premiumPlan,
-    },
-  })
 }

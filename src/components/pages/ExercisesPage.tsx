@@ -10,7 +10,7 @@ import {
   Hash, SkipForward, RefreshCw, AlertCircle, Loader2, Keyboard,
   Lock, Crown, Infinity as InfinityIcon
 } from 'lucide-react'
-import { useAppStore, canDoExercise, getRemainingExercises, incrementExerciseCount, FREE_EXERCISE_LIMIT, isFeatureAvailable, FEATURE_TIERS } from '@/lib/store'
+import { useAppStore, FREE_EXERCISE_LIMIT, isFeatureAvailable, FEATURE_TIERS } from '@/lib/store'
 import { useSpeechRecognition, type SpeechRecognitionResult } from '@/hooks/use-speech-recognition'
 import { speakWord } from '@/lib/speech-utils'
 import { EXERCISE_LEVELS, VOCAB_BY_LEVEL, QUIZ_BY_LEVEL, GRAMMAR_BY_LEVEL, PRONUNCIATION_BY_LEVEL, type VocabCard, type QuizQuestion, type GrammarExercise, type PronunciationWord, type ExerciseLevel } from '@/lib/exercises-data'
@@ -38,7 +38,7 @@ const itemVariants = {
     opacity: 1,
     y: 0,
     scale: 1,
-    transition: { type: 'spring', stiffness: 260, damping: 24 },
+    transition: { type: 'spring' as const, stiffness: 260, damping: 24 },
   },
 }
 
@@ -55,7 +55,7 @@ const feedbackVariants = {
 
 const pageVariants = {
   enter: { opacity: 0, x: 40 },
-  center: { opacity: 1, x: 0, transition: { type: 'spring', stiffness: 300, damping: 30 } },
+  center: { opacity: 1, x: 0, transition: { type: 'spring' as const, stiffness: 300, damping: 30 } },
   exit: { opacity: 0, x: -40, transition: { duration: 0.2 } },
 }
 
@@ -186,13 +186,13 @@ function ResultsSummary({
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
-      transition={{ type: 'spring', stiffness: 200, damping: 20 }}
+      transition={{ type: 'spring' as const, stiffness: 200, damping: 20 }}
       className="flex flex-col items-center text-center space-y-6 py-8"
     >
       <motion.div
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
-        transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
+        transition={{ delay: 0.2, type: 'spring' as const, stiffness: 200 }}
         className="relative"
       >
         <div className="flex h-28 w-28 items-center justify-center rounded-full bg-gradient-to-br from-yoel-primary/20 to-yoel-gold/20 border-2 border-yoel-primary/30">
@@ -395,7 +395,7 @@ function QuizTab({ level, onAdvance }: { level: string; onAdvance?: () => void }
           initial={{ opacity: 0, x: 50 }}
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -50 }}
-          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+          transition={{ type: 'spring' as const, stiffness: 300, damping: 30 }}
         >
           <Card className="glass-card overflow-hidden">
             <div className="relative w-full h-[100px] overflow-hidden rounded-t-xl">
@@ -608,7 +608,7 @@ function GrammarTab({ level, onAdvance }: { level: string; onAdvance?: () => voi
           initial={{ opacity: 0, x: 50 }}
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -50 }}
-          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+          transition={{ type: 'spring' as const, stiffness: 300, damping: 30 }}
         >
           <Card className="glass-card overflow-hidden">
             <div className="relative w-full h-[100px] overflow-hidden rounded-t-xl">
@@ -837,7 +837,7 @@ function VocabularyTab({ level, onAdvance }: { level: string; onAdvance?: () => 
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
-                    transition={{ duration: 0.25, ease: 'easeInOut' }}
+                    transition={{ duration: 0.25, ease: 'easeInOut' as const }}
                     className="flex flex-col items-center text-center space-y-3"
                   >
                     {currentCard.image && (
@@ -884,7 +884,7 @@ function VocabularyTab({ level, onAdvance }: { level: string; onAdvance?: () => 
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
-                    transition={{ duration: 0.25, ease: 'easeInOut' }}
+                    transition={{ duration: 0.25, ease: 'easeInOut' as const }}
                     className="flex flex-col items-center text-center space-y-4"
                   >
                     <Badge variant="secondary" className="text-xs bg-yoel-green/10 text-yoel-green">
@@ -1200,7 +1200,7 @@ function PronunciationTab({ level, onAdvance }: { level: string; onAdvance?: () 
           initial={{ opacity: 0, x: 50 }}
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -50 }}
-          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+          transition={{ type: 'spring' as const, stiffness: 300, damping: 30 }}
         >
           <Card className="glass-card overflow-hidden">
             <div className="relative w-full h-[80px] overflow-hidden rounded-t-xl">
@@ -1585,7 +1585,7 @@ function PronunciationTab({ level, onAdvance }: { level: string; onAdvance?: () 
                     <motion.div
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
-                      transition={{ type: 'spring', stiffness: 200, delay: 0.1 }}
+                      transition={{ type: 'spring' as const, stiffness: 200, delay: 0.1 }}
                     >
                       <CheckCircle2 className="h-12 w-12 text-yoel-green mx-auto mb-2" />
                     </motion.div>
@@ -1885,7 +1885,7 @@ export default function ExercisesPage() {
                   <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    transition={{ type: 'spring', stiffness: 200, damping: 20 }}
+                    transition={{ type: 'spring' as const, stiffness: 200, damping: 20 }}
                   >
                     <Card className="glass-card border-yoel-primary/20 overflow-hidden">
                       <CardContent className="p-6 sm:p-8 flex flex-col items-center text-center space-y-5">
@@ -1893,7 +1893,7 @@ export default function ExercisesPage() {
                         <motion.div
                           initial={{ scale: 0 }}
                           animate={{ scale: 1 }}
-                          transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
+                          transition={{ delay: 0.2, type: 'spring' as const, stiffness: 200 }}
                           className="relative"
                         >
                           <div className="flex h-20 w-20 items-center justify-center rounded-full bg-yoel-primary/10 border-2 border-yoel-primary/20">

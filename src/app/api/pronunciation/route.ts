@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import ZAI from 'z-ai-web-dev-sdk'
+import { verifyPremium } from '@/lib/api-utils'
 
 let zaiInstance: Awaited<ReturnType<typeof ZAI.create>> | null = null
 
@@ -58,6 +59,22 @@ export async function POST(req: NextRequest) {
     // Support both audio_base64 (from frontend) and audioBase64 (alternative)
     const rawAudioBase64 = body.audio_base64 || body.audioBase64
     const targetWord = body.target_word || body.targetWord
+    const userId = body.userId
+
+    // ─── Server-side premium verification (Complet+ required) ──────────
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'Identifiant utilisateur requis', code: 'AUTH_REQUIRED' },
+        { status: 401 }
+      )
+    }
+    const premiumCheck = await verifyPremium(userId, 'complet')
+    if (!premiumCheck.allowed) {
+      return NextResponse.json(
+        { error: 'La reconnaissance vocale nécessite le plan Complet ou Intégral', code: 'PREMIUM_REQUIRED', requiredTier: 'complet' },
+        { status: 403 }
+      )
+    }
 
     if (!rawAudioBase64 || !targetWord) {
       console.error('[Pronunciation API] Missing required fields:', {

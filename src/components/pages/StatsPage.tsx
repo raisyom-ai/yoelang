@@ -34,7 +34,7 @@ const itemVariants = {
     opacity: 1,
     y: 0,
     scale: 1,
-    transition: { type: 'spring', stiffness: 260, damping: 24 },
+    transition: { type: 'spring' as const, stiffness: 260, damping: 24 },
   },
 }
 
@@ -623,7 +623,7 @@ export default function StatsPage() {
                         className={`absolute inset-y-0 left-0 rounded-full bg-gradient-to-r ${lvl.color}`}
                         initial={{ width: 0 }}
                         animate={{ width: `${lvl.progress}%` }}
-                        transition={{ duration: 0.8, delay: 0.4 + idx * 0.1, ease: 'easeOut' }}
+                        transition={{ duration: 0.8, delay: 0.4 + idx * 0.1, ease: 'easeOut' as const }}
                       />
                     </div>
                   </motion.div>
@@ -728,7 +728,7 @@ export default function StatsPage() {
                           className={`absolute inset-y-0 left-0 rounded-full bg-gradient-to-r ${skill.color}`}
                           initial={{ width: 0 }}
                           animate={{ width: `${skill.value}%` }}
-                          transition={{ duration: 0.8, delay: 0.3 + idx * 0.1, ease: 'easeOut' }}
+                          transition={{ duration: 0.8, delay: 0.3 + idx * 0.1, ease: 'easeOut' as const }}
                         />
                       </div>
                     </motion.div>
@@ -763,7 +763,7 @@ export default function StatsPage() {
                       key={idx}
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
-                      transition={{ delay: 0.03 * idx, type: 'spring', stiffness: 300 }}
+                      transition={{ delay: 0.03 * idx, type: 'spring' as const, stiffness: 300 }}
                       className={`flex h-6 sm:h-8 w-full items-center justify-center rounded-md text-[10px] sm:text-xs font-medium transition-colors ${
                         day.active
                           ? 'bg-gradient-to-br from-orange-500/30 to-orange-600/20 text-orange-600 dark:text-orange-400 border border-orange-500/20'
@@ -801,7 +801,7 @@ export default function StatsPage() {
                     className="text-4xl sm:text-5xl font-bold text-orange-500"
                     initial={{ scale: 0.5, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
-                    transition={{ type: 'spring', stiffness: 200, delay: 0.3 }}
+                    transition={{ type: 'spring' as const, stiffness: 200, delay: 0.3 }}
                   >
                     {streak}
                   </motion.p>
@@ -887,7 +887,7 @@ export default function StatsPage() {
                             key={badge.id}
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: isEarned ? 1 : 0.7, scale: 1 }}
-                            transition={{ type: 'spring', stiffness: 260, damping: 24 }}
+                            transition={{ type: 'spring' as const, stiffness: 260, damping: 24 }}
                             className={`flex items-start gap-2 rounded-xl p-2 sm:p-2.5 border ${
                               isEarned
                                 ? `bg-gradient-to-br ${cat.bg} border-yoel-gold/20`

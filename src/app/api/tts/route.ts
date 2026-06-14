@@ -142,7 +142,7 @@ export async function POST(req: NextRequest) {
     // For single chunk, return WAV directly
     if (audioBuffers.length === 1) {
       const buffer = audioBuffers[0]
-      return new NextResponse(buffer, {
+      return new NextResponse(new Uint8Array(buffer), {
         status: 200,
         headers: {
           'Content-Type': 'audio/wav',
@@ -173,7 +173,7 @@ export async function POST(req: NextRequest) {
     const wavHeader = createWavHeader(combinedPcm.length)
     const finalBuffer = Buffer.concat([wavHeader, combinedPcm], wavHeader.length + combinedPcm.length)
 
-    return new NextResponse(finalBuffer, {
+    return new NextResponse(new Uint8Array(finalBuffer), {
       status: 200,
       headers: {
         'Content-Type': 'audio/wav',

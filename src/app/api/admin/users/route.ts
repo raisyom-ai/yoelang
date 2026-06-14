@@ -127,7 +127,9 @@ export async function PUT(req: NextRequest) {
       }
 
       case 'delete_user': {
-        // Delete all related records first
+        // Delete all related records first (order matters for FK constraints)
+        await db.examAttempt.deleteMany({ where: { userId: targetUserId } })
+        await db.certificate.deleteMany({ where: { userId: targetUserId } })
         await db.lessonCompletion.deleteMany({ where: { userId: targetUserId } })
         await db.userBadge.deleteMany({ where: { userId: targetUserId } })
         await db.userProgress.deleteMany({ where: { userId: targetUserId } })

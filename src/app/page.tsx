@@ -1,10 +1,8 @@
 'use client'
 
-import { useEffect } from 'react'
-import { useAppStore, type PageId, type UserState } from '@/lib/store'
 import { AnimatePresence, motion } from 'framer-motion'
+import { useAppStore, type PageId } from '@/lib/store'
 import dynamic from 'next/dynamic'
-import { toast } from 'sonner'
 
 // Dynamic imports for code splitting
 const SplashScreen = dynamic(() => import('@/components/pages/SplashScreen'), { ssr: false })
@@ -47,98 +45,7 @@ const pageComponents: Record<PageId, React.ComponentType> = {
 
 export default function YOELANGApp() {
   const currentPage = useAppStore((s) => s.currentPage)
-  const { setUser, setCurrentLevel, navigate, loadUserProgress } = useAppStore()
   const PageComponent = pageComponents[currentPage]
-
-  // Handle OAuth callback — when user returns from Google/Apple OAuth
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
-    if (params.get('oauth') === '1') {
-      // Clean up the URL
-      window.history.replaceState({}, '', '/')
-      
-      // Fetch the NextAuth session
-      fetch('/api/auth/session')
-        .then((res) => res.json())
-        .then((session) => {
-          if (session?.user) {
-            const user = session.user
-            // Check if admin
-            if (user.role === 'admin') {
-              const adminUser: UserState = {
-                id: user.id,
-                email: user.email,
-                name: user.name || 'Admin',
-                avatar: null,
-                role: 'admin',
-                level: user.level || 'C2',
-                xp: user.xp || 0,
-                streak: user.streak || 0,
-                coins: user.coins || 0,
-                isPremium: true,
-                premiumPlan: 'integral',
-                dailyGoal: user.dailyGoal || 20,
-                notifications: true,
-                darkMode: false,
-                soundEnabled: true,
-              }
-              setUser(adminUser)
-              navigate('admin-dashboard')
-              return
-            }
-
-            // Regular user
-            const oauthUser: UserState = {
-              id: user.id,
-              email: user.email,
-              name: user.name || user.email.split('@')[0],
-              avatar: null,
-              role: 'user',
-              level: user.level || 'A1',
-              xp: user.xp || 0,
-              streak: user.streak || 0,
-              coins: user.coins || 0,
-              isPremium: user.isPremium || false,
-              premiumPlan: user.premiumPlan || null,
-              dailyGoal: user.dailyGoal ?? 20,
-              notifications: true,
-              darkMode: false,
-              soundEnabled: true,
-            }
-            setUser(oauthUser)
-            setCurrentLevel(oauthUser.level)
-
-            // Load user progress from database
-            fetch(`/api/user/progress?userId=${oauthUser.id}`)
-              .then((res) => res.json())
-              .then((data) => {
-                if (data.success) {
-                  loadUserProgress({
-                    completedLessons: data.completedLessons || [],
-                    completions: data.completions || [],
-                    certificates: data.certificates || [],
-                    examAttempts: data.examAttempts || [],
-                    earnedBadges: data.earnedBadges || [],
-                  })
-                }
-              })
-              .catch(() => {
-                // Progress loading failed, continue with empty state
-              })
-
-            navigate('dashboard')
-            toast.success('Connexion r\u00e9ussie', { description: 'Bienvenue sur YOELANG !' })
-          } else {
-            toast.error('Connexion \u00e9chou\u00e9e', { description: 'Impossible de r\u00e9cup\u00e9rer votre session.' })
-            navigate('login')
-          }
-        })
-        .catch(() => {
-          toast.error('Connexion \u00e9chou\u00e9e', { description: 'Erreur lors de la r\u00e9cup\u00e9ration de votre session.' })
-          navigate('login')
-        })
-    }
-  }, [setUser, setCurrentLevel, navigate, loadUserProgress])
 
   return (
     <main className="min-h-screen bg-background text-foreground overflow-x-hidden">
@@ -148,7 +55,7 @@ export default function YOELANGApp() {
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -8 }}
-          transition={{ duration: 0.25, ease: 'easeInOut' }}
+          transition={{ duration: 0.25, ease: 'easeInOut' as const }}
           className="min-h-screen"
         >
           <PageComponent />

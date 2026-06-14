@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { PLAN_PRICES } from '@/lib/payment-config'
+import { paymentLimiter, getClientIP } from '@/lib/rate-limit'
+import { rateLimitResponse } from '@/lib/api-utils'
 
 const PLAN_NAMES: Record<string, string> = {
   essentiel: 'Essentiel',
@@ -21,6 +23,12 @@ const PLAN_NAMES: Record<string, string> = {
  * Body: { userId, planId, paymentMethod, mode, phoneNumber?, transactionRef? }
  */
 export async function POST(req: NextRequest) {
+  // ─── Rate limiting ────────────────────────────────────────────────
+  const clientIP = getClientIP(req)
+  if (!paymentLimiter.check(`payment:${clientIP}`)) {
+    return rateLimitResponse()
+  }
+
   try {
     const { userId, planId, paymentMethod, mode, phoneNumber, transactionRef } = await req.json()
 

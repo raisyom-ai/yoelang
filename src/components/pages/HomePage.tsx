@@ -123,7 +123,7 @@ const fadeInUp = {
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: i * 0.1, duration: 0.5, ease: 'easeOut' },
+    transition: { delay: i * 0.1, duration: 0.5, ease: 'easeOut' as const },
   }),
 }
 
@@ -260,7 +260,7 @@ export default function HomePage() {
           <motion.div
             initial={{ opacity: 0, x: -40 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.7, ease: 'easeOut' }}
+            transition={{ duration: 0.7, ease: 'easeOut' as const }}
             className="flex flex-col items-start gap-6 text-center lg:text-left"
           >
             <h1 className="text-4xl font-black leading-tight tracking-tight sm:text-5xl md:text-6xl">
@@ -303,7 +303,7 @@ export default function HomePage() {
           <motion.div
             initial={{ opacity: 0, x: 40 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.7, delay: 0.2, ease: 'easeOut' }}
+            transition={{ duration: 0.7, delay: 0.2, ease: 'easeOut' as const }}
             className="flex justify-center lg:justify-end"
           >
             <motion.img
@@ -311,7 +311,7 @@ export default function HomePage() {
               alt="YOELANG - Apprenez l'anglais en conversation"
               className="h-72 w-72 drop-shadow-2xl sm:h-80 sm:w-80 md:h-96 md:w-96"
               animate={{ y: [0, -12, 0] }}
-              transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+              transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' as const }}
             />
           </motion.div>
         </div>

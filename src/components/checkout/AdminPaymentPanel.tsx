@@ -12,7 +12,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
-import { ADMIN_CONFIG } from '@/lib/payment-config'
+// ADMIN_CONFIG is server-only (no NEXT_PUBLIC_ prefix).
+// The client authenticates by calling /api/payment/admin with the user-entered password.
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -88,14 +89,26 @@ export default function AdminPaymentPanel({ onClose }: AdminPaymentPanelProps) {
   const [statusFilter, setStatusFilter] = useState<string>('pending_validation')
   const [expandedPayment, setExpandedPayment] = useState<string | null>(null)
 
-  // Authenticate
-  const handleAuth = (e: React.FormEvent) => {
+  // Authenticate — verify via server API instead of local comparison
+  const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (password === ADMIN_CONFIG.password) {
-      setIsAuthenticated(true)
-      setAuthError(null)
-    } else {
-      setAuthError('Mot de passe incorrect')
+    setIsLoading(true)
+    try {
+      const params = new URLSearchParams({ password, status: 'pending_validation' })
+      const res = await fetch(`/api/payment/admin?${params}`)
+      const data = await res.json()
+      if (res.ok && data.success) {
+        setIsAuthenticated(true)
+        setAuthError(null)
+        setPayments(data.payments)
+        setStats(data.stats)
+      } else {
+        setAuthError(data.error || 'Mot de passe incorrect')
+      }
+    } catch {
+      setAuthError('Erreur de connexion au serveur')
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -104,7 +117,7 @@ export default function AdminPaymentPanel({ onClose }: AdminPaymentPanelProps) {
     setIsLoading(true)
     try {
       const params = new URLSearchParams({
-        password: ADMIN_CONFIG.password,
+        password,
         status: statusFilter,
       })
       const res = await fetch(`/api/payment/admin?${params}`)
@@ -112,13 +125,17 @@ export default function AdminPaymentPanel({ onClose }: AdminPaymentPanelProps) {
       if (data.success) {
         setPayments(data.payments)
         setStats(data.stats)
+      } else if (res.status === 401) {
+        // Session expired — log out
+        setIsAuthenticated(false)
+        setAuthError('Session expirée. Reconnectez-vous.')
       }
     } catch (err) {
       console.error('Failed to fetch payments:', err)
     } finally {
       setIsLoading(false)
     }
-  }, [statusFilter])
+  }, [statusFilter, password])
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -134,7 +151,7 @@ export default function AdminPaymentPanel({ onClose }: AdminPaymentPanelProps) {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          password: ADMIN_CONFIG.password,
+          password,
           paymentId,
           action,
         }),
@@ -143,6 +160,9 @@ export default function AdminPaymentPanel({ onClose }: AdminPaymentPanelProps) {
       if (data.success) {
         // Refresh the list
         await fetchPayments()
+      } else if (res.status === 401) {
+        setIsAuthenticated(false)
+        setAuthError('Session expirée. Reconnectez-vous.')
       }
     } catch (err) {
       console.error('Failed to process action:', err)
@@ -438,7 +458,7 @@ export default function AdminPaymentPanel({ onClose }: AdminPaymentPanelProps) {
           initial={{ y: 100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 100, opacity: 0 }}
-          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+          transition={{ type: 'spring' as const, stiffness: 300, damping: 30 }}
           onClick={(e) => e.stopPropagation()}
         >
           <div className="p-6">

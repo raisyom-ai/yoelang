@@ -1,56 +1,37 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '.prisma/client'
-
-const prisma = new PrismaClient()
+import { db } from '@/lib/db'
 
 /**
  * POST /api/payment/webhook
- * 
+ *
  * Webhook endpoint for payment providers (FedaPay, CinetPay).
  * This is called by the provider when a payment status changes.
- * 
- * In production, you MUST verify the webhook signature:
- * - FedaPay: verify with FEDAPAY_SECRET_KEY
- * - CinetPay: verify with CINETPAY_API_KEY
- * 
- * Security: Always verify webhooks came from your payment provider!
+ *
+ * Security: This endpoint verifies a webhook secret to prevent
+ * unauthorized payment confirmations. Set WEBHOOK_SECRET in .env.
  */
 export async function POST(req: NextRequest) {
   try {
+    // Verify webhook secret if configured
+    const webhookSecret = process.env.WEBHOOK_SECRET
+    if (webhookSecret) {
+      const providedSecret = req.headers.get('x-webhook-secret') || req.headers.get('authorization')?.replace('Bearer ', '')
+      if (providedSecret !== webhookSecret) {
+        return NextResponse.json({ error: 'Signature invalide' }, { status: 401 })
+      }
+    }
+
     const body = await req.json()
     const { eventType, paymentId, providerRef, status } = body
-
-    // ─── Production verification examples ───────────────────────────────
-    //
-    // FedaPay webhook verification:
-    // const signature = req.headers.get('x-fedapay-signature')
-    // const expectedSig = crypto
-    //   .createHmac('sha256', process.env.FEDAPAY_WEBHOOK_SECRET!)
-    //   .update(JSON.stringify(body))
-    //   .digest('hex')
-    // if (signature !== expectedSig) {
-    //   return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
-    // }
-    //
-    // CinetPay webhook verification:
-    // const cpSign = body.sign
-    // const expected = crypto
-    //   .createHmac('sha256', process.env.CINETPAY_API_KEY!)
-    //   .update(`${body.cpm_trans_id}${body.cpm_site_id}${body.cpm_amount}`)
-    //   .digest('hex')
-    // if (cpSign !== expected) {
-    //   return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
-    // }
-    // ─────────────────────────────────────────────────────────────────────
 
     // Find the payment by provider reference
     let payment
     if (providerRef) {
-      payment = await prisma.payment.findFirst({
+      payment = await db.payment.findFirst({
         where: { providerRef },
       })
     } else if (paymentId) {
-      payment = await prisma.payment.findUnique({
+      payment = await db.payment.findUnique({
         where: { id: paymentId },
       })
     }
@@ -68,14 +49,12 @@ export async function POST(req: NextRequest) {
     }
 
     // Map provider status to our status
-    // FedaPay: 'approved' → success
-    // CinetPay: 'ACCEPTED' → success
     const isSuccess = status === 'success' || status === 'approved' || status === 'ACCEPTED'
     const isFailed = status === 'failed' || status === 'declined' || status === 'REFUSED'
 
     if (isSuccess) {
       // Payment confirmed! Activate premium
-      await prisma.payment.update({
+      await db.payment.update({
         where: { id: payment.id },
         data: {
           status: 'success',
@@ -91,7 +70,7 @@ export async function POST(req: NextRequest) {
       }
       const premiumPlan = planMap[payment.planId] || 'essentiel'
 
-      await prisma.user.update({
+      await db.user.update({
         where: { id: payment.userId },
         data: {
           isPremium: true,
@@ -99,14 +78,14 @@ export async function POST(req: NextRequest) {
         },
       })
 
-      console.log(`✅ Premium activé pour ${payment.userId} - Plan: ${premiumPlan}`)
+      console.log(`[Webhook] Premium activé pour ${payment.userId} - Plan: ${premiumPlan}`)
 
     } else if (isFailed) {
-      await prisma.payment.update({
+      await db.payment.update({
         where: { id: payment.id },
         data: { status: 'failed' },
       })
-      console.log(`❌ Paiement échoué pour ${payment.userId}`)
+      console.log(`[Webhook] Paiement échoué pour ${payment.userId}`)
     }
 
     return NextResponse.json({ success: true })

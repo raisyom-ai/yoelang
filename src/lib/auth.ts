@@ -1,36 +1,10 @@
 import type { NextAuthOptions } from 'next-auth'
-import GoogleProvider from 'next-auth/providers/google'
-import AppleProvider from 'next-auth/providers/apple'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { db } from '@/lib/db'
 import bcrypt from 'bcryptjs'
 
 export const authOptions: NextAuthOptions = {
   providers: [
-    // ─── Google OAuth ──────────────────────────────────────────────
-    ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
-      ? [
-          GoogleProvider({
-            clientId: process.env.GOOGLE_CLIENT_ID,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-          }),
-        ]
-      : []),
-
-    // ─── Apple OAuth ──────────────────────────────────────────────
-    ...(process.env.APPLE_ID && process.env.APPLE_TEAM_ID && process.env.APPLE_KEY_ID && process.env.APPLE_PRIVATE_KEY
-      ? [
-          AppleProvider({
-            clientId: process.env.APPLE_ID,
-            clientSecret: {
-              teamId: process.env.APPLE_TEAM_ID,
-              privateKey: process.env.APPLE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-              keyId: process.env.APPLE_KEY_ID,
-            },
-          } as never),
-        ]
-      : []),
-
     // ─── Credentials (email/password) ──────────────────────────────
     CredentialsProvider({
       name: 'credentials',
@@ -51,10 +25,10 @@ export const authOptions: NextAuthOptions = {
           throw new Error('Email ou mot de passe incorrect')
         }
 
-        // Check if this is an OAuth-only account (no password set)
-        // Support both 'oauth_' (NextAuth OAuth) and 'oauth:' (legacy) prefixes
+        // Check if this is a legacy OAuth-only account (no real password set)
+        // These users need to set a password before they can log in
         if (!user.password || user.password.startsWith('oauth_') || user.password.startsWith('oauth:')) {
-          throw new Error('Ce compte utilise la connexion Google ou Apple. Veuillez utiliser le bouton correspondant.')
+          throw new Error('COMPTE_SANS_MOT_DE_PASSE:Vous devez définir un mot de passe pour votre compte. Utilisez la fonctionnalité "Définir un mot de passe".')
         }
 
         const validPassword = await bcrypt.compare(credentials.password, user.password)
@@ -85,64 +59,25 @@ export const authOptions: NextAuthOptions = {
   },
 
   callbacks: {
-    async signIn({ user, account, profile }) {
-      // ─── Handle OAuth sign-in (Google / Apple) ────────────────
-      if (account?.provider === 'google' || account?.provider === 'apple') {
-        const email = user.email
-        if (!email) return false
-
-        const existingUser = await db.user.findUnique({
-          where: { email },
-        })
-
-        if (existingUser) {
-          // User exists — attach DB fields to the user object so the JWT callback can read them
-          user.id = existingUser.id
-          user.role = existingUser.role
-          user.level = existingUser.level
-          user.xp = existingUser.xp
-          user.streak = existingUser.streak
-          user.coins = existingUser.coins
-          user.isPremium = existingUser.isPremium
-          user.premiumPlan = existingUser.premiumPlan
-          user.dailyGoal = existingUser.dailyGoal
-          return true
-        }
-
-        // Create new user from OAuth profile
-        const name = user.name || email.split('@')[0]
-        const oauthProvider = account.provider === 'google' ? 'google' : 'apple'
-
-        const newUser = await db.user.create({
-          data: {
-            email,
-            name,
-            password: `oauth_${oauthProvider}_${Date.now()}`, // Placeholder password for OAuth users
-            role: 'user',
-            level: 'A1',
-            xp: 0,
-            streak: 0,
-            coins: 0,
-            isPremium: false,
-            dailyGoal: 20,
-          },
-        })
-
-        // Attach DB fields to the user object so the JWT callback can read them
-        user.id = newUser.id
-        user.role = newUser.role
-        user.level = newUser.level
-        user.xp = newUser.xp
-        user.streak = newUser.streak
-        user.coins = newUser.coins
-        user.isPremium = newUser.isPremium
-        user.premiumPlan = newUser.premiumPlan
-        user.dailyGoal = newUser.dailyGoal
-
-        return true
-      }
-
+    async signIn({ user }) {
       // Credentials sign-in is handled by the authorize function
+      // Just attach DB fields if needed
+      if (user?.email) {
+        const dbUser = await db.user.findUnique({
+          where: { email: user.email },
+        })
+        if (dbUser) {
+          user.id = dbUser.id
+          user.role = dbUser.role
+          user.level = dbUser.level
+          user.xp = dbUser.xp
+          user.streak = dbUser.streak
+          user.coins = dbUser.coins
+          user.isPremium = dbUser.isPremium
+          user.premiumPlan = dbUser.premiumPlan
+          user.dailyGoal = dbUser.dailyGoal
+        }
+      }
       return true
     },
 
@@ -195,6 +130,20 @@ export const authOptions: NextAuthOptions = {
       }
       return session
     },
+
+    // ─── Redirect callback ────────────────────────────────────────────
+    async redirect({ url, baseUrl }) {
+      // If url is a relative path, use it directly
+      if (url.startsWith('/')) return baseUrl + url
+      // If url is on the same origin, use it
+      try {
+        if (new URL(url).origin === baseUrl) return url
+      } catch {
+        // Invalid URL, fall through to default
+      }
+      // Default to baseUrl (our app root)
+      return baseUrl
+    },
   },
 
   pages: {
@@ -203,8 +152,69 @@ export const authOptions: NextAuthOptions = {
   },
 
   secret: process.env.NEXTAUTH_SECRET,
-  trustHost: true, // Trust X-Forwarded-* headers from reverse proxy (Caddy) for correct OAuth redirect_uri
-  debug: false,
+  // trustHost is intentionally FALSE because the z.ai platform's reverse proxy
+  // sends the internal hostname (ws-ccfffc-...) instead of the external preview URL.
+  // We rely on NEXTAUTH_URL instead, which is set to the correct external URL.
+  trustHost: false,
+
+  // Cookie configuration for reverse proxy compatibility.
+  // In production, cookies should be secure (HTTPS only).
+  cookies: {
+    sessionToken: {
+      name: 'next-auth.session-token',
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+      },
+    },
+    callbackUrl: {
+      name: 'next-auth.callback-url',
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+      },
+    },
+    csrfToken: {
+      name: 'next-auth.csrf-token',
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+      },
+    },
+    pkceCodeVerifier: {
+      name: 'next-auth.pkce.code_verifier',
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+      },
+    },
+    state: {
+      name: 'next-auth.state',
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+      },
+    },
+    nonce: {
+      name: 'next-auth.nonce',
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+      },
+    },
+  },
 }
 
 // Type augmentation for NextAuth

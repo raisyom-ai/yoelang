@@ -39,7 +39,7 @@ const itemVariants = {
     opacity: 1,
     y: 0,
     scale: 1,
-    transition: { type: 'spring', stiffness: 260, damping: 24 },
+    transition: { type: 'spring' as const, stiffness: 260, damping: 24 },
   },
 }
 
@@ -454,7 +454,7 @@ function CircularProgress({
           strokeDasharray={circumference}
           initial={{ strokeDashoffset: circumference }}
           animate={{ strokeDashoffset: offset }}
-          transition={{ duration: 1.2, ease: 'easeOut', delay: 0.5 }}
+          transition={{ duration: 1.2, ease: 'easeOut' as const, delay: 0.5 }}
         />
         <defs>
           <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -1487,7 +1487,7 @@ export default function DashboardPage() {
       <motion.div
         initial={{ y: 80, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.6, type: 'spring', stiffness: 200, damping: 25 }}
+        transition={{ delay: 0.6, type: 'spring' as const, stiffness: 200, damping: 25 }}
         className="fixed bottom-0 left-0 right-0 z-50 lg:hidden"
       >
         <div className="mx-auto max-w-md">

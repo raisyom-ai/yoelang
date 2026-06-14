@@ -18,7 +18,7 @@ function Sparkle({ style, delay }: { style: React.CSSProperties; delay: number }
         duration: 2,
         delay,
         repeat: Infinity,
-        ease: 'easeInOut',
+        ease: 'easeInOut' as const,
       }}
     />
   )
@@ -54,7 +54,7 @@ function Particle({ index }: { index: number }) {
         duration,
         delay,
         repeat: Infinity,
-        ease: 'easeInOut',
+        ease: 'easeInOut' as const,
       }}
     />
   )
@@ -130,7 +130,7 @@ export default function SplashScreen() {
             className="relative z-10 flex flex-col items-center gap-6"
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, ease: 'easeOut' }}
+            transition={{ duration: 0.8, ease: 'easeOut' as const }}
           >
             {/* Logo with float animation */}
             <motion.div
@@ -146,7 +146,7 @@ export default function SplashScreen() {
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{
-                  type: 'spring',
+                  type: 'spring' as const,
                   stiffness: 200,
                   damping: 15,
                   delay: 0.3,

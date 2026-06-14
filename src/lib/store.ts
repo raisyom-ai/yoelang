@@ -5,7 +5,7 @@ export type PageId =
   | 'splash' | 'home' | 'login' | 'register' 
   | 'dashboard' | 'levels' | 'course' | 'exercises' 
   | 'chat' | 'stats' | 'profile' | 'settings' | 'premium' | 'certificate'
-  | 'admin-login' | 'admin-dashboard' | 'oauth-callback' | 'exam'
+  | 'admin-login' | 'admin-dashboard' | 'exam'
 
 // ─── Premium Plan Types ──────────────────────────────────────────────────
 
@@ -152,6 +152,12 @@ export interface LessonHistoryEntry {
 
 // Helper: get today's date as YYYY-MM-DD string
 const getTodayStr = () => new Date().toISOString().split('T')[0]
+
+// Helper: get current month as YYYY-MM string (for monthly chat limit)
+const getMonthStr = () => {
+  const now = new Date()
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+}
 
 // ─── Daily XP History Entry ──────────────────────────────────────────────────
 export interface DailyXpRecord {
@@ -462,6 +468,13 @@ interface AppState {
   getRemainingExercises: () => number
   incrementExerciseCount: () => void
 
+  // Trial premium (pending admin approval)
+  isTrialActive: boolean
+  trialPlan: PremiumPlan | null
+  trialEndDate: string | null  // ISO date string
+  activateTrial: (plan: PremiumPlan, endDate: string) => void
+  clearTrial: () => void
+
   // XP tracking
   addXP: (amount: number) => void
   dailyXpEarned: number
@@ -559,12 +572,12 @@ export const useAppStore = create<AppState>((set, get) => ({
   // Chat
   chatMessages: [],
   addChatMessage: (msg) => set((state) => {
-    const today = getTodayStr()
-    const currentCount = state.chatResetDate !== today ? 0 : state.chatMessagesSent
+    const currentMonth = getMonthStr()
+    const currentCount = state.chatResetDate !== currentMonth ? 0 : state.chatMessagesSent
     return {
       chatMessages: [...state.chatMessages, msg],
       chatMessagesSent: currentCount + 1,
-      chatResetDate: today,
+      chatResetDate: currentMonth,
     }
   }),
   clearChat: () => set({ chatMessages: [] }),
@@ -581,16 +594,16 @@ export const useAppStore = create<AppState>((set, get) => ({
   dailyXpHistory: [],
   // Premium plan tracking
   chatMessagesSent: 0,
-  chatResetDate: getTodayStr(),
+  chatResetDate: getMonthStr(),
   canSendChatMessage: () => {
     const state = get()
     if (!state.user?.isPremium) return false
     const plan = state.user.premiumPlan
     if (!plan) return false
-    // Reset counter if new day
-    const today = getTodayStr()
-    if (state.chatResetDate !== today) {
-      set({ chatMessagesSent: 0, chatResetDate: today })
+    // Reset counter if new month
+    const currentMonth = getMonthStr()
+    if (state.chatResetDate !== currentMonth) {
+      set({ chatMessagesSent: 0, chatResetDate: currentMonth })
     }
     const limit = CHAT_LIMITS[plan]
     return get().chatMessagesSent < limit
@@ -598,8 +611,8 @@ export const useAppStore = create<AppState>((set, get) => ({
   getRemainingChatMessages: () => {
     const state = get()
     if (!state.user?.isPremium || !state.user.premiumPlan) return 0
-    const today = getTodayStr()
-    const sent = state.chatResetDate !== today ? 0 : state.chatMessagesSent
+    const currentMonth = getMonthStr()
+    const sent = state.chatResetDate !== currentMonth ? 0 : state.chatMessagesSent
     const limit = CHAT_LIMITS[state.user.premiumPlan]
     return limit === Infinity ? -1 : Math.max(0, limit - sent)
   },
@@ -609,6 +622,10 @@ export const useAppStore = create<AppState>((set, get) => ({
     const state = get()
     // Premium users with essentiel+ have unlimited exercises
     if (state.user?.isPremium && state.user.premiumPlan && isFeatureAvailable(state.user.isPremium, state.user.premiumPlan, 'essentiel')) {
+      return true
+    }
+    // Trial users also have unlimited exercises during trial period
+    if (state.isTrialActive && state.trialEndDate && new Date(state.trialEndDate) > new Date()) {
       return true
     }
     // Free users have limited exercises per day
@@ -621,6 +638,9 @@ export const useAppStore = create<AppState>((set, get) => ({
     if (state.user?.isPremium && state.user.premiumPlan && isFeatureAvailable(state.user.isPremium, state.user.premiumPlan, 'essentiel')) {
       return -1 // unlimited
     }
+    if (state.isTrialActive && state.trialEndDate && new Date(state.trialEndDate) > new Date()) {
+      return -1 // unlimited during trial
+    }
     const today = getTodayStr()
     const completed = state.exerciseResetDate !== today ? 0 : state.exercisesCompletedToday
     return Math.max(0, FREE_EXERCISE_LIMIT - completed)
@@ -632,6 +652,21 @@ export const useAppStore = create<AppState>((set, get) => ({
       exercisesCompletedToday: completed + 1,
       exerciseResetDate: today,
     }
+  }),
+
+  // Trial premium (pending admin approval) — gives limited access during 3-day trial
+  isTrialActive: false,
+  trialPlan: null,
+  trialEndDate: null,
+  activateTrial: (plan, endDate) => set({
+    isTrialActive: true,
+    trialPlan: plan,
+    trialEndDate: endDate,
+  }),
+  clearTrial: () => set({
+    isTrialActive: false,
+    trialPlan: null,
+    trialEndDate: null,
   }),
 
   // XP tracking

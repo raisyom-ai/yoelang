@@ -2,14 +2,15 @@
 
 import { useState, FormEvent, useMemo } from 'react'
 import { motion } from 'framer-motion'
-import { Mail, Lock, Eye, EyeOff, Loader2, User, BookOpen, Globe, Sparkles, Shield, Check, ArrowLeft } from 'lucide-react'
+import { Mail, Lock, Eye, EyeOff, Loader2, User, BookOpen, Globe, Sparkles, Shield, Check, ArrowLeft, Chrome } from 'lucide-react'
 import { useAppStore, type UserState } from '@/lib/store'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Separator } from '@/components/ui/separator'
 import { toast } from 'sonner'
-import OAuthButtonGroup from '@/components/OAuthButtonGroup'
+import GoogleEmailDialog from '@/components/GoogleEmailDialog'
 
 interface FormErrors {
   name?: string
@@ -24,7 +25,7 @@ const fadeInUp = {
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: i * 0.08, duration: 0.5, ease: 'easeOut' },
+    transition: { delay: i * 0.08, duration: 0.5, ease: 'easeOut' as const },
   }),
 }
 
@@ -53,12 +54,12 @@ export default function RegisterPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
-  // All new users start at A1 level
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [acceptTerms, setAcceptTerms] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [errors, setErrors] = useState<FormErrors>({})
+  const [showGoogleDialog, setShowGoogleDialog] = useState(false)
 
   const passwordStrength = useMemo(() => getPasswordStrength(password), [password])
 
@@ -150,8 +151,14 @@ export default function RegisterPage() {
           // Progress loading failed, continue with empty state
         }
 
-        navigate('dashboard')
-        toast.success('Bienvenue !', { description: 'Votre compte a été créé avec succès' })
+        const isAdmin = data.isAdmin || registeredUser.role === 'admin'
+        navigate(isAdmin ? 'admin-dashboard' : 'dashboard')
+
+        if (data.isPasswordSet) {
+          toast.success('Mot de passe défini !', { description: 'Votre mot de passe a été créé. Vous êtes maintenant connecté.' })
+        } else {
+          toast.success('Bienvenue !', { description: 'Votre compte a été créé avec succès' })
+        }
       } else {
         const data = await res.json().catch(() => null)
         toast.error('Inscription échouée', {
@@ -179,7 +186,7 @@ export default function RegisterPage() {
       <motion.div
         initial={{ opacity: 0, x: -40 }}
         animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.6, ease: 'easeOut' }}
+        transition={{ duration: 0.6, ease: 'easeOut' as const }}
         className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-gradient-to-br from-yoel-blue-dark via-yoel-blue to-yoel-primary-dark items-center justify-center p-12"
       >
         {/* Background decorations */}
@@ -187,24 +194,23 @@ export default function RegisterPage() {
           <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-white/5 blur-3xl" />
           <div className="absolute -bottom-32 -left-32 w-[500px] h-[500px] rounded-full bg-yoel-primary/10 blur-3xl" />
           <div className="absolute top-1/3 right-1/4 w-64 h-64 rounded-full bg-yoel-gold/10 blur-2xl" />
-          {/* Floating decorative elements */}
           <motion.div
             animate={{ y: [-10, 10, -10] }}
-            transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+            transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' as const }}
             className="absolute top-24 left-20 text-6xl opacity-20"
           >
             🎓
           </motion.div>
           <motion.div
             animate={{ y: [10, -10, 10] }}
-            transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
+            transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' as const }}
             className="absolute bottom-28 right-16 text-5xl opacity-20"
           >
             🏆
           </motion.div>
           <motion.div
             animate={{ y: [-8, 12, -8] }}
-            transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
+            transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' as const }}
             className="absolute top-1/2 left-1/3 text-4xl opacity-15"
           >
             💡
@@ -320,214 +326,236 @@ export default function RegisterPage() {
             </p>
           </motion.div>
 
-          {/* OAuth buttons + email form (separator managed by OAuthButtonGroup) */}
+          {/* Google button */}
           <motion.div custom={2} variants={fadeInUp}>
-            <OAuthButtonGroup disabled={isLoading}>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                {/* Full name */}
-                <div className="space-y-2">
-                  <Label htmlFor="name">Nom complet</Label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <Input
-                      id="name"
-                      type="text"
-                      placeholder="Jean Dupont"
-                      value={name}
-                      onChange={(e) => {
-                        setName(e.target.value)
-                        clearError('name')
-                      }}
-                      className={`pl-10 h-11 ${errors.name ? 'border-destructive' : ''}`}
-                      autoComplete="name"
-                      disabled={isLoading}
-                    />
-                  </div>
-                  {errors.name && (
-                    <p className="text-sm text-destructive">{errors.name}</p>
-                  )}
-                </div>
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full h-12 text-sm font-medium hover:border-blue-300 hover:bg-blue-50 dark:hover:bg-blue-950/30 transition-colors border-2"
+              onClick={() => setShowGoogleDialog(true)}
+              disabled={isLoading}
+            >
+              <Chrome className="w-5 h-5 mr-3 text-blue-500" />
+              S&apos;inscrire avec Google
+            </Button>
+          </motion.div>
 
-                {/* Email */}
-                <div className="space-y-2">
-                  <Label htmlFor="reg-email">Adresse email</Label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <Input
-                      id="reg-email"
-                      type="email"
-                      placeholder="votre@email.com"
-                      value={email}
-                      onChange={(e) => {
-                        setEmail(e.target.value)
-                        clearError('email')
-                      }}
-                      className={`pl-10 h-11 ${errors.email ? 'border-destructive' : ''}`}
-                      autoComplete="email"
-                      disabled={isLoading}
-                    />
-                  </div>
-                  {errors.email && (
-                    <p className="text-sm text-destructive">{errors.email}</p>
-                  )}
-                </div>
+          {/* Separator */}
+          <motion.div custom={3} variants={fadeInUp} className="my-6">
+            <div className="relative">
+              <Separator />
+              <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background px-3 text-xs text-muted-foreground uppercase">
+                ou avec email
+              </span>
+            </div>
+          </motion.div>
 
-                {/* Password */}
-                <div className="space-y-2">
-                  <Label htmlFor="reg-password">Mot de passe</Label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <Input
-                      id="reg-password"
-                      type={showPassword ? 'text' : 'password'}
-                      placeholder="••••••••"
-                      value={password}
-                      onChange={(e) => {
-                        setPassword(e.target.value)
-                        clearError('password')
-                      }}
-                      className={`pl-10 pr-10 h-11 ${errors.password ? 'border-destructive' : ''}`}
-                      autoComplete="new-password"
-                      disabled={isLoading}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                      tabIndex={-1}
-                      aria-label={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
-                    >
-                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </button>
-                  </div>
-                  {errors.password && (
-                    <p className="text-sm text-destructive">{errors.password}</p>
-                  )}
-                  {/* Password strength indicator */}
-                  {password.length > 0 && (
-                    <div className="space-y-2">
-                      <div className="flex gap-1">
-                        {[1, 2, 3, 4, 5].map((i) => (
-                          <div
-                            key={i}
-                            className={`h-1.5 flex-1 rounded-full transition-all duration-300 ${
-                              i <= passwordStrength.score
-                                ? passwordStrength.color
-                                : 'bg-muted'
-                            }`}
-                          />
-                        ))}
-                      </div>
-                      <p className="text-xs text-muted-foreground">
-                        Force : <span className="font-medium">{passwordStrength.label}</span>
-                      </p>
-                      {/* Password requirements */}
-                      <div className="grid grid-cols-2 gap-1">
-                        {[
-                          { check: password.length >= 6, label: '6+ caractères' },
-                          { check: /[A-Z]/.test(password), label: '1 majuscule' },
-                          { check: /[0-9]/.test(password), label: '1 chiffre' },
-                          { check: /[^A-Za-z0-9]/.test(password), label: '1 spécial' },
-                        ].map((req) => (
-                          <span
-                            key={req.label}
-                            className={`text-xs flex items-center gap-1 transition-colors ${
-                              req.check ? 'text-yoel-green' : 'text-muted-foreground'
-                            }`}
-                          >
-                            <Check className={`w-3 h-3 ${req.check ? 'opacity-100' : 'opacity-30'}`} />
-                            {req.label}
-                          </span>
-                        ))}
-                      </div>
+          {/* Email/password register form */}
+          <motion.div custom={4} variants={fadeInUp}>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Full name */}
+              <div className="space-y-2">
+                <Label htmlFor="name">Nom complet</Label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    id="name"
+                    type="text"
+                    placeholder="Jean Dupont"
+                    value={name}
+                    onChange={(e) => {
+                      setName(e.target.value)
+                      clearError('name')
+                    }}
+                    className={`pl-10 h-11 ${errors.name ? 'border-destructive' : ''}`}
+                    autoComplete="name"
+                    disabled={isLoading}
+                  />
+                </div>
+                {errors.name && (
+                  <p className="text-sm text-destructive">{errors.name}</p>
+                )}
+              </div>
+
+              {/* Email */}
+              <div className="space-y-2">
+                <Label htmlFor="reg-email">Adresse email</Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    id="reg-email"
+                    type="email"
+                    placeholder="votre@email.com"
+                    value={email}
+                    onChange={(e) => {
+                      setEmail(e.target.value)
+                      clearError('email')
+                    }}
+                    className={`pl-10 h-11 ${errors.email ? 'border-destructive' : ''}`}
+                    autoComplete="email"
+                    disabled={isLoading}
+                  />
+                </div>
+                {errors.email && (
+                  <p className="text-sm text-destructive">{errors.email}</p>
+                )}
+              </div>
+
+              {/* Password */}
+              <div className="space-y-2">
+                <Label htmlFor="reg-password">Mot de passe</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    id="reg-password"
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => {
+                      setPassword(e.target.value)
+                      clearError('password')
+                    }}
+                    className={`pl-10 pr-10 h-11 ${errors.password ? 'border-destructive' : ''}`}
+                    autoComplete="new-password"
+                    disabled={isLoading}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    tabIndex={-1}
+                    aria-label={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+                {errors.password && (
+                  <p className="text-sm text-destructive">{errors.password}</p>
+                )}
+                {/* Password strength indicator */}
+                {password.length > 0 && (
+                  <div className="space-y-2">
+                    <div className="flex gap-1">
+                      {[1, 2, 3, 4, 5].map((i) => (
+                        <div
+                          key={i}
+                          className={`h-1.5 flex-1 rounded-full transition-all duration-300 ${
+                            i <= passwordStrength.score
+                              ? passwordStrength.color
+                              : 'bg-muted'
+                          }`}
+                        />
+                      ))}
                     </div>
-                  )}
-                </div>
+                    <p className="text-xs text-muted-foreground">
+                      Force : <span className="font-medium">{passwordStrength.label}</span>
+                    </p>
+                    {/* Password requirements */}
+                    <div className="grid grid-cols-2 gap-1">
+                      {[
+                        { check: password.length >= 6, label: '6+ caractères' },
+                        { check: /[A-Z]/.test(password), label: '1 majuscule' },
+                        { check: /[0-9]/.test(password), label: '1 chiffre' },
+                        { check: /[^A-Za-z0-9]/.test(password), label: '1 spécial' },
+                      ].map((req) => (
+                        <span
+                          key={req.label}
+                          className={`text-xs flex items-center gap-1 transition-colors ${
+                            req.check ? 'text-yoel-green' : 'text-muted-foreground'
+                          }`}
+                        >
+                          <Check className={`w-3 h-3 ${req.check ? 'opacity-100' : 'opacity-30'}`} />
+                          {req.label}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
 
-                {/* Confirm password */}
-                <div className="space-y-2">
-                  <Label htmlFor="confirm-password">Confirmer le mot de passe</Label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <Input
-                      id="confirm-password"
-                      type={showConfirmPassword ? 'text' : 'password'}
-                      placeholder="••••••••"
-                      value={confirmPassword}
-                      onChange={(e) => {
-                        setConfirmPassword(e.target.value)
-                        clearError('confirmPassword')
-                      }}
-                      className={`pl-10 pr-10 h-11 ${errors.confirmPassword ? 'border-destructive' : ''}`}
-                      autoComplete="new-password"
-                      disabled={isLoading}
-                    />
+              {/* Confirm password */}
+              <div className="space-y-2">
+                <Label htmlFor="confirm-password">Confirmer le mot de passe</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    id="confirm-password"
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    placeholder="••••••••"
+                    value={confirmPassword}
+                    onChange={(e) => {
+                      setConfirmPassword(e.target.value)
+                      clearError('confirmPassword')
+                    }}
+                    className={`pl-10 pr-10 h-11 ${errors.confirmPassword ? 'border-destructive' : ''}`}
+                    autoComplete="new-password"
+                    disabled={isLoading}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    tabIndex={-1}
+                    aria-label={showConfirmPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
+                  >
+                    {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+                {errors.confirmPassword && (
+                  <p className="text-sm text-destructive">{errors.confirmPassword}</p>
+                )}
+              </div>
+
+              {/* Terms checkbox */}
+              <div className="space-y-1">
+                <div className="flex items-start gap-2">
+                  <Checkbox
+                    id="terms"
+                    checked={acceptTerms}
+                    onCheckedChange={(checked) => {
+                      setAcceptTerms(checked === true)
+                      clearError('terms')
+                    }}
+                    disabled={isLoading}
+                    className="mt-0.5"
+                  />
+                  <Label htmlFor="terms" className="text-sm font-normal leading-snug cursor-pointer">
+                    J&apos;accepte les{' '}
                     <button
                       type="button"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                      tabIndex={-1}
-                      aria-label={showConfirmPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
+                      className="text-yoel-primary hover:text-yoel-primary-dark font-medium transition-colors"
+                      onClick={() => toast.info('Fonctionnalité à venir', { description: 'Les conditions seront disponibles prochainement.' })}
                     >
-                      {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      conditions d&apos;utilisation
                     </button>
-                  </div>
-                  {errors.confirmPassword && (
-                    <p className="text-sm text-destructive">{errors.confirmPassword}</p>
-                  )}
+                    {' '}et la{' '}
+                    <button
+                      type="button"
+                      className="text-yoel-primary hover:text-yoel-primary-dark font-medium transition-colors"
+                      onClick={() => toast.info('Fonctionnalité à venir', { description: 'La politique de confidentialité sera disponible prochainement.' })}
+                    >
+                      politique de confidentialité
+                    </button>
+                  </Label>
                 </div>
+                {errors.terms && (
+                  <p className="text-sm text-destructive">{errors.terms}</p>
+                )}
+              </div>
 
-                {/* Terms checkbox */}
-                <div className="space-y-1">
-                  <div className="flex items-start gap-2">
-                    <Checkbox
-                      id="terms"
-                      checked={acceptTerms}
-                      onCheckedChange={(checked) => {
-                        setAcceptTerms(checked === true)
-                        clearError('terms')
-                      }}
-                      disabled={isLoading}
-                      className="mt-0.5"
-                    />
-                    <Label htmlFor="terms" className="text-sm font-normal leading-snug cursor-pointer">
-                      J&apos;accepte les{' '}
-                      <button
-                        type="button"
-                        className="text-yoel-primary hover:text-yoel-primary-dark font-medium transition-colors"
-                        onClick={() => toast.info('Fonctionnalité à venir', { description: 'Les conditions seront disponibles prochainement.' })}
-                      >
-                        conditions d&apos;utilisation
-                      </button>
-                      {' '}et la{' '}
-                      <button
-                        type="button"
-                        className="text-yoel-primary hover:text-yoel-primary-dark font-medium transition-colors"
-                        onClick={() => toast.info('Fonctionnalité à venir', { description: 'La politique de confidentialité sera disponible prochainement.' })}
-                      >
-                        politique de confidentialité
-                      </button>
-                    </Label>
-                  </div>
-                  {errors.terms && (
-                    <p className="text-sm text-destructive">{errors.terms}</p>
-                  )}
-                </div>
-
-                {/* Submit button */}
-                <Button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full h-11 text-base font-semibold bg-gradient-to-r from-yoel-primary to-yoel-primary-dark hover:from-yoel-primary-dark hover:to-yoel-primary text-white shadow-lg hover:shadow-xl transition-all duration-300"
-                >
-                  {isLoading ? (
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                  ) : (
-                    'Créer mon compte'
-                  )}
-                </Button>
-              </form>
-            </OAuthButtonGroup>
+              {/* Submit button */}
+              <Button
+                type="submit"
+                disabled={isLoading}
+                className="w-full h-11 text-base font-semibold bg-gradient-to-r from-yoel-primary to-yoel-primary-dark hover:from-yoel-primary-dark hover:to-yoel-primary text-white shadow-lg hover:shadow-xl transition-all duration-300"
+              >
+                {isLoading ? (
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                ) : (
+                  'Créer mon compte'
+                )}
+              </Button>
+            </form>
           </motion.div>
 
           {/* Login link */}
@@ -547,6 +575,13 @@ export default function RegisterPage() {
           </motion.p>
         </motion.div>
       </div>
+
+      {/* Google Email Dialog */}
+      <GoogleEmailDialog
+        open={showGoogleDialog}
+        onClose={() => setShowGoogleDialog(false)}
+        mode="register"
+      />
     </div>
   )
 }

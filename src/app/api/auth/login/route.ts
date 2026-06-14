@@ -1,8 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import bcrypt from 'bcryptjs'
+import { authLimiter, getClientIP } from '@/lib/rate-limit'
+import { formatUserResponse, rateLimitResponse } from '@/lib/api-utils'
 
 export async function POST(req: NextRequest) {
+  // ─── Rate limiting ────────────────────────────────────────────────
+  const clientIP = getClientIP(req)
+  if (!authLimiter.check(`login:${clientIP}`)) {
+    return rateLimitResponse()
+  }
+
   try {
     const { email, password } = await req.json()
 
@@ -13,21 +21,33 @@ export async function POST(req: NextRequest) {
       )
     }
 
+    // Validate email format to prevent injection
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return NextResponse.json(
+        { error: 'Adresse email invalide' },
+        { status: 400 }
+      )
+    }
+
     const user = await db.user.findUnique({ where: { email } })
 
     if (!user) {
+      // Generic error — don't reveal whether email exists
       return NextResponse.json(
         { error: 'Email ou mot de passe incorrect' },
         { status: 401 }
       )
     }
 
-    // Check if this is an OAuth-only account (can't log in with password)
-    if (user.password.startsWith('oauth:')) {
-      const provider = user.password.includes('google') ? 'Google' : 'Apple'
+    // Check if this is a legacy OAuth-only account (no real password set)
+    if (user.password.startsWith('oauth_') || user.password.startsWith('oauth:')) {
       return NextResponse.json(
-        { error: `Ce compte utilise la connexion ${provider}. Veuillez cliquer sur "Continuer avec ${provider}" pour vous connecter.` },
-        { status: 401 }
+        {
+          error: 'Votre compte a été créé sans mot de passe. Veuillez définir un mot de passe pour vous connecter.',
+          code: 'ACCOUNT_NEEDS_PASSWORD',
+          email: user.email,
+        },
+        { status: 403 }
       )
     }
 
@@ -39,29 +59,12 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const { password: _password, ...userWithoutPassword } = user
-    void _password
-
-    // If user is admin, redirect to admin dashboard
     const isAdmin = user.role === 'admin'
 
     return NextResponse.json({
       success: true,
       isAdmin,
-      user: {
-        ...userWithoutPassword,
-        role: user.role || 'user',
-        level: user.level || 'A1',
-        xp: user.xp || 0,
-        streak: user.streak || 0,
-        coins: user.coins || 0,
-        isPremium: user.isPremium || false,
-        premiumPlan: (user as Record<string, unknown>).premiumPlan as string | null || null,
-        dailyGoal: user.dailyGoal ?? 0,
-        notifications: user.notifications ?? true,
-        darkMode: user.darkMode ?? false,
-        soundEnabled: user.soundEnabled ?? true,
-      },
+      user: formatUserResponse(user),
     })
   } catch (error) {
     console.error('Login error:', error)

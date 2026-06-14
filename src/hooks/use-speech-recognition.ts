@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useCallback, useEffect } from 'react'
+import { useAppStore } from '@/lib/store'
 
 // ─── Exported Types ──────────────────────────────────────────────
 
@@ -89,10 +90,10 @@ function calculateSimilarity(a: string, b: string): number {
 
 function getSpeechRecognitionConstructor(): (new () => SpeechRecognitionInstance) | null {
   if (typeof window === 'undefined') return null
-  const SR = (window as Record<string, unknown>).SpeechRecognition as
+  const SR = (window as unknown as Record<string, unknown>).SpeechRecognition as
     | (new () => SpeechRecognitionInstance)
     | undefined
-  const WSR = (window as Record<string, unknown>).webkitSpeechRecognition as
+  const WSR = (window as unknown as Record<string, unknown>).webkitSpeechRecognition as
     | (new () => SpeechRecognitionInstance)
     | undefined
   return SR || WSR || null
@@ -457,6 +458,7 @@ export function useSpeechRecognition(
               audio_base64: base64,
               target_word: targetWordRef.current,
               audio_mime_type: mimeType, // Send MIME type for the backend
+              userId: useAppStore.getState().user?.id ?? '',
             }),
           })
 

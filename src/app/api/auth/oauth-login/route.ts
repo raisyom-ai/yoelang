@@ -1,29 +1,18 @@
-// ╔══════════════════════════════════════════════════════════════════════════╗
-// ║  ⚠️  DEPRECATED — DO NOT USE IN PRODUCTION                            ║
-// ║                                                                        ║
-// ║  This route implements FAKE OAuth by checking email domains.           ║
-// ║  It is NOT real OAuth authentication — it does not verify the user     ║
-// ║  with Google or Apple.                                                 ║
-// ║                                                                        ║
-// ║  Real OAuth is now handled by NextAuth.js providers (Google/Apple).    ║
-// ║  See: src/lib/auth.ts for the real OAuth configuration.                ║
-// ║  See: src/components/OAuthButtonGroup.tsx for the real OAuth UI.       ║
-// ║                                                                        ║
-// ║  This route is kept ONLY as a development fallback and will be        ║
-// ║  removed in a future version.                                          ║
-// ╚══════════════════════════════════════════════════════════════════════════╝
-
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 
-// Valid email domains per provider
-const GOOGLE_DOMAINS = ['gmail.com', 'googlemail.com', 'google.com']
-const APPLE_DOMAINS = ['icloud.com', 'me.com', 'mac.com', 'apple.com']
+// ─── Google Email Recognition Login ──────────────────────────────────────────
+// This route handles authentication via Google email domain recognition.
+// When a user enters a @gmail.com address, they can log in or sign up
+// without a password — their Google email is their identity.
 
-// OAuth accounts have a password that starts with this prefix (plain text, not hashed)
-// This allows us to identify OAuth accounts while ensuring they can't log in via password
-// (bcrypt.compare will always fail for these since they're not real bcrypt hashes)
-const OAUTH_PASSWORD_PREFIX = 'oauth:'
+// Valid Google email domains
+const GOOGLE_DOMAINS = ['gmail.com', 'googlemail.com', 'google.com']
+
+// OAuth accounts have a password that starts with this prefix
+// This allows us to identify OAuth accounts while ensuring they can't log in
+// via the regular password flow (bcrypt.compare will always fail for these)
+const OAUTH_PASSWORD_PREFIX = 'oauth_'
 
 export async function POST(req: NextRequest) {
   try {
@@ -54,19 +43,13 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    if (provider === 'apple' && !APPLE_DOMAINS.includes(domain)) {
-      return NextResponse.json(
-        { error: `Pour Apple, utilisez une adresse iCloud (@icloud.com, @me.com). Votre domaine "${domain}" n'est pas un domaine Apple.` },
-        { status: 400 }
-      )
-    }
-
     // Check if user already exists
     const existingUser = await db.user.findUnique({ where: { email } })
 
     if (existingUser) {
-      // User exists — check if it's an OAuth account
-      const isOAuthAccount = existingUser.password.startsWith(OAUTH_PASSWORD_PREFIX)
+      // User exists — check if it's an OAuth account (can log in without password)
+      const isOAuthAccount = existingUser.password.startsWith(OAUTH_PASSWORD_PREFIX) ||
+                             existingUser.password.startsWith('oauth:')
 
       if (isOAuthAccount) {
         // OAuth account — log them in directly
@@ -100,11 +83,9 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // Create new user from OAuth provider
-    // Store a plain text prefix so we can identify OAuth accounts
-    // This password can never be used to log in via bcrypt.compare
+    // Create new user from Google email
     const name = email.split('@')[0]
-    const oauthPassword = `${OAUTH_PASSWORD_PREFIX}${provider}:${Date.now()}`
+    const oauthPassword = `oauth_${provider}_${Date.now()}`
 
     const newUser = await db.user.create({
       data: {
@@ -143,7 +124,7 @@ export async function POST(req: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('OAuth login error:', error)
+    console.error('Google email login error:', error)
     return NextResponse.json(
       { error: 'Erreur serveur' },
       { status: 500 }

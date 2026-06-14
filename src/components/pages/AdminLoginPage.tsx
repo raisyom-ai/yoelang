@@ -14,7 +14,7 @@ const fadeInUp = {
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: i * 0.1, duration: 0.5, ease: 'easeOut' },
+    transition: { delay: i * 0.1, duration: 0.5, ease: 'easeOut' as const },
   }),
 }
 
@@ -84,7 +84,7 @@ export default function AdminLoginPage() {
       <motion.div
         initial={{ opacity: 0, x: -40 }}
         animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.6, ease: 'easeOut' }}
+        transition={{ duration: 0.6, ease: 'easeOut' as const }}
         className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 items-center justify-center p-12"
       >
         {/* Background decorations */}
@@ -93,14 +93,14 @@ export default function AdminLoginPage() {
           <div className="absolute -bottom-32 -right-32 w-[500px] h-[500px] rounded-full bg-yoel-gold/5 blur-3xl" />
           <motion.div
             animate={{ y: [-10, 10, -10] }}
-            transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+            transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' as const }}
             className="absolute top-20 right-20 text-6xl opacity-20"
           >
             🛡️
           </motion.div>
           <motion.div
             animate={{ y: [10, -10, 10] }}
-            transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
+            transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' as const }}
             className="absolute bottom-32 left-16 text-5xl opacity-15"
           >
             🔐

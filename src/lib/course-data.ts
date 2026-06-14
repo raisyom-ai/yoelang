@@ -39,6 +39,7 @@ export interface VocabCard {
   example: string
   phonetic: string
   level?: string
+  image?: string
 }
 
 export interface QuizQuestion {

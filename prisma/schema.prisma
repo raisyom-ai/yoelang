@@ -34,6 +34,7 @@ model User {
   payments     Payment[]
   examAttempts ExamAttempt[]
   certificates Certificate[]
+  leaderboard  Leaderboard[]
 }
 
 model Level {
@@ -56,7 +57,7 @@ model Unit {
   order       Int
   icon        String
 
-  level   Level   @relation(fields: [levelId], references: [id])
+  level   Level   @relation(fields: [levelId], references: [id], onDelete: Cascade)
   lessons Lesson[]
 }
 
@@ -71,7 +72,7 @@ model Lesson {
   xpReward    Int     @default(10)
   duration    Int     @default(5)
 
-  unit        Unit             @relation(fields: [unitId], references: [id])
+  unit        Unit             @relation(fields: [unitId], references: [id], onDelete: Cascade)
   completions LessonCompletion[]
 }
 
@@ -83,8 +84,8 @@ model UserProgress {
   completed  Boolean  @default(false)
   updatedAt  DateTime @updatedAt
 
-  user  User  @relation(fields: [userId], references: [id])
-  level Level @relation(fields: [levelId], references: [id])
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  level Level @relation(fields: [levelId], references: [id], onDelete: Cascade)
 
   @@unique([userId, levelId])
 }
@@ -97,7 +98,7 @@ model UserBadge {
   icon      String
   earnedAt  DateTime @default(now())
 
-  user User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, badgeId])
 }
@@ -110,8 +111,8 @@ model LessonCompletion {
   xpEarned  Int
   completedAt DateTime @default(now())
 
-  user   User   @relation(fields: [userId], references: [id])
-  lesson Lesson @relation(fields: [lessonId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
 
   @@unique([userId, lessonId])
 }
@@ -123,7 +124,7 @@ model ChatMessage {
   content   String
   createdAt DateTime @default(now())
 
-  user User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model DailyChallenge {
@@ -144,6 +145,8 @@ model Leaderboard {
   period String
   score  Int
   rank   Int
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, period])
 }
@@ -166,7 +169,7 @@ model Payment {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
-  user User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
 }
 
 model ExamAttempt {
@@ -180,7 +183,7 @@ model ExamAttempt {
   xpEarned      Int      @default(0)
   completedAt   DateTime @default(now())
 
-  user User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, level])
 }
@@ -200,7 +203,7 @@ model Certificate {
   userName         String   @default("Apprenant") // Name as it appeared when certificate was earned
   issuedAt         DateTime @default(now())
 
-  user User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
 
   @@unique([userId, level])
   @@index([certificateId])

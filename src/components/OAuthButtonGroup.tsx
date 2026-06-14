@@ -12,18 +12,10 @@ interface ProviderStatus {
   apple: boolean
 }
 
-interface DetectUrlResponse {
-  detectedUrl: string
-  oauthRedirectUris: {
-    google: string
-    apple: string
-  }
-}
-
 interface OAuthButtonGroupProps {
   /** Whether a parent form is currently submitting (disables buttons) */
   disabled?: boolean
-  /** Callback URL after OAuth sign-in — defaults to '/?oauth=1' */
+  /** Callback URL after OAuth sign-in — defaults to '/' */
   callbackUrl?: string
   /** Content to show below OAuth buttons with a separator (e.g. email/password form) */
   children?: ReactNode
@@ -39,30 +31,21 @@ function checkOAuthError(): boolean {
 
 export default function OAuthButtonGroup({
   disabled = false,
-  callbackUrl = '/?oauth=1',
+  callbackUrl = '/',
   children,
 }: OAuthButtonGroupProps) {
   const [providers, setProviders] = useState<ProviderStatus | null>(null)
   const [loadingProvider, setLoadingProvider] = useState<'google' | 'apple' | null>(null)
   const [checkingProviders, setCheckingProviders] = useState(true)
-  const [detectInfo, setDetectInfo] = useState<DetectUrlResponse | null>(null)
   const [showSetupHint, setShowSetupHint] = useState(checkOAuthError)
   const [copied, setCopied] = useState(false)
 
-  // Compute the redirect URI from the browser's current origin
-  const browserRedirectUri = typeof window !== 'undefined'
-    ? `${window.location.origin}/api/auth/callback/google`
-    : null
-
-  // Fetch provider availability and detected URL on mount
+  // Fetch provider availability on mount
   useEffect(() => {
-    Promise.all([
-      fetch('/api/auth/providers').then((res) => res.json()),
-      fetch('/api/auth/detect-url').then((res) => res.json()),
-    ])
-      .then(([providerData, urlData]) => {
-        setProviders(providerData as ProviderStatus)
-        setDetectInfo(urlData as DetectUrlResponse)
+    fetch('/api/auth/providers')
+      .then((res) => res.json())
+      .then((data) => {
+        setProviders(data as ProviderStatus)
       })
       .catch(() => {
         setProviders({ google: false, apple: false })
@@ -75,10 +58,18 @@ export default function OAuthButtonGroup({
   const handleOAuthSignIn = async (provider: 'google' | 'apple') => {
     setLoadingProvider(provider)
     try {
-      // Use the current browser origin as callbackUrl so NextAuth
-      // generates the correct redirect_uri for Google/Apple OAuth
-      const origin = typeof window !== 'undefined' ? window.location.origin : ''
-      await signIn(provider, { callbackUrl: origin || callbackUrl })
+      // Mark that an OAuth flow was initiated so we can detect silent failures
+      // (e.g., when Google shows redirect_uri_mismatch and the user navigates back)
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('yoelang_oauth_pending', provider)
+        sessionStorage.setItem('yoelang_oauth_time', Date.now().toString())
+      }
+
+      // Use a simple callbackUrl — just the app root.
+      // The page.tsx session detection will pick up the NextAuth session
+      // automatically after the redirect, whether the URL has ?oauth=1
+      // or not (it checks for ?callbackUrl, ?error, and existing sessions).
+      await signIn(provider, { callbackUrl: '/' })
     } catch {
       setLoadingProvider(null)
     }
@@ -98,6 +89,11 @@ export default function OAuthButtonGroup({
   const hasAnyProvider = hasGoogle || hasApple
   const isLoading = disabled || loadingProvider !== null
 
+  // Compute the redirect URI from the browser's current origin
+  const browserRedirectUri = typeof window !== 'undefined'
+    ? `${window.location.origin}/api/auth/callback/google`
+    : ''
+
   // While checking, show a loading state
   if (checkingProviders) {
     return (
@@ -114,9 +110,6 @@ export default function OAuthButtonGroup({
   if (!hasAnyProvider) {
     return <>{children}</>
   }
-
-  // Determine the correct redirect URI to show (prefer browser origin over server detection)
-  const displayRedirectUri = browserRedirectUri || detectInfo?.oauthRedirectUris?.google || ''
 
   return (
     <>
@@ -157,7 +150,7 @@ export default function OAuthButtonGroup({
           </Button>
         )}
 
-        {/* Setup info button — always visible when Google is configured */}
+        {/* Setup info link — always visible when Google is configured */}
         {hasGoogle && (
           <button
             type="button"
@@ -183,11 +176,11 @@ export default function OAuthButtonGroup({
                 </p>
                 <div className="flex items-center gap-1.5 bg-white/60 dark:bg-black/20 rounded px-2 py-1.5">
                   <code className="text-xs text-amber-900 dark:text-amber-200 break-all flex-1">
-                    {displayRedirectUri}
+                    {browserRedirectUri}
                   </code>
                   <button
                     type="button"
-                    onClick={() => copyToClipboard(displayRedirectUri)}
+                    onClick={() => copyToClipboard(browserRedirectUri)}
                     className="shrink-0 p-1 hover:bg-amber-100 dark:hover:bg-amber-900/30 rounded transition-colors"
                     title="Copier"
                   >

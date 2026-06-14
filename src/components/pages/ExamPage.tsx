@@ -94,7 +94,7 @@ function ConfettiParticle({ delay }: { delay: number }) {
       }}
       initial={{ y: -10, opacity: 1, rotate: 0 }}
       animate={{ y: '110vh', opacity: 0, rotate: 720 }}
-      transition={{ duration, delay, ease: 'easeOut' }}
+      transition={{ duration, delay, ease: 'easeOut' as const }}
     />
   )
 }
@@ -518,7 +518,7 @@ export default function ExamPage() {
                 initial="enter"
                 animate="center"
                 exit="exit"
-                transition={{ duration: 0.25, ease: 'easeInOut' }}
+                transition={{ duration: 0.25, ease: 'easeInOut' as const }}
               >
                 <Card className="mb-6">
                   <CardContent className="p-6">
@@ -749,7 +749,7 @@ export default function ExamPage() {
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  transition={{ type: 'spring', stiffness: 260, damping: 20, delay: 0.2 }}
+                  transition={{ type: 'spring' as const, stiffness: 260, damping: 20, delay: 0.2 }}
                 >
                   {passed ? (
                     <div className="w-20 h-20 rounded-full bg-yoel-green/10 flex items-center justify-center mx-auto mb-4">
@@ -778,7 +778,7 @@ export default function ExamPage() {
                   <motion.div
                     initial={{ scale: 0.5, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
-                    transition={{ type: 'spring', delay: 0.3 }}
+                    transition={{ type: 'spring' as const, delay: 0.3 }}
                     className="text-5xl font-bold mb-1"
                   >
                     <span className={passed ? 'text-yoel-green' : 'text-red-500'}>{score}%</span>
@@ -857,7 +857,7 @@ export default function ExamPage() {
                       {isSubmitting ? (
                         <motion.div
                           animate={{ rotate: 360 }}
-                          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                          transition={{ duration: 1, repeat: Infinity, ease: 'linear' as const }}
                           className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
                         />
                       ) : (
@@ -914,7 +914,7 @@ export default function ExamPage() {
                 <motion.div
                   initial={{ scale: 0, rotate: -180 }}
                   animate={{ scale: 1, rotate: 0 }}
-                  transition={{ type: 'spring', stiffness: 260, damping: 20, delay: 0.2 }}
+                  transition={{ type: 'spring' as const, stiffness: 260, damping: 20, delay: 0.2 }}
                 >
                   <div className="w-24 h-24 rounded-full bg-yoel-gold/10 flex items-center justify-center mx-auto mb-4">
                     <PartyPopper className="w-12 h-12 text-yoel-gold" />

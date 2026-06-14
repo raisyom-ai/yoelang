@@ -34,14 +34,14 @@ const itemVariants = {
     opacity: 1,
     y: 0,
     scale: 1,
-    transition: { type: 'spring', stiffness: 260, damping: 24 },
+    transition: { type: 'spring' as const, stiffness: 260, damping: 24 },
   },
 }
 
 const floatVariants = {
   animate: {
     y: [-4, 4, -4],
-    transition: { duration: 3, repeat: Infinity, ease: 'easeInOut' },
+    transition: { duration: 3, repeat: Infinity, ease: 'easeInOut' as const },
   },
 }
 
@@ -57,7 +57,7 @@ const sparkleVariants = {
 const shimmerVariants = {
   animate: {
     backgroundPosition: ['0% 0%', '100% 100%'],
-    transition: { duration: 3, repeat: Infinity, ease: 'linear' },
+    transition: { duration: 3, repeat: Infinity, ease: 'linear' as const },
   },
 }
 
@@ -287,7 +287,7 @@ function FloatingParticle({ delay, x, size }: { delay: number; x: string; size: 
         duration: 4,
         delay,
         repeat: Infinity,
-        ease: 'easeOut',
+        ease: 'easeOut' as const,
       }}
     />
   )
@@ -339,7 +339,7 @@ function FeatureCard({ feature, index }: { feature: Feature; index: number }) {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.05 * index, type: 'spring', stiffness: 200 }}
+      transition={{ delay: 0.05 * index, type: 'spring' as const, stiffness: 200 }}
       className={`relative group rounded-2xl p-4 border transition-all duration-300 ${
         feature.premium && !feature.free
           ? 'bg-gradient-to-br from-yoel-gold/5 to-yoel-primary/5 border-yoel-gold/20 hover:border-yoel-gold/40 hover:shadow-lg hover:shadow-yoel-gold/5'
@@ -384,7 +384,7 @@ function PricingCard({
     <motion.div
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ type: 'spring', stiffness: 200 }}
+      transition={{ type: 'spring' as const, stiffness: 200 }}
       whileHover={{ y: -4 }}
       className="h-full"
     >
@@ -418,7 +418,7 @@ function PricingCard({
             animate={{
               backgroundPosition: ['0% 0%', '100% 100%', '0% 0%'],
             }}
-            transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
+            transition={{ duration: 3, repeat: Infinity, ease: 'linear' as const }}
           />
         )}
 
@@ -596,7 +596,7 @@ function ActivationOverlay({ onClose }: { onClose: () => void }) {
         className="bg-background rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl border border-yoel-gold/30"
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+        transition={{ type: 'spring' as const, stiffness: 300, damping: 25 }}
       >
         <motion.div
           animate={{
@@ -674,33 +674,14 @@ export default function PremiumPage() {
     if (user) {
       const plan = premiumPlanId as PremiumPlan
       
-      // Award premium badges based on plan tier
-      const badgeMap: Record<string, string[]> = {
-        essentiel: ['premium-star'],
-        complet: ['premium-star', 'premium-diamond', 'premium-crown'],
-        integral: ['premium-star', 'premium-diamond', 'premium-crown', 'premium-rocket'],
-      }
-      const newBadges = badgeMap[plan] || ['premium-star']
-      const currentBadges = useAppStore.getState().earnedBadges
-      const badgesToAdd = newBadges.filter(b => !currentBadges.includes(b))
-      
-      useAppStore.setState({
-        user: { ...user, isPremium: true, premiumPlan: plan },
-        earnedBadges: [...currentBadges, ...badgesToAdd],
-      })
+      // Activate a 3-day trial (not full premium — admin must approve first)
+      const trialEnd = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString()
+      useAppStore.getState().activateTrial(plan, trialEnd)
 
-      // Also update the backend
-      fetch('/api/user', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId: user.id,
-          isPremium: true,
-          premiumPlan: plan,
-        }),
-      }).catch(() => {
-        // Non-critical: store is already updated locally
-      })
+      // Note: We do NOT set isPremium: true here.
+      // The backend /api/user route blocks isPremium/premiumPlan updates from client.
+      // Admin approval via /api/payment/admin sets isPremium on the server.
+      // The trial gives the user limited access during the waiting period.
     }
   }
 
@@ -768,7 +749,7 @@ export default function PremiumPage() {
                   animate={{
                     backgroundPosition: ['0% 0%', '100% 100%', '0% 0%'],
                   }}
-                  transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
+                  transition={{ duration: 4, repeat: Infinity, ease: 'linear' as const }}
                 />
 
                 <CardContent className="relative flex flex-col items-center gap-4 p-8 text-center">
@@ -1173,7 +1154,7 @@ export default function PremiumPage() {
                   animate={{
                     backgroundPosition: ['0% 0%', '100% 100%', '0% 0%'],
                   }}
-                  transition={{ duration: 5, repeat: Infinity, ease: 'linear' }}
+                  transition={{ duration: 5, repeat: Infinity, ease: 'linear' as const }}
                 />
                 <CardContent className="relative flex flex-col items-center gap-4 p-8 text-center">
                   <motion.div

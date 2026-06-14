@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { formatUserResponse } from '@/lib/api-utils'
 
 export async function GET(req: NextRequest) {
   try {
@@ -47,9 +48,16 @@ export async function PUT(req: NextRequest) {
       return NextResponse.json({ error: 'UserId requis' }, { status: 400 })
     }
 
+    // Verify user exists
+    const existingUser = await db.user.findUnique({ where: { id: userId } })
+    if (!existingUser) {
+      return NextResponse.json({ error: 'Utilisateur non trouvé' }, { status: 404 })
+    }
+
     // Only allow safe fields to be updated
+    // SECURITY: isPremium and premiumPlan are NOT included — only admin/payments can change these
     const allowedFields = [
-      'name', 'level', 'xp', 'streak', 'coins', 'isPremium', 'premiumPlan',
+      'name', 'level', 'xp', 'streak', 'coins',
       'dailyGoal', 'notifications', 'darkMode', 'soundEnabled',
     ]
     
@@ -60,17 +68,22 @@ export async function PUT(req: NextRequest) {
       }
     }
 
+    // Validate level if being updated
+    if (safeUpdates.level) {
+      const VALID_LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']
+      if (!VALID_LEVELS.includes(safeUpdates.level as string)) {
+        return NextResponse.json({ error: 'Niveau invalide' }, { status: 400 })
+      }
+    }
+
     const user = await db.user.update({
       where: { id: userId },
       data: safeUpdates,
     })
 
-    const { password: _pwd2, ...userWithoutPassword } = user
-    void _pwd2
-
     return NextResponse.json({
       success: true,
-      user: userWithoutPassword,
+      user: formatUserResponse(user),
     })
   } catch (error) {
     console.error('Update user error:', error)

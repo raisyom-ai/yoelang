@@ -12,6 +12,12 @@ export async function POST(req: NextRequest) {
       )
     }
 
+    // Verify user exists
+    const user = await db.user.findUnique({ where: { id: userId } })
+    if (!user) {
+      return NextResponse.json({ error: 'Utilisateur non trouvé' }, { status: 404 })
+    }
+
     // Create or update lesson completion
     const completion = await db.lessonCompletion.upsert({
       where: {

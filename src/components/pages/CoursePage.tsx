@@ -34,7 +34,7 @@ const slideVariants = {
     x: 0,
     opacity: 1,
     scale: 1,
-    transition: { type: 'spring', stiffness: 300, damping: 30 },
+    transition: { type: 'spring' as const, stiffness: 300, damping: 30 },
   },
   exit: (direction: number) => ({
     x: direction > 0 ? -300 : 300,
@@ -57,7 +57,7 @@ const itemVariants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { type: 'spring', stiffness: 260, damping: 24 },
+    transition: { type: 'spring' as const, stiffness: 260, damping: 24 },
   },
 }
 
@@ -295,7 +295,7 @@ export default function CoursePage() {
 
   // Group lessons by unit
   const lessonsByUnit = useMemo(() => {
-    const grouped: Record<string, LessonData & { completed: boolean }[]> = {}
+    const grouped: Record<string, Array<LessonData & { completed: boolean }>> = {}
     for (const lesson of allLessons) {
       if (!grouped[lesson.unitId]) grouped[lesson.unitId] = []
       grouped[lesson.unitId].push(lesson)
@@ -389,7 +389,7 @@ export default function CoursePage() {
         title: selectedLessonData.title,
         type: selectedLessonData.type === 'vocabulary' ? 'vocabulaire'
           : selectedLessonData.type === 'grammar' ? 'grammaire'
-          : selectedLessonData.type === 'dialogue' ? 'conversation'
+          : selectedLessonData.type === 'conversation' ? 'conversation'
           : selectedLessonData.type === 'pronunciation' ? 'pronunciation'
           : 'vocabulaire',
         score,
@@ -926,7 +926,7 @@ export default function CoursePage() {
       <motion.div
         initial={{ y: 40, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.3, type: 'spring', stiffness: 200, damping: 25 }}
+        transition={{ delay: 0.3, type: 'spring' as const, stiffness: 200, damping: 25 }}
         className="sticky bottom-0 z-40 glass border-t border-border/30"
       >
         <div className="mx-auto max-w-3xl p-2 sm:p-3 flex items-center justify-between gap-2 sm:gap-3">
@@ -963,7 +963,7 @@ export default function CoursePage() {
               let start = Math.max(0, currentStep - half)
               const end = Math.min(totalSteps, start + maxDots)
               if (end - start < maxDots) start = Math.max(0, end - maxDots)
-              const dots = []
+              const dots: number[] = []
               for (let i = start; i < end; i++) {
                 dots.push(i)
               }
@@ -1048,7 +1048,7 @@ export default function CoursePage() {
               initial={{ scale: 0.5, opacity: 0, y: 40 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.8, opacity: 0, y: 20 }}
-              transition={{ type: 'spring', stiffness: 260, damping: 20 }}
+              transition={{ type: 'spring' as const, stiffness: 260, damping: 20 }}
               className="w-full max-w-sm"
             >
               <Card className="overflow-hidden border-0 shadow-2xl">
@@ -1058,7 +1058,7 @@ export default function CoursePage() {
                   <motion.div
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
-                    transition={{ type: 'spring', delay: 0.2 }}
+                    transition={{ type: 'spring' as const, delay: 0.2 }}
                   >
                     <div className="w-20 h-20 rounded-full bg-yoel-gold/10 flex items-center justify-center mx-auto">
                       <Award className="w-10 h-10 text-yoel-gold" />
@@ -1127,7 +1127,7 @@ export default function CoursePage() {
               initial={{ scale: 0.5, opacity: 0, y: 40 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.8, opacity: 0, y: 20 }}
-              transition={{ type: 'spring', stiffness: 260, damping: 20 }}
+              transition={{ type: 'spring' as const, stiffness: 260, damping: 20 }}
               className="w-full max-w-sm"
             >
               <Card className="overflow-hidden border-0 shadow-2xl">
@@ -1200,7 +1200,7 @@ export default function CoursePage() {
               initial={{ scale: 0.5, opacity: 0, y: 40 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.8, opacity: 0, y: 20 }}
-              transition={{ type: 'spring', stiffness: 260, damping: 20 }}
+              transition={{ type: 'spring' as const, stiffness: 260, damping: 20 }}
               className="w-full max-w-sm"
             >
               <Card className="overflow-hidden border-0 shadow-2xl">
@@ -3285,7 +3285,7 @@ function LessonQuizStep({
           initial={{ opacity: 0, x: 50 }}
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -50 }}
-          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+          transition={{ type: 'spring' as const, stiffness: 300, damping: 30 }}
         >
           <Card className="border-0 shadow-lg overflow-hidden">
             <div className="h-2 bg-gradient-to-r from-yoel-gold to-amber-400" />
@@ -3433,7 +3433,7 @@ function LessonCompletionModal({
         initial={{ scale: 0.8, opacity: 0, y: 20 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.8, opacity: 0, y: 20 }}
-        transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+        transition={{ type: 'spring' as const, stiffness: 300, damping: 25 }}
         className="w-full max-w-md"
         onClick={(e) => e.stopPropagation()}
       >
@@ -3447,7 +3447,7 @@ function LessonCompletionModal({
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
-              transition={{ delay: 0.3, type: 'spring', stiffness: 200 }}
+              transition={{ delay: 0.3, type: 'spring' as const, stiffness: 200 }}
             >
               {passed ? (
                 <Trophy className="h-16 w-16 mx-auto mb-4 drop-shadow-lg" />

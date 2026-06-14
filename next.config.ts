@@ -1,12 +1,13 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: "standalone",
-  /* config options here */
+  reactStrictMode: true,
   typescript: {
+    // TS errors are checked by `bun run lint` in CI/CD
+    // Disabling here prevents build failures from non-critical type issues
     ignoreBuildErrors: true,
   },
-  reactStrictMode: false,
+  turbopack: {},
 };
 
 export default nextConfig;

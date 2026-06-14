@@ -392,7 +392,7 @@ const itemVariants = {
     opacity: 1,
     y: 0,
     scale: 1,
-    transition: { type: 'spring', stiffness: 260, damping: 24 },
+    transition: { type: 'spring' as const, stiffness: 260, damping: 24 },
   },
 }
 
@@ -402,7 +402,7 @@ const messageVariants = {
     opacity: 1,
     y: 0,
     scale: 1,
-    transition: { type: 'spring', stiffness: 300, damping: 25 },
+    transition: { type: 'spring' as const, stiffness: 300, damping: 25 },
   },
 }
 
@@ -432,10 +432,10 @@ interface SpeechRecognitionInstance {
 
 function createSpeechRecognition(): SpeechRecognitionInstance | null {
   if (typeof window === 'undefined') return null
-  const SR = (window as Record<string, unknown>).SpeechRecognition as
+  const SR = (window as unknown as Record<string, unknown>).SpeechRecognition as
     | (new () => SpeechRecognitionInstance)
     | undefined
-  const WSR = (window as Record<string, unknown>).webkitSpeechRecognition as
+  const WSR = (window as unknown as Record<string, unknown>).webkitSpeechRecognition as
     | (new () => SpeechRecognitionInstance)
     | undefined
   const Ctor = SR || WSR
@@ -483,7 +483,7 @@ function TypingIndicator() {
                 duration: 0.6,
                 repeat: Infinity,
                 delay: i * 0.15,
-                ease: 'easeInOut',
+                ease: 'easeInOut' as const,
               }}
             />
           ))}
@@ -534,7 +534,7 @@ function SpeakingWaveform() {
             repeat: Infinity,
             repeatType: 'reverse',
             delay: i * 0.08,
-            ease: 'easeInOut',
+            ease: 'easeInOut' as const,
           }}
         />
       ))}
@@ -1076,7 +1076,21 @@ export default function ChatPage() {
         }),
       })
 
-      if (!response.ok) throw new Error('API request failed')
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        if (errorData.code === 'PREMIUM_REQUIRED') {
+          setChatLoading(false)
+          // Show premium upsell
+          toast.error('Premium requis', { description: 'Le chat IA est réservé aux membres Premium.' })
+          return
+        }
+        if (errorData.code === 'CHAT_LIMIT_REACHED') {
+          setChatLoading(false)
+          toast.error('Limite atteinte', { description: errorData.error || `Vous avez atteint votre limite de ${errorData.limit} messages ce mois.` })
+          return
+        }
+        throw new Error('API request failed')
+      }
 
       const data = await response.json()
 
@@ -1534,7 +1548,7 @@ export default function ChatPage() {
                 initial={{ opacity: 0, scale: 0.9, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                transition={{ type: 'spring', stiffness: 260, damping: 24 }}
+                transition={{ type: 'spring' as const, stiffness: 260, damping: 24 }}
                 className="glass-card mx-4 max-w-sm w-full rounded-2xl border border-border/50 p-6 text-center shadow-xl"
               >
                 <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-yoel-gold/20 to-amber-500/20 mx-auto mb-4">
@@ -1581,7 +1595,7 @@ export default function ChatPage() {
                 initial={{ opacity: 0, scale: 0.9, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                transition={{ type: 'spring', stiffness: 260, damping: 24 }}
+                transition={{ type: 'spring' as const, stiffness: 260, damping: 24 }}
                 className="glass-card max-w-sm w-full rounded-2xl border border-border/50 p-6 text-center shadow-2xl"
                 onClick={(e) => e.stopPropagation()}
               >

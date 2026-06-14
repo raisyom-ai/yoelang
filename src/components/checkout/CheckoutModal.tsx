@@ -13,9 +13,22 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 import { useAppStore, type PremiumPlan } from '@/lib/store'
-import { PAYMENT_ACCOUNTS, PLAN_PRICES } from '@/lib/payment-config'
+import { PLAN_PRICES } from '@/lib/payment-config'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
+
+interface PaymentAccount {
+  method: string
+  label: string
+  number: string
+  displayNumber: string
+  icon: string
+  color: string
+  bg: string
+  borderColor: string
+  ussdCode?: string
+  instructions: string[]
+}
 
 type CheckoutStep = 'method' | 'instructions' | 'confirm' | 'processing' | 'success' | 'error'
 
@@ -50,14 +63,15 @@ export default function CheckoutModal({ selectedPlanId, onClose, onSuccess }: Ch
   const [copied, setCopied] = useState<string | null>(null)
   const [paymentError, setPaymentError] = useState<string | null>(null)
   const [paymentId, setPaymentId] = useState<string | null>(null)
+  const [paymentAccounts, setPaymentAccounts] = useState<PaymentAccount[]>([])
 
   const planId = selectedPlanId || 'yearly'
   const planInfo = PLAN_INFO[planId] || PLAN_INFO.monthly
   const premiumPlanId = PLAN_ID_MAP[planId] || 'complet'
   const planPrice = PLAN_PRICES[premiumPlanId]
-  const selectedAccount = PAYMENT_ACCOUNTS.find(a => a.method === selectedMethod)
+  const selectedAccount = paymentAccounts.find(a => a.method === selectedMethod)
 
-  // Reset state on mount
+  // Fetch payment accounts from server & reset state on mount
   useEffect(() => {
     setStep('method')
     setSelectedMethod(null)
@@ -66,6 +80,11 @@ export default function CheckoutModal({ selectedPlanId, onClose, onSuccess }: Ch
     setCopied(null)
     setPaymentError(null)
     setPaymentId(null)
+    // Fetch payment accounts from server API
+    fetch('/api/payment/accounts')
+      .then(res => res.json())
+      .then(data => { if (data.success) setPaymentAccounts(data.accounts) })
+      .catch(() => {})
   }, [])
 
   // Copy to clipboard helper
@@ -107,7 +126,7 @@ export default function CheckoutModal({ selectedPlanId, onClose, onSuccess }: Ch
       setPaymentId(data.payment.id)
       setStep('success')
 
-      // Activate premium locally immediately (trial period)
+      // Activate trial period (not full premium — admin must approve)
       onSuccess(premiumPlanId)
     } catch (err) {
       setPaymentError('Erreur de connexion. Vérifiez votre connexion internet et réessayez.')
@@ -129,13 +148,16 @@ export default function CheckoutModal({ selectedPlanId, onClose, onSuccess }: Ch
       </div>
 
       <div className="space-y-3">
-        {PAYMENT_ACCOUNTS.map((account) => (
-          <motion.button
+        {paymentAccounts.map((account) => (
+          <motion.div
             key={account.method}
+            role="button"
+            tabIndex={0}
             whileHover={{ scale: 1.01 }}
             whileTap={{ scale: 0.99 }}
             onClick={() => setSelectedMethod(account.method)}
-            className={`w-full text-left rounded-2xl border-2 p-4 transition-all duration-200 ${
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setSelectedMethod(account.method) }}
+            className={`w-full text-left rounded-2xl border-2 p-4 transition-all duration-200 cursor-pointer ${
               selectedMethod === account.method
                 ? `${account.borderColor} ${account.bg} shadow-md`
                 : 'border-border/50 hover:border-border bg-card'
@@ -177,7 +199,7 @@ export default function CheckoutModal({ selectedPlanId, onClose, onSuccess }: Ch
                 selectedMethod === account.method ? account.color : 'text-muted-foreground/40'
               }`} />
             </div>
-          </motion.button>
+          </motion.div>
         ))}
       </div>
 
@@ -394,7 +416,7 @@ export default function CheckoutModal({ selectedPlanId, onClose, onSuccess }: Ch
     <div className="flex flex-col items-center justify-center py-8 space-y-4">
       <motion.div
         animate={{ rotate: 360 }}
-        transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+        transition={{ duration: 2, repeat: Infinity, ease: 'linear' as const }}
       >
         <Loader2 className="h-12 w-12 text-yoel-primary" />
       </motion.div>
@@ -412,7 +434,7 @@ export default function CheckoutModal({ selectedPlanId, onClose, onSuccess }: Ch
       <motion.div
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
-        transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+        transition={{ type: 'spring' as const, stiffness: 300, damping: 20 }}
       >
         <div className="flex h-20 w-20 items-center justify-center rounded-full bg-yoel-green/10">
           <CheckCircle2 className="h-10 w-10 text-yoel-green" />
@@ -563,7 +585,7 @@ export default function CheckoutModal({ selectedPlanId, onClose, onSuccess }: Ch
           initial={{ y: 100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 100, opacity: 0 }}
-          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+          transition={{ type: 'spring' as const, stiffness: 300, damping: 30 }}
           onClick={(e) => e.stopPropagation()}
         >
           <div className="p-6">
