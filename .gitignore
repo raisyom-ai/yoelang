@@ -53,3 +53,5 @@ server.log
 # Skills directory
 /skills/.env
 scripts/push-turso-schema.mjs
+worklog.md
+tool-results/
