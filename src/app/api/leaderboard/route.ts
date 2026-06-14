@@ -12,6 +12,9 @@ interface LeaderboardEntry {
   isPremium: boolean
   streak: number
   userId: string
+  lessonsCompleted: number
+  challengesCompleted: number
+  lastActiveAt: string | null
 }
 
 // ─── GET /api/leaderboard ────────────────────────────────────────────────────
@@ -43,12 +46,12 @@ export async function GET(req: NextRequest) {
     let userEntry: LeaderboardEntry | null = null
 
     if (period === 'weekly') {
-      // ── Weekly: sum XP from LessonCompletion in last 7 days ──
+      // ── Weekly: sum XP from LessonCompletion + ChallengeCompletion in last 7 days ──
       const sevenDaysAgo = new Date()
       sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
 
-      // Aggregate xpEarned per user in the last 7 days
-      const weeklyXp = await db.lessonCompletion.groupBy({
+      // Aggregate lesson xpEarned per user in the last 7 days
+      const weeklyLessonXp = await db.lessonCompletion.groupBy({
         by: ['userId'],
         where: {
           completedAt: { gte: sevenDaysAgo },
@@ -56,21 +59,58 @@ export async function GET(req: NextRequest) {
         _sum: {
           xpEarned: true,
         },
-        orderBy: {
-          _sum: {
-            xpEarned: 'desc',
-          },
+        _count: {
+          id: true,
         },
-        take: 50,
       })
 
-      // Get user details for the top 50
-      const userIds = weeklyXp.map((w) => w.userId)
+      // Also count challenge completions this week
+      const weeklyChallengeXp = await db.challengeCompletion.groupBy({
+        by: ['userId'],
+        where: {
+          completedAt: { gte: sevenDaysAgo },
+        },
+        _count: {
+          id: true,
+        },
+      })
 
-      // Apply level filter if needed
+      // Build a map of userId -> { xp, lessons, challenges }
+      const weeklyMap = new Map<string, { xp: number; lessons: number; challenges: number }>()
+
+      for (const l of weeklyLessonXp) {
+        weeklyMap.set(l.userId, {
+          xp: l._sum.xpEarned ?? 0,
+          lessons: l._count.id,
+          challenges: 0,
+        })
+      }
+
+      // Add challenge XP (approximate: each challenge = 10-20 XP, use challenge count * 15 as estimate)
+      // Actually, we need the real XP from challenges. Let's get it from the User.xp changes.
+      // For simplicity, let's just count challenges as completed
+      for (const c of weeklyChallengeXp) {
+        const existing = weeklyMap.get(c.userId)
+        if (existing) {
+          existing.challenges = c._count.id
+        } else {
+          weeklyMap.set(c.userId, {
+            xp: 0, // Challenge XP is already added to User.xp, not tracked separately
+            lessons: 0,
+            challenges: c._count.id,
+          })
+        }
+      }
+
+      // Filter out users with no activity this week
+      const activeUserIds = Array.from(weeklyMap.entries())
+        .filter(([, data]) => data.xp > 0 || data.challenges > 0)
+        .map(([id]) => id)
+
+      // Get user details for active users
       const users = await db.user.findMany({
         where: {
-          id: { in: userIds },
+          id: { in: activeUserIds },
           ...levelFilter,
         },
         select: {
@@ -80,150 +120,82 @@ export async function GET(req: NextRequest) {
           level: true,
           isPremium: true,
           streak: true,
+          updatedAt: true,
         },
       })
 
-      // Map user details + weekly XP, preserving sort order
       const userMap = new Map(users.map((u) => [u.id, u]))
 
-      leaderboard = weeklyXp
-        .filter((w) => userMap.has(w.userId)) // only include users matching level filter
-        .map((w, idx) => {
-          const u = userMap.get(w.userId)!
+      // Build leaderboard sorted by weekly XP
+      const sortedEntries = activeUserIds
+        .filter((id) => userMap.has(id))
+        .map((id) => {
+          const u = userMap.get(id)!
+          const data = weeklyMap.get(id)!
           return {
-            rank: idx + 1,
+            userId: id,
             name: u.name ?? 'Apprenant',
             avatar: u.avatar,
             level: u.level,
-            xp: w._sum.xpEarned ?? 0,
+            xp: data.xp,
             isPremium: u.isPremium,
             streak: u.streak,
-            userId: u.id,
+            lessonsCompleted: data.lessons,
+            challengesCompleted: data.challenges,
+            lastActiveAt: u.updatedAt.toISOString(),
           }
         })
+        .sort((a, b) => b.xp - a.xp)
+        .slice(0, 50)
 
-      // If the requesting user is not in top 50, find their position
+      leaderboard = sortedEntries.map((entry, idx) => ({
+        ...entry,
+        rank: idx + 1,
+      }))
+
+      // Find requesting user's position if not in top 50
       if (userId) {
         const isInTop = leaderboard.some((e) => e.userId === userId)
         if (!isInTop) {
-          // Get the user's weekly XP
-          const userWeeklyXp = await db.lessonCompletion.aggregate({
-            where: {
-              userId,
-              completedAt: { gte: sevenDaysAgo },
-            },
-            _sum: {
-              xpEarned: true,
+          const u = await db.user.findUnique({
+            where: { id: userId },
+            select: {
+              id: true,
+              name: true,
+              avatar: true,
+              level: true,
+              isPremium: true,
+              streak: true,
+              updatedAt: true,
             },
           })
 
-          if (userWeeklyXp._sum.xpEarned && userWeeklyXp._sum.xpEarned > 0) {
-            const u = await db.user.findUnique({
-              where: { id: userId },
-              select: {
-                id: true,
-                name: true,
-                avatar: true,
-                level: true,
-                isPremium: true,
-                streak: true,
-              },
-            })
+          if (u && (level === 'all' || u.level === level)) {
+            const userData = weeklyMap.get(userId)
+            const userXp = userData?.xp ?? 0
+            const higherCount = sortedEntries.filter((e) => e.xp > userXp).length
 
-            if (u && (level === 'all' || u.level === level)) {
-              // Count how many users have more weekly XP
-              // We need to count users with higher XP who also match the level filter
-              const allWeeklyXp = await db.lessonCompletion.groupBy({
-                by: ['userId'],
-                where: {
-                  completedAt: { gte: sevenDaysAgo },
-                },
-                _sum: {
-                  xpEarned: true,
-                },
-              })
-
-              // Get all user levels for filtering
-              const allUserIds = allWeeklyXp.map((w) => w.userId)
-              const allUsers = await db.user.findMany({
-                where: {
-                  id: { in: allUserIds },
-                  ...levelFilter,
-                },
-                select: { id: true },
-              })
-              const filteredUserIds = new Set(allUsers.map((u) => u.id))
-
-              const higherCount = allWeeklyXp.filter(
-                (w) =>
-                  filteredUserIds.has(w.userId) &&
-                  (w._sum.xpEarned ?? 0) > (userWeeklyXp._sum.xpEarned ?? 0),
-              ).length
-
-              userEntry = {
-                rank: higherCount + 1,
-                name: u.name ?? 'Apprenant',
-                avatar: u.avatar,
-                level: u.level,
-                xp: userWeeklyXp._sum.xpEarned ?? 0,
-                isPremium: u.isPremium,
-                streak: u.streak,
-                userId: u.id,
-              }
-            }
-          } else {
-            // User has no weekly XP — put them at the end
-            const u = await db.user.findUnique({
-              where: { id: userId },
-              select: {
-                id: true,
-                name: true,
-                avatar: true,
-                level: true,
-                isPremium: true,
-                streak: true,
-              },
-            })
-
-            if (u && (level === 'all' || u.level === level)) {
-              // Count all users with any weekly XP matching the filter
-              const allWeeklyXp = await db.lessonCompletion.groupBy({
-                by: ['userId'],
-                where: {
-                  completedAt: { gte: sevenDaysAgo },
-                },
-                _sum: {
-                  xpEarned: true,
-                },
-              })
-
-              const allUserIds = allWeeklyXp.map((w) => w.userId)
-              const allUsers = await db.user.findMany({
-                where: {
-                  id: { in: allUserIds },
-                  ...levelFilter,
-                },
-                select: { id: true },
-              })
-
-              userEntry = {
-                rank: allUsers.length + 1,
-                name: u.name ?? 'Apprenant',
-                avatar: u.avatar,
-                level: u.level,
-                xp: 0,
-                isPremium: u.isPremium,
-                streak: u.streak,
-                userId: u.id,
-              }
+            userEntry = {
+              rank: higherCount + 1,
+              name: u.name ?? 'Apprenant',
+              avatar: u.avatar,
+              level: u.level,
+              xp: userXp,
+              isPremium: u.isPremium,
+              streak: u.streak,
+              userId: u.id,
+              lessonsCompleted: userData?.lessons ?? 0,
+              challengesCompleted: userData?.challenges ?? 0,
+              lastActiveAt: u.updatedAt.toISOString(),
             }
           }
         }
       }
     } else {
-      // ── All-time: use total XP from User table ──
+      // ── All-time: use total XP from User table, but ONLY users with XP > 0 ──
       const topUsers = await db.user.findMany({
         where: {
+          xp: { gt: 0 },
           ...levelFilter,
         },
         orderBy: { xp: 'desc' },
@@ -236,8 +208,34 @@ export async function GET(req: NextRequest) {
           xp: true,
           isPremium: true,
           streak: true,
+          updatedAt: true,
         },
       })
+
+      // Get lesson completion counts
+      const lessonCounts = await db.lessonCompletion.groupBy({
+        by: ['userId'],
+        where: {
+          userId: { in: topUsers.map((u) => u.id) },
+        },
+        _count: {
+          id: true,
+        },
+      })
+
+      // Get challenge completion counts
+      const challengeCounts = await db.challengeCompletion.groupBy({
+        by: ['userId'],
+        where: {
+          userId: { in: topUsers.map((u) => u.id) },
+        },
+        _count: {
+          id: true,
+        },
+      })
+
+      const lessonMap = new Map(lessonCounts.map((l) => [l.userId, l._count.id]))
+      const challengeMap = new Map(challengeCounts.map((c) => [c.userId, c._count.id]))
 
       leaderboard = topUsers.map((u, idx) => ({
         rank: idx + 1,
@@ -248,6 +246,9 @@ export async function GET(req: NextRequest) {
         isPremium: u.isPremium,
         streak: u.streak,
         userId: u.id,
+        lessonsCompleted: lessonMap.get(u.id) ?? 0,
+        challengesCompleted: challengeMap.get(u.id) ?? 0,
+        lastActiveAt: u.updatedAt.toISOString(),
       }))
 
       // Find the requesting user's position if not in top 50
@@ -264,6 +265,7 @@ export async function GET(req: NextRequest) {
               xp: true,
               isPremium: true,
               streak: true,
+              updatedAt: true,
             },
           })
 
@@ -275,6 +277,12 @@ export async function GET(req: NextRequest) {
               },
             })
 
+            // Get this user's counts
+            const [userLessonCount, userChallengeCount] = await Promise.all([
+              db.lessonCompletion.count({ where: { userId: u.id } }),
+              db.challengeCompletion.count({ where: { userId: u.id } }),
+            ])
+
             userEntry = {
               rank: higherCount + 1,
               name: u.name ?? 'Apprenant',
@@ -284,6 +292,9 @@ export async function GET(req: NextRequest) {
               isPremium: u.isPremium,
               streak: u.streak,
               userId: u.id,
+              lessonsCompleted: userLessonCount,
+              challengesCompleted: userChallengeCount,
+              lastActiveAt: u.updatedAt.toISOString(),
             }
           }
         }

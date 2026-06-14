@@ -4,7 +4,8 @@ import { useState, useEffect, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import {
   ArrowLeft, Home, Trophy, Flame, Zap, Crown,
-  ChevronDown, Loader2, Medal,
+  ChevronDown, Loader2, Medal, BookOpen, Target,
+  Clock,
 } from 'lucide-react'
 import { useAppStore } from '@/lib/store'
 import { Card, CardContent } from '@/components/ui/card'
@@ -29,6 +30,9 @@ interface LeaderboardEntry {
   isPremium: boolean
   streak: number
   userId: string
+  lessonsCompleted: number
+  challengesCompleted: number
+  lastActiveAt: string | null
 }
 
 // ─── Animation Variants ─────────────────────────────────────────────────────
@@ -99,6 +103,23 @@ const PODIUM_STYLES: Record<number, { bg: string; border: string; medal: string;
   },
 }
 
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+
+function timeAgo(dateStr: string | null): string {
+  if (!dateStr) return ''
+  const now = new Date()
+  const date = new Date(dateStr)
+  const diffMs = now.getTime() - date.getTime()
+  const diffMin = Math.floor(diffMs / 60000)
+  if (diffMin < 1) return "À l'instant"
+  if (diffMin < 60) return `Il y a ${diffMin}min`
+  const diffH = Math.floor(diffMin / 60)
+  if (diffH < 24) return `Il y a ${diffH}h`
+  const diffD = Math.floor(diffH / 24)
+  if (diffD < 7) return `Il y a ${diffD}j`
+  return `Il y a ${Math.floor(diffD / 7)}sem.`
+}
+
 // ─── Main Component ─────────────────────────────────────────────────────────
 
 export default function LeaderboardPage() {
@@ -110,6 +131,7 @@ export default function LeaderboardPage() {
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([])
   const [userEntry, setUserEntry] = useState<LeaderboardEntry | null>(null)
   const [loading, setLoading] = useState(true)
+  const [totalActiveUsers, setTotalActiveUsers] = useState(0)
 
   // ─── Fetch leaderboard ──────────────────────────────────────────────────
   const fetchLeaderboard = useCallback(async () => {
@@ -127,6 +149,7 @@ export default function LeaderboardPage() {
       if (data.success) {
         setLeaderboard(data.leaderboard)
         setUserEntry(data.userEntry ?? null)
+        setTotalActiveUsers(data.leaderboard.length)
       }
     } catch (err) {
       console.error('Leaderboard fetch error:', err)
@@ -262,6 +285,14 @@ export default function LeaderboardPage() {
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
+
+          {/* Active users count */}
+          <div className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">
+            <div className="h-1.5 w-1.5 rounded-full bg-yoel-green animate-pulse" />
+            <span>
+              {totalActiveUsers} apprenant{totalActiveUsers !== 1 ? 's' : ''} {period === 'weekly' ? 'actif cette semaine' : 'classé'}s
+            </span>
+          </div>
         </motion.div>
 
         {/* ─── Podium (Top 3) ─────────────────────────────────────────── */}
@@ -323,11 +354,27 @@ export default function LeaderboardPage() {
                         </span>
                       </div>
 
+                      {/* Stats row */}
+                      <div className="flex items-center gap-2 mt-1.5 text-[9px] text-muted-foreground">
+                        {entry.lessonsCompleted > 0 && (
+                          <span className="flex items-center gap-0.5">
+                            <BookOpen className="h-2.5 w-2.5" />
+                            {entry.lessonsCompleted}
+                          </span>
+                        )}
+                        {entry.challengesCompleted > 0 && (
+                          <span className="flex items-center gap-0.5">
+                            <Target className="h-2.5 w-2.5" />
+                            {entry.challengesCompleted}
+                          </span>
+                        )}
+                      </div>
+
                       {/* Streak */}
                       {entry.streak > 0 && (
                         <div className="flex items-center gap-0.5 mt-1">
                           <Flame className="h-3 w-3 text-orange-500" />
-                          <span className="text-[10px] font-medium text-orange-500">{entry.streak}</span>
+                          <span className="text-[10px] font-medium text-orange-500">{entry.streak}j</span>
                         </div>
                       )}
 
@@ -347,7 +394,7 @@ export default function LeaderboardPage() {
           <motion.div variants={itemVariants}>
             <Card className="glass-card">
               <CardContent className="p-2">
-                <div className="max-h-96 overflow-y-auto space-y-1 pr-1 scrollbar-thin">
+                <div className="max-h-[500px] overflow-y-auto space-y-1 pr-1 scrollbar-thin">
                   {restEntries.map((entry) => {
                     const isCurrentUser = entry.userId === userId
 
@@ -384,12 +431,37 @@ export default function LeaderboardPage() {
                               <Crown className="h-3 w-3 text-yoel-gold shrink-0" />
                             )}
                           </div>
-                          <Badge
-                            className={`text-[9px] px-1.5 py-0 border-0 mt-0.5 ${LEVEL_COLORS[entry.level] ?? 'bg-muted/50 text-muted-foreground'}`}
-                          >
-                            {entry.level}
-                          </Badge>
+                          <div className="flex items-center gap-1.5 mt-0.5">
+                            <Badge
+                              className={`text-[9px] px-1.5 py-0 border-0 ${LEVEL_COLORS[entry.level] ?? 'bg-muted/50 text-muted-foreground'}`}
+                            >
+                              {entry.level}
+                            </Badge>
+                            {/* Mini stats */}
+                            <div className="flex items-center gap-1.5 text-[9px] text-muted-foreground">
+                              {entry.lessonsCompleted > 0 && (
+                                <span className="flex items-center gap-0.5">
+                                  <BookOpen className="h-2.5 w-2.5" />
+                                  {entry.lessonsCompleted}
+                                </span>
+                              )}
+                              {entry.challengesCompleted > 0 && (
+                                <span className="flex items-center gap-0.5">
+                                  <Target className="h-2.5 w-2.5" />
+                                  {entry.challengesCompleted}
+                                </span>
+                              )}
+                            </div>
+                          </div>
                         </div>
+
+                        {/* Last active */}
+                        {entry.lastActiveAt && (
+                          <span className="text-[9px] text-muted-foreground shrink-0 hidden sm:block flex items-center gap-0.5">
+                            <Clock className="h-2.5 w-2.5" />
+                            {timeAgo(entry.lastActiveAt)}
+                          </span>
+                        )}
 
                         {/* Streak */}
                         {entry.streak > 0 && (
@@ -426,7 +498,7 @@ export default function LeaderboardPage() {
                 <h3 className="font-semibold text-lg mb-1">Aucun classement</h3>
                 <p className="text-sm text-muted-foreground text-center max-w-xs">
                   {period === 'weekly'
-                    ? 'Aucun apprenant n’a gagné de XP cette semaine. Soyez le premier !'
+                    ? "Aucun apprenant n'a gagné de XP cette semaine. Soyez le premier !"
                     : 'Commencez à apprendre pour apparaître dans le classement !'}
                 </p>
                 <Button
@@ -442,11 +514,11 @@ export default function LeaderboardPage() {
         )}
 
         {/* ─── Spacer for bottom card ──────────────────────────────────── */}
-        {currentUserEntry && <div className="h-20" />}
+        {currentUserEntry && !userInTop && <div className="h-20" />}
       </motion.div>
 
       {/* ─── Your Position — Sticky Bottom Card ────────────────────────── */}
-      {currentUserEntry && (
+      {currentUserEntry && !userInTop && (
         <div className="sticky bottom-0 z-30 border-t border-border/40 bg-background/90 backdrop-blur-lg px-4 py-3">
           <div className="mx-auto max-w-4xl">
             <Card className="border-yoel-primary/20 bg-yoel-primary/5 overflow-hidden">
@@ -472,11 +544,17 @@ export default function LeaderboardPage() {
                       <Crown className="h-3 w-3 text-yoel-gold shrink-0" />
                     )}
                   </div>
-                  <Badge
-                    className={`text-[9px] px-1.5 py-0 border-0 ${LEVEL_COLORS[currentUserEntry.level] ?? 'bg-muted/50 text-muted-foreground'}`}
-                  >
-                    {currentUserEntry.level}
-                  </Badge>
+                  <div className="flex items-center gap-1.5 mt-0.5">
+                    <Badge
+                      className={`text-[9px] px-1.5 py-0 border-0 ${LEVEL_COLORS[currentUserEntry.level] ?? 'bg-muted/50 text-muted-foreground'}`}
+                    >
+                      {currentUserEntry.level}
+                    </Badge>
+                    <span className="text-[9px] text-muted-foreground flex items-center gap-1">
+                      <BookOpen className="h-2.5 w-2.5" />
+                      {currentUserEntry.lessonsCompleted} leçons
+                    </span>
+                  </div>
                 </div>
 
                 {/* Streak */}

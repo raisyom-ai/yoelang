@@ -10,6 +10,7 @@ import {
   Trophy as TrophyIcon, Swords
 } from 'lucide-react'
 import { useAppStore, getLevelsForUser, BADGES, getRecommendedDailyGoal, calculateStreak, getWeekActivity, type PageId } from '@/lib/store'
+import { toast } from 'sonner'
 import { getLessonContent, type VocabWord, type GrammarRule } from '@/lib/lesson-content'
 import { speakWord } from '@/lib/speech-utils'
 import UserSessionWidget from '@/components/UserSessionWidget'
@@ -81,6 +82,9 @@ interface LeaderboardEntry {
   isPremium: boolean
   streak: number
   userId: string
+  lessonsCompleted: number
+  challengesCompleted: number
+  lastActiveAt: string | null
 }
 
 const TYPE_LABELS: Record<string, string> = {
@@ -419,13 +423,18 @@ export default function DashboardPage() {
 
   // Submit challenge answer
   const handleChallengeAnswer = async (index: number) => {
-    if (!currentChallenge || !user?.id) return
+    if (!currentChallenge || !user?.id) {
+      console.warn('Challenge answer blocked: no challenge or user', { currentChallenge: !!currentChallenge, userId: user?.id })
+      return
+    }
     const challengeId = currentChallenge.id
     if (completedIds.includes(challengeId)) return
     const currentStatus = challengeStates[challengeId]?.status
-    if (currentStatus === 'correct' || currentStatus === 'wrong') return
+    // Allow retry after wrong answer — reset state first
+    if (currentStatus === 'correct') return
 
     setSubmittingChallengeId(challengeId)
+    // Optimistic: mark as selected
     setChallengeStates(prev => ({
       ...prev,
       [challengeId]: { ...prev[challengeId], selectedIndex: index },
@@ -439,6 +448,17 @@ export default function DashboardPage() {
       })
       const data = await res.json()
 
+      // Handle already completed challenge
+      if (data.code === 'ALREADY_COMPLETED') {
+        setChallengeStates(prev => ({
+          ...prev,
+          [challengeId]: { status: 'correct', selectedIndex: currentChallenge.correctIndex, xpEarned: currentChallenge.xpReward },
+        }))
+        setCompletedIds(prev => [...prev, challengeId])
+        setSubmittingChallengeId(null)
+        return
+      }
+
       if (data.correct) {
         setChallengeStates(prev => ({
           ...prev,
@@ -449,11 +469,17 @@ export default function DashboardPage() {
         if (data.totalXp !== undefined) {
           useAppStore.setState(s => ({ user: s.user ? { ...s.user, xp: data.totalXp } : null }))
         }
+        toast.success(`+${data.xpEarned} XP !`, {
+          description: data.bonusXp > 0 ? `Bonus complet : +${data.bonusXp} XP !` : undefined,
+        })
       } else {
         setChallengeStates(prev => ({
           ...prev,
           [challengeId]: { status: 'wrong', selectedIndex: index, correctIndex: data.correctIndex },
         }))
+        toast.error('Mauvaise réponse !', {
+          description: data.correctAnswer ? `La bonne réponse était : ${data.correctAnswer}` : 'Essayez encore !',
+        })
       }
     } catch (err) {
       console.error('Challenge submit error:', err)
@@ -879,17 +905,19 @@ export default function DashboardPage() {
                         const isSelected = state?.selectedIndex === idx
                         const isCorrectOption = idx === currentChallenge.correctIndex
                         const isWrongSelection = state?.status === 'wrong' && isSelected
-                        const isCorrectReveal = (state?.status === 'correct' || state?.status === 'wrong') && isCorrectOption
-                        const isDisabled = completedIds.includes(currentChallenge.id) || state?.status === 'correct' || state?.status === 'wrong' || submittingChallengeId === currentChallenge.id
+                        const isCorrectReveal = state?.status === 'correct' && isCorrectOption
+                        const isCorrectShowOnWrong = state?.status === 'wrong' && isCorrectOption
+                        // Disable if: completed, correct, or currently submitting. Wrong answers can retry.
+                        const isDisabled = completedIds.includes(currentChallenge.id) || state?.status === 'correct' || submittingChallengeId === currentChallenge.id
 
                         let btnClass = 'text-xs sm:text-sm py-1.5 sm:py-2 rounded-xl border transition-all font-medium'
 
-                        if (state?.status === 'correct' && isCorrectOption) {
+                        if (isCorrectReveal) {
                           btnClass += ' bg-yoel-green/20 border-yoel-green/40 text-yoel-green'
                         } else if (isWrongSelection) {
                           btnClass += ' bg-destructive/15 border-destructive/40 text-destructive'
-                        } else if (isCorrectReveal && state?.status === 'wrong') {
-                          btnClass += ' bg-yoel-green/20 border-yoel-green/40 text-yoel-green'
+                        } else if (isCorrectShowOnWrong) {
+                          btnClass += ' bg-yoel-green/15 border-yoel-green/30 text-yoel-green'
                         } else {
                           btnClass += isDisabled ? ' bg-muted/50 border-muted text-muted-foreground' : ' bg-background border-border hover:border-yoel-primary/50 hover:bg-yoel-primary/5 cursor-pointer'
                         }
@@ -897,8 +925,12 @@ export default function DashboardPage() {
                         return (
                           <motion.button
                             key={idx}
-                            whileTap={!isDisabled ? { scale: 0.95 } : undefined}
-                            onClick={() => { if (!isDisabled) handleChallengeAnswer(idx) }}
+                            whileTap={!isDisabled && state?.status !== 'wrong' ? { scale: 0.95 } : undefined}
+                            onClick={() => {
+                              if (!isDisabled && state?.status !== 'wrong') {
+                                handleChallengeAnswer(idx)
+                              }
+                            }}
                             disabled={isDisabled}
                             className={btnClass}
                           >
@@ -913,9 +945,25 @@ export default function DashboardPage() {
                         <span className="text-yoel-green font-medium">✓ Correct ! +{challengeStates[currentChallenge.id]?.xpEarned} XP</span>
                       )}
                       {challengeStates[currentChallenge.id]?.status === 'wrong' && (
-                        <span className="text-destructive font-medium">✗ Mauvaise réponse</span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-destructive font-medium">✗ Mauvaise réponse</span>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="h-6 rounded-full text-[10px] px-2 border-yoel-primary/30 text-yoel-primary hover:bg-yoel-primary/5"
+                            onClick={() => {
+                              // Reset state to allow retry
+                              setChallengeStates(prev => ({
+                                ...prev,
+                                [currentChallenge.id]: { status: 'unanswered', selectedIndex: null },
+                              }))
+                            }}
+                          >
+                            Réessayer
+                          </Button>
+                        </div>
                       )}
-                      {(challengeStates[currentChallenge.id]?.status === 'correct' || challengeStates[currentChallenge.id]?.status === 'wrong') && (
+                      {challengeStates[currentChallenge.id]?.status === 'correct' && (
                         <Button
                           size="sm"
                           className="h-7 rounded-full bg-yoel-primary hover:bg-yoel-primary-dark text-white text-xs px-3"
@@ -1103,13 +1151,16 @@ export default function DashboardPage() {
                       <CardContent className="space-y-2 p-4 sm:p-6 pt-0 sm:pt-0">
                         {topLeaderboard.map((player, idx) => {
                           const initials = player.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+                          const isMe = player.userId === user?.id
                           return (
                             <motion.div
                               key={player.userId}
                               initial={{ opacity: 0, x: -20 }}
                               animate={{ opacity: 1, x: 0 }}
                               transition={{ delay: 0.5 + idx * 0.1 }}
-                              className="flex items-center gap-2 sm:gap-3 rounded-xl bg-muted/30 p-2.5 sm:p-3 transition-colors hover:bg-muted/50"
+                              className={`flex items-center gap-2 sm:gap-3 rounded-xl p-2.5 sm:p-3 transition-colors ${
+                                isMe ? 'bg-yoel-primary/10 ring-1 ring-yoel-primary/20' : 'bg-muted/30 hover:bg-muted/50'
+                              }`}
                             >
                               <div
                                 className={`flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full font-bold text-xs sm:text-sm ${
@@ -1138,7 +1189,33 @@ export default function DashboardPage() {
                                   {player.isPremium && (
                                     <Star className="h-3 w-3 text-yoel-gold fill-yoel-gold" />
                                   )}
+                                  {isMe && (
+                                    <span className="text-[9px] text-yoel-primary font-normal">(vous)</span>
+                                  )}
                                 </p>
+                                <div className="flex items-center gap-1.5 mt-0.5">
+                                  <Badge className={`text-[8px] px-1 py-0 border-0 ${
+                                    player.level === 'A1' ? 'bg-emerald-500/15 text-emerald-600' :
+                                    player.level === 'A2' ? 'bg-teal-500/15 text-teal-600' :
+                                    player.level === 'B1' ? 'bg-cyan-500/15 text-cyan-600' :
+                                    player.level === 'B2' ? 'bg-sky-500/15 text-sky-600' :
+                                    player.level === 'C1' ? 'bg-indigo-500/15 text-indigo-600' :
+                                    player.level === 'C2' ? 'bg-violet-500/15 text-violet-600' :
+                                    'bg-muted/50 text-muted-foreground'
+                                  }`}>
+                                    {player.level}
+                                  </Badge>
+                                  {player.streak > 0 && (
+                                    <span className="flex items-center gap-0.5 text-[9px] text-orange-500">
+                                      <Flame className="h-2.5 w-2.5" />{player.streak}j
+                                    </span>
+                                  )}
+                                  {player.lessonsCompleted > 0 && (
+                                    <span className="text-[9px] text-muted-foreground">
+                                      {player.lessonsCompleted} leçon{player.lessonsCompleted > 1 ? 's' : ''}
+                                    </span>
+                                  )}
+                                </div>
                               </div>
                               <span className="text-xs sm:text-sm font-semibold text-muted-foreground">
                                 {player.xp.toLocaleString()} XP
@@ -1162,6 +1239,24 @@ export default function DashboardPage() {
                               </Avatar>
                               <div className="flex-1 min-w-0">
                                 <p className="text-xs sm:text-sm font-medium truncate">{displayName} (vous)</p>
+                                <div className="flex items-center gap-1.5 mt-0.5">
+                                  <Badge className={`text-[8px] px-1 py-0 border-0 ${
+                                    userRank.level === 'A1' ? 'bg-emerald-500/15 text-emerald-600' :
+                                    userRank.level === 'A2' ? 'bg-teal-500/15 text-teal-600' :
+                                    userRank.level === 'B1' ? 'bg-cyan-500/15 text-cyan-600' :
+                                    userRank.level === 'B2' ? 'bg-sky-500/15 text-sky-600' :
+                                    userRank.level === 'C1' ? 'bg-indigo-500/15 text-indigo-600' :
+                                    userRank.level === 'C2' ? 'bg-violet-500/15 text-violet-600' :
+                                    'bg-muted/50 text-muted-foreground'
+                                  }`}>
+                                    {userRank.level}
+                                  </Badge>
+                                  {userRank.lessonsCompleted > 0 && (
+                                    <span className="text-[9px] text-muted-foreground">
+                                      {userRank.lessonsCompleted} leçon{userRank.lessonsCompleted > 1 ? 's' : ''}
+                                    </span>
+                                  )}
+                                </div>
                               </div>
                               <span className="text-xs sm:text-sm font-semibold text-yoel-primary">
                                 {userRank.xp.toLocaleString()} XP
@@ -1172,6 +1267,7 @@ export default function DashboardPage() {
                         {!userRank && topLeaderboard.length === 0 && (
                           <div className="text-center py-4">
                             <p className="text-xs text-muted-foreground">Aucun classement disponible</p>
+                            <p className="text-[10px] text-muted-foreground mt-1">Gagnez des XP pour apparaître ici !</p>
                           </div>
                         )}
                       </CardContent>
