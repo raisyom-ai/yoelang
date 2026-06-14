@@ -4,20 +4,28 @@ import { useEffect } from 'react'
 
 /**
  * Registers the service worker for PWA functionality.
- * Only runs in production (not during development).
+ * In production, @ducanh2912/next-pwa auto-injects the SW registration.
+ * This component handles fallback registration for when that doesn't apply.
  */
 export function PWARegister() {
   useEffect(() => {
-    if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
-      navigator.serviceWorker
-        .register('/sw.js')
-        .then((registration) => {
-          console.log('YOELANG SW registered:', registration.scope)
-        })
-        .catch((error) => {
-          console.log('YOELANG SW registration failed:', error)
-        })
-    }
+    if (typeof window === 'undefined') return
+    if (!('serviceWorker' in navigator)) return
+
+    // Register the service worker
+    navigator.serviceWorker
+      .register('/sw.js', { scope: '/' })
+      .then((registration) => {
+        console.log('YOELANG SW registered:', registration.scope)
+
+        // Check for updates periodically
+        setInterval(() => {
+          registration.update().catch(() => {})
+        }, 60 * 60 * 1000) // Every hour
+      })
+      .catch((error) => {
+        console.log('YOELANG SW registration failed:', error)
+      })
   }, [])
 
   return null

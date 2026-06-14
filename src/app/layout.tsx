@@ -4,6 +4,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { PWARegister } from "@/components/providers/pwa-register";
+import { PWAInstallBanner } from "@/components/providers/pwa-install";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,8 +26,11 @@ export const metadata: Metadata = {
   authors: [{ name: "YOELANG" }],
   manifest: "/manifest.json",
   icons: {
-    icon: "/yoelang-logo.png",
-    apple: "/icons/icon-192x192.png",
+    icon: [
+      { url: "/favicon.ico", sizes: "32x32" },
+      { url: "/yoelang-logo.png", sizes: "512x512" },
+    ],
+    apple: "/icons/apple-touch-icon-180x180.png",
   },
   appleWebApp: {
     capable: true,
@@ -71,6 +75,7 @@ export default function RootLayout({
         >
           {children}
           <PWARegister />
+          <PWAInstallBanner />
           <Toaster position="top-center" richColors duration={8000} />
         </ThemeProvider>
       </body>
