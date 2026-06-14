@@ -131,15 +131,19 @@ export default function ChallengesPage() {
         setCompletedIds(data.completedIds)
         setDateStr(data.date)
 
-        // Initialize states for already completed
+        // Initialize states: 'correct' for completed, 'unanswered' for the rest
         const initialStates: Record<string, ChallengeState> = {}
-        data.completedIds.forEach((id: string) => {
-          const challenge = data.challenges.find((c: Challenge) => c.id === id)
-          if (challenge) {
-            initialStates[id] = {
+        data.challenges.forEach((challenge: Challenge) => {
+          if (data.completedIds.includes(challenge.id)) {
+            initialStates[challenge.id] = {
               status: 'correct',
               selectedIndex: challenge.correctIndex,
               xpEarned: challenge.xpReward,
+            }
+          } else {
+            initialStates[challenge.id] = {
+              status: 'unanswered',
+              selectedIndex: null,
             }
           }
         })
@@ -164,7 +168,9 @@ export default function ChallengesPage() {
       return
     }
     if (completedIds.includes(challenge.id)) return
-    if (challengeStates[challenge.id]?.status !== 'unanswered' && challengeStates[challenge.id]?.status !== 'wrong') return
+    const currentState = challengeStates[challenge.id]?.status
+    if (currentState === 'correct') return
+    if (currentState !== undefined && currentState !== 'unanswered' && currentState !== 'wrong') return
 
     setSubmitting(challenge.id)
 

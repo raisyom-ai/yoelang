@@ -399,12 +399,13 @@ export default function DashboardPage() {
         if (data.success) {
           setApiChallenges(data.challenges)
           setCompletedIds(data.completedIds)
-          // Initialize states for already completed
+          // Initialize states: 'correct' for completed, 'unanswered' for the rest
           const initialStates: Record<string, ChallengeState> = {}
-          data.completedIds.forEach((id: string) => {
-            const ch = data.challenges.find((c: ApiChallenge) => c.id === id)
-            if (ch) {
-              initialStates[id] = { status: 'correct', selectedIndex: ch.correctIndex, xpEarned: ch.xpReward }
+          data.challenges.forEach((c: ApiChallenge) => {
+            if (data.completedIds.includes(c.id)) {
+              initialStates[c.id] = { status: 'correct', selectedIndex: c.correctIndex, xpEarned: c.xpReward }
+            } else {
+              initialStates[c.id] = { status: 'unanswered', selectedIndex: null }
             }
           })
           setChallengeStates(initialStates)
@@ -421,8 +422,8 @@ export default function DashboardPage() {
     if (!currentChallenge || !user?.id) return
     const challengeId = currentChallenge.id
     if (completedIds.includes(challengeId)) return
-    const state = challengeStates[challengeId]
-    if (state?.status === 'correct') return
+    const currentStatus = challengeStates[challengeId]?.status
+    if (currentStatus === 'correct' || currentStatus === 'wrong') return
 
     setSubmittingChallengeId(challengeId)
     setChallengeStates(prev => ({
