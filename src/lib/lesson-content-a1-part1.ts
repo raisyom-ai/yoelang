@@ -135,8 +135,8 @@ export const A1_PART1: Record<string, LessonContent> = {
     ],
     // Pronunciation: Introduction sounds
     [
-      ['Name', '/neɪm/', 'Nom', 'Le "a" est long : "néèm". Ne dites pas "nam".' },
-      ['Age', '/eɪdʒ/', 'Âge', 'Prononcez "édj" — le son "dj" comme dans "juge" français.' },
+      ['Name', '/neɪm/', 'Nom', 'Le "a" est long : "néèm". Ne dites pas "nam".'],
+      ['Age', '/eɪdʒ/', 'Âge', 'Prononcez "édj" — le son "dj" comme dans "juge" français.'],
       ['Country', '/ˈkʌntri/', 'Pays', 'Le "ou" est très ouvert comme dans "cou" : "keun-tri".' ],
       ['Language', '/ˈlæŋɡwɪdʒ/', 'Langue', 'Le "a" est ouvert : "laeng-guidj". Le "w" se lie au "i" suivant.' ],
     ]

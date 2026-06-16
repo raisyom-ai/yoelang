@@ -372,7 +372,8 @@ export default function ChallengesPage() {
                       const isCorrectOption = idx === challenge.correctIndex
                       const isWrongSelection = state?.status === 'wrong' && isSelected
                       const isCorrectReveal = (state?.status === 'wrong' || state?.status === 'correct') && isCorrectOption
-                      const isDisabled = isCompleted || state?.status === 'correct' || state?.status === 'wrong' || isSubmitting
+                      // Disable if: completed, correct, or currently submitting. Wrong answers can retry.
+                      const isDisabled = isCompleted || state?.status === 'correct' || isSubmitting
 
                       let optionClass = 'border-border/50 bg-background/50 hover:border-yoel-primary/30 hover:bg-yoel-primary/5 text-foreground'
 
@@ -391,10 +392,10 @@ export default function ChallengesPage() {
                           variants={optionVariants}
                           initial="hidden"
                           animate={isCorrectReveal && state?.status === 'correct' ? successPulse : 'visible'}
-                          whileHover={!isDisabled ? { scale: 1.01 } : undefined}
-                          whileTap={!isDisabled ? { scale: 0.98 } : undefined}
+                          whileHover={!isDisabled && state?.status !== 'wrong' ? { scale: 1.01 } : undefined}
+                          whileTap={!isDisabled && state?.status !== 'wrong' ? { scale: 0.98 } : undefined}
                           onClick={() => {
-                            if (!isDisabled) {
+                            if (!isDisabled && state?.status !== 'wrong') {
                               handleSubmit(challenge, idx)
                             }
                           }}
@@ -440,24 +441,39 @@ export default function ChallengesPage() {
                     )}
                   </AnimatePresence>
 
-                  {/* Wrong answer state - show correct answer */}
+                  {/* Wrong answer state - show correct answer + retry button */}
                   <AnimatePresence>
                     {state?.status === 'wrong' && state.correctIndex !== undefined && (
                       <motion.div
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
-                        className="mt-4 flex items-center gap-2 rounded-xl bg-destructive/10 border border-destructive/20 px-4 py-3"
+                        className="mt-4 flex items-center justify-between gap-2 rounded-xl bg-destructive/10 border border-destructive/20 px-4 py-3"
                       >
-                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-destructive/20">
-                          <X className="h-4 w-4 text-destructive" />
+                        <div className="flex items-center gap-2">
+                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-destructive/20">
+                            <X className="h-4 w-4 text-destructive" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-semibold text-destructive">Mauvaise réponse</p>
+                            <p className="text-xs text-destructive/70">
+                              La bonne réponse était : <span className="font-semibold">{challenge.options[state.correctIndex]}</span>
+                            </p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="text-sm font-semibold text-destructive">Mauvaise réponse</p>
-                          <p className="text-xs text-destructive/70">
-                            La bonne réponse était : <span className="font-semibold">{challenge.options[state.correctIndex]}</span>
-                          </p>
-                        </div>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="shrink-0 rounded-full text-xs px-3 border-yoel-primary/30 text-yoel-primary hover:bg-yoel-primary/5"
+                          onClick={() => {
+                            setChallengeStates((prev) => ({
+                              ...prev,
+                              [challenge.id]: { status: 'unanswered', selectedIndex: null },
+                            }))
+                          }}
+                        >
+                          Réessayer
+                        </Button>
                       </motion.div>
                     )}
                   </AnimatePresence>

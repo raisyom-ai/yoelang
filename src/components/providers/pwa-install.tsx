@@ -14,22 +14,25 @@ interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>
 }
 
+function getIsStandalone(): boolean {
+  if (typeof window === 'undefined') return false
+  return window.matchMedia('(display-mode: standalone)').matches
+}
+
+function getIsIOS(): boolean {
+  if (typeof window === 'undefined') return false
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) && !('MSStream' in window)
+}
+
 export function PWAInstallBanner() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null)
   const [showBanner, setShowBanner] = useState(false)
-  const [isIOS, setIsIOS] = useState(false)
-  const [isInstalled, setIsInstalled] = useState(false)
+  const [isIOS] = useState(getIsIOS)
+  const [isInstalled, setIsInstalled] = useState(getIsStandalone)
 
   useEffect(() => {
-    // Check if already installed (standalone mode)
-    const isStandalone = window.matchMedia('(display-mode: standalone)').matches
-    if (isStandalone) {
-      return // Don't show banner in standalone mode
-    }
-
-    // Check if iOS
-    const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !('MSStream' in window)
-    setIsIOS(isIOSDevice)
+    // If already installed, nothing to do
+    if (isInstalled) return
 
     // Listen for the beforeinstallprompt event (Android/Chrome/Edge)
     const handler = (e: Event) => {
@@ -58,7 +61,7 @@ export function PWAInstallBanner() {
       window.removeEventListener('beforeinstallprompt', handler)
       window.removeEventListener('appinstalled', installedHandler)
     }
-  }, [])
+  }, [isInstalled])
 
   const handleInstallClick = useCallback(async () => {
     if (!deferredPrompt) return
