@@ -27,6 +27,7 @@ import {
   Menu,
   LogIn,
   UserPlus,
+  Sparkles,
 } from 'lucide-react'
 
 /* ---------- data ---------- */
@@ -37,36 +38,42 @@ const features = [
     title: 'Tuteur IA',
     description: 'Conversez avec une IA intelligente qui s\'adapte à votre niveau et vous corrige en temps réel.',
     color: 'from-yoel-primary to-yoel-primary-dark',
+    span: 'lg:col-span-2',
   },
   {
     icon: BookOpen,
     title: 'Leçons interactives',
     description: 'Des leçons dynamiques couvrant le vocabulaire, la grammaire et la culture anglophone.',
     color: 'from-yoel-blue to-yoel-blue-dark',
+    span: '',
   },
   {
     icon: Mic,
     title: 'Reconnaissance vocale',
     description: 'Pratiquez votre prononciation avec la technologie de reconnaissance vocale avancée.',
     color: 'from-yoel-green to-emerald-600',
+    span: '',
   },
   {
     icon: BarChart3,
     title: 'Suivi de progression',
-    description: 'Suivez vos progrès avec des statistiques détaillées, des séries et des points XP.',
+    description: 'Statistiques détaillées, séries quotidiennes et points XP pour rester motivé.',
     color: 'from-yoel-gold to-amber-600',
+    span: 'lg:col-span-2',
   },
   {
     icon: Trophy,
     title: 'Défis journaliers',
     description: 'Relevez des défis chaque jour pour gagner des XP et maintenir votre série.',
-    color: 'from-purple-500 to-purple-700',
+    color: 'from-yoel-primary to-yoel-blue',
+    span: '',
   },
   {
     icon: Award,
-    title: 'Certificats',
-    description: 'Obtenez des certificats officiels à chaque fois que vous complétez un niveau de compétence.',
-    color: 'from-teal-500 to-teal-700',
+    title: 'Certificats officiels',
+    description: 'Obtenez des certificats à chaque niveau de compétence atteint.',
+    color: 'from-yoel-gold to-yoel-primary',
+    span: '',
   },
 ]
 
@@ -74,7 +81,7 @@ const stats = [
   { value: '50K+', label: 'Apprenants', icon: Users },
   { value: '1000+', label: 'Leçons', icon: BookOpen },
   { value: '6', label: 'Niveaux', icon: GraduationCap },
-  { value: '4.9', label: 'Note', icon: Star },
+  { value: '4.9', label: 'Note moyenne', icon: Star },
 ]
 
 const testimonials = [
@@ -119,16 +126,16 @@ const steps = [
 /* ---------- animation helpers ---------- */
 
 const fadeInUp = {
-  hidden: { opacity: 0, y: 30 },
+  hidden: { opacity: 0, y: 24 },
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: i * 0.1, duration: 0.5, ease: 'easeOut' as const },
+    transition: { delay: i * 0.08, duration: 0.5, ease: [0.22, 1, 0.36, 1] as const },
   }),
 }
 
 const stagger = {
-  visible: { transition: { staggerChildren: 0.1 } },
+  visible: { transition: { staggerChildren: 0.08 } },
 }
 
 /* ---------- component ---------- */
@@ -142,31 +149,31 @@ export default function HomePage() {
       {/* ===== NAVBAR ===== */}
       <nav className="sticky top-0 z-50 glass">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
             <img src="/yoelang-logo.png" alt="YOELANG" className="h-9 w-9" />
-            <span className="text-xl font-black gradient-text-primary">YOELANG</span>
+            <span className="text-xl font-black tracking-tight">YOELANG</span>
           </div>
 
-          {/* Desktop buttons (visible on sm+) */}
-          <div className="hidden sm:flex items-center gap-3">
+          {/* Desktop buttons */}
+          <div className="hidden sm:flex items-center gap-2">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => navigate('login')}
-              className="text-sm"
+              className="text-sm rounded-full px-5"
             >
               Se connecter
             </Button>
             <Button
               size="sm"
               onClick={() => navigate('register')}
-              className="bg-yoel-primary hover:bg-yoel-primary-dark text-white"
+              className="bg-yoel-primary hover:bg-yoel-primary-dark text-white rounded-full px-5 shadow-[var(--shadow-glow-primary)]"
             >
               Commencer
             </Button>
           </div>
 
-          {/* Mobile hamburger (visible below sm) */}
+          {/* Mobile hamburger */}
           <Button
             variant="ghost"
             size="icon"
@@ -185,7 +192,7 @@ export default function HomePage() {
           <SheetHeader className="text-left">
             <div className="flex items-center gap-2">
               <img src="/yoelang-logo.png" alt="YOELANG" className="h-8 w-8" />
-              <SheetTitle className="text-lg font-black gradient-text-primary">YOELANG</SheetTitle>
+              <SheetTitle className="text-lg font-black">YOELANG</SheetTitle>
             </div>
             <SheetDescription className="text-sm text-muted-foreground">
               Apprenez l&apos;anglais avec YOELANG
@@ -199,7 +206,7 @@ export default function HomePage() {
                 setMobileMenuOpen(false)
                 navigate('register')
               }}
-              className="w-full bg-yoel-primary hover:bg-yoel-primary-dark text-white text-base h-12"
+              className="w-full bg-yoel-primary hover:bg-yoel-primary-dark text-white text-base h-12 rounded-full"
             >
               <UserPlus className="mr-2 h-5 w-5" />
               Commencer gratuitement
@@ -211,7 +218,7 @@ export default function HomePage() {
                 setMobileMenuOpen(false)
                 navigate('login')
               }}
-              className="w-full text-base h-12"
+              className="w-full text-base h-12 rounded-full"
             >
               <LogIn className="mr-2 h-5 w-5" />
               Se connecter
@@ -248,37 +255,39 @@ export default function HomePage() {
 
       {/* ===== HERO ===== */}
       <header className="relative overflow-hidden">
-        {/* Background decoration */}
-        <div className="pointer-events-none absolute inset-0 -z-10">
-          <div className="absolute -right-40 -top-40 h-[500px] w-[500px] rounded-full bg-yoel-primary/5 blur-3xl" />
-          <div className="absolute -left-40 top-20 h-[400px] w-[400px] rounded-full bg-yoel-blue/5 blur-3xl" />
-          <div className="absolute bottom-0 right-1/4 h-[300px] w-[300px] rounded-full bg-yoel-gold/5 blur-3xl" />
-        </div>
+        {/* Aurora background - modern mesh gradient */}
+        <div className="aurora-bg" />
+        <div className="noise-overlay" />
 
-        <div className="mx-auto grid max-w-7xl items-center gap-8 px-4 py-16 sm:px-6 md:py-24 lg:grid-cols-2 lg:gap-16 lg:px-8 lg:py-32">
+        <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-4 py-20 sm:px-6 md:py-28 lg:grid-cols-2 lg:gap-16 lg:px-8 lg:py-36">
           {/* Text */}
           <motion.div
-            initial={{ opacity: 0, x: -40 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.7, ease: 'easeOut' as const }}
-            className="flex flex-col items-start gap-6 text-center lg:text-left"
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] as const }}
+            className="flex flex-col items-start gap-7 text-left"
           >
-            <h1 className="text-4xl font-black leading-tight tracking-tight sm:text-5xl md:text-6xl">
-              <span className="gradient-text-primary">Master English</span>
-              <br />
-              <span className="gradient-text-blue">with YOELANG</span>
+            {/* Eyebrow badge */}
+            <div className="inline-flex items-center gap-2 rounded-full border border-yoel-primary/20 bg-yoel-primary/5 px-4 py-1.5 text-xs font-medium text-yoel-primary">
+              <Sparkles className="size-3.5" />
+              <span>Nouveau : Tuteur IA conversationnel</span>
+            </div>
+
+            <h1 className="text-5xl font-black leading-[1.05] tracking-tight sm:text-6xl md:text-7xl">
+              <span className="block">Master English</span>
+              <span className="gradient-text-premium">with YOELANG</span>
             </h1>
 
-            <p className="max-w-lg text-lg text-muted-foreground">
+            <p className="max-w-lg text-lg text-muted-foreground leading-relaxed">
               La plateforme premium d&apos;apprentissage de l&apos;anglais.
               Apprenez à votre rythme avec une IA qui s&apos;adapte à vous.
             </p>
 
-            <div className="flex flex-col gap-3 sm:flex-row">
+            <div className="flex flex-col gap-3 sm:flex-row w-full sm:w-auto">
               <Button
                 size="lg"
                 onClick={() => navigate('register')}
-                className="bg-yoel-primary hover:bg-yoel-primary-dark text-white text-base px-8"
+                className="bg-yoel-primary hover:bg-yoel-primary-dark text-white text-base px-8 rounded-full shadow-[var(--shadow-glow-primary)] h-12"
               >
                 Commencer gratuitement
                 <ArrowRight className="ml-2 size-4" />
@@ -287,7 +296,7 @@ export default function HomePage() {
                 size="lg"
                 variant="outline"
                 onClick={() => navigate('login')}
-                className="text-base px-8"
+                className="text-base px-8 rounded-full h-12"
               >
                 Se connecter
               </Button>
@@ -301,47 +310,49 @@ export default function HomePage() {
 
           {/* Mascot / Hero Image */}
           <motion.div
-            initial={{ opacity: 0, x: 40 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.7, delay: 0.2, ease: 'easeOut' as const }}
-            className="flex justify-center lg:justify-end"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] as const }}
+            className="relative flex justify-center lg:justify-end"
           >
+            {/* Decorative glow ring behind mascot */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="h-72 w-72 sm:h-80 sm:w-80 md:h-96 md:w-96 rounded-full bg-gradient-to-br from-yoel-primary/20 to-yoel-gold/20 blur-3xl" />
+            </div>
             <motion.img
               src="/yoelang-mascot.png"
               alt="YOELANG - Apprenez l'anglais en conversation"
-              className="h-72 w-72 drop-shadow-2xl sm:h-80 sm:w-80 md:h-96 md:w-96"
+              className="relative h-72 w-72 sm:h-80 sm:w-80 md:h-96 md:w-96 drop-shadow-2xl"
               animate={{ y: [0, -12, 0] }}
-              transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' as const }}
+              transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' as const }}
             />
           </motion.div>
         </div>
       </header>
 
-      {/* ===== FEATURES ===== */}
-      <section className="bg-muted/40 py-16 md:py-24">
+      {/* ===== FEATURES (Bento Grid) ===== */}
+      <section className="py-16 md:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: '-80px' }}
             variants={stagger}
-            className="text-center"
+            className="text-center mb-12"
           >
             <motion.h2
               variants={fadeInUp}
               custom={0}
-              className="text-3xl font-bold tracking-tight sm:text-4xl"
+              className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl"
             >
-              <span className="gradient-text-premium">Tout ce dont vous avez besoin</span>
-              <br />
-              pour apprendre l'anglais
+              Tout ce dont vous avez besoin
             </motion.h2>
             <motion.p
               variants={fadeInUp}
               custom={1}
-              className="mx-auto mt-4 max-w-2xl text-muted-foreground"
+              className="mx-auto mt-4 max-w-2xl text-muted-foreground text-base sm:text-lg"
             >
-              Notre plateforme combine la technologie IA de pointe avec des méthodes d'apprentissage
+              Notre plateforme combine la technologie IA de pointe avec des méthodes d&apos;apprentissage
               des langues éprouvées pour offrir une expérience premium.
             </motion.p>
           </motion.div>
@@ -351,22 +362,22 @@ export default function HomePage() {
             whileInView="visible"
             viewport={{ once: true, margin: '-60px' }}
             variants={stagger}
-            className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
+            className="grid gap-4 sm:gap-5 sm:grid-cols-2 lg:grid-cols-3"
           >
             {features.map((feature, i) => (
               <motion.div
                 key={feature.title}
                 variants={fadeInUp}
                 custom={i}
-                whileHover={{ y: -6, transition: { duration: 0.2 } }}
-                className="glass-card group rounded-2xl p-6 transition-shadow hover:shadow-xl"
+                whileHover={{ y: -4, transition: { duration: 0.2 } }}
+                className={`bento-card group rounded-2xl p-6 sm:p-7 ${feature.span}`}
               >
                 <div
-                  className={`mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${feature.color} text-white shadow-lg`}
+                  className={`mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${feature.color} text-white shadow-lg`}
                 >
                   <feature.icon className="size-6" />
                 </div>
-                <h3 className="mb-2 text-lg font-semibold">{feature.title}</h3>
+                <h3 className="mb-2 text-lg font-semibold tracking-tight">{feature.title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">
                   {feature.description}
                 </p>
@@ -377,14 +388,14 @@ export default function HomePage() {
       </section>
 
       {/* ===== STATS ===== */}
-      <section className="py-16 md:py-20">
+      <section className="py-12 md:py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: '-60px' }}
             variants={stagger}
-            className="grid grid-cols-2 gap-6 md:grid-cols-4"
+            className="grid grid-cols-2 gap-4 sm:gap-5 md:grid-cols-4"
           >
             {stats.map((stat, i) => (
               <motion.div
@@ -393,11 +404,13 @@ export default function HomePage() {
                 custom={i}
                 className="flex flex-col items-center gap-2 rounded-2xl glass-card p-6 text-center"
               >
-                <stat.icon className="size-6 text-yoel-primary" />
-                <span className="text-3xl font-black gradient-text-primary sm:text-4xl">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-yoel-primary/10 mb-1">
+                  <stat.icon className="size-5 text-yoel-primary" />
+                </div>
+                <span className="text-3xl font-black tracking-tight sm:text-4xl">
                   {stat.value}
                 </span>
-                <span className="text-sm text-muted-foreground">{stat.label}</span>
+                <span className="text-xs text-muted-foreground uppercase tracking-wider">{stat.label}</span>
               </motion.div>
             ))}
           </motion.div>
@@ -405,7 +418,7 @@ export default function HomePage() {
       </section>
 
       {/* ===== HOW IT WORKS ===== */}
-      <section className="bg-muted/40 py-16 md:py-24">
+      <section className="py-16 md:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <motion.div
             initial="hidden"
@@ -417,14 +430,14 @@ export default function HomePage() {
             <motion.h2
               variants={fadeInUp}
               custom={0}
-              className="text-3xl font-bold tracking-tight sm:text-4xl"
+              className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl"
             >
-              <span className="gradient-text-blue">Comment ça marche</span>
+              Comment ça marche
             </motion.h2>
             <motion.p
               variants={fadeInUp}
               custom={1}
-              className="mx-auto mt-4 max-w-xl text-muted-foreground"
+              className="mx-auto mt-4 max-w-xl text-muted-foreground text-base sm:text-lg"
             >
               Commencez votre apprentissage de l&apos;anglais en trois étapes simples.
             </motion.p>
@@ -441,7 +454,7 @@ export default function HomePage() {
             <img
               src="/learning-group.png"
               alt="Apprenez l'anglais en groupe"
-              className="h-48 sm:h-56 md:h-64 w-auto object-contain drop-shadow-lg"
+              className="h-48 sm:h-56 md:h-64 w-auto object-contain"
             />
           </motion.div>
 
@@ -459,14 +472,14 @@ export default function HomePage() {
                 custom={i}
                 className="relative flex flex-col items-center text-center"
               >
-                {/* Connector line (hidden on mobile) */}
+                {/* Connector line */}
                 {i < steps.length - 1 && (
                   <div className="absolute left-[calc(50%+3rem)] top-10 hidden h-0.5 w-[calc(100%-6rem)] bg-gradient-to-r from-yoel-primary/30 to-yoel-blue/30 md:block" />
                 )}
-                <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-yoel-primary to-yoel-blue text-white shadow-lg">
+                <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-yoel-primary to-yoel-blue text-white shadow-lg shadow-yoel-primary/20">
                   <span className="text-2xl font-black">{step.number}</span>
                 </div>
-                <h3 className="mb-2 text-lg font-semibold">{step.title}</h3>
+                <h3 className="mb-2 text-lg font-semibold tracking-tight">{step.title}</h3>
                 <p className="text-sm text-muted-foreground max-w-xs leading-relaxed">
                   {step.description}
                 </p>
@@ -477,7 +490,7 @@ export default function HomePage() {
       </section>
 
       {/* ===== TESTIMONIALS ===== */}
-      <section className="py-16 md:py-24">
+      <section className="py-16 md:py-24 bg-muted/30">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <motion.div
             initial="hidden"
@@ -489,16 +502,16 @@ export default function HomePage() {
             <motion.h2
               variants={fadeInUp}
               custom={0}
-              className="text-3xl font-bold tracking-tight sm:text-4xl"
+              className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl"
             >
-              Aimé par les <span className="gradient-text-primary">apprenants</span>
+              Aimé par les apprenants
             </motion.h2>
             <motion.p
               variants={fadeInUp}
               custom={1}
-              className="mx-auto mt-4 max-w-xl text-muted-foreground"
+              className="mx-auto mt-4 max-w-xl text-muted-foreground text-base sm:text-lg"
             >
-              Rejoignez des milliers d'apprenants satisfaits qui ont transformé leur anglais.
+              Rejoignez des milliers d&apos;apprenants satisfaits qui ont transformé leur anglais.
             </motion.p>
           </motion.div>
 
@@ -507,17 +520,17 @@ export default function HomePage() {
             whileInView="visible"
             viewport={{ once: true, margin: '-60px' }}
             variants={stagger}
-            className="mt-12 grid gap-6 md:grid-cols-3"
+            className="mt-12 grid gap-5 md:grid-cols-3"
           >
             {testimonials.map((t, i) => (
               <motion.div
                 key={t.name}
                 variants={fadeInUp}
                 custom={i}
-                className="glass-card rounded-2xl p-6"
+                className="rounded-2xl bg-card border border-border p-6 shadow-[var(--shadow-raised)]"
               >
                 <Quote className="mb-3 size-8 text-yoel-primary/40" />
-                <p className="mb-4 text-sm leading-relaxed text-foreground/90">
+                <p className="mb-5 text-sm leading-relaxed text-foreground/90">
                   &ldquo;{t.text}&rdquo;
                 </p>
                 <div className="flex items-center gap-3">
@@ -545,51 +558,52 @@ export default function HomePage() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
-              className="flex justify-center"
+              className="flex justify-center order-2 md:order-1"
             >
               <img
                 src="/achievement.png"
                 alt="Atteignez vos objectifs en anglais"
-                className="h-56 sm:h-64 md:h-72 w-auto object-contain drop-shadow-lg"
+                className="h-56 sm:h-64 md:h-72 w-auto object-contain"
               />
             </motion.div>
 
             <motion.div
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-80px' }}
               transition={{ duration: 0.6 }}
-              className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-yoel-primary via-yoel-primary-dark to-yoel-blue-dark p-8 text-center text-white shadow-2xl sm:p-12 md:p-16"
+              className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-yoel-primary via-yoel-primary-dark to-yoel-blue-dark p-8 text-center text-white shadow-[var(--shadow-floating)] sm:p-12 md:p-16 order-1 md:order-2"
             >
-            {/* Decorative circles */}
-            <div className="pointer-events-none absolute -right-20 -top-20 h-60 w-60 rounded-full bg-white/10 blur-2xl" />
-            <div className="pointer-events-none absolute -bottom-20 -left-20 h-60 w-60 rounded-full bg-white/5 blur-2xl" />
+              {/* Decorative aurora */}
+              <div className="aurora-bg opacity-50" />
 
-            <h2 className="relative text-3xl font-bold sm:text-4xl">
-              Prêt à commencer votre parcours ?
-            </h2>
-            <p className="relative mx-auto mt-4 max-w-lg text-white/80">
-              Rejoignez plus de 50 000 apprenants et commencez à maîtriser l'anglais aujourd'hui. C'est gratuit pour commencer.
-            </p>
-            <div className="relative mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
-              <Button
-                size="lg"
-                onClick={() => navigate('register')}
-                className="bg-white text-yoel-primary hover:bg-white/90 text-base px-8 font-semibold"
-              >
-                Commencer gratuitement
-                <ArrowRight className="ml-2 size-4" />
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                onClick={() => navigate('login')}
-                className="border-white/30 bg-transparent text-white hover:bg-white/10 text-base px-8"
-              >
-                Se connecter
-              </Button>
-            </div>
-          </motion.div>
+              <div className="relative">
+                <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+                  Prêt à commencer votre parcours ?
+                </h2>
+                <p className="mx-auto mt-4 max-w-lg text-white/80 text-base sm:text-lg">
+                  Rejoignez plus de 50 000 apprenants et commencez à maîtriser l&apos;anglais aujourd&apos;hui. C&apos;est gratuit pour commencer.
+                </p>
+                <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+                  <Button
+                    size="lg"
+                    onClick={() => navigate('register')}
+                    className="bg-white text-yoel-primary hover:bg-white/90 text-base px-8 font-semibold rounded-full h-12"
+                  >
+                    Commencer gratuitement
+                    <ArrowRight className="ml-2 size-4" />
+                  </Button>
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    onClick={() => navigate('login')}
+                    className="border-white/30 bg-transparent text-white hover:bg-white/10 text-base px-8 rounded-full h-12"
+                  >
+                    Se connecter
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
           </div>
         </div>
       </section>
@@ -598,9 +612,9 @@ export default function HomePage() {
       <footer className="mt-auto border-t bg-muted/30 py-10">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col items-center gap-4 md:flex-row md:justify-between">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2.5">
               <img src="/yoelang-logo.png" alt="YOELANG" className="h-7 w-7" />
-              <span className="text-lg font-black gradient-text-primary">YOELANG</span>
+              <span className="text-lg font-black tracking-tight">YOELANG</span>
               <span className="text-xs text-muted-foreground">— YOEL ANGLAIS</span>
             </div>
 

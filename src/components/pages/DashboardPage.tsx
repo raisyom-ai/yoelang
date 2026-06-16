@@ -544,14 +544,14 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-background pb-[88px] lg:pb-8">
       {/* ─── Sticky Top Bar ──────────────────────────────────────────── */}
-      <div className="sticky top-0 z-40 bg-background/80 backdrop-blur-lg border-b border-border/40">
-        <div className="mx-auto max-w-4xl flex items-center justify-between gap-2 sm:gap-3 px-4 py-2 sm:py-2.5 lg:px-6">
+      <div className="sticky top-0 z-40 glass">
+        <div className="mx-auto max-w-4xl flex items-center justify-between gap-2 sm:gap-3 px-4 py-2.5 sm:py-3 lg:px-6">
           <div className="flex items-center gap-2 min-w-0">
             <div className="min-w-0">
               <p className="text-xs text-muted-foreground truncate">
                 {greeting} 👋
               </p>
-              <p className="font-semibold truncate gradient-text-primary text-sm">
+              <p className="font-semibold truncate text-sm">
                 {displayName}
               </p>
             </div>
@@ -562,10 +562,10 @@ export default function DashboardPage() {
             <motion.div
               variants={pulseVariants}
               animate="pulse"
-              className="flex items-center gap-1 rounded-full bg-orange-500/10 px-2 py-1 sm:px-2.5 sm:py-1.5"
+              className="flex items-center gap-1 rounded-full bg-yoel-gold/10 px-2 py-1 sm:px-2.5 sm:py-1.5"
             >
-              <Flame className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-orange-500" />
-              <span className="text-xs sm:text-sm font-semibold text-orange-600 dark:text-orange-400">
+              <Flame className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-yoel-gold" />
+              <span className="text-xs sm:text-sm font-semibold text-yoel-gold">
                 {streak}
               </span>
             </motion.div>
@@ -797,19 +797,19 @@ export default function DashboardPage() {
             <QuickAction
               icon={Swords}
               label="Défis"
-              color="from-orange-500 to-red-600"
+              color="from-yoel-gold to-yoel-gold-light"
               onClick={() => navigate('challenges')}
             />
             <QuickAction
               icon={Trophy}
               label="Classement"
-              color="from-amber-500 to-yellow-600"
+              color="from-yoel-gold to-yoel-primary"
               onClick={() => navigate('leaderboard')}
             />
             <QuickAction
               icon={ShoppingBag}
               label="Boutique"
-              color="from-purple-500 to-pink-600"
+              color="from-yoel-blue to-yoel-primary"
               onClick={() => navigate('shop')}
             />
           </div>
@@ -1007,7 +1007,7 @@ export default function DashboardPage() {
                         d.isFuture
                           ? 'bg-muted/20 border border-transparent opacity-40'
                           : d.completed
-                          ? 'bg-gradient-to-b from-orange-500/20 to-orange-600/10 border border-orange-500/20'
+                          ? 'bg-gradient-to-b from-yoel-gold/20 to-yoel-gold/10 border border-yoel-gold/30'
                           : d.isToday
                           ? 'bg-yoel-primary/5 border border-yoel-primary/20'
                           : 'bg-muted/40 border border-transparent'
